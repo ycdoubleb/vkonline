@@ -1,0 +1,34 @@
+.wrap >.content {
+    padding: 50px 0px 20px !important;
+}
+.statistics-content{
+    padding-top: 20px;
+}
+@media (max-width: 480px) {
+    .statistics-content{
+        padding-top: 0px;
+    }
+}
+.statistics-content .chart{
+    width: 100%;
+    height: 400px;
+}
+
+.statistics-content .summar-title{
+    color:#9A9898;
+}
+
+.statistics-content .summar-title .summar-icon{
+    width: 24px;
+    height: 23px;
+    display: inline-block;
+    margin-right: 5px;
+    margin-left: 7px;
+    background: url('../imgs/statistics_icon24x24.png');
+}
+
+.statistics-content .summar-title .num{
+    font-family: 'Arial';
+    font-size: 35px;
+    color: #333;
+}

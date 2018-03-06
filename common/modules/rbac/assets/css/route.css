@@ -1,0 +1,22 @@
+/**************************************************************
+rbac-route-index
+***************************************************************/
+.rbac-route-index .list{
+    height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    margin-top: 10px;
+}
+.rbac-route-index .list option{
+    height: 20px;
+}
+
+.rbac-route-index .filter{
+    height: 30px;
+    width: 300px;
+}
+
+.rbac-route-index .list-all{
+    margin: 10px;
+}

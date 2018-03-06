@@ -1,0 +1,85 @@
+/* 
+    Created on : 2017-5-31, 14:07:17
+    Author     : Kiwi°
+*/
+.rbac-breadcrumbs{
+    margin-bottom: 10px !important;
+}
+
+.head .rbac-navbar{
+    margin-bottom: 20px;
+}
+
+.rbac .rbac-frame{
+    width: 100%;
+    height: 500px;
+    border: 1px #ddd solid;
+    border-radius: 10px;
+    display: inline-block;
+}
+.rbac .frame-title{
+    width: 100%;
+    height: 50px; 
+    padding-left: 15px;
+    padding-right: 15px;
+    border-bottom: 1px #ddd solid;
+    line-height: 50px;
+}
+.rbac .frame-body{
+    position: relative;
+    width: 100%;
+    height: 400px;
+    overflow: auto;
+    padding: 10px 15px;
+}
+.rbac .frame-body .list{
+    width:100%;
+    height: 100%;
+}
+
+.rbac .frame-footer{
+    width: 100%;
+    height: 50px;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-top: 1px #ddd solid;
+    text-align: right;
+    line-height: 50px;
+}
+.rbac .prompt{
+    color: #9d9d9d;
+}
+.rbac .modal-dialog{
+    width: 1170px;
+}
+.rbac .modal-body{
+    height: 790px;
+    overflow: auto;
+}
+
+/***********************************************
+*
+* role 角色
+*
+***********************************************/
+/* 权限列表 分组显示样式 */
+.group-item{
+    /*width: 150px;*/
+    padding-right: 20px;
+    display: inline-block;
+}
+/* 用户列表 分组显示样式 */
+.group-item-user{
+    width: 120px;
+    display: inline-block;
+}
+/***********************************************
+*
+* permission 权限
+*
+***********************************************/
+/* 添加路由弹出模态框 */
+.permission-add-route{}
+.permission-add-route .list{
+    margin-top: 10px;
+}

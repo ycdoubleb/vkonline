@@ -1,0 +1,313 @@
+<?php
+
+namespace common\models;
+
+use Yii;
+use yii\base\NotSupportedException;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
+use yii\web\IdentityInterface;
+use yii\web\UploadedFile;
+
+/**
+ * User model
+ *
+ * @property string $id
+ * @property string $customer_id            所属客户id
+ * @property string $username               用户名
+ * @property string $nickname               昵称或者真实名称
+ * @property string $password_hash          密码
+ * @property string $password_reset_token   密码重置口令
+ * @property int $sex                       姓别：0保密 1男 2女
+ * @property string $phone                  电话
+ * @property string $email                  邮箱
+ * @property string $avatar                 头像
+ * @property int $status                    状态：0 停用 10启用
+ * @property string $max_store              最大存储空间（最小单位为B）
+ * @property string $des                    简介
+ * @property string $auth_key               认证
+ * @property string $created_at             创建时间
+ * @property string $updated_at             更新时间
+ * @property string $password write-only password
+ */
+class User extends ActiveRecord implements IdentityInterface {
+
+    /** 创建场景 */
+    const SCENARIO_CREATE = 'create';
+
+    /** 更新场景 */
+    const SCENARIO_UPDATE = 'update';
+    //已停账号
+    const STATUS_STOP = 0;
+    //活动账号
+    const STATUS_ACTIVE = 10;
+
+    /** 性别 男 */
+    const SEX_MALE = 1;
+
+    /** 性别 女 */
+    const SEX_WOMAN = 2;
+
+    /**
+     * 性别
+     * @var array 
+     */
+    public static $sexName = [
+        self::SEX_MALE => '男',
+        self::SEX_WOMAN => '女',
+    ];
+
+    /* 重复密码验证 */
+    public $password2;
+
+    public function scenarios() {
+        return [
+            self::SCENARIO_CREATE =>
+            ['username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
+            self::SCENARIO_UPDATE =>
+            ['username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
+            self::SCENARIO_DEFAULT => ['username', 'nickname']
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName() {
+        return '{{%user}}';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function behaviors() {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules() {
+        return [
+            [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE]],
+            [['username', 'nickname', 'email'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
+            [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
+            [['id', 'username'], 'unique'],
+            [['password_hash'], 'string', 'min' => 6, 'max' => 64],
+            [['customer_id', 'max_store', 'created_at', 'updated_at'], 'integer'],
+            [['des'], 'string'],
+            [['id', 'auth_key'], 'string', 'max' => 32],
+            [['username', 'nickname', 'phone'], 'string', 'max' => 50],
+            [['password_hash'], 'string', 'max' => 64],
+            [['password_reset_token', 'email', 'avatar'], 'string', 'max' => 255],
+            [['sex'], 'string', 'max' => 1],
+            [['status'], 'string', 'max' => 2],
+            [['email'], 'email'],
+            [['avatar'], 'image'],
+            [['password2'], 'compare', 'compareAttribute' => 'password_hash'],
+            [['avatar'], 'file', 'extensions' => 'jpg, png', 'mimeTypes' => 'image/jpeg, image/png']
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels() {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'customer_id' => Yii::t('app', 'Customer ID'),
+            'username' => Yii::t('app', 'Username'),
+            'nickname' => Yii::t('app', 'Nickname'),
+            'password_hash' => Yii::t('app', 'Password Hash'),
+            'password2' => Yii::t('app', 'Password2'),
+            'password_reset_token' => Yii::t('app', 'Password Reset Token'),
+            'sex' => Yii::t('app', 'Sex'),
+            'phone' => Yii::t('app', 'Phone'),
+            'email' => Yii::t('app', 'Email'),
+            'avatar' => Yii::t('app', 'Avatar'),
+            'status' => Yii::t('app', 'Status'),
+            'max_store' => Yii::t('app', 'Max Store'),
+            'des' => Yii::t('app', 'Des'),
+            'auth_key' => Yii::t('app', 'Auth Key'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+        ];
+    }
+
+    public function beforeSave($insert) {
+        if (parent::beforeSave($insert)) {
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
+            $upload = UploadedFile::getInstance($this, 'avatar');
+            if ($upload != null) {
+                $string = $upload->name;
+                $array = explode('.', $string);
+                //获取后缀名，默认为 jpg 
+                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/avatars/'));
+                $upload->saveAs($uploadpath . $this->username . '.' . $ext);
+                $this->avatar = '/resources/avatars/' . $this->username . '.' . $ext . '?rand=' . rand(0, 1000);
+            }
+
+
+            if ($this->scenario == self::SCENARIO_CREATE) {
+                $this->setPassword($this->password_hash);
+                //设置默认头像
+                if (trim($this->avatar) == '')
+                    $this->avatar = '/resources/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+            }else if ($this->scenario == self::SCENARIO_UPDATE) {
+                if (trim($this->password_hash) == '')
+                    $this->password_hash = $this->getOldAttribute('password_hash');
+                else
+                    $this->setPassword($this->password_hash);
+
+                if (trim($this->avatar) == '')
+                    $this->avatar = $this->getOldAttribute('avatar');
+            }
+
+            if ($this->scenario == self::SCENARIO_CREATE)
+                $this->generateAuthKey();
+
+            if (trim($this->nickname) == '')
+                $this->nickname = $this->username;
+
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 检查目标路径是否存在，不存即创建目标
+     * @param string $uploadpath    目录路径
+     * @return string
+     */
+    protected function fileExists($uploadpath) {
+
+        if (!file_exists($uploadpath)) {
+            mkdir($uploadpath);
+        }
+        return $uploadpath;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function findIdentity($id) {
+        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function findIdentityByAccessToken($token, $type = null) {
+        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+    }
+
+    /**
+     * Finds user by username
+     *
+     * @param string $username
+     * @return static|null
+     */
+    public static function findByUsername($username) {
+        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    /**
+     * Finds user by password reset token
+     *
+     * @param string $token password reset token
+     * @return static|null
+     */
+    public static function findByPasswordResetToken($token) {
+        if (!static::isPasswordResetTokenValid($token)) {
+            return null;
+        }
+
+        return static::findOne([
+                    'password_reset_token' => $token,
+                    'status' => self::STATUS_ACTIVE,
+        ]);
+    }
+
+    /**
+     * Finds out if password reset token is valid
+     *
+     * @param string $token password reset token
+     * @return bool
+     */
+    public static function isPasswordResetTokenValid($token) {
+        if (empty($token)) {
+            return false;
+        }
+
+        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
+        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
+        return $timestamp + $expire >= time();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getId() {
+        return $this->getPrimaryKey();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthKey() {
+        return $this->auth_key;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateAuthKey($authKey) {
+        return $this->getAuthKey() === $authKey;
+    }
+
+    /**
+     * Validates password
+     *
+     * @param string $password password to validate
+     * @return bool if password provided is valid for current user
+     */
+    public function validatePassword($password) {
+        return Yii::$app->security->validatePassword($password, $this->password_hash);
+    }
+
+    /**
+     * Generates password hash from password and sets it to the model
+     *
+     * @param string $password
+     */
+    public function setPassword($password) {
+        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
+    }
+
+    /**
+     * Generates "remember me" authentication key
+     */
+    public function generateAuthKey() {
+        $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+    /**
+     * Generates new password reset token
+     */
+    public function generatePasswordResetToken() {
+        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
+    }
+
+    /**
+     * Removes password reset token
+     */
+    public function removePasswordResetToken() {
+        $this->password_reset_token = null;
+    }
+
+}
