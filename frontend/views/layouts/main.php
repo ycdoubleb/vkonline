@@ -35,19 +35,41 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
-    $menuItems = [
-        ['label' => 'Home', 'url' => ['/site/index']],
-        ['label' => 'About', 'url' => ['/site/about']],
-        ['label' => 'Contact', 'url' => ['/site/contact']],
-    ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+    
+    if (!Yii::$app->user->isGuest) {
+        $menuItems[] = ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup']];
+        $menuItems[] = ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login']];
     } else {
+        $menuItems = [
+            ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
+            ['label' => Yii::t('app', 'Course'), 'url' => ['/site/index']],
+            ['label' => Yii::t('app', 'Video'), 'url' => ['/site/index']],
+            ['label' => Yii::t(null, '{Study}{Center}', [
+                'Study' => Yii::t('app', 'Study'),
+                'Center' => Yii::t('app', 'Center'),
+            ]), 'url' => ['/site/index']],
+            ['label' => Yii::t('app', 'Square'), 'url' => ['/site/index']],
+            ['label' => Yii::t(null, '{Build}{Center}',[
+                'Build' => Yii::t('app', 'Build Course'),
+                'Course' => Yii::t('app', 'Courses'),
+                'Center' => Yii::t('app', 'Center'),
+            ]), 'url' => ['/site/index']],
+            ['label' => Yii::t(null, '{Help}{Center}',[
+                'Help' => Yii::t('app', 'Help'),
+                'Center' => Yii::t('app', 'Center'),
+            ]), 'url' => ['/site/index']],
+            ['label' => Yii::t(null, '{Manage}{Center}',[
+                'Manage' => Yii::t('app', 'Manage'),
+                'Center' => Yii::t('app', 'Center'),
+            ]), 'url' => ['/site/index']],
+//            ['label' => 'About', 'url' => ['/site/about']],
+//            ['label' => 'Contact', 'url' => ['/site/contact']],
+        ];
+        
         $menuItems[] = '<li>'
             . Html::beginForm(['/site/logout'], 'post')
             . Html::submitButton(
-                'Logout (' . Yii::$app->user->identity->username . ')',
+//                'Logout (' . Yii::$app->user->identity->username . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()
