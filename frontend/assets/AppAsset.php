@@ -15,6 +15,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
+        'js/hm.js',     //百度站点统计
     ];
     public $depends = [
         'yii\web\YiiAsset',
