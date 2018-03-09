@@ -11,7 +11,8 @@ body {
 }
 
 .wrap > .container {
-    padding: 70px 15px 20px;
+    width: 1200px;
+    padding: 70px 0 20px;
 }
 
 .footer {
@@ -96,25 +97,60 @@ a.desc:after {
 }
 
 /* align the logout "link" (button in form) of the navbar */
-.nav li > form > button.logout {
+/*.nav li > form > button.logout {
     padding: 15px;
+    border: none;
+}*/
+
+.nav li.logout {
+    height: 50px;
+    padding: 0 15px;
+    border: none;
+}
+
+.nav li > a.logout {
+    padding: 0 15px;
+    text-align: right;
     border: none;
 }
 
 @media(max-width:767px) {
-    .nav li > form > button.logout {
+/*    .nav li > form > button.logout {
         display:block;
         text-align: left;
         width: 100%;
         padding: 10px 15px;
+    }*/
+    .nav li.logout {
+        height: 50px;
+        display:block;
+        text-align: left;
+        width: 100%;
+        padding: 0 15px;
+    }
+    .nav li > a.logout {
+        display:block;
+        text-align: right;
+        width: 100%;
+        padding: 0 15px;
     }
 }
 
-.nav > li > form > button.logout:focus,
+/*.nav > li > form > button.logout:focus,
 .nav > li > form > button.logout:hover {
     text-decoration: none;
+}*/
+
+.nav  li > a.logout:focus,
+.nav  li > a.logout:hover {
+    text-decoration: none;
+    background-color: transparent;
 }
 
-.nav > li > form > button.logout:focus {
+/*.nav > li > form > button.logout:focus {
+    outline: none;
+}*/
+
+.nav  li > a.logout:focus {
     outline: none;
 }

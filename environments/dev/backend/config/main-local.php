@@ -12,8 +12,7 @@ $config = [
         'rbac' => [
             'class' => 'common\modules\rbac\Module',
         ],
-        
-        //权限控制
+        //后台用户
         'user_admin' => [
             'class' => 'backend\modules\user_admin\Module',
         ],
