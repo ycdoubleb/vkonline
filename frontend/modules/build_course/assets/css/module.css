@@ -1,0 +1,205 @@
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    padding-left: 35px;
+}
+
+.main > p,
+.main .search-frame {
+    padding: 0;
+    margin: 0 0 30px;
+}
+
+.search-frame .search-drop-downList,
+.search-frame .search-text-input {
+    float: left;
+    width: 100%;
+    height: auto;
+    padding-right: 45px;
+    border: 1px #ccc solid;
+}
+
+.search-frame .search-drop-downList {
+    padding-right: 10px;
+    margin-bottom: -20px;
+}
+
+.search-frame .search-drop-downList > select,
+.search-frame .search-text-input > input {
+    height: 38px;
+    font-size: 14px;
+    border: none;
+}
+
+.search-frame .search-drop-downList > select:focus,
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-btn-frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    padding: 9px 15px;
+    background-color: #00cc99;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.search-frame .search-btn-frame > a,
+.search-frame .search-btn-frame > a:focus,
+.search-frame .search-btn-frame > a:hover {
+    font-size: 16px;
+    color: #fff;
+}
+
+.main .list {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    font-size: 0px;
+}
+
+.list .item {
+    display: inline-block;
+    width: 260px;
+    margin-right: 90px;
+    margin-bottom: 30px;
+    font-size: 0px;
+}
+
+.list .item.item-right {
+    margin-right: 0;
+}
+
+.list .item .pic {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 147px;
+    background-color: #26bfcd; 
+}
+
+.list .item .pic .title {
+/*    position: absolute;
+    top: 10px;
+    left: 10px;*/
+    width: 169px;
+    height: 103px;
+    margin: 10px auto;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    line-height: 103px;
+}
+
+.list .item .pic .avatars {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 95px;
+    height: 112px;
+}
+
+.list .item .pic .float {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 33px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 33px;
+    background-color: rgba(0, 0, 0, .6);
+}
+
+.list .item .pic .float > span {
+    margin-right: 20px;
+}
+
+.list .item .pic .float > span > i {
+    margin-left: 5px;
+}
+
+.list .item .cont {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #999;
+    background-color: #f2f2f2; 
+}
+
+.list .item .cont .name,
+.list .item .cont .tuip {
+    padding: 12px 0;
+    text-align: left;
+}
+
+.list .item .cont .tuip {
+    position: relative;
+    border-top: dashed 1px #dedede;
+}
+
+.list .item .cont .name > span,
+.list .item .cont .tuip > span {
+    color: #666;
+}
+
+.list .item .cont .tuip > a,
+.list .item .cont .tuip .labels {
+    float: right;
+    text-decoration: none;
+}
+
+.list .item .cont .tuip > a.into {
+    color: #0099FF;
+}
+
+.list .item .cont .tuip > a.see {
+    color: #FE862E;
+}
+
+.list .item .cont .tuip > a.play {
+    font-size: 18px;
+    color: #4bd127;
+}
+
+.list .item .cont .tuip .labels {
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+.list .item .cont .tuip .labels > span {
+    display: block;
+    float: left;
+    padding: 2px;
+    margin-right: 3px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.build_course-default-myVideo
+.list .item .pic .float > span {
+    float: right;
+    margin-right: 0;
+}
