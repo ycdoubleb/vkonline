@@ -4,11 +4,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model common\models\searchs\HolidaySearch */
+/* @var $model common\models\vk\searchs\CourseSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="holiday-search">
+<div class="course-search">
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
@@ -17,17 +17,29 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
+    <?= $form->field($model, 'customer_id') ?>
+
+    <?= $form->field($model, 'category_id') ?>
+
+    <?= $form->field($model, 'teacher_id') ?>
+
     <?= $form->field($model, 'name') ?>
 
-    <?= $form->field($model, 'type') ?>
-
-    <?= $form->field($model, 'year') ?>
-
-    <?= $form->field($model, 'date') ?>
+    <?php // echo $form->field($model, 'level') ?>
 
     <?php // echo $form->field($model, 'des') ?>
 
+    <?php // echo $form->field($model, 'cover_img') ?>
+
+    <?php // echo $form->field($model, 'is_recommend') ?>
+
     <?php // echo $form->field($model, 'is_publish') ?>
+
+    <?php // echo $form->field($model, 'zan_count') ?>
+
+    <?php // echo $form->field($model, 'favorite_count') ?>
+
+    <?php // echo $form->field($model, 'created_by') ?>
 
     <?php // echo $form->field($model, 'created_at') ?>
 

@@ -41,9 +41,9 @@ class UploadfileSearch extends Uploadfile {
      */
     public function search($params) {
         $time = ArrayHelper::getValue($params, 'time');                                                         //时间段
-        $query = $query = (new Query())
-                ->select(['Uploadfile.id', 'Uploadfile.name AS filename', 'Uploadfile.del_mark', 'Uploadfile.is_del',
-                    'CreateBy.nickname AS created_by', 'Uploadfile.path', 'Uploadfile.created_at'])
+        $query = (new Query())
+                ->select(['Uploadfile.id', 'Uploadfile.name', 'Uploadfile.del_mark', 'Uploadfile.is_del',
+                    'User.nickname AS created_by', 'Uploadfile.path', 'Uploadfile.created_at'])
                 ->from(['Uploadfile' => Uploadfile::tableName()]);
 
         // add conditions that should always apply here
@@ -61,7 +61,7 @@ class UploadfileSearch extends Uploadfile {
             return $dataProvider;
         }
         //关联查询创建者
-        $query->leftJoin(['CreateBy' => User::tableName()], 'CreateBy.id = Uploadfile.created_by');
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Uploadfile.created_by');
         
         //按时间段搜索
         if($time != null){

@@ -20,6 +20,14 @@ $config = [
         'system_admin' => [
             'class' => 'backend\modules\system_admin\Module',
         ],
+        //帮助中心管理
+        'helpcenter_admin' => [
+            'class' => 'backend\modules\helpcenter_admin\Module',
+        ],
+        //前台管理
+        'frontend_admin' => [
+            'class' => 'backend\modules\frontend_admin\Module',
+        ],
     ],
 ];
 
