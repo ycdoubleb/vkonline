@@ -104,10 +104,13 @@ return [
     'Prev' => '上一页',
     'Next' => '下一页',
     'Disabled' => '禁用',
+    'Enable' => '启用',
     'Main Speak' => '主讲',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
+    'Are you sure you want to disable this user?' => '你确定要禁用此用户？',
+    'Are you sure you want to enable this user?' => '你确定要启用此用户？',
     'The requested page does not exist.' => '所请求的页面不存在。',
     'Select Placeholder' => '请选择...',
     'Input Placeholder' => '请输入...',
@@ -138,6 +141,8 @@ return [
     'The' => '所属',
     'Account Number' => '账号',
     'True' => '真实',
+    'Build' => '建设',
+    'Data' => '数据',
     
     
     'Normal' => '正常',

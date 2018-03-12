@@ -2,10 +2,13 @@
 
 namespace common\models\vk\searchs;
 
-use Yii;
+use common\models\User;
+use common\models\vk\Course;
+use common\models\vk\Customer;
+use common\models\vk\Teacher;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\vk\Course;
+use yii\db\Query;
 
 /**
  * CourseSearch represents the model behind the search form of `common\models\vk\Course`.
@@ -41,7 +44,11 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
-        $query = Course::find();
+        $query = (new Query())
+                ->select(['Course.id', 'Customer.name AS customer_id', 'Course.category_id', 'Course.name',
+                            'Teacher.name AS teacher_id', 'User.nickname AS created_by', 'Course.is_publish',
+                            'Course.level', 'Course.created_at'])
+                ->from(['Course' => Course::tableName()]);
 
         // add conditions that should always apply here
 
@@ -56,6 +63,10 @@ class CourseSearch extends Course
             // $query->where('0=1');
             return $dataProvider;
         }
+        
+        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');    //关联查询所属客户
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');        //关联查询主讲老师
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');                 //关联查询课程创建者
 
         // grid filtering conditions
         $query->andFilterWhere([

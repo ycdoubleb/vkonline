@@ -1,47 +1,54 @@
 <?php
 
-use yii\helpers\Html;
+use backend\modules\system_admin\assets\SystemAssets;
+use common\models\vk\searchs\CourseSearch;
+use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\web\View;
 
-/* @var $this yii\web\View */
-/* @var $searchModel common\models\vk\searchs\CourseSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $this View */
+/* @var $searchModel CourseSearch */
+/* @var $dataProvider ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Courses');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="course-index">
+<div class="course-index customer">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <div class="frame">
+        <div class="col-md-12 col-xs-12 frame-title">
+            <i class="icon fa fa-list-ul"></i>
+            <span><?= Yii::t('app', 'List') ?></span>
+        </div>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'layout' => "{items}\n{summary}\n{pager}",
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Course'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'customer_id',
-            'category_id',
-            'teacher_id',
-            'name',
-            //'level',
-            //'des',
-            //'cover_img',
-            //'is_recommend',
-            //'is_publish',
-            //'zan_count',
-            //'favorite_count',
-            //'created_by',
-            //'created_at',
-            //'updated_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+                'customer_id',
+                'category_id',
+                'name',
+                'teacher_id',
+                'created_by',
+                'is_publish',
+                'level',    //可见范围
+                //占用空间
+                //标签
+                'created_at',
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}',
+                ],
+            ],
+        ]); ?>
+    </div>
 </div>
+<?php
+    $js = <<<JS
+        
+JS;
+    $this->registerJs($js, View::POS_READY);
+    SystemAssets::register($this);
+?>

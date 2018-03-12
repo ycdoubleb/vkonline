@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Customer}{List}',[
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="customer-view" style="height: 1100px;">
+<div class="customer-view">
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Renew'), ['update', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
@@ -28,10 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a(Yii::t('app', 'Courses'), ['update', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
-        <?= Html::a(Yii::t('app', 'Users'), ['update', 'id' => $model->id], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Courses'), ['/frontend_admin/course/index'], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Users'), ['/frontend_admin/user/index'], ['class' => 'btn btn-default']) ?>
     </p>
-    <div class="col-md-12 col-xs-12 frame">
+    <div class="frame">
         <div class="col-xs-6 frame-content">
             <div class="frame-title">
                 <i class="icon fa fa-file-text-o"></i>

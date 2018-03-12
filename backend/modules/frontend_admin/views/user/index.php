@@ -1,7 +1,9 @@
 <?php
 
+use backend\components\GridViewChangeSelfColumn;
 use backend\modules\system_admin\assets\SystemAssets;
 use common\models\searchs\UserSearch;
+use common\models\User;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -25,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'User' => Yii::t('app', 'User'),
         ]), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-    <div class="col-xs-12 frame">
+    <div class="frame">
         <div class="col-md-12 col-xs-12 frame-title">
             <i class="icon fa fa-list-ul"></i>
             <span><?= Yii::t('app', 'List') ?></span>
@@ -38,10 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['class' => 'yii\grid\SerialColumn'],
                 [
                     'attribute' => 'customer_id',
-                    'label' => Yii::t('app', '{The}{Customer}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Customer' => Yii::t('app', 'Customer'),
-                    ]),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -65,7 +63,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'username',
-                    'label' => Yii::t('app', 'Account Number'),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -79,10 +76,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'nickname',
-                    'label' => Yii::t('app', '{True}{Name}',[
-                        'True' => Yii::t('app', 'True'),
-                        'Name' => Yii::t('app', 'Name'),
-                    ]),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -102,7 +95,61 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return !empty($data['sex']) ? common\models\User::$sexName[$data['sex']] : null;
+                        return User::$sexName[$data['sex']];
+                    },
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'sex',
+                        'data' => User::$sexName,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'status',
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+//                    'class' => GridViewChangeSelfColumn::className(),
+                    'value' => function ($data){
+                        return User::$statusIs[$data['status']];
+                    },
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'status',
+                        'data' => User::$statusIs,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'course_num',
+                    'label' => Yii::t('app', 'Course'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'value' => function($data) {
+                        return $data['course_num'] . ' 门';
                     },
                     'contentOptions' => [
                         'style' => [
@@ -110,12 +157,53 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
-                'status',
-                'max_store',
-                //'des:ntext',
-                //'auth_key',
-                //'created_at',
-                //'updated_at',
+                [
+                    'attribute' => 'video_num',
+                    'label' => Yii::t('app', 'Video'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'value' => function($data) {
+                        return $data['video_num'] . ' 个';
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'max_store',
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'created_at',
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => false,
+                    'value' => function ($data){
+                        return !empty($data['created_at']) ? date('Y-m-d H:i', $data['created_at']) : null;
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
 
                 ['class' => 'yii\grid\ActionColumn'],
             ],

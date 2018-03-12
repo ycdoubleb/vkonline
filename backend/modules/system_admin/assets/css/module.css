@@ -12,6 +12,7 @@ and open the template in the editor.
     height: 100%
 }
 .customer .frame {
+    width: 100%;
     padding-left: 0;
     padding-right: 0;
     display: inline-block
@@ -37,6 +38,23 @@ and open the template in the editor.
     float: left;
 }
 
+/** table表格th样式 */
+.customer .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/** table表格th-head样式 */
+.customer .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
 /********* uploadfile-index样式 ***********/
 /** table表格th样式 */
 .uploadfile-index .viewdetail-th {
@@ -56,6 +74,7 @@ and open the template in the editor.
 }
 
 .uploadfile-index .frame {
+    width: 100%;
     padding-left: 0;
     padding-right: 0;
     display: inline-block;
@@ -99,6 +118,7 @@ and open the template in the editor.
 }
 
 .customer-view .frame {
+    width: 100%;
     padding-left: 0;
     padding-right: 0;
     display: inline-block;
