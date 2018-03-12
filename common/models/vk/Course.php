@@ -27,6 +27,38 @@ use yii\db\ActiveRecord;
  */
 class Course extends ActiveRecord
 {
+    //未发布
+    const STATUS_NO = 0;
+    //已发布
+    const STATUS_YES = 1;
+    //私有
+    const LEVEL_ZERO = 0;
+    //内网
+    const LEVEL_ONE = 1;
+    //公开
+    const LEVEL_TWO = 2;
+
+    
+    /**
+     * 发布状态
+     * @var array 
+     */
+    public static $satusPublish = [
+        self::STATUS_NO => '未发布',
+        self::STATUS_YES => '已发布',
+    ];
+
+    /**
+     * 发布的位置
+     * @var array
+     */
+    public static $levelStatus = [
+        self::LEVEL_ZERO => '私有',
+        self::LEVEL_ONE => '内网',
+        self::LEVEL_TWO => '公开',
+    ];
+
+
     /**
      * @inheritdoc
      */
@@ -69,9 +101,18 @@ class Course extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', 'Customer ID'),
-            'category_id' => Yii::t('app', 'Category ID'),
-            'teacher_id' => Yii::t('app', 'Teacher ID'),
+            'customer_id' => Yii::t('app', '{The}{Customer}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Customer' => Yii::t('app', 'Customer'),
+                    ]),
+            'category_id' => Yii::t('app', '{The}{Category}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Category' => Yii::t('app', 'Category'),
+                    ]),
+            'teacher_id' => Yii::t('app', '{Main Speak}{Teacher}',[
+                        'Main Speak' => Yii::t('app', 'Main Speak'),
+                        'Teacher' => Yii::t('app', 'Teacher'),
+                    ]),
             'name' => Yii::t('app', 'Name'),
             'level' => Yii::t('app', 'Level'),
             'des' => Yii::t('app', 'Des'),

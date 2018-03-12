@@ -3,9 +3,16 @@
 namespace common\models\vk\searchs;
 
 use common\models\User;
+use common\models\vk\Category;
 use common\models\vk\Course;
+use common\models\vk\CourseNode;
 use common\models\vk\Customer;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -45,15 +52,16 @@ class CourseSearch extends Course
     public function search($params)
     {
         $query = (new Query())
-                ->select(['Course.id', 'Customer.name AS customer_id', 'Course.category_id', 'Course.name',
+                ->select(['Course.id', 'Customer.name AS customer_id', 'Category.name AS category_id', 'Course.name',
                             'Teacher.name AS teacher_id', 'User.nickname AS created_by', 'Course.is_publish',
-                            'Course.level', 'Course.created_at'])
+                            'Course.level', 'SUM(Uploadfile.size) AS size', 'Tags.name AS tags', 'Course.created_at'])
                 ->from(['Course' => Course::tableName()]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'key' => 'id',
         ]);
 
         $this->load($params);
@@ -64,10 +72,18 @@ class CourseSearch extends Course
             return $dataProvider;
         }
         
-        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');    //关联查询所属客户
-        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');        //关联查询主讲老师
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');                 //关联查询课程创建者
-
+        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');//关联查询所属客户
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');    //关联查询主讲老师
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');             //关联查询课程创建者
+        $query->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id');//关联查询课程所属分类
+        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id');        //关联节点找相应的视频
+        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id');               //关联查询视频
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id'); //关联查询视频附件中间表
+        //关联查询视频文件/关联查询视频附件
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id');     
+        $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id');        //关联查询标签中间表
+        $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                 //关联查询标签
+        
         // grid filtering conditions
         $query->andFilterWhere([
             'category_id' => $this->category_id,
