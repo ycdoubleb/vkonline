@@ -104,6 +104,7 @@ return [
     'Prev' => '上一页',
     'Next' => '下一页',
     'Disabled' => '禁用',
+    'Main Speak' => '主讲',
     'Enable' => '启用',
     'Main Speak' => '主讲',
   
