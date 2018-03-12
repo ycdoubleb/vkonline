@@ -92,6 +92,7 @@ return [
     'Time' => '时间',
     'Is Deleted' => '是否删除',
     'All' => '全部',
+    'Basic' => '基本',
     'Info' => '信息',
     'Download' => '下载',
     'Message' => '留言',
@@ -103,6 +104,7 @@ return [
     'Prev' => '上一页',
     'Next' => '下一页',
     'Disabled' => '禁用',
+    'Main Speak' => '主讲',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
