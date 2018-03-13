@@ -2,10 +2,11 @@
 
 namespace common\models\searchs;
 
-use Yii;
+use common\models\AdminUser;
+use common\models\Banner;
+use common\models\vk\Customer;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Banner;
 
 /**
  * BannerSearch represents the model behind the search form of `common\models\Banner`.
@@ -19,7 +20,7 @@ class BannerSearch extends Banner
     {
         return [
             [['id', 'created_at', 'updated_at'], 'integer'],
-            [['customer_id', 'title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'des'], 'safe'],
+            [['customer_id', 'title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'des', 'created_by'], 'safe'],
         ];
     }
 
@@ -41,14 +42,22 @@ class BannerSearch extends Banner
      */
     public function search($params)
     {
-        $query = Banner::find();
+        $query = Banner::find()
+                ->select(['Banner.id', 'Customer.name AS customer_id', 'Banner.title', 'Banner.path', 'Banner.link',
+                    'Banner.target', 'Banner.sort_order', 'Banner.type', 'Banner.is_publish',
+                    'AdminUser.nickname AS created_by', 'Banner.created_at'])
+                ->from(['Banner' => Banner::tableName()]);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'key' => 'id',
         ]);
 
+        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id');//关联查询所属客户
+        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by');//关联查询创建人
+        
         $this->load($params);
 
         if (!$this->validate()) {
@@ -59,20 +68,12 @@ class BannerSearch extends Banner
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'Banner.customer_id' => $this->customer_id,
+            'Banner.is_publish' => $this->is_publish,
+            'Banner.created_by' => $this->created_by,
         ]);
 
-        $query->andFilterWhere(['like', 'customer_id', $this->customer_id])
-            ->andFilterWhere(['like', 'title', $this->title])
-            ->andFilterWhere(['like', 'path', $this->path])
-            ->andFilterWhere(['like', 'link', $this->link])
-            ->andFilterWhere(['like', 'target', $this->target])
-            ->andFilterWhere(['like', 'type', $this->type])
-            ->andFilterWhere(['like', 'sort_order', $this->sort_order])
-            ->andFilterWhere(['like', 'is_publish', $this->is_publish])
-            ->andFilterWhere(['like', 'des', $this->des]);
+        $query->andFilterWhere(['like', 'Banner.title', $this->title]);
 
         return $dataProvider;
     }

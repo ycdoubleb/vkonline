@@ -53,7 +53,7 @@ class CourseSearch extends Course
     public function search($params)
     {
         $tags = ArrayHelper::getValue($params, 'CourseSearch.tags');
-        $query = Course::find()
+        $query = (new Query())
                 ->select(['Course.id', 'Customer.name AS customer_id', 'Category.name AS category_id', 'Course.name',
                             'Teacher.name AS teacher_id', 'User.nickname AS created_by', 'Course.is_publish',
                             'Course.level', 'SUM(Uploadfile.size) AS size', 'Tags.name AS tags', 'Course.created_at'])
@@ -78,7 +78,7 @@ class CourseSearch extends Course
         
         $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id');        //关联查询标签中间表
         $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                 //关联查询标签
-               
+        
         $this->load($params);
         
         if (!$this->validate()) {
@@ -99,6 +99,8 @@ class CourseSearch extends Course
 
         $query->andFilterWhere(['like', 'Course.name', $this->name])
                 ->andFilterWhere(['like', 'Tags.name', $tags]);
+        
+        $query->groupBy(['Course.id']);
         
         return $dataProvider;
     }
