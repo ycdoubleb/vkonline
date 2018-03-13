@@ -1,15 +1,41 @@
+/***************************************公共****************************************/
 .main {
     display: inline-block;
     float: right;  
     width: 1000px;
     height: auto;
     padding-left: 35px;
+    font-size: 14px;
 }
 
 .main > p,
 .main .search-frame {
     padding: 0;
     margin: 0 0 30px;
+}
+
+.main .form-label {
+    padding: 10px 0 !important;
+    font-size: 14px;
+    color: #999;
+    font-weight: normal;
+    padding-right: 0px;
+}
+
+.main .form-control,
+.main .select2-selection {
+    height: 40px !important;
+    padding: 10px 24px 10px 12px !important;
+    border-radius: 0 !important;
+}
+
+.main textarea.form-control {
+    height: auto !important;
+}
+
+.main .select2-selection__arrow {
+    height: 38px !important;
+    border-left: none !important;
 }
 
 .search-frame .search-drop-downList,
@@ -28,7 +54,7 @@
 
 .search-frame .search-drop-downList > select,
 .search-frame .search-text-input > input {
-    height: 38px;
+    height: 38px !important;
     font-size: 14px;
     border: none;
 }
@@ -66,6 +92,61 @@
     color: #fff;
 }
 
+/**
+ * table表格th样式 
+ */
+.main .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格th-head样式 
+ */
+.main .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/**
+ * table表格td-head样式 
+ */
+.main .viewdetail-td-head {
+    color: #000000;
+    float: right;
+    font-weight: bold;
+}
+
+/**
+ * table表格td样式 
+ */
+.main .viewdetail-td {
+    min-width: 100px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格td-des样式 
+ */
+.main .viewdetail-td-des {
+    height: 65px;
+    display:table-cell;
+    vertical-align:middle; 
+}
+
+/**
+ * 设置表格内容中部对齐
+ */
+.main .table > tbody > tr > td{
+    vertical-align: middle;
+}
+
+/************************************列表*******************************************/
 .main .list {
     position: relative;
     display: inline-block;
@@ -198,8 +279,90 @@
     background-color: #fff;
 }
 
-.build_course-default-myVideo
-.list .item .pic .float > span {
+/****************************************详情***************************************/
+.main .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.frame.left {
+    float: left;
+    padding-right: 15px;
+}
+
+.frame.right {
+    float: right;
+    padding-left: 15px;
+}
+
+.frame .title {
+    padding: 10px 15px;
+    color: #fff;
+    text-align: left;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.frame .title > i {
+    float: left; 
+    margin: 3px 5px 0 0;
+}
+
+.frame .title > span {
+    display: block;
+    float: left;
+}
+
+.frame .title > .btngroup {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+}
+
+.frame .table {
+    padding: 0;
+    margin-bottom: 20px;
+    border: 1px #ddd solid;
+}
+
+.frame .table.right {
+    min-height: 268px;
+    border: 1px #ddd solid;
+    overflow-y: auto;
+}
+
+.main.modal {
+    display: block;
+    width: 100%;
+}
+
+.main.modal .recent {
+    display: inline-block; 
+    width:60px;
+    height:60px;
+    margin: 0 0 5px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px #ccc solid;
+    background-color:#fff;
+}
+
+.main.modal .recent:hover {
+    cursor:pointer;
+}
+
+.main.modal .recent.active {
+    border-color: #666;
+    background-color:#ddd;
+}
+
+.main.modal ul.select2-selection__rendered {
+    margin: -6px -12px;
+}
+
+/***************************************我的视频****************************************/
+.default-myVideo .list .item .pic .float > span {
     float: right;
     margin-right: 0;
 }

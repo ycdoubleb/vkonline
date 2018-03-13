@@ -15,10 +15,8 @@ ModuleAssets::register($this);
 ?>
 <div class="course-create main">
 
-    <?= $this->render('_form_course', [
+    <?= $this->render('_form_teacher', [
         'model' => $model,
-        'allCategory' => $allCategory,
-        'allTeacher' => $allTeacher,
     ]) ?>
 
 </div>

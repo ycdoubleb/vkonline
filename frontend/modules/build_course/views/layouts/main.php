@@ -56,7 +56,9 @@ $utilsItems = [
 ];
 //导航
 foreach ($menuItems as $item) {
-    $menu .= (Yii::$app->controller->action->id == $item['url'][0] ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $actionId = strstr(Yii::$app->controller->action->id, '-');
+    $action = strstr($item['url'][0], '-');
+    $menu .= ($actionId == $action ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 //工具
 foreach ($utilsItems as $item) {

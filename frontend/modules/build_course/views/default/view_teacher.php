@@ -12,11 +12,11 @@ ModuleAssets::register($this);
 
 ?>
 
-<div class="default-myCourse main">
+<div class="course-view main">
     
     <p>
         <?= Html::a(Yii::t(null, '{Create}{Course}', [
-            'Create' => Yii::t('app', 'Create'),'Course' => Yii::t('app', '微课')]), ['add-course'], [
+            'Create' => Yii::t('app', 'Create'),'Course' => Yii::t('app', '微课')]), 'javascript:;', [
                 'class' => 'btn btn-success'
             ]) ?>
     </p>
