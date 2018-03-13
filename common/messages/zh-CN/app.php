@@ -113,16 +113,13 @@ return [
     'Sort Order' => '顺序',
     'Des' => '描述',
     'Main Speak' => '主讲',
-    'Teacher' => '老师',
-    'Is Deleted' => '是否删除',
-    'Action' => '动作',
-    'Normal' => '正常',
-    'Disable' => '停用',
-    'Open' => '开通',
-    'Privilege' => '权限',
-    
-    //公共-提示消息
+    'Enable' => '启用',
+    'Main Speak' => '主讲',
+  
+    //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
+    'Are you sure you want to disable this user?' => '你确定要禁用此用户？',
+    'Are you sure you want to enable this user?' => '你确定要启用此用户？',
     'The requested page does not exist.' => '所请求的页面不存在。',
     'Select Placeholder' => '请选择...',
     'Input Placeholder' => '请输入...',
@@ -153,6 +150,8 @@ return [
     'The' => '所属',
     'Account Number' => '账号',
     'True' => '真实',
+    'Build' => '建设',
+    'Data' => '数据',
     
     //后台-文件管理
     'File' => '文件',

@@ -2,12 +2,17 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
-use Yii;
+use common\models\User;
 use common\models\vk\Course;
+use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
+use common\models\vk\Teacher;
+use Yii;
+use yii\db\Query;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * CourseController implements the CRUD actions for Course model.
@@ -41,6 +46,11 @@ class CourseController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            
+            'customer' => $this->getCustomer(),     //所属客户
+            'course' => $this->getCourse(),         //所有课程
+            'teacher' => $this->getTeacher(),       //所有主讲老师
+            'createdBy' => $this->getCreatedBy(),  //所有创建者
         ]);
     }
 
@@ -123,5 +133,64 @@ class CourseController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 查找所属客户
+     * @return array
+     */
+    public function getCustomer()
+    {
+        $customer = (new Query())
+                ->select(['Customer.id', 'Customer.name'])
+                ->from(['User' => User::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
+                ->all();
+
+        return ArrayHelper::map($customer, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有课程
+     * @return array
+     */
+    public function getCourse()
+    {
+        $course = (new Query())
+                ->select(['id', 'name'])
+                ->from(['Course' => Course::tableName()])
+                ->all();
+        
+        return ArrayHelper::map($course, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有主讲老师
+     * @return array
+     */
+    public function getTeacher()
+    {
+        $teacher = (new Query())
+                ->select(['Course.teacher_id AS id', 'Teacher.name'])
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id')
+                ->all();
+        
+        return ArrayHelper::map($teacher, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有创建者
+     * @return array
+     */
+    public function getCreatedBy()
+    {
+        $createdBy = (new Query())
+                ->select(['Course.created_by AS id', 'User.nickname AS name'])
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by')
+                ->all();
+        
+        return ArrayHelper::map($createdBy, 'id', 'name');
     }
 }

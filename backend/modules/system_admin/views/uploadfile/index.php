@@ -18,8 +18,8 @@ $this->title = Yii::t('app', '{File}{Administration}',[
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="uploadfile-index" style="height: 1100px">
-    <div class="col-md-12 col-xs-12 frame frame-left">
+<div class="uploadfile-index">
+    <div class="frame frame-left">
         <div class="col-xs-12 frame-title">
             <span><?= Yii::t('null', '{Storage}{Info}',[
                 'Storage' => Yii::t('app', 'Storage'),
@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]);?>
     </div>
     
-    <div class="col-md-12 col-xs-12 frame">
+    <div class="frame">
         <div class="col-xs-12 frame-title">
             <span><?= Yii::t('app', '{File}{List}',[
                 'File' => Yii::t('app', 'File'),

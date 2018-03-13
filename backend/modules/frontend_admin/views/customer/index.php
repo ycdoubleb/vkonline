@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'Customer' => Yii::t('app', 'Customer'),
         ]), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-    <div class="col-xs-12 frame">
+    <div class="frame">
         <div class="col-md-12 col-xs-12 frame-title">
             <i class="icon fa fa-list-ul"></i>
             <span><?= Yii::t('app', 'List') ?></span>
@@ -176,6 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
+                //剩余空间！！！！
                 [
                     'attribute' => 'status',
                     'label' => Yii::t('app', 'Status'),
@@ -245,7 +246,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                     'template'=>'{view} {update}',
+                    'template'=>'{view} {update}',
                 ],
             ],
         ]); ?>

@@ -2,9 +2,11 @@
 
 namespace common\models;
 
+use common\models\vk\Customer;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
@@ -42,6 +44,9 @@ class User extends ActiveRecord implements IdentityInterface {
     //活动账号
     const STATUS_ACTIVE = 10;
 
+    /** 性别 保密 */
+    const SEX_SECRECY = 0;
+    
     /** 性别 男 */
     const SEX_MALE = 1;
 
@@ -53,8 +58,18 @@ class User extends ActiveRecord implements IdentityInterface {
      * @var array 
      */
     public static $sexName = [
+        self::SEX_SECRECY => '保密',
         self::SEX_MALE => '男',
         self::SEX_WOMAN => '女',
+    ];
+    
+    /**
+     *账号
+     * @var array 
+     */
+    public static $statusIs = [
+        self::STATUS_STOP => '停用',
+        self::STATUS_ACTIVE => '启用',
     ];
 
     /* 重复密码验证 */
@@ -63,9 +78,9 @@ class User extends ActiveRecord implements IdentityInterface {
     public function scenarios() {
         return [
             self::SCENARIO_CREATE =>
-            ['username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
             self::SCENARIO_UPDATE =>
-            ['username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
             self::SCENARIO_DEFAULT => ['username', 'nickname']
         ];
     }
@@ -100,7 +115,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname', 'phone'], 'string', 'max' => 50],
-            [['password_hash'], 'string', 'max' => 64],
+//            [['password_hash'], 'string', 'max' => 64],
             [['password_reset_token', 'email', 'avatar'], 'string', 'max' => 255],
             [['sex'], 'string', 'max' => 1],
             [['status'], 'string', 'max' => 2],
@@ -117,9 +132,15 @@ class User extends ActiveRecord implements IdentityInterface {
     public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', 'Customer ID'),
-            'username' => Yii::t('app', 'Username'),
-            'nickname' => Yii::t('app', 'Nickname'),
+            'customer_id' => Yii::t('app', '{The}{Customer}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Customer' => Yii::t('app', 'Customer'),
+                    ]),
+            'username' => Yii::t('app', 'Account Number'),
+            'nickname' => Yii::t('app', '{True}{Name}',[
+                        'True' => Yii::t('app', 'True'),
+                        'Name' => Yii::t('app', 'Name'),
+                    ]),
             'password_hash' => Yii::t('app', 'Password Hash'),
             'password2' => Yii::t('app', 'Password2'),
             'password_reset_token' => Yii::t('app', 'Password Reset Token'),
@@ -128,7 +149,10 @@ class User extends ActiveRecord implements IdentityInterface {
             'email' => Yii::t('app', 'Email'),
             'avatar' => Yii::t('app', 'Avatar'),
             'status' => Yii::t('app', 'Status'),
-            'max_store' => Yii::t('app', 'Max Store'),
+            'max_store' => Yii::t('app', '{Storage}{Space}',[
+                        'Storage' => Yii::t('app', 'Storage'),
+                        'Space' => Yii::t('app', 'Space'),
+                    ]),
             'des' => Yii::t('app', 'Des'),
             'auth_key' => Yii::t('app', 'Auth Key'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -136,6 +160,15 @@ class User extends ActiveRecord implements IdentityInterface {
         ];
     }
 
+    /**
+     * 关联获取所属客户
+     * @return ActiveQuery
+     */
+    public function getCustomer()
+    {
+        return $this->hasOne(Customer::className(), ['id' => 'customer_id']);
+    }
+    
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if (!$this->id) {
@@ -151,8 +184,7 @@ class User extends ActiveRecord implements IdentityInterface {
                 $upload->saveAs($uploadpath . $this->username . '.' . $ext);
                 $this->avatar = '/resources/avatars/' . $this->username . '.' . $ext . '?rand=' . rand(0, 1000);
             }
-
-
+            
             if ($this->scenario == self::SCENARIO_CREATE) {
                 $this->setPassword($this->password_hash);
                 //设置默认头像
