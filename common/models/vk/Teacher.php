@@ -114,15 +114,15 @@ class Teacher extends ActiveRecord
                 $array = explode('.', $string);
                 //获取后缀名，默认为 jpg 
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/avatars/teacher/'));
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
                 $upload->saveAs($uploadpath . $this->name . '.' . $ext);
-                $this->avatar = '/resources/avatars/teacher/' . $this->name . '.' . $ext . '?rand=' . rand(0, 1000);
+                $this->avatar = '/upload/teacher/avatars/' . $this->name . '.' . $ext . '?rand=' . rand(0, 1000);
             }
 
             if ($this->isNewRecord) {
                 //设置默认头像
                 if (trim($this->avatar) == ''){
-                    $this->avatar = '/resources/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                    $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }    
             }else {
                 if (trim($this->avatar) == ''){

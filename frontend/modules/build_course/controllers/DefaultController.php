@@ -5,6 +5,7 @@ namespace frontend\modules\build_course\controllers;
 use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
+use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
 use common\models\vk\searchs\CourseUserSearch;
@@ -209,6 +210,66 @@ class DefaultController extends Controller
         } else {
             return $this->renderAjax('del_help_man',[
                 'model' => $model
+            ]);
+        }
+    }
+    
+    /**
+     * Lists all CourseFrame.
+     * @return mixed
+     */
+    public function actionCourseFrame($course_id)
+    {
+        
+        $model = $this->findCourseModel($course_id);
+        $phaseSearch = new McbsCoursePhaseSearch();
+        $blockSearch = new McbsCourseBlockSearch();
+        $chapterSearch = new McbsCourseChapterSearch();
+        $sectionSearch = new McbsCourseSectionSearch();
+        $activitySearch = new McbsCourseActivitySearch();
+        
+        return $this->renderAjax('course_frame', [
+            'course_id' => $model->id,
+            'isPermission' => self::IsPermission($model->id, $model->status, false),
+            'dataCouphase' => $phaseSearch->search(['course_id'=>$course_id]),
+            'dataCoublock' => $blockSearch->search(['course_id'=>$course_id]),
+            'dataCouchapter' => $chapterSearch->search(['course_id'=>$course_id]),
+            'dataCousection' => $sectionSearch->search(['course_id'=>$course_id]),
+            'dataCouactivity' => $activitySearch->search(['course_id'=>$course_id]),
+        ]);
+    }
+    
+    /**
+     * AddCouframe a new CourseNode model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionAddCouframe($course_id)
+    {        
+        $model = new CourseNode(['id' => md5(rand(1,10000) . time()), 'course_id' => $course_id]);
+        $model->loadDefaultValues();
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = McbsAction::getInstance()->CreateCouFrame($model,Yii::t('app', 'Phase'),$course_id);
+            return [
+                'code'=> $result ? 200 : 404,
+                'data' =>$result ? [
+                    'frame_name'=>'phase',
+                    'sub_frame'=>'block',
+                    'id'=>$model->id,
+                    'parent_id'=>'',
+                    'name'=>$model->name,
+                    'value_percent'=>"占课程总分比例：".number_format($model->value_percent,2)."%",
+                ] : [],
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $course_id]);
+        } else {
+            return $this->renderAjax('create-couframe', [
+                'model' => $model,
+                'course_id'=>$model->course_id,
+                'title' => Yii::t('app', 'Phase')
             ]);
         }
     }

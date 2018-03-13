@@ -81,7 +81,7 @@ $js =
         $.post("$helpManUrl",$('#build-course-form').serialize(),function(data){
             if(data['code'] == '200'){
                 $("#help_man").load("$helpMan");
-                $("#action-log").load("$actLog");
+                $("#act_log").load("$actLog");
             }
         });
     });   

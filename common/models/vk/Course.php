@@ -140,15 +140,15 @@ class Course extends ActiveRecord
                 $array = explode('.', $string);
                 //获取后缀名，默认为 png 
                 $ext = count($array) == 0 ? 'png' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/build_course/cover_imgs/'));
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/course/cover_imgs/'));
                 $upload->saveAs($uploadpath . md5($this->name) . '.' . $ext);
-                $this->cover_img = '/resources/build_course/cover_imgs/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
+                $this->cover_img = '/upload/course/cover_imgs/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
             }
 
             if ($this->isNewRecord) {
                 //设置默认头像
                 if (trim($this->cover_img) == ''){
-                    $this->cover_img = '/resources/build_course/cover_imgs/default.png';
+                    $this->cover_img = '';
                 }
                 //保存自己为协作人
                 $model = new CourseUser(['course_id' => $this->id, 

@@ -279,7 +279,7 @@
     background-color: #fff;
 }
 
-/****************************************详情***************************************/
+/****************************************详情-公共***************************************/
 .main .frame {
     padding-left: 0;
     padding-right: 0;
@@ -332,11 +332,15 @@
     overflow-y: auto;
 }
 
+/**
+ *  模态框样式
+ */
 .main.modal {
     display: block;
     width: 100%;
 }
 
+/**************************************最近联系*****************************************/
 .main.modal .recent {
     display: inline-block; 
     width:60px;
@@ -359,6 +363,102 @@
 
 .main.modal ul.select2-selection__rendered {
     margin: -6px -12px;
+}
+
+/***************************************课程框架****************************************/
+.sortable {
+    padding:0;
+    margin: 0;
+}
+
+.sortable li {
+    list-style: none outside none;
+    cursor: normal;
+}
+
+.sortable li.disabled:hover {
+    cursor: default;
+}
+
+.sortable .head {
+    position: relative;
+    padding: 10px 5px;
+    margin: 0;
+    font-size: 14px;
+    color: #ff0000;
+}
+
+.sortable .nodes {
+    padding: 10px;
+}
+
+.sortable .head.blue {
+    background-color: #006699;
+}
+
+.sortable .head.gray {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #eeeeee;
+}
+
+.sortable .head.add {
+    display: inline-block;
+    padding: 15px;
+    margin: 10px auto;
+    border-radius: 6px;
+}
+
+.sortable .head > a {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 20px;
+    text-align: left;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sortable .head > a > i{
+    float: left;
+    margin-right: 5px;
+    font-size: 20px;
+}
+
+.sortable .head .icongroup {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+}
+
+.sortable .head .icongroup > a > i {
+    float: left;
+    margin: 3px 2px;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: normal;
+}
+
+.sortable .head .icongroup .handle:hover{
+    cursor: move;
+}
+
+.sortable .head.gray > a {
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+}
+
+.sortable .head.gray > a > i,
+.sortable .head.gray .icongroup > a > i{
+    color: #000;
+}
+
+.sortable .head.add > a,
+.sortable .head.add > a > i {
+    float: left;
+    margin: 0 5px;
+    font-size: 18px;
+    color: #999;
 }
 
 /***************************************我的视频****************************************/

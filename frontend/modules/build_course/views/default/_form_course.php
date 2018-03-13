@@ -58,7 +58,7 @@ use yii\widgets\ActiveForm;
             'browseLabel' => '选择上传图像...',
             'initialPreview' => [
                 $model->isNewRecord ?
-                        Html::img(['/resources/build_course/cover_imgs/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+                        Html::img(['/upload/course/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
                         Html::img([$model->cover_img], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
             ],
             'overwriteInitial' => true,

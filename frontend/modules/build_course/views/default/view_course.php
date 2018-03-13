@@ -86,6 +86,28 @@ ModuleAssets::register($this);
         </div>
     </div>
     
+    <div class="col-xs-12 frame">
+        <div class="col-xs-12 title">
+            <i class="icon fa fa-cubes"></i>
+            <span>
+                <?= Yii::t('app', '{Course}{Frame}',[
+                    'Course' => Yii::t('app', 'Course'), 'Frame' => Yii::t('app', 'Frame')
+                ]) ?>
+            </span>
+            <div class="btngroup">
+                <?= Html::a('<i class="fa fa-sign-in"></i> '.Yii::t('app', '导入'),'javascript:;', [
+                    'class' => 'btn btn-sm btn-info disabled'
+                ]) ?>
+                <?= Html::a('<i class="fa fa-sign-out"></i> '.Yii::t('app', '导出'),'javascript:;', [
+                    'class' => 'btn btn-sm btn-info disabled'
+                ]) ?>
+            </div>
+        </div>
+        <div id="course_frame" class="col-xs-12 table right">
+            <?= $this->render('course_frame', ['course_id' => $model->id]) ?>
+        </div>
+    </div>
+    
 </div>
 
 <?= $this->render('/layouts/model') ?>

@@ -1,24 +1,25 @@
 <?php
 
-use frontend\modules\build_course\assets\ModuleAssets;
+use mconline\modules\mcbs\assets\McbsAssets;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $model CourseUser */
 
-ModuleAssets::register($this);
+$is_show = null;
+if(Yii::$app->controller->action->id == 'delete-couphase')
+    $is_show = "（{$model->value_percent}分）";
 
-$this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
-    'Delete' => Yii::t('app', 'Delete'),'HelpMan' => Yii::t('app', 'Help Man')
+$this->title = Yii::t(null, "{delete}{$title}：{$model->name}{$is_show}", [
+    'delete' => Yii::t('app', 'Delete'),
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
-<div class="help_man-delete main modal">
+<div class="mcbs-delete-couframe mcbs">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -30,7 +31,10 @@ $this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
             </div>
             <div class="modal-body">
                 <?php $form = ActiveForm::begin([
-                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                    'options'=>[
+                        'id' => 'form-couframe',
+                        'class'=>'form-horizontal',
+                    ],
                     'fieldConfig' => [  
                         'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
                         'labelOptions' => [
@@ -40,8 +44,9 @@ $this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
                 ]); ?>
                 
                 <?= Html::activeHiddenInput($model, 'id') ?>
+                <?= Html::activeHiddenInput($model, 'is_del',['value'=>1]) ?>
 
-                <?= Html::encode('确定要删除该协作人？') ?>
+                <?= Html::encode("确定要删除该课程{$title}？") ?>
 
                 <?php ActiveForm::end(); ?>
             </div>
@@ -58,24 +63,26 @@ $this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
 
 <?php
 
-$helpMan = Url::to(['helpman', 'course_id' => $model->course_id]);
-$helpManUrl = Url::to(['del-helpman', 'id' => $model->id]);
-$actLog = Url::to(['actlog', 'course_id' => $model->course_id]);;
+$action = Url::to(['course-make/'.Yii::$app->controller->action->id, 'id' => $model->id]);
+$actlog = Url::to(['course-make/log-index', 'course_id' => $course_id]);
 
 $js = 
 <<<JS
         
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$('#build-course-form').submit();return;
-        $.post("$helpManUrl",$('#build-course-form').serialize(),function(data){
+        $.post("$action",$('#form-couframe').serialize(),function(data){
             if(data['code'] == '200'){
-                $("#help_man").load("$helpMan");
-                $("#act_log").load("$actLog");
+                $("#$model->id").remove();
+                $("#action-log").load("$actlog");
             }
         });
-    }); 
+    });  
         
 JS;
     $this->registerJs($js,  View::POS_READY);
+?>
+
+<?php
+    McbsAssets::register($this);
 ?>
