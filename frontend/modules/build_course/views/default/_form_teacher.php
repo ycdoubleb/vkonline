@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
             'data' => Teacher::$sexName, 'options' => ['prompt'=>'请选择...',]
     ]);?>
     
-    <?php echo $form->field($model, 'avatar')->widget(FileInput::classname(), [
+    <?= $form->field($model, 'avatar')->widget(FileInput::classname(), [
         'options' => [
             'accept' => 'image/*',
             'multiple' => false,

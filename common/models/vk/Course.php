@@ -7,6 +7,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 
 
 /**
@@ -133,6 +134,32 @@ class Course extends ActiveRecord
         }
         
         if (parent::beforeSave($insert)) {
+            $upload = UploadedFile::getInstance($this, 'cover_img');
+            if ($upload != null) {
+                $string = $upload->name;
+                $array = explode('.', $string);
+                //获取后缀名，默认为 png 
+                $ext = count($array) == 0 ? 'png' : $array[count($array) - 1];
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/build_course/cover_imgs/'));
+                $upload->saveAs($uploadpath . md5($this->name) . '.' . $ext);
+                $this->cover_img = '/resources/build_course/cover_imgs/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
+            }
+
+            if ($this->isNewRecord) {
+                //设置默认头像
+                if (trim($this->cover_img) == ''){
+                    $this->cover_img = '/resources/build_course/cover_imgs/default.png';
+                }
+                //保存自己为协作人
+                $model = new CourseUser(['course_id' => $this->id, 
+                    'user_id' => $this->created_by, 'privilege' => CourseUser::ALL
+                ]);
+                $model->save();
+            }else {
+                if (trim($this->cover_img) == ''){
+                    $this->cover_img = $this->getOldAttribute('cover_img');
+                }
+            }
             return true;
         }
         
@@ -169,5 +196,18 @@ class Course extends ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * 检查目标路径是否存在，不存即创建目标
+     * @param string $uploadpath    目录路径
+     * @return string
+     */
+    protected function fileExists($uploadpath) {
+
+        if (!file_exists($uploadpath)) {
+            mkdir($uploadpath);
+        }
+        return $uploadpath;
     }
 }

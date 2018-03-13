@@ -82,7 +82,7 @@ ModuleAssets::register($this);
             </div>
         </div>
         <div id="help_man" class="col-xs-12 table right">
-            <center>加载中...</center>
+            <?= $this->render('help_man', ['dataProvider' => $dataProvider]) ?>
         </div>
     </div>
     

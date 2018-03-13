@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\Course;
+use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\web\View;
@@ -17,6 +18,7 @@ use yii\widgets\ActiveForm;
         'options'=>[
             'id' => 'build-course-form',
             'class'=>'form-horizontal',
+            'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [  
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",  
@@ -40,6 +42,28 @@ use yii\widgets\ActiveForm;
             'data' => $allTeacher, 'options' => ['prompt'=>'请选择...',]
         ]);
     ?>
+    
+    <?= $form->field($model, 'cover_img')->widget(FileInput::classname(), [
+        'options' => [
+            'accept' => 'image/*',
+            'multiple' => false,
+        ],
+        'pluginOptions' => [
+            'resizeImages' => true,
+            'showCaption' => false,
+            'showRemove' => false,
+            'showUpload' => false,
+            'browseClass' => 'btn btn-primary btn-block',
+            'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+            'browseLabel' => '选择上传图像...',
+            'initialPreview' => [
+                $model->isNewRecord ?
+                        Html::img(['/resources/build_course/cover_imgs/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+                        Html::img([$model->cover_img], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
+            ],
+            'overwriteInitial' => true,
+        ],
+    ]);?>
     
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
