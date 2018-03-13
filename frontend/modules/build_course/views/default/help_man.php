@@ -1,20 +1,21 @@
 <?php
 
-use common\models\mconline\McbsCourseUser;
-use common\models\mconline\searchs\McbsCourseUserSearch;
-use mconline\modules\mcbs\assets\McbsAssets;
-use mconline\modules\mcbs\utils\McbsAction;
+use common\models\vk\CourseUser;
+use common\models\vk\searchs\CourseUserSearch;
+use frontend\modules\build_course\assets\ModuleAssets;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
-/* @var $searchModel McbsCourseUserSearch */
+/* @var $searchModel CourseUserSearch */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Mcbs Courses');
-$this->params['breadcrumbs'][] = $this->title;
+ModuleAssets::register($this);
+
+//$this->title = Yii::t('app', 'Mcbs Courses');
+//$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="mcbs-helpman-index">
 
@@ -33,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => Yii::t('app', 'Fullname'),
                 'format' => 'raw',
                 'value'=> function ($model) {
-                    /* @var $model McbsCourseUser */
+                    /* @var $model CourseUser */
                     return !empty($model->user_id) ? $model->user->nickname : null;
                 },
                 'headerOptions' => [
@@ -52,8 +53,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => Yii::t('app', 'Privilege'),
                 'format' => 'raw',
                 'value'=> function ($model) {
-                    /* @var $model McbsCourseUser */
-                    return McbsCourseUser::$privilegeName[$model->privilege];
+                    /* @var $model CourseUser */
+                    return CourseUser::$privilegeMap[$model->privilege];
                 },
                 'headerOptions' => [
                     'style' => [
@@ -91,15 +92,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 'class' => 'yii\grid\ActionColumn',
                 //'header' => Yii::t('app', 'Operating'),
                 'buttons' => [
-                    'update' => function ($url, $model, $key) use($isPermission) {
-                        /* @var $model McbsCourseUser */
+                    'update' => function ($url, $model, $key) {
+                        /* @var $model CourseUser */
                          $options = [
                             'class' => 'btn btn-sm btn-primary',
                             'style' => $model->user_id == $model->course->created_by ? 'display: none' : '',
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
-                            'onclick' => 'editHelpman($(this));return false;'
+                            'onclick' => 'showModal($(this));'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-pencil"></span>',
@@ -109,11 +110,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             'conditions' => $model->course->created_by == Yii::$app->user->id,
                             'adminOptions' => true,
                         ];
-                        if($isPermission)
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                        return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                         //return ResourceHelper::a($buttonHtml['name'], $buttonHtml['url'],$buttonHtml['options'],$buttonHtml['conditions']);
                     },
-                    'delete' => function ($url, $model, $key) use($isPermission) {
+                    'delete' => function ($url, $model, $key) {
                         $options = [
                             'class' => 'btn btn-sm btn-danger',
                             'style' => $model->user_id == $model->course->created_by ? 'display: none' : '',
@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'aria-label' => Yii::t('yii', 'Delete'),
                             'data-pjax' => '0',
                             //'data' => ['method' => 'post'],
-                            'onclick' => 'deleteHelpman($(this));return false;'
+                            'onclick' => 'showModal($(this));'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-user-times"></span>',
@@ -131,8 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'conditions' => $model->course->created_by == Yii::$app->user->id,
                             'adminOptions' => true,
                         ];
-                        if($isPermission)
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
+                        return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
                         //return ResourceHelper::a($buttonHtml['name'], $buttonHtml['url'],$buttonHtml['options'],$buttonHtml['conditions']);
                     },       
                 ],
@@ -156,22 +155,14 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $js = 
 <<<JS
-       
-    //编辑协作人弹出框
-    function editHelpman(elem){
+    
+    /** 显示模态框 */
+    window.showModal = function(elem){
         $(".myModal").html("");
         $('.myModal').modal("show").load(elem.attr("href"));
-    }
-    //删除协作人弹出框
-    function deleteHelpman(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-    }
+        return false;
+    }    
    
 JS;
     $this->registerJs($js,  View::POS_READY);
-?>
-
-<?php
-    McbsAssets::register($this);
 ?>

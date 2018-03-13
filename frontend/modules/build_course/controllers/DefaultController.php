@@ -7,6 +7,7 @@ use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
+use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\Teacher;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
@@ -75,9 +76,11 @@ class DefaultController extends Controller
     public function actionViewCourse($id)
     {
         $model = $this->findCourseModel($id);
+        $searchModel = new CourseUserSearch();
         
         return $this->render('view_course', [
             'model' => $model,
+            'dataProvider' => $searchModel->search(['course_id' => $model->id]),
         ]);
     }
    
@@ -88,7 +91,7 @@ class DefaultController extends Controller
      */
     public function actionAddCourse()
     {
-        $model = new Course(['customer_id' => Yii::$app->user->identity->customer_id,'created_by' => Yii::$app->user->id]);
+        $model = new Course(['customer_id' => Yii::$app->user->identity->customer_id, 'created_by' => Yii::$app->user->id]);
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

@@ -119,6 +119,13 @@ class Course extends ActiveRecord
         }
         
         if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                $courUser = new CourseUser([
+                    'course_id' => $this->id, 'user_id' => $this->created_by,
+                    'privilege' => CourseUser::ALL
+                ]);
+                $courUser->save();
+            }
             return true;
         }
         

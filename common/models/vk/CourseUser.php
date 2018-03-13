@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -18,6 +19,7 @@ use yii\db\ActiveRecord;
  * @property string $updated_at 更新时间
  * 
  * @property Course $courset 获取课程
+ * @property User $user 获取用户
  */
 class CourseUser extends ActiveRecord
 {
@@ -93,5 +95,13 @@ class CourseUser extends ActiveRecord
     public function getCourse()
     {
         return $this->hasOne(Course::className(), ['id' => 'course_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
     }
 }

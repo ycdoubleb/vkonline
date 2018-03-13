@@ -412,8 +412,8 @@ class ActionUtils
         //组装保存数组
         foreach ($user_ids as $user_id) {
             if(!in_array($user_id, $userIds)){
-                $latelyUsers[] = ['course_id' => $course_id,'user_id' => $user_id,
-                    'privilege' => $privilege,'created_at' => time(),'updated_at' => time(),
+                $latelyUsers[] = ['course_id' => $course_id, 'user_id' => $user_id,
+                    'privilege' => $privilege, 'created_at' => time(), 'updated_at' => time(),
                 ];
             }
         }
@@ -460,7 +460,7 @@ class ActionUtils
         }
         
         /** 添加$userContacts数组到表里 */
-        $v = Yii::$app->db->createCommand()->batchInsert(RecentContacts::tableName(), 
+        Yii::$app->db->createCommand()->batchInsert(RecentContacts::tableName(), 
             array_keys($userContacts[0]), $userContacts)->execute();        
     }
     
