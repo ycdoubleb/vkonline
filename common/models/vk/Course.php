@@ -43,6 +43,11 @@ class Course extends ActiveRecord
     /** 可见范围-私有 */
     const PRIVATE_LEVEL = 0;
     
+    /** 发布状态-未发布 */
+    const NO_PUBLISH = 0;
+    /** 发布状态-已发布 */
+    const YES_PUBLISH = 1;
+    
     /**
      * 可见范围
      * @var array 
@@ -51,6 +56,15 @@ class Course extends ActiveRecord
         self::PUBLIC_LEVEL => '公开',
         self::INTRANET_LEVEL => '内网',
         self::PRIVATE_LEVEL => '私有',
+    ];
+    
+    /**
+     * 发布状态
+     * @var array 
+     */
+    public static $publishStatus = [
+        self::NO_PUBLISH => '未发布',
+        self::YES_PUBLISH => '已发布',
     ];
 
     /**
