@@ -16,9 +16,14 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/hm.js',     //百度站点统计
+        'js/render.js'  //渲染
     ];
     public $depends = [
+        'rmrevin\yii\fontawesome\AssetBundle',
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
+    ];
+    public $publishOptions = [
+        'forceCopy' => YII_DEBUG,
     ];
 }

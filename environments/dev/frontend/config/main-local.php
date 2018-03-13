@@ -7,6 +7,12 @@ $config = [
             'cookieValidationKey' => '',
         ],
     ],
+    'modules' => [
+        //建课中心
+        'build_course' => [
+            'class' => 'frontend\modules\build_course\Module',
+        ],
+    ],
 ];
 
 if (!YII_ENV_TEST) {

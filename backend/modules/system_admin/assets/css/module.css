@@ -1,0 +1,163 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2018-3-7, 13:50:08
+    Author     : Vito
+*/
+/********* customer 样式 ***********/
+.customer{
+    height: 100%
+}
+.customer .frame {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+.customer
+.frame-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: #ffffff;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+.customer
+.frame-title .icon {
+    float: left; 
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.customer
+.frame-title>span {
+    display: block;
+    float: left;
+}
+
+/** table表格th样式 */
+.customer .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/** table表格th-head样式 */
+.customer .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/********* uploadfile-index样式 ***********/
+/** table表格th样式 */
+.uploadfile-index .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/** table表格th-head样式 */
+.uploadfile-index .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+.uploadfile-index .frame {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block;
+}
+
+.uploadfile-index .frame-left {
+    width: 40%;
+    margin-bottom: 30px;
+}
+
+.uploadfile-index .frame
+.frame-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: #ffffff;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.uploadfile-index .frame
+.frame-title>span {
+    display: block;
+    float: left;
+}
+/********* customer-view样式 ***********/
+/** table表格th样式 */
+.customer-view .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: center;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/** table表格th-head样式 */
+.customer-view .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+.customer-view .frame {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block;
+}
+
+.customer-view .frame-left {
+    width: 40%;
+    margin-bottom: 30px;
+}
+
+.customer-view .frame
+.frame-content {
+    padding: 10px 5px 0px 5px;
+}
+
+.customer-view .frame
+.frame-title {
+    padding: 15px 0px 30px 10px;
+    color: #ffffff;
+    line-height: 18px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.customer-view .frame
+.frame-title .icon {
+    float: left; 
+    margin-top: 2px;
+    margin-right: 5px;
+}
+
+.customer-view .frame
+.frame-title>span {
+    display: block;
+    float: left;
+}
+
+.customer-view .frame
+.frame-title>.framebtn {
+    position: absolute;
+    top: 18px;
+    right: 15px;
+}

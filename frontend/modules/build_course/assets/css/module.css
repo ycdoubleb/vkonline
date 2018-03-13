@@ -1,0 +1,468 @@
+/***************************************公共****************************************/
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    padding-left: 35px;
+    font-size: 14px;
+}
+
+.main > p,
+.main .search-frame {
+    padding: 0;
+    margin: 0 0 30px;
+}
+
+.main .form-label {
+    padding: 10px 0 !important;
+    font-size: 14px;
+    color: #999;
+    font-weight: normal;
+    padding-right: 0px;
+}
+
+.main .form-control,
+.main .select2-selection {
+    height: 40px !important;
+    padding: 10px 24px 10px 12px !important;
+    border-radius: 0 !important;
+}
+
+.main textarea.form-control {
+    height: auto !important;
+}
+
+.main .select2-selection__arrow {
+    height: 38px !important;
+    border-left: none !important;
+}
+
+.search-frame .search-drop-downList,
+.search-frame .search-text-input {
+    float: left;
+    width: 100%;
+    height: auto;
+    padding-right: 45px;
+    border: 1px #ccc solid;
+}
+
+.search-frame .search-drop-downList {
+    padding-right: 10px;
+    margin-bottom: -20px;
+}
+
+.search-frame .search-drop-downList > select,
+.search-frame .search-text-input > input {
+    height: 38px !important;
+    font-size: 14px;
+    border: none;
+}
+
+.search-frame .search-drop-downList > select:focus,
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-btn-frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    padding: 9px 15px;
+    background-color: #00cc99;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.search-frame .search-btn-frame > a,
+.search-frame .search-btn-frame > a:focus,
+.search-frame .search-btn-frame > a:hover {
+    font-size: 16px;
+    color: #fff;
+}
+
+/**
+ * table表格th样式 
+ */
+.main .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格th-head样式 
+ */
+.main .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/**
+ * table表格td-head样式 
+ */
+.main .viewdetail-td-head {
+    color: #000000;
+    float: right;
+    font-weight: bold;
+}
+
+/**
+ * table表格td样式 
+ */
+.main .viewdetail-td {
+    min-width: 100px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格td-des样式 
+ */
+.main .viewdetail-td-des {
+    height: 65px;
+    display:table-cell;
+    vertical-align:middle; 
+}
+
+/**
+ * 设置表格内容中部对齐
+ */
+.main .table > tbody > tr > td{
+    vertical-align: middle;
+}
+
+/************************************列表*******************************************/
+.main .list {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    font-size: 0px;
+}
+
+.list .item {
+    display: inline-block;
+    width: 260px;
+    margin-right: 90px;
+    margin-bottom: 30px;
+    font-size: 0px;
+}
+
+.list .item.item-right {
+    margin-right: 0;
+}
+
+.list .item .pic {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 147px;
+    background-color: #26bfcd; 
+}
+
+.list .item .pic .title {
+/*    position: absolute;
+    top: 10px;
+    left: 10px;*/
+    width: 169px;
+    height: 103px;
+    margin: 10px auto;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    line-height: 103px;
+}
+
+.list .item .pic .avatars {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 95px;
+    height: 112px;
+}
+
+.list .item .pic .float {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 33px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 33px;
+    background-color: rgba(0, 0, 0, .6);
+}
+
+.list .item .pic .float > span {
+    margin-right: 20px;
+}
+
+.list .item .pic .float > span > i {
+    margin-left: 5px;
+}
+
+.list .item .cont {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #999;
+    background-color: #f2f2f2; 
+}
+
+.list .item .cont .name,
+.list .item .cont .tuip {
+    padding: 12px 0;
+    text-align: left;
+}
+
+.list .item .cont .tuip {
+    position: relative;
+    border-top: dashed 1px #dedede;
+}
+
+.list .item .cont .name > span,
+.list .item .cont .tuip > span {
+    color: #666;
+}
+
+.list .item .cont .tuip > a,
+.list .item .cont .tuip .labels {
+    float: right;
+    text-decoration: none;
+}
+
+.list .item .cont .tuip > a.into {
+    color: #0099FF;
+}
+
+.list .item .cont .tuip > a.see {
+    color: #FE862E;
+}
+
+.list .item .cont .tuip > a.play {
+    font-size: 18px;
+    color: #4bd127;
+}
+
+.list .item .cont .tuip .labels {
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+.list .item .cont .tuip .labels > span {
+    display: block;
+    float: left;
+    padding: 2px;
+    margin-right: 3px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+/****************************************详情-公共***************************************/
+.main .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.frame.left {
+    float: left;
+    padding-right: 15px;
+}
+
+.frame.right {
+    float: right;
+    padding-left: 15px;
+}
+
+.frame .title {
+    padding: 10px 15px;
+    color: #fff;
+    text-align: left;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.frame .title > i {
+    float: left; 
+    margin: 3px 5px 0 0;
+}
+
+.frame .title > span {
+    display: block;
+    float: left;
+}
+
+.frame .title > .btngroup {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+}
+
+.frame .table {
+    padding: 0;
+    margin-bottom: 20px;
+    border: 1px #ddd solid;
+}
+
+.frame .table.right {
+    min-height: 268px;
+    border: 1px #ddd solid;
+    overflow-y: auto;
+}
+
+/**
+ *  模态框样式
+ */
+.main.modal {
+    display: block;
+    width: 100%;
+}
+
+/**************************************最近联系*****************************************/
+.main.modal .recent {
+    display: inline-block; 
+    width:60px;
+    height:60px;
+    margin: 0 0 5px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px #ccc solid;
+    background-color:#fff;
+}
+
+.main.modal .recent:hover {
+    cursor:pointer;
+}
+
+.main.modal .recent.active {
+    border-color: #666;
+    background-color:#ddd;
+}
+
+.main.modal ul.select2-selection__rendered {
+    margin: -6px -12px;
+}
+
+/***************************************课程框架****************************************/
+.sortable {
+    padding:0;
+    margin: 0;
+}
+
+.sortable li {
+    list-style: none outside none;
+    cursor: normal;
+}
+
+.sortable li.disabled:hover {
+    cursor: default;
+}
+
+.sortable .head {
+    position: relative;
+    padding: 10px 5px;
+    margin: 0;
+    font-size: 14px;
+    color: #ff0000;
+}
+
+.sortable .nodes {
+    padding: 10px;
+}
+
+.sortable .head.blue {
+    background-color: #006699;
+}
+
+.sortable .head.gray {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #eeeeee;
+}
+
+.sortable .head.add {
+    display: inline-block;
+    padding: 15px;
+    margin: 10px auto;
+    border-radius: 6px;
+}
+
+.sortable .head > a {
+    font-size: 16px;
+    color: #ffffff;
+    line-height: 20px;
+    text-align: left;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sortable .head > a > i{
+    float: left;
+    margin-right: 5px;
+    font-size: 20px;
+}
+
+.sortable .head .icongroup {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+}
+
+.sortable .head .icongroup > a > i {
+    float: left;
+    margin: 3px 2px;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: normal;
+}
+
+.sortable .head .icongroup .handle:hover{
+    cursor: move;
+}
+
+.sortable .head.gray > a {
+    font-size: 14px;
+    color: #666;
+    font-weight: normal;
+}
+
+.sortable .head.gray > a > i,
+.sortable .head.gray .icongroup > a > i{
+    color: #000;
+}
+
+.sortable .head.add > a,
+.sortable .head.add > a > i {
+    float: left;
+    margin: 0 5px;
+    font-size: 18px;
+    color: #999;
+}
+
+/***************************************我的视频****************************************/
+.default-myVideo .list .item .pic .float > span {
+    float: right;
+    margin-right: 0;
+}

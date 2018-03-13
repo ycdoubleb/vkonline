@@ -40,13 +40,15 @@ use common\widgets\Menu;
             }else{
                 $menuItems = array_merge($menuItems, [
                     ['label' => '清除缓存', 'icon' => 'eraser', 'url' => ['/system_admin/cache']],
-                    ['label' => '数据库备份', 'icon' => 'database', 'url' => ['/backup']],
                     [
-                        'label' => '公共',
+                        'label' => '系统',
                         'icon' => 'bars',
                         'url' => '#',
                         'items' => [
                             ['label' => '配置管理', 'icon' => 'circle-o', 'url' => ['/system_admin/config'],],
+                            ['label' => '文件管理', 'icon' => 'circle-o', 'url' => ['/system_admin/uploadfile'],],
+                            ['label' => '日常任务', 'icon' => 'circle-o', 'url' => ['/system_admin/task-log'],],
+                            ['label' => '数据库备份', 'icon' => 'database', 'url' => ['/system_admin/backup']],
                         ],
                     ],
                     [
@@ -63,12 +65,25 @@ use common\widgets\Menu;
                         ],
                     ],
                     [
+                        'label' => '前台管理',
+                        'icon' => 'bars',
+                        'url' => '#',
+                        'items' => [
+                            ['label' => '概况', 'icon' => 'circle-o', 'url' => ['/frontend_admin/default']],
+                            ['label' => '客户', 'icon' => 'circle-o', 'url' => ['/frontend_admin/customer']],
+                            ['label' => '用户', 'icon' => 'circle-o', 'url' => ['/frontend_admin/user']],
+                            ['label' => '课程', 'icon' => 'circle-o', 'url' => ['/frontend_admin/course']],
+                            ['label' => '视频', 'icon' => 'circle-o', 'url' => ['/frontend_admin/video']],
+                            ['label' => '宣传栏', 'icon' => 'circle-o', 'url' => ['/frontend_admin/banner']],
+                        ],
+                    ],
+                    [
                         'label' => '帮助中心',
                         'icon' => 'bars',
                         'url' => '#',
                         'items' => [
-                            ['label' => '文章分类列表','icon' => 'circle-o','url' => ['/helpcenter_admin/post-category']],
-                            ['label' => '文章列表','icon' => 'circle-o','url' => ['/helpcenter_admin/post']],
+                            ['label' => '文章分类列表', 'icon' => 'circle-o', 'url' => ['/helpcenter_admin/category']],
+                            ['label' => '文章列表', 'icon' => 'circle-o', 'url' => ['/helpcenter_admin/post']],
                         ],
                     ],
                 ]);
