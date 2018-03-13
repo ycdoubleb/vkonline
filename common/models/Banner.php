@@ -2,9 +2,12 @@
 
 namespace common\models;
 
+use common\models\vk\Customer;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "{{%banner}}".
@@ -24,6 +27,48 @@ use yii\db\ActiveRecord;
  */
 class Banner extends ActiveRecord
 {
+    /** 内容-图片 */
+    const TYPE_IMG = 1;
+    /** 内容-视频 */
+    const TYPE_VIDEO = 2;
+    
+    /** 发布状态-未发布 */
+    const NO_PUBLISH = 0;
+    /** 发布状态-已发布 */
+    const YES_PUBLISH = 1;
+    
+    /** 打开方式-新开页面 */
+    const TARGET_BLANK = '_blank';
+    /** 打开方式-替换打开 */
+    const TARGET_SELF = '_self';
+
+    /**
+     * 内容类型
+     * @var array
+     */
+    public static $contentType = [
+        self::TYPE_IMG => '图片',
+        self::TYPE_VIDEO => '视频',
+    ];
+    
+    /**
+     * 发布状态
+     * @var array 
+     */
+    public static $publishStatus = [
+        self::NO_PUBLISH => '未发布',
+        self::YES_PUBLISH => '已发布',
+    ];
+
+    /**
+     * 打开方式
+     * @var array 
+     */
+    public static $targetType = [
+        self::TARGET_BLANK => '新开页面',
+        self::TARGET_SELF => '替换打开',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -48,13 +93,11 @@ class Banner extends ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'integer'],
-            [['customer_id'], 'string', 'max' => 32],
+            [['created_at', 'updated_at', 'type', 'is_publish', 'sort_order'], 'integer'],
+            [['customer_id', 'created_by'], 'string', 'max' => 32],
             [['title'], 'string', 'max' => 50],
             [['path', 'link', 'des'], 'string', 'max' => 255],
             [['target'], 'string', 'max' => 10],
-            [['type', 'is_publish'], 'string', 'max' => 1],
-            [['sort_order'], 'string', 'max' => 2],
         ];
     }
 
@@ -65,17 +108,80 @@ class Banner extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', 'Customer ID'),
-            'title' => Yii::t('app', 'Title'),
+            'customer_id' => Yii::t('app', '{The}{Customer}',['The' => Yii::t('app', 'The'),'Customer' => Yii::t('app', 'Customer')]),
+            'title' => Yii::t('app', 'Name'),
             'path' => Yii::t('app', 'Path'),
-            'link' => Yii::t('app', 'Link'),
-            'target' => Yii::t('app', 'Target'),
+            'link' => Yii::t('app', 'Href'),
+            'target' => Yii::t('app', '{Open}{Mode}',['Open' => Yii::t('app', 'Open'),'Mode' => Yii::t('app', 'Mode')]),
             'type' => Yii::t('app', 'Type'),
             'sort_order' => Yii::t('app', 'Sort Order'),
-            'is_publish' => Yii::t('app', 'Is Publish'),
+            'is_publish' => Yii::t('app', '{Is}{Publish}',['Is' => Yii::t('app', 'Is'),'Publish' => Yii::t('app', 'Publish')]),
             'des' => Yii::t('app', 'Des'),
+            'created_by' => Yii::t('app', 'Created By'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+    
+    /**
+     * 关联获取所属客户
+     * @return ActiveQuery
+     */
+    public function getCustomer()
+    {
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
+    
+    /**
+     * 关联获取创建者
+     * @return ActiveQuery
+     */
+    public function getAdminUser()
+    {
+        return $this->hasOne(AdminUser::class, ['id' => 'created_by']);
+    }
+    
+    /**
+     * 
+     * @param type $insert
+     * @return boolean
+     */
+    public function beforeSave($insert) {
+        if (parent::beforeSave($insert)) {
+            //设置创建人
+            if(!$this->created_by){
+                $this->created_by = Yii::$app->user->id;
+            }
+            $file_name = md5(time());
+            //图片上传
+            $upload = UploadedFile::getInstance($this, 'path');
+            if ($upload !== null) {
+                $string = $upload->name;
+                $array = explode('.', $string);
+                //获取后缀名，默认名为.jpg
+                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/customer/'));
+                $upload->saveAs($uploadpath . $file_name . '.' . $ext);
+                $this->path = '/upload/customer/' . $file_name . '.' . $ext . '?r=' . rand(1, 10000);
+            }
+            if (trim($this->path) == '') {
+                $this->path = $this->getOldAttribute('path');
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 检查目标路径是否存在，不存即创建目标
+     * @param string $uploadpath    目录路径
+     * @return string
+     */
+    private function fileExists($uploadpath) {
+
+        if (!file_exists($uploadpath)) {
+            mkdir($uploadpath);
+        }
+        return $uploadpath;
     }
 }

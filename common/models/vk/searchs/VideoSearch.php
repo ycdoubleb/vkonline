@@ -92,6 +92,8 @@ class VideoSearch extends Video
         $query->andFilterWhere(['like', 'Video.name', $this->name])
                 ->andFilterWhere(['like', 'Tags.name', $tags]);
 
+        $query->groupBy(['Video.id']);
+        
         return $dataProvider;
     }
 }

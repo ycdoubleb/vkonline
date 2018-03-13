@@ -144,7 +144,7 @@ class Course extends ActiveRecord
      */
     public function getCustomer()
     {
-        return $this->hasOne(Customer::className(), ['id' => 'customer_id']);
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
 
     /**
@@ -152,7 +152,7 @@ class Course extends ActiveRecord
      */
     public function getCategory()
     {
-        return $this->hasOne(Category::className(), ['id' => 'category_id']);
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
     /**
@@ -160,7 +160,7 @@ class Course extends ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
     
     /**
@@ -168,6 +168,6 @@ class Course extends ActiveRecord
      */
     public function getTeacher()
     {
-        return $this->hasOne(Teacher::className(), ['id' => 'teacher_id']);
+        return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
     }
 }

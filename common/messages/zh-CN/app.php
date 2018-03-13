@@ -205,6 +205,12 @@ return [
     'Sort Order' => '排序',
     'Help' => '帮助',
     
+    //后台-宣传栏
+    'Propaganda' => '宣传',
+    'Banner' => '横幅',
+    'Page' => '页',
+    'Mode' => '方式',
+    
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-操作记录

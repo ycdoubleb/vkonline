@@ -166,7 +166,7 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function getCustomer()
     {
-        return $this->hasOne(Customer::className(), ['id' => 'customer_id']);
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
     
     public function beforeSave($insert) {
@@ -180,16 +180,16 @@ class User extends ActiveRecord implements IdentityInterface {
                 $array = explode('.', $string);
                 //获取后缀名，默认为 jpg 
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/avatars/'));
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/avatars/'));
                 $upload->saveAs($uploadpath . $this->username . '.' . $ext);
-                $this->avatar = '/resources/avatars/' . $this->username . '.' . $ext . '?rand=' . rand(0, 1000);
+                $this->avatar = '/upload/avatars/' . $this->username . '.' . $ext . '?rand=' . rand(0, 1000);
             }
             
             if ($this->scenario == self::SCENARIO_CREATE) {
                 $this->setPassword($this->password_hash);
                 //设置默认头像
                 if (trim($this->avatar) == '')
-                    $this->avatar = '/resources/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                    $this->avatar = '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
                 if (trim($this->password_hash) == '')
                     $this->password_hash = $this->getOldAttribute('password_hash');

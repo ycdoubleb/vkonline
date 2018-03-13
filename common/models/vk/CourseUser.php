@@ -92,6 +92,6 @@ class CourseUser extends ActiveRecord
      */
     public function getCourse()
     {
-        return $this->hasOne(Course::className(), ['id' => 'course_id']);
+        return $this->hasOne(Course::class, ['id' => 'course_id']);
     }
 }

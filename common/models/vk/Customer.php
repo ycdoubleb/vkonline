@@ -123,7 +123,7 @@ class Customer extends ActiveRecord
      */
     public function getCustomerAdmin()
     {
-        return $this->hasOne(CustomerAdmin::className(), ['customer_id' => 'id']);
+        return $this->hasOne(CustomerAdmin::class, ['customer_id' => 'id']);
     }
     
     /**
@@ -132,7 +132,7 @@ class Customer extends ActiveRecord
      */
     public function getUserName()
     {
-        return $this->hasOne(AdminUser::className(), ['id' => 'created_by']);
+        return $this->hasOne(AdminUser::class, ['id' => 'created_by']);
     }
     
     /**
@@ -163,9 +163,9 @@ class Customer extends ActiveRecord
                 $array = explode('.', $string);
                 //获取后缀名，默认名为.jpg
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array)-1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/resources/customer/'));
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/customer/'));
                 $upload->saveAs($uploadpath . $logo_name . '.' . $ext) ;
-                $this->logo = '/resources/customer/' . $logo_name . '.' . $ext . '?r=' . rand(0, 10000);
+                $this->logo = '/upload/customer/' . $logo_name . '.' . $ext . '?r=' . rand(0, 10000);
             }
             if(trim($this->logo) == ''){
                 $this->logo = $this->getOldAttribute('logo');
