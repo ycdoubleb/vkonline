@@ -1,55 +1,241 @@
 <?php
 
-use yii\helpers\Html;
+use backend\modules\system_admin\assets\SystemAssets;
+use common\models\vk\Course;
+use common\models\vk\searchs\VideoSearch;
+use kartik\widgets\Select2;
+use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\web\View;
 
-/* @var $this yii\web\View */
-/* @var $searchModel common\models\vk\searchs\VideoSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $this View */
+/* @var $searchModel VideoSearch */
+/* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Videos');
+$this->title = Yii::t('app', '{Video}{List}',[
+    'Video' => Yii::t('app', 'Video'),
+    'List' => Yii::t('app', 'List'),
+]);
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="video-index">
+<div class="video-index customer">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Video'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'node_id',
-            'teacher_id',
-            'source_id',
-            'customer_id',
-            //'ref_id',
-            //'name',
-            //'source_level',
-            //'source_wh',
-            //'source_bitrate',
-            //'content_level',
-            //'des',
-            //'level',
-            //'img',
-            //'is_ref',
-            //'is_recommend',
-            //'is_publish',
-            //'zan_count',
-            //'favorite_count',
-            //'sort_order',
-            //'created_by',
-            //'created_at',
-            //'updated_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+    <div class="frame">
+        <div class="col-md-12 col-xs-12 frame-title">
+            <i class="icon fa fa-list-ul"></i>
+            <span><?= Yii::t('app', 'List') ?></span>
+        </div>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'layout' => "{items}\n{summary}\n{pager}",
+            'columns' => [
+                ['class' => 'yii\grid\SerialColumn'],
+                [
+                    'attribute' => 'customer_id',
+                    'label' => Yii::t('app', '{The}{Customer}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Customer' => Yii::t('app', 'Customer'),
+                    ]),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'customer_id',
+                        'data' => $customer,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'name',
+                    'label' => Yii::t('app', '{Video}{Name}',[
+                        'Video' => Yii::t('app', 'Video'),
+                        'Name' => Yii::t('app', 'Name'),
+                    ]),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'teacher_id',
+                    'label' => Yii::t('app', 'Teacher'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'teacher_id',
+                        'data' => $teacher,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'created_by',
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'created_by',
+                        'data' => $createdBy,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'is_publish',
+                    'label' => Yii::t('app', 'Status'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'is_publish',
+                        'data' => Course::$satusPublish,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'value' => function ($data){
+                        return ($data['is_publish'] != null) ? Course::$satusPublish[$data['is_publish']] : null;
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [   //可见范围
+                    'attribute' => 'level',
+                    'label' => Yii::t('app', 'DataVisible Range'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'level',
+                        'data' => Course::$levelStatus,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'value' => function ($data){
+                        return ($data['level'] != null) ? Course::$levelStatus[$data['level']] : null;
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'size',
+                    'label' => Yii::t('app', '{Occupy}{Space}',[
+                        'Occupy' => Yii::t('app', 'Occupy'),
+                        'Space' => Yii::t('app', 'Space'),
+                    ]),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'tags',
+                    'label' => Yii::t('app', 'Tag'),
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'created_at',
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'filter' => false,
+                    'value' => function ($data){
+                        return !empty($data['created_at']) ? date('Y-m-d H:i', $data['created_at']) : null;
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => '{view}',
+                ],
+            ],
+        ]); ?>
+    </div>
 </div>
+<?php
+    $js = <<<JS
+        
+JS;
+    $this->registerJs($js, View::POS_READY);
+    SystemAssets::register($this);
+?>

@@ -104,7 +104,6 @@ return [
     'Prev' => '上一页',
     'Next' => '下一页',
     'Disabled' => '禁用',
-    'Main Speak' => '主讲',
     'Enable' => '启用',
     'Main Speak' => '主讲',
   
@@ -144,6 +143,8 @@ return [
     'True' => '真实',
     'Build' => '建设',
     'Data' => '数据',
+    'DataVisible Range' => '可见范围',
+    'Tag' => '标签',
     
     
     'Normal' => '正常',

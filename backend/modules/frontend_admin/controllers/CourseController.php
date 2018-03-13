@@ -3,6 +3,7 @@
 namespace backend\modules\frontend_admin\controllers;
 
 use common\models\User;
+use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
@@ -46,11 +47,12 @@ class CourseController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model' => new Course(),
             
             'customer' => $this->getCustomer(),     //所属客户
-            'course' => $this->getCourse(),         //所有课程
+            'category' => $this->getCategory(),     //所有分类
             'teacher' => $this->getTeacher(),       //所有主讲老师
-            'createdBy' => $this->getCreatedBy(),  //所有创建者
+            'createdBy' => $this->getCreatedBy(),   //所有创建者
         ]);
     }
 
@@ -143,25 +145,26 @@ class CourseController extends Controller
     {
         $customer = (new Query())
                 ->select(['Customer.id', 'Customer.name'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id')
                 ->all();
 
         return ArrayHelper::map($customer, 'id', 'name');
     }
     
     /**
-     * 查找所有课程
+     * 查找所有分类
      * @return array
      */
-    public function getCourse()
+    public function getCategory()
     {
-        $course = (new Query())
-                ->select(['id', 'name'])
+        $category = (new Query())
+                ->select(['Category.id', 'Category.name'])
                 ->from(['Course' => Course::tableName()])
+                ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
                 ->all();
         
-        return ArrayHelper::map($course, 'id', 'name');
+        return ArrayHelper::map($category, 'name', 'name');
     }
     
     /**

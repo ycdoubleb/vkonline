@@ -2,12 +2,17 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
-use Yii;
-use common\models\vk\Video;
+use common\models\User;
+use common\models\vk\Customer;
 use common\models\vk\searchs\VideoSearch;
+use common\models\vk\Teacher;
+use common\models\vk\Video;
+use Yii;
+use yii\db\Query;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * VideoController implements the CRUD actions for Video model.
@@ -41,6 +46,10 @@ class VideoController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            
+            'customer' => $this->getCustomer(),     //所属客户
+            'teacher' => $this->getTeacher(),       //所有主讲老师
+            'createdBy' => $this->getCreatedBy(),   //所有创建者
         ]);
     }
 
@@ -123,5 +132,50 @@ class VideoController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 查找所属客户
+     * @return array
+     */
+    public function getCustomer()
+    {
+        $customer = (new Query())
+                ->select(['Customer.id', 'Customer.name'])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id')
+                ->all();
+
+        return ArrayHelper::map($customer, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有主讲老师
+     * @return array
+     */
+    public function getTeacher()
+    {
+        $teacher = (new Query())
+                ->select(['Video.teacher_id AS id', 'Teacher.name'])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
+                ->all();
+        
+        return ArrayHelper::map($teacher, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有创建者
+     * @return array
+     */
+    public function getCreatedBy()
+    {
+        $createdBy = (new Query())
+                ->select(['Video.created_by AS id', 'User.nickname AS name'])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
+                ->all();
+        
+        return ArrayHelper::map($createdBy, 'id', 'name');
     }
 }

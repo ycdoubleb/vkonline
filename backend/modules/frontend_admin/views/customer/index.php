@@ -222,7 +222,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'created_by',
-                    'label' => Yii::t('app', 'Create By'),
+                    'label' => Yii::t('app', 'Created By'),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',

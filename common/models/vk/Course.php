@@ -31,6 +31,7 @@ class Course extends ActiveRecord
     const STATUS_NO = 0;
     //已发布
     const STATUS_YES = 1;
+    
     //私有
     const LEVEL_ZERO = 0;
     //内网
@@ -101,18 +102,9 @@ class Course extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', '{The}{Customer}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Customer' => Yii::t('app', 'Customer'),
-                    ]),
-            'category_id' => Yii::t('app', '{The}{Category}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Category' => Yii::t('app', 'Category'),
-                    ]),
-            'teacher_id' => Yii::t('app', '{Main Speak}{Teacher}',[
-                        'Main Speak' => Yii::t('app', 'Main Speak'),
-                        'Teacher' => Yii::t('app', 'Teacher'),
-                    ]),
+            'customer_id' => Yii::t('app', 'Customer ID'),
+            'category_id' => Yii::t('app', 'Category ID'),
+            'teacher_id' => Yii::t('app', 'Teacher ID'),
             'name' => Yii::t('app', 'Name'),
             'level' => Yii::t('app', 'Level'),
             'des' => Yii::t('app', 'Des'),

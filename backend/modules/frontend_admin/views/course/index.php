@@ -12,7 +12,10 @@ use yii\web\View;
 /* @var $searchModel CourseSearch */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Courses');
+$this->title = Yii::t('app', '{Course}{List}',[
+    'Course' => Yii::t('app', 'Course'),
+    'List' => Yii::t('app', 'List'),
+]);
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="course-index customer">
@@ -30,6 +33,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['class' => 'yii\grid\SerialColumn'],
                 [
                     'attribute' => 'customer_id',
+                    'label' => Yii::t('app', '{The}{Customer}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Customer' => Yii::t('app', 'Customer'),
+                    ]),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -53,6 +60,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'category_id',
+                    'label' => Yii::t('app', '{The}{Category}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Category' => Yii::t('app', 'Category'),
+                    ]),
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'category_id',
+                        'data' => $category,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -75,16 +96,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'text-align' => 'center',
                         ],
                     ],
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'name',
-                        'data' => $course,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -93,6 +104,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'teacher_id',
+                    'label' => Yii::t('app', '{Main Speak}{Teacher}',[
+                        'Main Speak' => Yii::t('app', 'Main Speak'),
+                        'Teacher' => Yii::t('app', 'Teacher'),
+                    ]),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -156,7 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['is_publish'] != null) ? Course::$satusPublish[$data['is_publish']] : null;
+                        return ($data->is_publish != null) ? Course::$satusPublish[$data->is_publish] : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -192,7 +207,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'size',
+//                    'attribute' => 'size',
                     'label' => Yii::t('app', '{Occupy}{Space}',[
                         'Occupy' => Yii::t('app', 'Occupy'),
                         'Space' => Yii::t('app', 'Space'),
@@ -209,13 +224,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'tags',
+//                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'headerOptions' => [
                         'style' => [
                             'text-align' => 'center',
                         ],
                     ],
+                    'filter' => true,
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
