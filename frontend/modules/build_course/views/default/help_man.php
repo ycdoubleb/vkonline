@@ -17,7 +17,7 @@ ModuleAssets::register($this);
 //$this->title = Yii::t('app', 'Mcbs Courses');
 //$this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="mcbs-helpman-index">
+<div class="help_man-index">
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -100,11 +100,11 @@ ModuleAssets::register($this);
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
-                            'onclick' => 'showModal($(this));'
+                            'onclick' => 'showModal($(this)); return false;'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-pencil"></span>',
-                            'url' => ['update-helpman', 'id' => $model->id],
+                            'url' => ['edit-helpman', 'id' => $model->id],
                             'options' => $options,
                             'symbol' => '&nbsp;',
                             'conditions' => $model->course->created_by == Yii::$app->user->id,
@@ -121,11 +121,11 @@ ModuleAssets::register($this);
                             'aria-label' => Yii::t('yii', 'Delete'),
                             'data-pjax' => '0',
                             //'data' => ['method' => 'post'],
-                            'onclick' => 'showModal($(this));'
+                            'onclick' => 'showModal($(this)); return false;'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-user-times"></span>',
-                            'url' => ['delete-helpman', 'id' => $model->id],
+                            'url' => ['del-helpman', 'id' => $model->id],
                             'options' => $options,
                             'symbol' => '&nbsp;',
                             'conditions' => $model->course->created_by == Yii::$app->user->id,

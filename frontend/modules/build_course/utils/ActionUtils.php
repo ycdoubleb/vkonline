@@ -52,16 +52,14 @@ class ActionUtils
         try
         {  
             $results = $this->saveCourseUser($post);
-            
             if($results != null){
                 $this->saveRecentContacts($post);
-                $this->saveCourseActLog([
-                    'action'=>'增加','title'=>'协作人员',
-                    'content'=>implode('、',$results['nickname']),
-                    'course_id'=>$results['course_id']
+                $this->saveCourseActLog(['action'=>'增加', 'title'=>'协作人员',
+                    'content'=>implode('、',$results['nickname']), 'course_id' => $results['course_id']
                 ]);
-            }else
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
@@ -75,31 +73,25 @@ class ActionUtils
     
     /**
      * 编辑协作人员操作
-     * @param McbsCourseUser $model
+     * @param CourseUser $model
      * @throws Exception
      */
     public function UpdateHelpman($model)
     {
-        //获取新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取旧属性值
-        $oldPrivilege = $model->getOldAttribute('privilege');
+        $newAttr = $model->getDirtyAttributes();    //获取新属性值
+        $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
+        
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save()){
-                if($newAttr){
-                    $this->saveMcbsActionLog([
-                        'action'=>'修改','title'=>'协作人员',
-                        'content'=>"调整【".$model->user->nickname."】以下属性：\n\r". 
-                                  "权限：【旧】".McbsCourseUser::$privilegeName[$oldPrivilege].
-                                   " >>【新】".McbsCourseUser::$privilegeName[$model->privilege],
-                        'course_id'=>$model->course_id
-                    ]);
-                }
-            }else
+            if($model->save() && $newAttr != null){
+                $this->saveCourseActLog(['action'=>'修改', 'title'=>'协作人员',
+                    'content'=>"调整【".$model->user->nickname."】以下属性：\n\r权限：【旧】".CourseUser::$privilegeMap[$oldPrivilege].">>【新】".CourseUser::$privilegeMap[$model->privilege],
+                    'course_id'=>$model->course_id]);
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
@@ -113,7 +105,7 @@ class ActionUtils
     
     /**
      * 编辑协作人员操作
-     * @param McbsCourseUser $model
+     * @param CourseUser $model
      * @throws Exception
      */
     public function DeleteHelpman($model)
@@ -123,12 +115,10 @@ class ActionUtils
         try
         {  
             if($model->delete()){
-                $this->saveMcbsActionLog([
-                    'action'=>'删除','title'=>'协作人员',
-                    'content'=>'删除【'.$model->user->nickname.'】的协作',
-                    'course_id'=>$model->course_id]);
-            }else
+                $this->saveCourseActLog(['action'=>'删除','title'=>'协作人员', 'content'=>'删除【'.$model->user->nickname.'】的协作','course_id'=>$model->course_id]);
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
@@ -417,10 +407,9 @@ class ActionUtils
                 ];
             }
         }
-        
-        /** 添加$users数组到表里 */
+        /** 添加$latelyUsers数组到表里 */
         $number = Yii::$app->db->createCommand()->batchInsert(CourseUser::tableName(), 
-            array_keys($latelyUsers[0]), $latelyUsers)->execute();
+            isset($latelyUsers[0]) ? array_keys($latelyUsers[0]) : [], $latelyUsers)->execute();
         
         if($number > 0){
             $users = (new Query())->select(['nickname'])->from(User::tableName())
@@ -441,6 +430,7 @@ class ActionUtils
     public function saveRecentContacts($post)
     {
         $userContacts = [];
+        $v = 0;
         $user_ids = ArrayHelper::getValue($post, 'CourseUser.user_id'); //用户id
         //查询过滤已经和自己相关的人
         $contacts = (new Query())->select(['contacts_id'])->from(RecentContacts::tableName())
@@ -453,15 +443,14 @@ class ActionUtils
                     'user_id' => Yii::$app->user->id, 'contacts_id' => $user_id,
                     'created_at' => time(),'updated_at' => time(),
                 ];
-            } else {
-                Yii::$app->db->createCommand()->update(RecentContacts::tableName(), ['updated_at' => time()],[
+                /** 添加$userContacts数组到表里 */
+                Yii::$app->db->createCommand()->batchInsert(RecentContacts::tableName(), 
+                    array_keys($userContacts[0]), $userContacts)->execute();
+            }else {
+                $v += Yii::$app->db->createCommand()->update(RecentContacts::tableName(), ['updated_at' => time()], [
                     'user_id' => Yii::$app->user->id, 'contacts_id' => $user_id])->execute();
             }
         }
-        
-        /** 添加$userContacts数组到表里 */
-        Yii::$app->db->createCommand()->batchInsert(RecentContacts::tableName(), 
-            array_keys($userContacts[0]), $userContacts)->execute();        
     }
     
     /**
@@ -485,7 +474,7 @@ class ActionUtils
         $course_id = ArrayHelper::getValue($params, 'course_id');   //课程id
         $related_id = ArrayHelper::getValue($params, 'related_id'); //相关环节
         
-        //values数组
+        //$actLog数组
         $actLog = [
             'action' => $action, 'title' => $title, 'content' => $content,
             'created_by' => $created_by, 'course_id' => $course_id, 'related_id' => $related_id,

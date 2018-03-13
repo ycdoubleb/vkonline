@@ -16,7 +16,6 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 
@@ -165,29 +164,51 @@ class DefaultController extends Controller
     }
 
     /**
-     * Updates an existing McbsCourseUser model.
+     * EditHelpman an existing CourseUser model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
      */
-    public function actionUpdateHelpman($id)
+    public function actionEditHelpman($id)
     {
-        $model = McbsCourseUser::findOne($id);
-        
-        if(!self::IsPermission($model->course_id,$model->course->status))
-            throw new NotAcceptableHttpException('无权限操作！');
+        $model = CourseUser::findOne($id);
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = McbsAction::getInstance()->UpdateHelpman($model);
+            $result = ActionUtils::getInstance()->UpdateHelpman($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'message' => ''
             ];
             //return $this->redirect(['default/view', 'id' => $model->course_id]);
         } else {
-            return $this->renderAjax('update-helpman', [
+            return $this->renderAjax('edit_help_man', [
                 'model' => $model,
+            ]);
+        }
+    }
+    
+    /**
+     * DelHelpman an existing CourseUser model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelHelpman($id)
+    {
+        $model = CourseUser::findOne($id);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->DeleteHelpman($model);
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('del_help_man',[
+                'model' => $model
             ]);
         }
     }

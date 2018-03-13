@@ -121,11 +121,13 @@ class Teacher extends ActiveRecord
 
             if ($this->isNewRecord) {
                 //设置默认头像
-                if (trim($this->avatar) == '')
+                if (trim($this->avatar) == ''){
                     $this->avatar = '/resources/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                }    
             }else {
-                if (trim($this->avatar) == '')
+                if (trim($this->avatar) == ''){
                     $this->avatar = $this->getOldAttribute('avatar');
+                }
             }
 
             return true;

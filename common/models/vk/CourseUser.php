@@ -66,10 +66,10 @@ class CourseUser extends ActiveRecord
         return [
             //[['id'], 'required'],
             [['user_id'], 'required'],
-            [['created_at', 'updated_at'], 'integer'],
+            [['privilege', 'created_at', 'updated_at'], 'integer'],
             [['course_id'], 'string', 'max' => 32],
             //[['user_id'], 'array'],
-            [['privilege'], 'string', 'max' => 2],
+            //[['privilege'], 'string', 'max' => 2],
             [['id'], 'unique'],
         ];
     }

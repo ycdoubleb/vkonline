@@ -114,7 +114,10 @@ return [
     'Sort Order' => '顺序',
     'Des' => '描述',
     'Main Speak' => '主讲',
-    'Teacher' => '老师', 
+    'Teacher' => '老师',
+    'Cover Img' => '封面图片',
+    'Fullname' => '姓名',
+    'Privilege' => '权限',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
