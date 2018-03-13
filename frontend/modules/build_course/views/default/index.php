@@ -10,7 +10,7 @@ ModuleAssets::register($this);
 
 ?>
 
-<div class="build_course-default-index build-course">
+<div class="default-index main">
     <h1><?= $this->context->action->uniqueId ?></h1>
     <p>
         This is the view content for action "<?= $this->context->action->id ?>".

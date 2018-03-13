@@ -13,7 +13,7 @@ ModuleAssets::register($this);
 $allCourse = ['第一章','第一章','第一章','第一章','第一章','第一章'];
 ?>
 
-<div class="build_course-default-myVideo main">
+<div class="default-myVideo main">
     
     <?php $form = ActiveForm::begin(['id' => 'build-course-form']); ?>
     

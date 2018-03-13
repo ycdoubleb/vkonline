@@ -32,6 +32,10 @@ AppAsset::register($this);
 
 <div class="wrap">
     <?php
+    
+    $leftMenuItems = [];
+    $rightMenuItems = [];
+    
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
@@ -40,7 +44,7 @@ AppAsset::register($this);
         ],
     ]);
     
-    if (!Yii::$app->user->isGuest) {
+    if (Yii::$app->user->isGuest) {
         //右边导航
         $rightMenuItems = [
             [
@@ -90,7 +94,7 @@ AppAsset::register($this);
         ];
         //右边退出导航
         $rightMenuItems[] = [
-            'label' => Html::img(['/resources/avatars/default.jpg'], ['width' => 28, 'height' => 28, 'class' => 'img-circle','style' => 'margin-right: 5px;']),
+            'label' => Html::img([Yii::$app->user->identity->avatar], ['width' => 28, 'height' => 28, 'class' => 'img-circle','style' => 'margin-right: 5px;']),
             'url' => ['/user/default/index'],
             'options' => ['class' => 'logout'],
             'items' => [
