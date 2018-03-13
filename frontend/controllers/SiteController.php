@@ -1,17 +1,18 @@
 <?php
 namespace frontend\controllers;
 
-use Yii;
-use yii\base\InvalidParamException;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
 use common\models\LoginForm;
+use FFMpeg\FFProbe;
+use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\models\SignupForm;
-use frontend\models\ContactForm;
+use Yii;
+use yii\base\InvalidParamException;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\web\BadRequestHttpException;
+use yii\web\Controller;
 
 /**
  * Site controller
@@ -72,6 +73,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
+        var_dump(\common\utils\FfmpegUtil::getVideoInfoByUfileId('4bae375840b589de2ae8e163b08c4f32'));exit;
+        
         return $this->render('index');
     }
 
