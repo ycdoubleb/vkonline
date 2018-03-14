@@ -25,9 +25,9 @@ ModuleAssets::register($this);
             <div class="head blue">
                 <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
                 <div class="icongroup">
-                    <?= Html::a('<i class="fa fa-plus"></i>', ['course-make/create-couchapter','node_id'=> 'node_id'], ['onclick'=>'showModal($(this));']) ?>
-                    <?= Html::a('<i class="fa fa-pencil"></i>', ['course-make/update-coublock','id' => 'id'], ['onclick'=>'couFrame($(this));return false;']) ?>
-                    <?= Html::a('<i class="fa fa-times"></i>',['course-make/delete-coublock', 'id' => 'id'], ['onclick'=>'showModal($(this));']) ?>
+                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-couframe', 'course_id' => $course_id], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'couFrame($(this));return false; return false;']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
                     <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                 </div>
             </div>
@@ -39,9 +39,9 @@ ModuleAssets::register($this);
                             <?= Html::a("<i class=\"fa fa-play-circle\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true']) ?>
                             <i class="fa fa-link"></i>
                             <div class="icongroup">
-                                <?= Html::a('<i class="fa fa-eye"></i>', ['course-make/create-couchapter','node_id'=> 'node_id'], ['onclick'=>'showModal($(this));']) ?>
-                                <?= Html::a('<i class="fa fa-pencil"></i>', ['course-make/update-coublock','id' => 'id'], ['onclick'=>'couFrame($(this));return false;']) ?>
-                                <?= Html::a('<i class="fa fa-times"></i>',['course-make/delete-coublock', 'id' => 'id'], ['onclick'=>'showModal($(this));']) ?>
+                                <?= Html::a('<i class="fa fa-eye"></i>', ['add-couframe','id'=> '1d3d74a07ed5b29af483e6299872eef4'], ['onclick'=>'showModal($(this)); return false;']) ?>
+                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'couFrame($(this));return false; return false;']) ?>
+                                <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
                                 <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                             </div>
                         </div>
@@ -92,7 +92,7 @@ ModuleAssets::register($this);
         <li>
             <center>
                 <div class="head gray add">
-                    <?= Html::a('<i class="fa fa-plus-square"></i>'.Yii::t('app', 'Add'), ['course-make/create-couphase', 'course_id'=>$course_id],['onclick'=>'couFrame($(this));return false;']) ?>
+                    <?= Html::a('<i class="fa fa-plus-square"></i>'.Yii::t('app', 'Add'), ['add-couframe', 'course_id' => $course_id],['onclick' => 'showModal($(this));return false;']) ?>
                 </div>
             </center>
         </li>

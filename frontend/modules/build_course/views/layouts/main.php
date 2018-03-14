@@ -44,13 +44,13 @@ $utilsItems = [
     [
         'label' => '板书工具',
         'url' => [Yii::$app->controller->action->id, 'utils' => 'bs_utils'],
-        'icons' => Html::img(['/resources/build_course/images/icon_1-1.png']),
+        'icons' => Html::img(['/imgs/build_course/icons/icon_1-1.png']),
         'options' => ['class' => 'links']
     ],
     [
         'label' => '情景工具',
         'url' => [Yii::$app->controller->action->id, 'utils' => 'qj_utils'],
-        'icons' => Html::img(['/resources/build_course/images/icon_1-2.png']),
+        'icons' => Html::img(['/imgs/build_course/icons/icon_1-2.png']),
         'options' => ['class' => 'links disabled']
     ]
 ];
@@ -67,7 +67,7 @@ foreach ($utilsItems as $item) {
 
 $html = <<<Html
     <header class="header">
-        <img src="/resources/build_course/images/u5303.png" />
+        <img src="/imgs/build_course/images/u5303.png" />
     </header>
     
     <div class="content">

@@ -9,6 +9,7 @@ use common\models\mconline\McbsCourseUser;
 use common\models\mconline\McbsFileActionResult;
 use common\models\User;
 use common\models\vk\CourseActLog;
+use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
 use wskeee\webuploader\models\Uploadfile;
@@ -132,25 +133,22 @@ class ActionUtils
     
     /**
      * 添加课程框架操作
+     * @param CourseNode $model
      * @throws Exception
      */
-    public function CreateCouFrame($model,$title,$course_id,$relative_id=null,$data=[])
+    public function CreateCouFrame($model)
     {
-        $is_add = !empty($model->value_percent) ? "（{$model->value_percent}分）" : null;
-        
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $this->saveMcbsActionLog([
-                    'action'=>'增加','title'=>"{$title}管理",
-                    'content'=>"{$model->name}{$is_add}",
-                    'course_id'=>$course_id,
-                    'relative_id'=>$relative_id
+                $this->saveCourseActLog(['action' => '增加', 'title' => "添加环节",
+                    'content' => $model->name,  'course_id' => $model->course_id,
                 ]);
-            }else
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
@@ -455,14 +453,7 @@ class ActionUtils
     
     /**
      * 保存操作记录
-     * $params[
-     *   'action' => '动作',
-     *   'title' => '标题',
-     *   'content' => '内容',
-     *   'created_by' => '创建者',
-     *   'course_id' => '课程id',
-     *   'relative_id' => '相关id'
-     * ]
+     * $params['action' => '动作','title' => '标题','content' => '内容','created_by' => '创建者','course_id' => '课程id','relative_id' => '相关id']
      * @param array $params                                   
      */
     public function saveCourseActLog($params=null)

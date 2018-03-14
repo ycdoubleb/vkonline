@@ -56,13 +56,14 @@ class CourseNode extends ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required'],
-            [['created_at', 'updated_at'], 'integer'],
+            //[['id'], 'required'],
+            [['name'], 'required'],
+            [['level', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['id', 'course_id', 'parent_id'], 'string', 'max' => 32],
-            [['level', 'is_del'], 'string', 'max' => 1],
+            //[['level', 'is_del'], 'string', 'max' => 1],
             [['name'], 'string', 'max' => 50],
             [['des'], 'string', 'max' => 255],
-            [['sort_order'], 'string', 'max' => 2],
+            //[['sort_order'], 'string', 'max' => 2],
             [['id'], 'unique'],
         ];
     }
@@ -75,7 +76,7 @@ class CourseNode extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'course_id' => Yii::t('app', 'Course ID'),
-            'parent_id' => Yii::t('app', 'Parent ID'),
+            'parent_id' => Yii::t('app', 'Parent'),
             'level' => Yii::t('app', 'Level'),
             'name' => Yii::t('app', 'Name'),
             'des' => Yii::t('app', 'Des'),
@@ -99,15 +100,22 @@ class CourseNode extends ActiveRecord
         if(parent::beforeSave($insert))
         {
             if($this->isNewRecord){
-                $nodes = self::getCouByNode(['course_id'=>$this->course_id,'parent_id'=>$this->parent_id]);
-                if (empty($this->parent_id)) {
-                    $this->parent_id = 0;
-                }
+                $nodes = self::getCouByNode(['course_id'=>$this->course_id]);
                 ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
                 //设置等级
-                $this->level = $this->parent_id == 0 ? 1 : $nodes->level + 1;
+                if($this->parent_id == null){
+                    $this->level = 1;
+                }else{
+                    $this->level = reset($nodes)->level + 1;
+                }
                 //设置顺序
-                $this->sort_order = $nodes->sort_order + 1;
+                if(reset($nodes) == null){
+                    if($this->parent_id == null){
+                        $this->sort_order = 0;
+                    }
+                }else{
+                    $this->sort_order = reset($nodes)->sort_order + 1;
+                }
             }
             return true;
         }
@@ -135,10 +143,26 @@ class CourseNode extends ActiveRecord
         if(self::$nodes != null){
             return self::$nodes;
         }
-        
         return null;
     }
     
+    /**
+     * 获取父级
+     * @param integer $level    默认返回所有分类
+     * @param bool $key_to_value    返回键值对形式
+     * @return array
+     */
+    public static function getCouNodeByLevel($level = 1, $key_to_value = true)
+    {
+        self::$nodes = self::getCouByNode(['level' => $level]);
+        $parents = [];
+        foreach (self::$nodes as $id => $parent) {
+            $parents[] = $parent;
+        }
+
+        return $key_to_value ? ArrayHelper::map($parents, 'id', 'name') : $parents;
+    }
+
     /**
      * 获取父级路径
      * @return array

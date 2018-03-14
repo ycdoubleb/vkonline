@@ -246,30 +246,79 @@ class DefaultController extends Controller
      */
     public function actionAddCouframe($course_id)
     {        
-        $model = new CourseNode(['id' => md5(rand(1,10000) . time()), 'course_id' => $course_id]);
+        $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            $result = McbsAction::getInstance()->CreateCouFrame($model,Yii::t('app', 'Phase'),$course_id);
+            //Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->CreateCouFrame($model);
             return [
                 'code'=> $result ? 200 : 404,
-                'data' =>$result ? [
-                    'frame_name'=>'phase',
-                    'sub_frame'=>'block',
-                    'id'=>$model->id,
-                    'parent_id'=>'',
-                    'name'=>$model->name,
-                    'value_percent'=>"占课程总分比例：".number_format($model->value_percent,2)."%",
-                ] : [],
+                'data' =>$result ? ['id' => $model->id, 'name'=>$model->name] : [],
                 'message' => ''
             ];
             //return $this->redirect(['default/view', 'id' => $course_id]);
         } else {
-            return $this->renderAjax('create-couframe', [
+            return $this->renderAjax('add_couframe', [
                 'model' => $model,
                 'course_id'=>$model->course_id,
-                'title' => Yii::t('app', 'Phase')
+            ]);
+        }
+    }
+    
+    /**
+     * EditCoufram an existing CourseNode model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionEditCouframe($id)
+    {
+        $model = CourseNode::findOne($id);
+        
+        $post = Yii::$app->request->post();
+        if(isset($post['McbsCoursePhase']))
+            $post['McbsCoursePhase']['value_percent'] = (float)$post['McbsCoursePhase']['value_percent'];
+        
+        if ($model->load($post)) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->UpdateCouFrame($model,Yii::t('app', 'Phase'),$model->course_id);
+            return [
+                'code'=> $result ? 200 : 404,
+                'data'=> $result ? ['id'=>$model->id, 'name'=>$model->name,] : [],
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('edit_couframe', [
+                'model' => $model,
+                'course_id' => $model->course_id,
+            ]);
+        }
+    }
+
+    /**
+     * DelCouframe an existing CourseNode model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelCouframe($id)
+    {
+        $model = CourseNode::findOne($id);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->DeleteCouFrame($model,Yii::t('app', 'Phase'),$model->course_id);
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('del_couframe',[
+                'model' => $model,
+                'course_id' => $model->course_id,
             ]);
         }
     }
