@@ -45,7 +45,7 @@
                                         + '<a id="euploader-ctl-btn" class="btn btn-default euploader-ctl-btn">开始上传</a>'
                                 + '</div>'
                                 + '<div class="euploader-list-container">'
-                                    + '<table id="euploader-list" class="table table-striped euploader-list"></table>'
+                                    + '<table id="euploader-list" class="table table-striped euploader-list"><tbody></tbody></table>'
                                 + '</div>'
                             + '</div>';
 
@@ -119,7 +119,7 @@
             // 内部根据当前运行是创建，可能是input元素，也可能是flash.
             pick: '#picker',
             //列表
-            list: '#euploader-list',
+            list: '#euploader-list tbody',
             //控制按钮
             ctlBtn:'#euploader-ctl-btn',
             // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
