@@ -1,25 +1,26 @@
 <?php
 
-use mconline\modules\mcbs\assets\McbsAssets;
+use common\models\vk\CourseNode;
+use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
+/* @var $model CourseNode */
 
-$is_show = null;
-if(Yii::$app->controller->action->id == 'delete-couphase')
-    $is_show = "（{$model->value_percent}分）";
 
-$this->title = Yii::t(null, "{delete}{$title}：{$model->name}{$is_show}", [
-    'delete' => Yii::t('app', 'Delete'),
+ModuleAssets::register($this);
+
+$this->title = Yii::t(null, "{Delete}{Node}：{$model->name}", [
+    'Delete' => Yii::t('app', 'Delete'), 'Node' => Yii::t('app', 'Node')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
+//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
-<div class="mcbs-delete-couframe mcbs">
+<div class="course_frame-delete main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -31,10 +32,7 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
             </div>
             <div class="modal-body">
                 <?php $form = ActiveForm::begin([
-                    'options'=>[
-                        'id' => 'form-couframe',
-                        'class'=>'form-horizontal',
-                    ],
+                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
                     'fieldConfig' => [  
                         'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
                         'labelOptions' => [
@@ -44,16 +42,15 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
                 ]); ?>
                 
                 <?= Html::activeHiddenInput($model, 'id') ?>
-                <?= Html::activeHiddenInput($model, 'is_del',['value'=>1]) ?>
+                <?= Html::activeHiddenInput($model, 'is_del', ['value' => 1]) ?>
 
-                <?= Html::encode("确定要删除该课程{$title}？") ?>
+                <?= Html::encode("确定要删除【{$model->name}】环节？") ?>
 
                 <?php ActiveForm::end(); ?>
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary',
-                    'data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -63,26 +60,20 @@ $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 
 <?php
 
-$action = Url::to(['course-make/'.Yii::$app->controller->action->id, 'id' => $model->id]);
-$actlog = Url::to(['course-make/log-index', 'course_id' => $course_id]);
-
+$actLog = Url::to(['actlog', 'course_id' => $model->course_id]);
 $js = 
 <<<JS
         
     /** 提交表单 */
     $("#submitsave").click(function(){
-        $.post("$action",$('#form-couframe').serialize(),function(data){
-            if(data['code'] == '200'){
+        $.post("../default/del-couframe?id=$model->id",$('#build-course-form').serialize(),function(rel){
+            if(rel['code'] == '200'){
                 $("#$model->id").remove();
-                $("#action-log").load("$actlog");
+                $("#act_log").load("$actLog");
             }
         });
     });  
         
 JS;
     $this->registerJs($js,  View::POS_READY);
-?>
-
-<?php
-    McbsAssets::register($this);
 ?>
