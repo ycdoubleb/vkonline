@@ -26,9 +26,4 @@ return [
             'http://mconline.gzedu.net' => '14825',         //指向在线课程制作平台，生产机
         ]
     ],
-    /* ffmpeg配置 */
-    'ffmpeg' => [
-        'ffprobe.ffmpeg' => 'D:/Program Files/ffmpeg/bin/ffmpeg.exe',
-        'ffprobe.binaries' => 'D:/Program Files/ffmpeg/bin/ffprobe.exe',
-    ],
 ];

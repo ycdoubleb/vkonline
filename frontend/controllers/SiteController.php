@@ -73,8 +73,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        var_dump(\common\utils\FfmpegUtil::getVideoInfoByUfileId('4bae375840b589de2ae8e163b08c4f32'));exit;
-        
         return $this->render('index');
     }
 
