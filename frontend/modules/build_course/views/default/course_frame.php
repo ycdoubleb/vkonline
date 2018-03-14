@@ -21,17 +21,26 @@ ModuleAssets::register($this);
 <div class="course_frame-index">
    
    <ul class="sortable list">
-        <li id="1b95f700734759703e9fc5cb52025aa6">
+        <?php foreach ($dataProvider as $index => $node): ?>
+        <li id="<?= $node->id ?>">
             <div class="head blue">
-                <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
+                <?php if ($index == 0): ?>
+                <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
+                <?php else: ?>
+                <?= Html::a("<i class=\"fa fa-plus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
+                <?php endif; ?>
                 <div class="icongroup">
-                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-couframe', 'course_id' => $course_id], ['onclick'=>'showModal($(this)); return false;']) ?>
-                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'couFrame($(this));return false; return false;']) ?>
-                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-couframe', 'node_id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => $node->id], ['onclick'=>'showModal($(this));return false;']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
                     <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                 </div>
             </div>
-            <div id="id" class="collapse in nodes" aria-expanded="true">
+            <?php if ($index == 0): ?>
+            <div id="toggle_<?= $node->id ?>" class="collapse in nodes" aria-expanded="true">
+            <?php else: ?>
+            <div id="toggle_<?= $node->id ?>" class="collapse nodes" aria-expanded="false">  
+            <?php endif; ?>
                 <!--子节点-->
                 <ul class="sortable list">
                     <li id="1b95f700734759703e9fc5cb52025aa6">
@@ -40,7 +49,7 @@ ModuleAssets::register($this);
                             <i class="fa fa-link"></i>
                             <div class="icongroup">
                                 <?= Html::a('<i class="fa fa-eye"></i>', ['add-couframe','id'=> '1d3d74a07ed5b29af483e6299872eef4'], ['onclick'=>'showModal($(this)); return false;']) ?>
-                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'couFrame($(this));return false; return false;']) ?>
+                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'showModal($(this));return false;']) ?>
                                 <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
                                 <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                             </div>
@@ -86,6 +95,7 @@ ModuleAssets::register($this);
                 </ul>
             </div>
         </li>
+        <?php endforeach; ?>
     </ul>
     
     <ul class="sortable list">

@@ -23,6 +23,7 @@ use yii\helpers\ArrayHelper;
  * @property string $updated_at 更新时间
  * 
  * @property Course $course 获取课程
+ * @property Video $videos 获取课程
  */
 class CourseNode extends ActiveRecord
 {
@@ -102,19 +103,20 @@ class CourseNode extends ActiveRecord
             if($this->isNewRecord){
                 $nodes = self::getCouByNode(['course_id'=>$this->course_id]);
                 ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
+                $counode = $nodes == null ? null : reset($nodes);
                 //设置等级
                 if($this->parent_id == null){
                     $this->level = 1;
                 }else{
-                    $this->level = reset($nodes)->level + 1;
+                    $this->level = $counode->level + 1;
                 }
                 //设置顺序
-                if(reset($nodes) == null){
+                if($counode == null){
                     if($this->parent_id == null){
                         $this->sort_order = 0;
                     }
                 }else{
-                    $this->sort_order = reset($nodes)->sort_order + 1;
+                    $this->sort_order = $counode->sort_order + 1;
                 }
             }
             return true;
@@ -127,7 +129,15 @@ class CourseNode extends ActiveRecord
      */
     public function getCourse()
     {
-        return $this->hasOne(Course::className(), ['id' => 'course_id']);
+        return $this->hasOne(Course::class, ['id' => 'course_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getVideos()
+    {
+        return $this->hasMany(Video::class, ['node_id' => 'id']);
     }
     
     /**

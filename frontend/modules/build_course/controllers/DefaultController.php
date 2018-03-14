@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
+use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\Teacher;
 use frontend\modules\build_course\utils\ActionUtils;
@@ -76,11 +77,13 @@ class DefaultController extends Controller
     public function actionViewCourse($id)
     {
         $model = $this->findCourseModel($id);
-        $searchModel = new CourseUserSearch();
+        $searchUserModel = new CourseUserSearch();
+        $searchNodeModel = new CourseNodeSearch();
         
         return $this->render('view_course', [
             'model' => $model,
-            'dataProvider' => $searchModel->search(['course_id' => $model->id]),
+            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]),
+            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]),
         ]);
     }
    
@@ -220,22 +223,11 @@ class DefaultController extends Controller
      */
     public function actionCourseFrame($course_id)
     {
+        $searchModel = new CourseNodeSearch();
+        $dataProvider = $searchModel->search(['course_id' => $course_id]);
         
-        $model = $this->findCourseModel($course_id);
-        $phaseSearch = new McbsCoursePhaseSearch();
-        $blockSearch = new McbsCourseBlockSearch();
-        $chapterSearch = new McbsCourseChapterSearch();
-        $sectionSearch = new McbsCourseSectionSearch();
-        $activitySearch = new McbsCourseActivitySearch();
-        
-        return $this->renderAjax('course_frame', [
-            'course_id' => $model->id,
-            'isPermission' => self::IsPermission($model->id, $model->status, false),
-            'dataCouphase' => $phaseSearch->search(['course_id'=>$course_id]),
-            'dataCoublock' => $blockSearch->search(['course_id'=>$course_id]),
-            'dataCouchapter' => $chapterSearch->search(['course_id'=>$course_id]),
-            'dataCousection' => $sectionSearch->search(['course_id'=>$course_id]),
-            'dataCouactivity' => $activitySearch->search(['course_id'=>$course_id]),
+        return $this->renderAjax('help_man', [
+            'dataProvider' => $dataProvider,
         ]);
     }
     
@@ -250,11 +242,11 @@ class DefaultController extends Controller
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post())) {
-            //Yii::$app->getResponse()->format = 'json';
+            Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->CreateCouFrame($model);
             return [
                 'code'=> $result ? 200 : 404,
-                'data' =>$result ? ['id' => $model->id, 'name'=>$model->name] : [],
+                'data' => $result ? ['id' => $model->id, 'name' => $model->name] : [],
                 'message' => ''
             ];
             //return $this->redirect(['default/view', 'id' => $course_id]);
@@ -275,24 +267,19 @@ class DefaultController extends Controller
     public function actionEditCouframe($id)
     {
         $model = CourseNode::findOne($id);
-        
-        $post = Yii::$app->request->post();
-        if(isset($post['McbsCoursePhase']))
-            $post['McbsCoursePhase']['value_percent'] = (float)$post['McbsCoursePhase']['value_percent'];
-        
-        if ($model->load($post)) {
+                
+        if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->UpdateCouFrame($model,Yii::t('app', 'Phase'),$model->course_id);
+            $result = ActionUtils::getInstance()->UpdateCouFrame($model);
             return [
                 'code'=> $result ? 200 : 404,
-                'data'=> $result ? ['id'=>$model->id, 'name'=>$model->name,] : [],
+                'data'=> $result ? ['id' => $model->id, 'name' => $model->name,] : [],
                 'message' => ''
             ];
             //return $this->redirect(['default/view', 'id' => $model->course_id]);
         } else {
             return $this->renderAjax('edit_couframe', [
                 'model' => $model,
-                'course_id' => $model->course_id,
             ]);
         }
     }
@@ -318,7 +305,6 @@ class DefaultController extends Controller
         } else {
             return $this->renderAjax('del_couframe',[
                 'model' => $model,
-                'course_id' => $model->course_id,
             ]);
         }
     }

@@ -4,7 +4,6 @@ use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 
@@ -46,31 +45,31 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 
 <?php
 
-$action = Url::to(Yii::$app->request->url);
 $actLog = Url::to(['actlog', 'course_id' => $course_id]);
-//$item = json_encode(str_replace(array("\r\n", "\r", "\n"),"",$this->renderFile('@mconline/modules/mcbs/views/course-make/couframe_view.php')));
-
+$domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"", 
+    $this->renderFile('@frontend/modules/build_course/views/default/view_couframe.php')));
 $js = 
 <<<JS
             
     /** 提交表单 */
     $("#submitsave").click(function(){
-        $('#build-course-form').submit(); return;
-        var item = '';    
-        $.post("$action",$('#build-course-form').serialize(),function(data){
-            if(data['code'] == '200'){
-                var dome = renderDom(item,data['data']);
-                if(data['data']['parent_id'] == ''){
-                    $(".sortable").eq(0).append(dome);
-                }else{
-                    $("#"+data['data']['parent_id']+">div >.sortable").append(dome);
-                }
+        //$('#build-course-form').submit(); return;
+        var items = '$domes';    
+        $.post("../default/add-couframe?course_id=$course_id",$('#build-course-form').serialize(),function(rel){
+            if(rel['code'] == '200'){
+                var dome = renderHtml(items, rel['data']);
+                $(".sortable").eq(0).append(dome);
+//                if(data['data']['parent_id'] == ''){
+//                    $(".sortable").eq(0).append(dome);
+//                }else{
+//                    $("#"+data['data']['parent_id']+">div >.sortable").append(dome);
+//                }
                 sortable('.sortable', {
                     forcePlaceholderSize: true,
                     items: 'li',
                     handle: '.fa-arrows'
                 });
-                $("#action-log").load("$actLog");
+                $("#act_log").load("$actLog");
             }
         });
     });   

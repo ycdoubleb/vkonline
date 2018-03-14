@@ -82,7 +82,7 @@ ModuleAssets::register($this);
             </div>
         </div>
         <div id="help_man" class="col-xs-12 table right">
-            <?= $this->render('help_man', ['dataProvider' => $dataProvider]) ?>
+            <?= $this->render('help_man', ['dataProvider' => $courseUsers]) ?>
         </div>
     </div>
     
@@ -104,7 +104,7 @@ ModuleAssets::register($this);
             </div>
         </div>
         <div id="course_frame" class="col-xs-12 table right">
-            <?= $this->render('course_frame', ['course_id' => $model->id]) ?>
+            <?= $this->render('course_frame', ['dataProvider' => $courseNodes, 'course_id' => $model->id]) ?>
         </div>
     </div>
     

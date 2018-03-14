@@ -143,7 +143,7 @@ class ActionUtils
         try
         {  
             if($model->save()){
-                $this->saveCourseActLog(['action' => '增加', 'title' => "添加环节",
+                $this->saveCourseActLog(['action' => '增加', 'title' => "环节管理",
                     'content' => $model->name,  'course_id' => $model->course_id,
                 ]);
             }else{
@@ -162,35 +162,29 @@ class ActionUtils
     
     /**
      * 编辑课程框架操作
+     * @param CourseNode $model
      * @throws Exception
      */
-    public function UpdateCouFrame($model,$title,$course_id,$relative_id=null)
+    public function UpdateCouFrame($model)
     {
         //获取所有新属性值
         $newAttr = $model->getDirtyAttributes();
         //获取所有旧属性值
         $oldAttr = $model->getOldAttributes();
-        $is_show = isset($oldAttr['value_percent']) ? "（{$oldAttr['value_percent']}分）" : null;
-        $is_empty = !empty($model->value_percent) ? "（{$model->value_percent}分）" : null;
-        $is_add = $is_show != null && $is_empty != null && $oldAttr['value_percent'] !== (float)$model->value_percent ? 
-                "占课程总分比例：【旧】{$oldAttr['value_percent']}% >> 【新】{$model->value_percent}%,\n\r" : null;
         
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save()){
-                if($newAttr){
-                    $this->saveMcbsActionLog([
-                        'action'=>'修改','title'=>"{$title}管理",
-                        'content'=>"调整 【{$oldAttr['name']}{$is_show}】 以下属性：\n\r".
-                                    ($oldAttr['name'] !== $model->name ? "名称：【旧】{$oldAttr['name']}{$is_show}>>【新】{$model->name}{$is_empty},\n\r" : null).
-                                    "{$is_add}".($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
-                        'course_id'=>$course_id,
-                        'relative_id'=>$relative_id]);
-                }
-            }else
+            if($model->save() && $newAttr != null){
+                $this->saveCourseActLog(['action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
+                    'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
+                        ($oldAttr['name'] !== $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
+                ]);
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
@@ -204,144 +198,20 @@ class ActionUtils
     
     /**
      * 删除课程框架操作
+     * @param CourseNode $model
      * @throws Exception
      */
-    public function DeleteCouFrame($model,$title,$course_id,$relative_id=null)
+    public function DeleteCouFrame($model)
     {
-        $is_add = !empty($model->value_percent) ? "（{$model->value_percent}分）" : null;
-        
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->update()){
-                $this->saveMcbsActionLog([
-                    'action'=>'删除','title'=>"{$title}管理",
-                    'content'=>"{$model->name}{$is_add}",
-                    'course_id'=>$course_id,
-                    'relative_id'=>$relative_id]);
-            }else
+                $this->saveCourseActLog(['action' => '删除', 'title' => "环节管理", 'content' => "{$model->name}", 'course_id' => $model->course_id]);
+            }else{
                 throw new Exception($model->getErrors());
-            
-            $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-    }
-    
-    /**
-     * 添加课程活动操作
-     * @throws Exception
-     */
-    public function CreateCouactivity($model,$post)
-    {
-        $title = Yii::t('app', 'Activity');
-        $fileIds = ArrayHelper::getValue($post, 'files');
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if($model->save()){
-                $results = $this->saveMcbsActivityFile([
-                    'activity_id'=>$model->id,
-                    'file_id'=>$fileIds,
-                    'course_id'=>$model->section->chapter->block->phase->course_id
-                ]);
-                $this->saveMcbsFileActionResult($results);
-                $this->saveMcbsActionLog([
-                    'action'=>'增加','title'=>"{$title}管理",
-                    'content'=>"{$model->name}",
-                    'course_id'=>$model->section->chapter->block->phase->course_id,
-                    'relative_id'=>$model->id
-                ]);
-            }else
-                throw new Exception($model->getErrors());
-            
-            $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-    }
-    
-    /**
-     * 编辑课程活动操作
-     * @throws Exception
-     */
-    public function UpdateCouactivity($model,$post)
-    {
-        //获取所有新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取所有旧属性值
-        $oldAttr = $model->getOldAttributes();
-        $title = Yii::t('app', 'Activity');
-        $fileIds = ArrayHelper::getValue($post, 'files');
-        $actiType = McbsActivityType::findOne([$oldAttr['type_id']]);
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if($model->save()){
-                $results = $this->saveMcbsActivityFile([
-                    'activity_id'=>$model->id,
-                    'file_id'=>$fileIds,
-                    'course_id'=>$model->section->chapter->block->phase->course_id
-                ]);
-                $this->saveMcbsFileActionResult($results);
-                if($newAttr){
-                    $this->saveMcbsActionLog([
-                        'action'=>'修改','title'=>"{$title}管理",
-                        'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                                    ($actiType->name !== $model->type->name ? "活动类型：【旧】{$actiType->name} >>【新】{$model->type->name},\n\r" : null).
-                                    ($oldAttr['name'] !==$model->name ? "名称：【旧】{$oldAttr['name']}}>>【新】{$model->name},\n\r" : null).
-                                    ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}" : null),
-                        'course_id'=>$model->section->chapter->block->phase->course_id,
-                        'relative_id'=>$model->id
-                    ]);
-                }
-            }else
-                throw new Exception($model->getErrors());
-            
-            $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-    }
-    
-    /**
-     * 删除课程活动架操作
-     * @throws Exception
-     */
-    public function DeleteCouactivity($model)
-    {
-        $title = Yii::t('app', 'Activity');
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if($model->update()){
-                $this->saveMcbsActionLog([
-                    'action'=>'删除','title'=>"{$title}管理",
-                    'content'=>"{$model->name}",
-                    'course_id'=>$model->section->chapter->block->phase->course_id,
-                    'relative_id'=>$model->id
-                ]);
-            }else
-                throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
             return true;
