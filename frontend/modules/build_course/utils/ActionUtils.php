@@ -2,17 +2,12 @@
 
 namespace frontend\modules\build_course\utils;
 
-use common\models\Config;
-use common\models\mconline\McbsActivityFile;
-use common\models\mconline\McbsActivityType;
-use common\models\mconline\McbsCourseUser;
-use common\models\mconline\McbsFileActionResult;
 use common\models\User;
 use common\models\vk\CourseActLog;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
-use wskeee\webuploader\models\Uploadfile;
+use common\models\vk\Video;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
@@ -224,26 +219,33 @@ class ActionUtils
     }
     
     /**
-     * 添加留言操作
+     * 移动课程框架操作
+     * @param type $post
      * @throws Exception
      */
-    public function CreateMessage($model,$post)
+    public function MoveCouframe($post, $number = 0)
     {
-        $model->title = $model->activity->name;
-        $model->content = ArrayHelper::getValue($post, 'content');
-        $model->course_id = $model->activity->section->chapter->block->phase->course_id;
-        
+        $table = ArrayHelper::getValue($post, 'tableName');
+        $course_id = ArrayHelper::getValue($post, 'course_id');
+        $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
+        $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
+        $oldItems = json_decode(json_encode($oldIndexs), true);
+        $newItems = json_decode(json_encode($newIndexs), true);
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save()){
-                
-            }else
+            foreach ($newItems as $id => $sortOrder){
+                $number += $this->UpdateTableAttribute($id, $table, $sortOrder);
+            }
+            if($number > 0){
+                $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
+            }else{
                 throw new Exception($model->getErrors());
+            }
             
             $trans->commit();  //提交事务
-            return true;
+            return $number;
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
@@ -252,12 +254,31 @@ class ActionUtils
         }
     }
     
+    
+    
+    /**
+     * 修改表属性值
+     * @param string $id                              id
+     * @param string $table                           表名
+     * @param integer $sortOrder                      顺序
+     * @return integer|null
+     */
+    private function UpdateTableAttribute($id, $table, $sortOrder)
+    {
+        $number = Yii::$app->db->createCommand()
+           ->update("{{%$table}}",['sort_order' => $sortOrder], ['id' => $id])->execute();
+        if($number > 0){
+            return $number;
+        }
+        return null;
+    }
+    
     /**
      * 保存协作人员
      * @param type $post
      * @return array
      */
-    public function saveCourseUser($post)
+    private function saveCourseUser($post)
     {
         $latelyUsers = [];
         $course_id = ArrayHelper::getValue($post, 'CourseUser.course_id');  //课程id
@@ -295,7 +316,7 @@ class ActionUtils
      * 保存最近联系人
      * @param type $post
      */
-    public function saveRecentContacts($post)
+    private function saveRecentContacts($post)
     {
         $userContacts = [];
         $v = 0;
@@ -326,7 +347,7 @@ class ActionUtils
      * $params['action' => '动作','title' => '标题','content' => '内容','created_by' => '创建者','course_id' => '课程id','relative_id' => '相关id']
      * @param array $params                                   
      */
-    public function saveCourseActLog($params=null)
+    private function saveCourseActLog($params=null)
     {
         $action = ArrayHelper::getValue($params, 'action'); //动作
         $title = ArrayHelper::getValue($params, 'title');   //标题  
@@ -347,154 +368,39 @@ class ActionUtils
     }
     
     /**
-     * 保存活动文件
-     * $params[
-     *   'activity_id' => '活动id',
-     *   'file_id' => '文件id',
-     *   'course_id' => '课程id',
-     *   'created_by' => '创建者',
-     *   'expire_time' => '到期时间',
-     * ]
-     * @param array $params                                   
+     * 保存顺序调整记录
+     * @param string $table 数据表
+     * @param string $course_id 课程id
+     * @param array $oldIndexs  旧顺序
+     * @param array $newIndexs  新顺序
+     * @param string|array|null $id
      */
-    public function saveMcbsActivityFile($params=null)
+    public function saveSortOrderLog($table, $course_id, $oldIndexs, $newIndexs, $id)
     {
-        //配置
-        $config = (new Query())
-            ->select(['config_value'])->from(Config::tableName())
-            ->where(['config_name'=>'mconline_file_expire_time'])->one();
-        //一个月后的时间
-        $month = strtotime(date('Y-m-d H:i:s',strtotime('+'.$config['config_value']. 'day')));
-        $activityId = ArrayHelper::getValue($params, 'activity_id');                            //活动id
-        $fileIds = ArrayHelper::getValue($params, 'file_id');                                   //文件id  
-        $fileIds = $fileIds != null ? $fileIds : [];
-        $courseId = ArrayHelper::getValue($params, 'course_id');                                //课程id
-        $createBy = ArrayHelper::getValue($params, 'created_by', Yii::$app->user->id);          //创建者
-        $expireTime = ArrayHelper::getValue($params, 'expire_time', $month);                    //到期时间
-        $values = [];
-        $add = [];
-        $del = [];
-        
-        //获取已经存在的活动文件
-        $actfiles = (new Query())->select(['ActivityFile.file_id','Uploadfile.name'])
-                ->from(['ActivityFile'=>McbsActivityFile::tableName()])
-                ->leftJoin(['Uploadfile'=> Uploadfile::tableName()],'Uploadfile.id = ActivityFile.file_id')
-                ->where(['activity_id'=>$activityId])->all();
-        $actfileIds = ArrayHelper::getColumn($actfiles, 'file_id');
-        
-        $new_adds = array_diff($fileIds, $actfileIds);       //新增
-        $del_adds = array_diff($actfileIds, $fileIds);       //删除
-        //新添加的文件
-        $addfiles = (new Query())->select(['id','name'])
-            ->from(Uploadfile::tableName())->where(['id'=>$new_adds])->all();
-        $addName = ArrayHelper::map($addfiles, 'id', 'name');
-        $delName = ArrayHelper::map($actfiles, 'file_id', 'name');
-        //添加
-        if($new_adds){
-            foreach ($new_adds as $fileId){
-                $values[] = ['activity_id' => $activityId,'file_id' => $fileId,
-                    'course_id' => $courseId,'created_by' => $createBy,
-                    'expire_time' => $expireTime,'created_at' => time(),'updated_at' => time(),
-                ];
-                $add[] = $addName[$fileId];
-            }
-            Yii::$app->db->createCommand()->batchInsert(McbsActivityFile::tableName(),[
-                'activity_id','file_id','course_id','created_by','expire_time','created_at','updated_at'],$values)->execute();
-           
-            $this->saveMcbsActionLog([
-                'action'=>'增加','title'=>"活动文件",
-                'content'=> implode('、', $add),
-                'course_id'=>$courseId,
-                'relative_id'=>$activityId
-            ]);
-        }
-        //删除
-        if($del_adds){
-            foreach ($del_adds as $fileId){
-                Yii::$app->db->createCommand()->delete(McbsActivityFile::tableName(),[
-                    'activity_id' => $activityId, 'file_id' => $fileId])->execute();
-                
-                $del[] = $delName[$fileId];
-            }
-            
-            $this->saveMcbsActionLog([
-                'action'=>'删除','title'=>"活动文件",
-                'content'=> implode('、', $del),
-                'course_id'=>$courseId,
-                'relative_id'=>$activityId
-            ]);
-        }
-        
-        return [
-            'course_id' => $courseId,
-            'activity_id' => $activityId,
-            'add' => $new_adds,
-            'del' => $del_adds,
+        $oleItems = [];
+        $newItems = [];
+        $tableName = [
+            CourseNode::tableName() => CourseNode::getCouNodeByPath($id),
+            Video::tableName() => CourseNode::getCouNodeByPath($id[0]),
         ];
-    }
-    
-    /**
-     * 保存板书课堂，活动文件操作结果表
-     * @param array $params
-     */
-    public function saveMcbsFileActionResult($params=null)
-    {
-        $results = [];
-        $courseId = ArrayHelper::getValue($params, 'course_id');
-        $activityId = ArrayHelper::getValue($params, 'activity_id');
-        $new_adds = ArrayHelper::getValue($params, 'add');
-        $del_adds = ArrayHelper::getValue($params, 'del');
-        //获取所有协作人员
-        $helpmans = (new Query())->from(McbsCourseUser::tableName())
-            ->where(['course_id'=>$courseId])->all();
-       
-        //添加通知
-        if($new_adds){
-            foreach ($new_adds as $fileId){
-                foreach ($helpmans as $item) {
-                    if(Yii::$app->user->id != $item['user_id']){
-                        $results[] = [
-                            'activity_id' => $activityId,
-                            'file_id' => $fileId,
-                            'user_id' => $item['user_id'],
-                            'status' => 0,
-                            'created_at' => time(),
-                            'updated_at' => time()
-                        ];
-                    }
-                }
-            }
-
-            Yii::$app->db->createCommand()->batchInsert(McbsFileActionResult::tableName(),[
-                'activity_id','file_id','user_id','status','created_at','updated_at'],$results)->execute();
+        $parentPath = implode('>>', $tableName["{{%$table}}"]);
+        $content = $parentPath != null ? "调整：{$parentPath}：\n\r" : null;
+        //获取名称、顺序
+        $query = (new Query())->from("{{%$table}}");
+        $query->where(['id' => $id]);
+        //结果数组
+        $results = ArrayHelper::map($query->all(), 'id', 'name');
+        //组装旧目录
+        foreach ($oldIndexs as $oldkey => $oldvalue) {
+            $oleItems[$oldkey] = $results[$oldkey];
         }
-        //删除通知
-        if($del_adds){
-            foreach ($del_adds as $fileId){
-                Yii::$app->db->createCommand()->update(McbsFileActionResult::tableName(),['status'=>1],
-                   ['activity_id' => $activityId, 'file_id' => $fileId])->execute();
-            }
+        //组装新目录
+        foreach ($newIndexs as $newkey => $newvalue) {
+            $newItems[$newkey] = $results[$newkey];
         }
-    }
-
-    /**
-     * 获取是否有权限
-     * @param string $course_id                                     课程id
-     * @param integer|array $privilege                              权限
-     * @return boolean
-     */
-    public static function getIsPermission($course_id, $privilege)
-    {
-        //获取关联课程用户
-        $courseUsers = (new Query)
-                ->select(['McbsCourseUser.user_id'])->from(['McbsCourseUser' => McbsCourseUser::tableName()])
-                ->where(['McbsCourseUser.course_id' => $course_id, 'McbsCourseUser.privilege' => $privilege])->all();
-        //取出所有用户id
-        $users = ArrayHelper::getColumn($courseUsers, 'user_id');
-        //判断当前用户是否拥有该权限
-        if(in_array(Yii::$app->user->id,$users))
-            return true;
-        
-        return false;
+        //保存记录
+        $this->saveCourseActLog(['action' => '修改', 'title' => '顺序调整', 'course_id' => $course_id,
+            'content' => $content."【旧】". implode('、', $oleItems)."\n\r【新】".implode('、', $newItems),
+        ]);
     }
 }

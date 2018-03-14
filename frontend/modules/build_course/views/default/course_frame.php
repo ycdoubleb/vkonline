@@ -20,7 +20,7 @@ ModuleAssets::register($this);
 
 <div class="course_frame-index">
    
-   <ul class="sortable list">
+   <ul id="course_node" class="sortable list">
         <?php foreach ($dataProvider as $index => $node): ?>
         <li id="<?= $node->id ?>">
             <div class="head blue">
@@ -42,7 +42,7 @@ ModuleAssets::register($this);
             <div id="toggle_<?= $node->id ?>" class="collapse nodes" aria-expanded="false">  
             <?php endif; ?>
                 <!--子节点-->
-                <ul class="sortable list">
+                <ul id="video" class="sortable list">
                     <li id="1b95f700734759703e9fc5cb52025aa6">
                         <div class="head gray">
                             <?= Html::a("<i class=\"fa fa-play-circle\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true']) ?>
@@ -113,7 +113,6 @@ ModuleAssets::register($this);
 <?php
 
 $actLog = Url::to(['actlog', 'course_id' => $course_id]);
-
 $js = 
 <<<JS
     //初始化组件
@@ -127,7 +126,6 @@ $js =
     });
     //提交更改顺序
     $(".sortable").each(function(i,e){
-        //var tableName = e.attr("id");
         e.addEventListener('sortupdate', function(evt){
             var oldList = evt.detail.oldStartList,
                 newList = evt.detail.newEndList,
@@ -144,10 +142,10 @@ $js =
                 }
             });
             
-            $.post("/mcbs/course-make/sort-order",
-                {"tableName":e.id,"oldIndexs":oldIndexs,"newIndexs":newIndexs,"course_id":"$course_id"},
-            function(data){
-                if(data['code'] == '200'){
+            $.post("../default/move-couframe", 
+                {"tableName":e.id, "oldIndexs":oldIndexs, "newIndexs":newIndexs, "course_id":"$course_id"},
+            function(rel){
+                if(rel['code'] == '200'){
                     $("#act_log").load("$actLog");
                 }else{
                     alert("顺序调整失败");

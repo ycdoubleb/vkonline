@@ -9,6 +9,6 @@
         </div>
     </div>
     <div id="toggle_{%id%}" class="collapse in nodes" aria-expanded="true">
-        <ul class="sortable list"></ul>
+        <ul id="video" class="sortable list"></ul>
     </div>
 </li>

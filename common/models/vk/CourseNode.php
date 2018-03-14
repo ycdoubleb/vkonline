@@ -141,22 +141,6 @@ class CourseNode extends ActiveRecord
     }
     
     /**
-     * 获取课程环节
-     * @param array $condition  条件
-     * @return CourseNode
-     */
-    public static function getCouByNode($condition) 
-    {
-        //数组合并
-        $condition = array_merge(['is_del' => 0], $condition);
-        self::$nodes = self::findAll($condition);
-        if(self::$nodes != null){
-            return self::$nodes;
-        }
-        return null;
-    }
-    
-    /**
      * 获取父级
      * @param integer $level    默认返回所有分类
      * @param bool $key_to_value    返回键值对形式
@@ -177,8 +161,28 @@ class CourseNode extends ActiveRecord
      * 获取父级路径
      * @return array
      */
-    public static function getParentPath($params = null)
+    public static function getCouNodeByPath($id)
     {
+        self::$nodes = self::getCouByNode(['parent_id' => $id]);
+        if (isset(self::$nodes[0])) {
+            return self::$nodes[0];
+        }
         return [];
+    }
+    
+    /**
+     * 获取课程环节
+     * @param array $condition  条件
+     * @return CourseNode
+     */
+    public static function getCouByNode($condition) 
+    {
+        //数组合并
+        $condition = array_merge(['is_del' => 0], $condition);
+        self::$nodes = self::findAll($condition);
+        if(self::$nodes != null){
+            return self::$nodes;
+        }
+        return null;
     }
 }

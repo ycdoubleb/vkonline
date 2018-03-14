@@ -218,7 +218,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * Lists all CourseFrame.
+     * Lists all CourseNode.
      * @return mixed
      */
     public function actionCourseFrame($course_id)
@@ -306,6 +306,31 @@ class DefaultController extends Controller
             return $this->renderAjax('del_couframe',[
                 'model' => $model,
             ]);
+        }
+    }
+    
+    /**
+     * MoveCouframe an existing CourseNode model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionMoveCouframe()
+    {
+        
+        if(Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->MoveCouframe(Yii::$app->request->post());
+            
+            return [
+                'code' => $result ? 200 : 404,
+                'message' => ''
+            ];
+        }else{
+            return [
+                'code' => 404,
+                'message' => ''
+            ];
         }
     }
     
