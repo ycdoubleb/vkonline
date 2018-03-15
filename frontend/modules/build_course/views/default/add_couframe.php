@@ -1,25 +1,23 @@
 <?php
 
-use mconline\modules\mcbs\assets\McbsAssets;
+use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 
-
 /* @var $this View */
 
-$is_show = null;
-if(Yii::$app->controller->action->id == 'create-couphase')
-    $is_show = true;
 
-$this->title = Yii::t(null, "{add}{$title}",[
-    'add' => Yii::t('app', 'Add'),
+ModuleAssets::register($this);
+
+$this->title = Yii::t('app', "{Add}{Node}",[
+    'Add' => Yii::t('app', 'Add'), 'Node' => Yii::t('app', 'Node')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
+//$this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="mcbs-create-couframe mcbs">
+<div class="course_frame-create main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -30,15 +28,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body">
-                <?= $this->render('couframe_form',[
+                
+                <?= $this->render('_form_frame', [
                     'model' => $model,
-                    'is_show' => $is_show
                 ]) ?>
+
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary',
-                    'data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -47,39 +45,35 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 
-$action = Url::to(Yii::$app->request->url);
-$actlog = Url::to(['course-make/log-index', 'course_id' => $course_id]);
-$item = json_encode(str_replace(array("\r\n", "\r", "\n"),"",$this->renderFile('@mconline/modules/mcbs/views/course-make/couframe_view.php')));
-
+$actLog = Url::to(['actlog', 'course_id' => $course_id]);
+$domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"", 
+    $this->renderFile('@frontend/modules/build_course/views/default/view_couframe.php')));
 $js = 
 <<<JS
             
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$('#form-couframe').submit(); return;
-        var item = $item;    
-        $.post("$action",$('#form-couframe').serialize(),function(data){
-            if(data['code'] == '200'){
-                var dome = renderDom(item,data['data']);
-                if(data['data']['parent_id'] == ''){
-                    $(".sortable").eq(0).append(dome);
-                }else{
-                    $("#"+data['data']['parent_id']+">div >.sortable").append(dome);
-                }
+        //$('#build-course-form').submit(); return;
+        var items = '$domes';    
+        $.post("../default/add-couframe?course_id=$course_id",$('#build-course-form').serialize(),function(rel){
+            if(rel['code'] == '200'){
+                var dome = renderHtml(items, rel['data']);
+                $(".sortable").eq(0).append(dome);
+//                if(data['data']['parent_id'] == ''){
+//                    $(".sortable").eq(0).append(dome);
+//                }else{
+//                    $("#"+data['data']['parent_id']+">div >.sortable").append(dome);
+//                }
                 sortable('.sortable', {
                     forcePlaceholderSize: true,
                     items: 'li',
                     handle: '.fa-arrows'
                 });
-                $("#action-log").load("$actlog");
+                $("#act_log").load("$actLog");
             }
         });
     });   
         
 JS;
     $this->registerJs($js,  View::POS_READY);
-?>
-
-<?php
-    McbsAssets::register($this);
 ?>

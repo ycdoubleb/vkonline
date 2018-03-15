@@ -20,28 +20,37 @@ ModuleAssets::register($this);
 
 <div class="course_frame-index">
    
-   <ul class="sortable list">
-        <li id="1b95f700734759703e9fc5cb52025aa6">
+   <ul id="course_node" class="sortable list">
+        <?php foreach ($dataProvider as $index => $node): ?>
+        <li id="<?= $node->id ?>">
             <div class="head blue">
-                <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
+                <?php if ($index == 0): ?>
+                <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
+                <?php else: ?>
+                <?= Html::a("<i class=\"fa fa-plus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
+                <?php endif; ?>
                 <div class="icongroup">
-                    <?= Html::a('<i class="fa fa-plus"></i>', ['course-make/create-couchapter','node_id'=> 'node_id'], ['onclick'=>'showModal($(this));']) ?>
-                    <?= Html::a('<i class="fa fa-pencil"></i>', ['course-make/update-coublock','id' => 'id'], ['onclick'=>'couFrame($(this));return false;']) ?>
-                    <?= Html::a('<i class="fa fa-times"></i>',['course-make/delete-coublock', 'id' => 'id'], ['onclick'=>'showModal($(this));']) ?>
+                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-couframe', 'node_id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => $node->id], ['onclick'=>'showModal($(this));return false;']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
                     <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                 </div>
             </div>
-            <div id="id" class="collapse in nodes" aria-expanded="true">
+            <?php if ($index == 0): ?>
+            <div id="toggle_<?= $node->id ?>" class="collapse in nodes" aria-expanded="true">
+            <?php else: ?>
+            <div id="toggle_<?= $node->id ?>" class="collapse nodes" aria-expanded="false">  
+            <?php endif; ?>
                 <!--子节点-->
-                <ul class="sortable list">
+                <ul id="video" class="sortable list">
                     <li id="1b95f700734759703e9fc5cb52025aa6">
                         <div class="head gray">
                             <?= Html::a("<i class=\"fa fa-play-circle\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true']) ?>
                             <i class="fa fa-link"></i>
                             <div class="icongroup">
-                                <?= Html::a('<i class="fa fa-eye"></i>', ['course-make/create-couchapter','node_id'=> 'node_id'], ['onclick'=>'showModal($(this));']) ?>
-                                <?= Html::a('<i class="fa fa-pencil"></i>', ['course-make/update-coublock','id' => 'id'], ['onclick'=>'couFrame($(this));return false;']) ?>
-                                <?= Html::a('<i class="fa fa-times"></i>',['course-make/delete-coublock', 'id' => 'id'], ['onclick'=>'showModal($(this));']) ?>
+                                <?= Html::a('<i class="fa fa-eye"></i>', ['add-couframe','id'=> '1d3d74a07ed5b29af483e6299872eef4'], ['onclick'=>'showModal($(this)); return false;']) ?>
+                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'showModal($(this));return false;']) ?>
+                                <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
                                 <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                             </div>
                         </div>
@@ -86,13 +95,14 @@ ModuleAssets::register($this);
                 </ul>
             </div>
         </li>
+        <?php endforeach; ?>
     </ul>
     
     <ul class="sortable list">
         <li>
             <center>
                 <div class="head gray add">
-                    <?= Html::a('<i class="fa fa-plus-square"></i>'.Yii::t('app', 'Add'), ['course-make/create-couphase', 'course_id'=>$course_id],['onclick'=>'couFrame($(this));return false;']) ?>
+                    <?= Html::a('<i class="fa fa-plus-square"></i>'.Yii::t('app', 'Add'), ['add-couframe', 'course_id' => $course_id],['onclick' => 'showModal($(this));return false;']) ?>
                 </div>
             </center>
         </li>
@@ -103,7 +113,6 @@ ModuleAssets::register($this);
 <?php
 
 $actLog = Url::to(['actlog', 'course_id' => $course_id]);
-
 $js = 
 <<<JS
     //初始化组件
@@ -117,7 +126,6 @@ $js =
     });
     //提交更改顺序
     $(".sortable").each(function(i,e){
-        //var tableName = e.attr("id");
         e.addEventListener('sortupdate', function(evt){
             var oldList = evt.detail.oldStartList,
                 newList = evt.detail.newEndList,
@@ -134,10 +142,10 @@ $js =
                 }
             });
             
-            $.post("/mcbs/course-make/sort-order",
-                {"tableName":e.id,"oldIndexs":oldIndexs,"newIndexs":newIndexs,"course_id":"$course_id"},
-            function(data){
-                if(data['code'] == '200'){
+            $.post("../default/move-couframe", 
+                {"tableName":e.id, "oldIndexs":oldIndexs, "newIndexs":newIndexs, "course_id":"$course_id"},
+            function(rel){
+                if(rel['code'] == '200'){
                     $("#act_log").load("$actLog");
                 }else{
                     alert("顺序调整失败");

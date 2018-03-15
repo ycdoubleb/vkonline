@@ -25,5 +25,5 @@ return [
             'http://ccoa.gzedu.net' => '145??',             //指向课程建设平台
             'http://mconline.gzedu.net' => '14825',         //指向在线课程制作平台，生产机
         ]
-    ]
+    ],
 ];

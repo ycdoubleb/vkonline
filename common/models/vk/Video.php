@@ -19,6 +19,8 @@ use yii\db\ActiveRecord;
  * @property int $source_level 视频质量：1=480P 1=720P 2=1080P
  * @property string $source_wh 分辨率：1080x720
  * @property string $source_bitrate 视频码率：480kpi
+ * @property double $source_duration 时长
+ * @property int $source_is_link 是否为外链：0否 1是
  * @property int $content_level 内容评级：初1 中2 高3
  * @property string $des 视频简介
  * @property int $level 等级：0私有 1内网 2公共
@@ -61,10 +63,11 @@ class Video extends ActiveRecord
     {
         return [
             [['id'], 'required'],
+            [['source_duration'], 'number'], 
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
             [['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
-            [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish'], 'string', 'max' => 1],
+            [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'source_is_link'], 'int', 'max' => 1],
             [['source_wh'], 'string', 'max' => 20],
             [['source_bitrate'], 'string', 'max' => 10],
             [['des'], 'string', 'max' => 500],
@@ -90,6 +93,8 @@ class Video extends ActiveRecord
             'source_level' => Yii::t('app', 'Source Level'),
             'source_wh' => Yii::t('app', 'Source Wh'),
             'source_bitrate' => Yii::t('app', 'Source Bitrate'),
+            'source_duration' => Yii::t('app', 'Source Duration'), 
+            'source_is_link' => Yii::t('app', 'Source Is Link'),
             'content_level' => Yii::t('app', 'Content Level'),
             'des' => Yii::t('app', 'Des'),
             'level' => Yii::t('app', 'Level'),

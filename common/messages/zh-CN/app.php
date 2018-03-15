@@ -66,6 +66,7 @@ return [
     'Build Course' => '建课',
     'Database' => '数据库',
     'Frame' => '框架',
+    'Node' => '环节',
     
     //公共-操作
     'Add' => '添加',

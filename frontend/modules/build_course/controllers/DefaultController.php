@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
+use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\Teacher;
 use frontend\modules\build_course\utils\ActionUtils;
@@ -76,11 +77,13 @@ class DefaultController extends Controller
     public function actionViewCourse($id)
     {
         $model = $this->findCourseModel($id);
-        $searchModel = new CourseUserSearch();
+        $searchUserModel = new CourseUserSearch();
+        $searchNodeModel = new CourseNodeSearch();
         
         return $this->render('view_course', [
             'model' => $model,
-            'dataProvider' => $searchModel->search(['course_id' => $model->id]),
+            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]),
+            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]),
         ]);
     }
    
@@ -215,27 +218,16 @@ class DefaultController extends Controller
     }
     
     /**
-     * Lists all CourseFrame.
+     * Lists all CourseNode.
      * @return mixed
      */
     public function actionCourseFrame($course_id)
     {
+        $searchModel = new CourseNodeSearch();
+        $dataProvider = $searchModel->search(['course_id' => $course_id]);
         
-        $model = $this->findCourseModel($course_id);
-        $phaseSearch = new McbsCoursePhaseSearch();
-        $blockSearch = new McbsCourseBlockSearch();
-        $chapterSearch = new McbsCourseChapterSearch();
-        $sectionSearch = new McbsCourseSectionSearch();
-        $activitySearch = new McbsCourseActivitySearch();
-        
-        return $this->renderAjax('course_frame', [
-            'course_id' => $model->id,
-            'isPermission' => self::IsPermission($model->id, $model->status, false),
-            'dataCouphase' => $phaseSearch->search(['course_id'=>$course_id]),
-            'dataCoublock' => $blockSearch->search(['course_id'=>$course_id]),
-            'dataCouchapter' => $chapterSearch->search(['course_id'=>$course_id]),
-            'dataCousection' => $sectionSearch->search(['course_id'=>$course_id]),
-            'dataCouactivity' => $activitySearch->search(['course_id'=>$course_id]),
+        return $this->renderAjax('help_man', [
+            'dataProvider' => $dataProvider,
         ]);
     }
     
@@ -246,31 +238,99 @@ class DefaultController extends Controller
      */
     public function actionAddCouframe($course_id)
     {        
-        $model = new CourseNode(['id' => md5(rand(1,10000) . time()), 'course_id' => $course_id]);
+        $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = McbsAction::getInstance()->CreateCouFrame($model,Yii::t('app', 'Phase'),$course_id);
+            $result = ActionUtils::getInstance()->CreateCouFrame($model);
             return [
                 'code'=> $result ? 200 : 404,
-                'data' =>$result ? [
-                    'frame_name'=>'phase',
-                    'sub_frame'=>'block',
-                    'id'=>$model->id,
-                    'parent_id'=>'',
-                    'name'=>$model->name,
-                    'value_percent'=>"占课程总分比例：".number_format($model->value_percent,2)."%",
-                ] : [],
+                'data' => $result ? ['id' => $model->id, 'name' => $model->name] : [],
                 'message' => ''
             ];
             //return $this->redirect(['default/view', 'id' => $course_id]);
         } else {
-            return $this->renderAjax('create-couframe', [
+            return $this->renderAjax('add_couframe', [
                 'model' => $model,
                 'course_id'=>$model->course_id,
-                'title' => Yii::t('app', 'Phase')
             ]);
+        }
+    }
+    
+    /**
+     * EditCoufram an existing CourseNode model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionEditCouframe($id)
+    {
+        $model = CourseNode::findOne($id);
+                
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->UpdateCouFrame($model);
+            return [
+                'code'=> $result ? 200 : 404,
+                'data'=> $result ? ['id' => $model->id, 'name' => $model->name,] : [],
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('edit_couframe', [
+                'model' => $model,
+            ]);
+        }
+    }
+
+    /**
+     * DelCouframe an existing CourseNode model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelCouframe($id)
+    {
+        $model = CourseNode::findOne($id);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->DeleteCouFrame($model,Yii::t('app', 'Phase'),$model->course_id);
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('del_couframe',[
+                'model' => $model,
+            ]);
+        }
+    }
+    
+    /**
+     * MoveCouframe an existing CourseNode model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionMoveCouframe()
+    {
+        
+        if(Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            $result = ActionUtils::getInstance()->MoveCouframe(Yii::$app->request->post());
+            
+            return [
+                'code' => $result ? 200 : 404,
+                'message' => ''
+            ];
+        }else{
+            return [
+                'code' => 404,
+                'message' => ''
+            ];
         }
     }
     
