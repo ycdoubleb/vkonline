@@ -40,11 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ['class' => 'yii\grid\SerialColumn'],
                 [
                     'attribute' => 'customer_id',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
@@ -58,15 +53,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'attribute' => 'username',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
+                ],
                     ],
                     'contentOptions' => [
                         'style' => [
@@ -76,11 +66,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'nickname',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -89,11 +74,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'sex',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'value' => function ($data){
                         return User::$sexName[$data['sex']];
                     },
@@ -115,11 +95,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'status',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
 //                    'class' => GridViewChangeSelfColumn::className(),
                     'value' => function ($data){
                         return User::$statusIs[$data['status']];
@@ -145,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('app', 'Course'),
                     'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '90px',
                         ],
                     ],
                     'value' => function($data) {
@@ -162,7 +137,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('app', 'Video'),
                     'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '90px',
                         ],
                     ],
                     'value' => function($data) {
@@ -176,11 +151,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'max_store',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -191,7 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'created_at',
                     'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '90px',
                         ],
                     ],
                     'filter' => false,
@@ -201,6 +171,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],

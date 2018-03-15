@@ -1,23 +1,28 @@
 <?php
 
-use yii\helpers\Html;
+use common\models\Banner;
+use yii\web\View;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\Banner */
+/* @var $this View */
+/* @var $model Banner */
 
-$this->title = Yii::t('app', 'Update Banner: {nameAttribute}', [
+$this->title = Yii::t('app', '{Update}{Banner}: {nameAttribute}', [
+    'Update' => Yii::t('app', 'Update'),
+    'Banner' => Yii::t('app', 'Banner'),
     'nameAttribute' => $model->title,
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Banners'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->title, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Propaganda}{List}',[
+    'Propaganda' => Yii::t('app', 'Propaganda'),
+    'List' => Yii::t('app', 'List'),
+]), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="banner-update">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
     <?= $this->render('_form', [
         'model' => $model,
+        'customer' => $customer,
     ]) ?>
 
 </div>

@@ -19,8 +19,8 @@ and open the template in the editor.
 }
 .customer
 .frame-title {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     color: #ffffff;
     line-height: 20px;
     background-color: rgba(153, 153, 153, 1);
@@ -55,6 +55,10 @@ and open the template in the editor.
     font-weight: bold;
 }
 
+.customer .table > thead:first-child > tr:first-child > th{
+    text-align: center;
+}
+
 /********* uploadfile-index样式 ***********/
 /** table表格th样式 */
 .uploadfile-index .viewdetail-th {
@@ -87,8 +91,8 @@ and open the template in the editor.
 
 .uploadfile-index .frame
 .frame-title {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     color: #ffffff;
     line-height: 20px;
     background-color: rgba(153, 153, 153, 1);
@@ -136,7 +140,7 @@ and open the template in the editor.
 
 .customer-view .frame
 .frame-title {
-    padding: 15px 0px 30px 10px;
+    padding: 12px 0px 28px 10px;
     color: #ffffff;
     line-height: 18px;
     background-color: rgba(153, 153, 153, 1);

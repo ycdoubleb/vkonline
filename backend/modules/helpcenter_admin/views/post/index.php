@@ -68,8 +68,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'category_id',
-                'label' => Yii::t('app', '{Belong}{Category}',[
-                    'Belong' => Yii::t('app', 'Belong'),
+                'label' => Yii::t('app', '{The}{Category}',[
+                    'The' => Yii::t('app', 'The'),
                     'Category' => Yii::t('app', 'Category'),
                 ]),
                 'value' => function ($data){
@@ -229,7 +229,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'created_by',
-                'label' => Yii::t('app', 'Create By'),
+                'label' => Yii::t('app', 'Created By'),
                 'filter' => Select2::widget([
                     'model' => $searchModel,
                     'attribute' => 'created_by',

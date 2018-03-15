@@ -93,6 +93,7 @@ return [
     'Disabled' => '禁用',
     'Prev' => '上一页',
     'Next' => '下一页',
+    'Play' => '播放',
     
     //公共-属性
     'ID' => 'ID',
@@ -124,6 +125,8 @@ return [
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
     'Are you sure you want to disable this user?' => '你确定要禁用此用户？',
     'Are you sure you want to enable this user?' => '你确定要启用此用户？',
+    'Are you sure you want to disable this customer?' => '你确定要停用此客户？',
+    'Are you sure you want to enable this customer?' => '你确定要启用此客户？',
     'The requested page does not exist.' => '所请求的页面不存在。',
     'Select Placeholder' => '请选择...',
     'Input Placeholder' => '请输入...',
@@ -209,7 +212,9 @@ return [
     'Sort Order' => '排序',
     'Help' => '帮助',
     
-    //后台-宣传栏
+    //后台
+    'Resources' => '资源',
+    'Record' => '记录',
     'Propaganda' => '宣传',
     'Banner' => '横幅',
     'Page' => '页',

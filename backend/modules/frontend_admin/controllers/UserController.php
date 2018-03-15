@@ -52,7 +52,7 @@ class UserController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             
-            'customer' => $this->getCustomer(),
+            'customer' => $this->getTheCustomer(),
         ]);
     }
 
@@ -175,18 +175,32 @@ class UserController extends Controller
     }
     
     /**
-     * 查找所属客户
+     * 查找所有客户
      * @return array
      */
     public function getCustomer()
     {
         $customer = (new Query())
+                ->select(['id', 'name'])
+                ->from(['Customer' => Customer::tableName()])
+                ->all();
+
+        return ArrayHelper::map($customer, 'id', 'name');
+    }
+    
+    /**
+     * 查找所属客户
+     * @return array
+     */
+    public function getTheCustomer()
+    {
+        $theCustomer = (new Query())
                 ->select(['Customer.id', 'Customer.name'])
                 ->from(['User' => User::tableName()])
                 ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
                 ->all();
 
-        return ArrayHelper::map($customer, 'id', 'name');
+        return ArrayHelper::map($theCustomer, 'id', 'name');
     }
     
     /**

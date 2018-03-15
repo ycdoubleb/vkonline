@@ -68,13 +68,14 @@ class CustomerController extends Controller
      */
     public function actionView($id)
     {
-        $params = Yii::$app->request->queryParams;
         $searchModel = new CustomerSearch();
-        $dataProvider = $searchModel->search($params);
+        $resourceData = $searchModel->searchResources($id);
+        $recordData = $searchModel->searchActLog($id);
         
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'dataProvider' => $dataProvider,
+            'resourceData' => $resourceData,
+            'recordData' => $recordData,
             
             'customerAdmin' => $this->getCustomerAdmin($id)['view']['0']['nickname'],   //客户管理员
         ]);
@@ -129,10 +130,120 @@ class CustomerController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
+        
+        $model->status = Customer::STATUS_STOP;
+        $model->save(false,['status']);
 
         return $this->redirect(['index']);
     }
+    
+    /**
+     * Enables an existing User model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionEnable($id)
+    {
+        $model = $this->findModel($id);
+        
+        $model->status = Customer::STATUS_ACTIVE;
+        $model->save(false,['status']);
+        
+        return $this->redirect(['index']);
+    }
+    
+    /**
+     * Lists all CustomerAdmin models.
+     * @return mixed
+     */
+    public function actionAdminIndex($id)
+    {
+        $searchModel = new CustomerSearch();
+        
+        return $this->renderAjax('admin-index', [
+            'dataProvider' => $searchModel->searchCustomerAdmin(['customer_id' => $id]),
+        ]);
+    }
+
+    /**
+     * Creates a new CustomerAdmin model.
+     * If creation is successful, the browser will be redirected to the 'view' page.
+     * @return mixed
+     */
+    public function actionCreateAdmin($id)
+    {
+        $model = new CustomerAdmin(['customer_id' => $id]);
+        $model->loadDefaultValues();
+
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = $this->CreateAdmin($model, Yii::$app->request->post());
+            return [
+                'code' => $result ? 200 : 404,
+                'message' => ''
+            ];
+
+        } else {
+            return $this->renderAjax('create-admin', [
+                'model' => $model,
+                'admins' => $this->getCustomerManList($id),
+            ]);
+        }
+    }
+    
+    /**
+     * Updates an existing McbsCourseUser model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionUpdateAdmin($id)
+    {
+        $model = CustomerAdmin::findOne($id);
+                
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = $this->UpdateAdmin($model);
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('update-admin', [
+                'model' => $model,
+            ]);
+        }
+    }
+    
+    /**
+     * Deletes an existing McbsCourseUser model.
+     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDeleteAdmin($id)
+    {
+        $model = CustomerAdmin::findOne($id);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = $this->DeleteAdmin($model);
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        } else {
+            return $this->renderAjax('delete-admin',[
+                'model' => $model
+            ]);
+        }
+    }
+
     
     /**
      * Function output the site that you selected.
@@ -275,4 +386,145 @@ class CustomerController extends Controller
 
         return $point;
     }
+    
+    /**
+     * 获取该客户下的所有人
+     * @return array
+     */
+    public function getCustomerManList($id)
+    {
+        //查找已添加的管理员
+        $customerUsers = (new Query())->select(['user_id'])
+                ->from(CustomerAdmin::tableName())->where(['customer_id' => $id])
+                ->all();
+        $customerUserIds = ArrayHelper::getColumn($customerUsers, 'user_id');
+        
+        //查找所有可以添加的协作人员
+        $users = (new Query())->select(['id', 'nickname'])
+                ->from(User::tableName())->where(['NOT IN', 'id', $customerUserIds])
+                ->andWhere(['customer_id' => $id])
+                ->all();
+
+        return ArrayHelper::map($users, 'id', 'nickname');
+    }
+    
+    /**
+     * 添加协作人员操作
+     * @param CustomerAdmin $model
+     * @param type $post
+     * @return array
+     * @throws Exception
+     */
+    public function CreateAdmin($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $results = $this->saveCustomerAdmin($post);
+            if($results['code'] == 400){
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return true;
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return false;
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
+     * 编辑协作人员操作
+     * @param McbsCourseUser $model
+     * @throws Exception
+     */
+    public function UpdateAdmin($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if (!$model->save()) {
+                throw new Exception($model->getErrors());
+            }
+
+            $trans->commit();  //提交事务
+            return true;
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return false;
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }  
+    
+    /**
+     * 编辑协作人员操作
+     * @param McbsCourseUser $model
+     * @throws Exception
+     */
+    public function DeleteAdmin($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if(!$model->delete()){
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return true;
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return false;
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
+     * 保存客户管理员
+     * @param type $post
+     * @return array
+     */
+    public function saveCustomerAdmin($post)
+    {
+        $customer_id = ArrayHelper::getValue($post, 'CustomerAdmin.customer_id');       //客户id
+        $user_id = ArrayHelper::getValue($post, 'CustomerAdmin.user_id');               //用户id
+        $level = ArrayHelper::getValue($post, 'CustomerAdmin.level');                   //权限
+        //过滤已经添加的管理员
+        $courseUsers = (new Query())->select(['user_id'])
+                ->from(CustomerAdmin::tableName())
+                ->where(['customer_id'=>$customer_id])
+                ->all();
+        $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
+        
+        $values = [];
+        if(!in_array($user_id, $userIds)){
+            $values[] = [
+                'customer_id' => $customer_id,
+                'user_id' => $user_id,
+                'level' => $level,
+                'created_by' => \Yii::$app->user->id,
+                'created_at' => time(),
+                'updated_at' => time(),
+            ];
+        }
+        
+        /** 添加$values数组到表里 */
+        $num = Yii::$app->db->createCommand()->batchInsert(CustomerAdmin::tableName(), [
+            'customer_id','user_id','level','created_by','created_at','updated_at'
+        ],$values)->execute();
+        
+        if($num > 0){
+            return ['code' => 200];
+        } else {
+            return ['code' => 400];
+        }
+    }
+   
 }
