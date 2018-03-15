@@ -101,20 +101,7 @@ class CustomerSearch extends Customer
         
         return $dataProvider;
     }
-    
-    public function searchCustomerAdmin($id)
-    {
-        $query = CustomerAdmin::find();
         
-        $query->where(['customer_id' => $id]);
-
-        return  new ArrayDataProvider([
-            'allModels' => $query->all(),
-        ]);
-    }
-
-
-    
     /**
      * 资源统计
      * @param string $id    客户ID
@@ -180,6 +167,22 @@ class CustomerSearch extends Customer
     }
     
     /**
+     * 查找客户管理员
+     * @param string $id    客户ID
+     * @return ArrayDataProvider
+     */
+    public function searchCustomerAdmin($id)
+    {
+        $query = CustomerAdmin::find();
+        
+        $query->where(['customer_id' => $id]);
+
+        return  new ArrayDataProvider([
+            'allModels' => $query->all(),
+        ]);
+    }
+    
+    /**
      * 查找对客户的操作记录
      * @param string $id    客户ID
      * @return ActiveDataProvider
@@ -187,8 +190,8 @@ class CustomerSearch extends Customer
     public function searchActLog($id)
     {
         $query = (new Query())
-                ->select(['ActLog.title', 'ActLog.good_id', 'ActLog.content', 'ActLog.start_time', 'ActLog.end_time',
-                    'AdminUser.nickname AS created_by', 'ActLog.created_at'])
+                ->select([ 'ActLog.id', 'ActLog.title', 'ActLog.good_id', 'ActLog.content', 'ActLog.start_time', 
+                    'ActLog.end_time', 'AdminUser.nickname AS created_by', 'ActLog.created_at'])
                 ->from(['ActLog' => CustomerActLog::tableName()]);
         
         $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = ActLog.created_by');

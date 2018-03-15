@@ -18,7 +18,8 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
- * @property User $user         关联用户
+ * @property User $user             关联用户
+ * @property Customer $customer     关联客户
  */
 class CustomerAdmin extends ActiveRecord
 {
@@ -50,7 +51,7 @@ class CustomerAdmin extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     

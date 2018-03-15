@@ -2,8 +2,10 @@
 
 namespace common\models\vk;
 
+use common\models\AdminUser;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 /**
@@ -19,6 +21,10 @@ use yii\db\ActiveRecord;
  * @property string $created_by 操作人
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
+ * 
+ * @property Good $good             关联套餐
+ * @property User $user             关联用户
+ * @property Customer $customer     关联客户
  */
 class CustomerActLog extends ActiveRecord
 {
@@ -71,5 +77,29 @@ class CustomerActLog extends ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getGood()
+    {
+//        return $this->hasOne(Good::class, ['id' => 'good_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getAdminUser()
+    {
+        return $this->hasOne(AdminUser::class, ['id' => 'created_by']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getCustomer()
+    {
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
 }
