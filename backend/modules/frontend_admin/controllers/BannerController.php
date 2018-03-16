@@ -2,17 +2,22 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
-use Yii;
+use backend\components\BaseController;
+use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use common\models\User;
+use common\models\vk\Customer;
+use Yii;
+use yii\db\Query;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 
 /**
  * BannerController implements the CRUD actions for Banner model.
  */
-class BannerController extends Controller
+class BannerController extends BaseController
 {
     /**
      * @inheritdoc
@@ -41,6 +46,9 @@ class BannerController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            
+            'customer' => $this->getTheCustomer(),      //所属客户
+            'createdBy' => $this->getCreatedBy(),       //所有创建者
         ]);
     }
 
@@ -72,6 +80,7 @@ class BannerController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'customer' => $this->getCustomer(),
         ]);
     }
 
@@ -92,6 +101,7 @@ class BannerController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'customer' => $this->getCustomer(),
         ]);
     }
 
@@ -123,5 +133,49 @@ class BannerController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+/**
+     * 查找所有客户
+     * @return array
+     */
+    public function getCustomer()
+    {
+        $customer = (new Query())
+                ->select(['id', 'name'])
+                ->from(['Customer' => Customer::tableName()])
+                ->all();
+
+        return ArrayHelper::map($customer, 'id', 'name');
+    }
+    
+    /**
+     * 查找所属客户
+     * @return array
+     */
+    public function getTheCustomer()
+    {
+        $theCustomer = (new Query())
+                ->select(['Customer.id', 'Customer.name'])
+                ->from(['User' => User::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
+                ->all();
+
+        return ArrayHelper::map($theCustomer, 'id', 'name');
+    }
+    
+    /**
+     * 查找所有创建者
+     * @return array
+     */
+    public function getCreatedBy()
+    {
+        $createdBy = (new Query())
+                ->select(['Banner.created_by AS id', 'User.nickname AS name'])
+                ->from(['Banner' => Banner::tableName()])
+                ->leftJoin(['User' => AdminUser::tableName()], 'User.id = Banner.created_by')
+                ->all();
+        
+        return ArrayHelper::map($createdBy, 'id', 'name');
     }
 }

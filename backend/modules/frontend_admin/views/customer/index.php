@@ -40,11 +40,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'province',
                     'label' => Yii::t('app', 'Province'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'province',
@@ -64,11 +59,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'city',
                     'label' => Yii::t('app', 'City'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'city',
@@ -88,11 +78,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'district',
                     'label' => Yii::t('app', 'District'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'district',
@@ -112,11 +97,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'name',
                     'label' => Yii::t('app', 'Name'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -126,11 +106,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'domain',
                     'label' => Yii::t('app', 'Domain'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -140,11 +115,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'user_id',
                     'label' => Yii::t('app', 'Administrators'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'name' => 'customerAdmin',
@@ -165,27 +135,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'good_id',
                     'label' => Yii::t('app', 'Good ID'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
                         ],
                     ],
                 ],
-                //剩余空间！！！！
+                [//剩余空间！！！！
+                    'label' => Yii::t('app', '{Surplus}{Space}',[
+                        'Surplus' => Yii::t('app', 'Surplus'),
+                        'Space' => Yii::t('app', 'Space'),
+                    ]),
+                ],
                 [
                     'attribute' => 'status',
                     'label' => Yii::t('app', 'Status'),
                     'format' => 'raw',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'status',
@@ -197,8 +162,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data) {
-                        return !empty($data['status']) ? '<span style="color:' . ($data['status'] == 10 ? 'green' : 'red') . '">' 
-                                . Customer::$statusUser[$data['status']] . '</span>' : null;
+                        return '<span style="color:' . ($data['status'] == 10 ? 'green' : 'red') . '">' 
+                                . Customer::$statusUser[$data['status']] . '</span>';
                     },
                     'contentOptions' => [
                         'style' => [
@@ -209,11 +174,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'expire_time',
                     'label' => Yii::t('app', 'Expire'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -223,11 +183,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'created_by',
                     'label' => Yii::t('app', 'Created By'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
@@ -246,7 +201,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'template'=>'{view} {update}',
+                    'template' => '{view} {update}',
                 ],
             ],
         ]); ?>

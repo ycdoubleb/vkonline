@@ -37,11 +37,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'The' => Yii::t('app', 'The'),
                         'Customer' => Yii::t('app', 'Customer'),
                     ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
@@ -64,11 +59,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Video' => Yii::t('app', 'Video'),
                         'Name' => Yii::t('app', 'Name'),
                     ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -78,11 +68,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'teacher_id',
                     'label' => Yii::t('app', 'Teacher'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'teacher_id',
@@ -101,11 +86,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'created_by',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
@@ -125,15 +105,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'is_publish',
                     'label' => Yii::t('app', 'Status'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_publish',
-                        'data' => Course::$satusPublish,
+                        'data' => Course::$publishStatus,
                         'hideSearch' => true,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
@@ -141,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['is_publish'] != null) ? Course::$satusPublish[$data['is_publish']] : null;
+                        return ($data['is_publish'] != null) ? Course::$publishStatus[$data['is_publish']] : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -152,15 +127,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 [   //可见范围
                     'attribute' => 'level',
                     'label' => Yii::t('app', 'DataVisible Range'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'level',
-                        'data' => Course::$levelStatus,
+                        'data' => Course::$levelMap,
                         'hideSearch' => true,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
@@ -168,7 +138,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['level'] != null) ? Course::$levelStatus[$data['level']] : null;
+                        return ($data['level'] != null) ? Course::$levelMap[$data['level']] : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -177,16 +147,19 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'size',
+//                    'attribute' => 'size',
                     'label' => Yii::t('app', '{Occupy}{Space}',[
                         'Occupy' => Yii::t('app', 'Occupy'),
                         'Space' => Yii::t('app', 'Space'),
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '90px',
                         ],
                     ],
+                    'value' => function ($data){
+                        return ($data['size'] != null) ? $data['size'] : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -194,13 +167,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'tags',
+//                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
+                    'filter' => true,
+                    'value' => function ($data){
+                        return ($data['tags'] != null) ? $data['tags'] : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -211,7 +183,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'created_at',
                     'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '90px'
                         ],
                     ],
                     'filter' => false,
@@ -221,6 +193,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],

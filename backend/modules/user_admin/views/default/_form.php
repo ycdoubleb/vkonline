@@ -62,7 +62,7 @@ use yii\widgets\ActiveForm;
                     'browseLabel' => '选择上传图像...',
                     'initialPreview' => [
                         $model->isNewRecord ?
-                                Html::img(WEB_ROOT . '/resources/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
+                                Html::img(WEB_ROOT . '/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
                                 Html::img(WEB_ROOT . $model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
                     ],
                     'overwriteInitial' => true,

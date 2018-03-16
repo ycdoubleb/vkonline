@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'confirm' => Yii::t('app', 'Are you sure you want to enable this user?'),
                 'method' => 'post',
             ],
-        ]) : Html::a('<i class="fa fa-ban">&nbsp;</i>' . Yii::t('app', 'Disabled'), ['disable', 'id' => $model->id], [
+        ]) : Html::a('<i class="fa fa-ban">&nbsp;</i>' . Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to disable this user?'),
