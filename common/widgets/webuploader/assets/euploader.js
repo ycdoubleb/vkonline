@@ -263,6 +263,9 @@
          * publich method
          *
          *************************************************************************************/
+        this.clearAll = function(){
+            $list.empty();
+        }
         /**
          * 
          * @param {array} files
@@ -312,7 +315,7 @@
             if(!bo){
                 $btnContainer.remove();
                 $('.euploader-del-btn').hide();
-                console.log($('.euploader-del-btn'));
+                //console.log($('.euploader-del-btn'));
             }else{
                 $rootContainer.prepend($btnContainer);
                 $('.euploader-del-btn').show();
