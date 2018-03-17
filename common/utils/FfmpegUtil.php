@@ -22,7 +22,7 @@ class FfmpegUtil {
     /**
      * 获取视频信息
      * @param string $path      文件路径
-     * @return array {width,height,level,bitrate,duration}
+     * @return array {width:宽,height:高,level:等级(1=480P 1=720P 2=1080P),bitrate:码率,duration:长度}
      */
     static public function getVideoInfoByUfileId($path) {
         $ffprobe = FFProbe::create(Yii::$app->params['ffmpeg']);
@@ -62,7 +62,7 @@ class FfmpegUtil {
      * @return string
      */
     static public function createVideoImageByUfileId($ufileId,$path){
-        $imagePath = "upload/video/screenshots/$ufileId.jpg";
+        $imagePath = "/upload/video/screenshots/$ufileId.jpg";
         $ffmpeg = FFMpeg::create(Yii::$app->params['ffmpeg']);
         $video = $ffmpeg->open($path);
         //$video->filters()->resize(new Dimension(640, 360))->synchronize();

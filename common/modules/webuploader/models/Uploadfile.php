@@ -64,7 +64,7 @@ class Uploadfile extends ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['size'], 'float'],
+            [['size'], 'string'],
             [['download_count', 'del_mark', 'is_del', 'is_fixed', 'created_at','deleted_at', 'updated_at'], 'integer'],
             [['id'], 'string', 'max' => 32],
             [['app_id'], 'string', 'max' => 50],

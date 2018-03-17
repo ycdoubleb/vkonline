@@ -75,9 +75,7 @@ use yii\widgets\ActiveForm;
             });
             //return;
             videoUploader.addCompleteFiles(<?= $files ?>);
-            console.log(<?= $files ?>);
             videoUploader.setEnabled(false);
-            videoUploader.clearAll();
         }
         /**
          * 上传文件完成才可以提交
