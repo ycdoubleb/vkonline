@@ -21,6 +21,7 @@ class DefaultController extends Controller {
      * @return string
      */
     public function actionIndex() {
+        //var_dump(Yii::$app->getRequest()->post());exit;
         return $this->render('index');
     }
 

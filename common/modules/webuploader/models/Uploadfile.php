@@ -24,7 +24,7 @@ use yii\db\ActiveRecord;
  * @property string $created_at         创建时间
  * @property string $created_at         创建时间
  * @property string $updated_at         更新时间
- * @property string $size               大小B
+ * @property integer $size              大小B
  */
 class Uploadfile extends ActiveRecord
 {
@@ -64,7 +64,6 @@ class Uploadfile extends ActiveRecord
     {
         return [
             [['id'], 'required'],
-            [['size'], 'string'],
             [['download_count', 'del_mark', 'is_del', 'is_fixed', 'created_at','deleted_at', 'updated_at'], 'integer'],
             [['id'], 'string', 'max' => 32],
             [['app_id'], 'string', 'max' => 50],

@@ -30,6 +30,7 @@ use yii\widgets\ActiveForm;
         window.onload = function () {
             
             videoUploader = new Wskeee.Uploader({
+                name:'videos',
                 // 文件接收服务端。
                 server: '/webuploader/default/upload',
                 //检查文件是否存在
@@ -53,6 +54,7 @@ use yii\widgets\ActiveForm;
             
             
             attachmentUploader = new Wskeee.Uploader({
+                name:'attachments',
                 // 文件接收服务端。
                 server: '/webuploader/default/upload',
                 //检查文件是否存在
