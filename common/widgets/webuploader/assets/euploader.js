@@ -51,7 +51,7 @@
 
     /* 行DOM模板 */
     var TR_ITEM_DOM = '<tr id="{%id%}" class="{%status%}">'
-            + '<td class="euploader-item-input"><input name="files[]" type="hidden" value="{%value%}" {%disabled%}/></td>'
+            + '<td class="euploader-item-input"><input name="{%files%}[]" type="hidden" value="{%value%}" {%disabled%}/></td>'
             + '<td class="euploader-item-status"><span>{%statusIcon%}</span></td>'
             + '<td class="euploader-item-filename"><span>{%name%}</span></td>'
             + '<td class="euploader-item-state">{%state%}</td>'
@@ -105,7 +105,7 @@
         var _self = this;
         /* 全局配置 */
         this.config = $.extend({
-            name: 'euploader-' + Math.round(Math.random() * 100000000),
+            name: 'files',
             swf: '/Uploader.swf',
             // 文件接收服务端。
             server: '/site/upload',
@@ -177,6 +177,7 @@
                 dbID: file.fileMd5,
                 status: 'euploader-item-waiting',
                 name: file.name,
+                files: _self.config['name'],
                 statusIcon: STATUS_WAITING_ICON,
                 state: StringUtil.createDOM(STATE_DOM, {text: '等待上传'}),
                 disabled: 'disabled',
@@ -284,6 +285,7 @@
                     dbID: file.id,
                     status: 'euploader-item-waiting',
                     name: file.name,
+                    files: this.config['name'],
                     statusIcon: STATUS_SUCCEE_ICON,
                     state: StringUtil.createDOM(STATE_DOM, {text: '已上传'}),
                     disabled: '',
@@ -467,7 +469,7 @@
                         file.dbFile = data.result;
                         deferred.resolve();
                     } else {
-                        console.error(data);
+                        console.error(JSON.parse(data));
                         deferred.reject();
                     }
                 },
