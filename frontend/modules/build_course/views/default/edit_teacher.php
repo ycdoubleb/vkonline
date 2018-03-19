@@ -12,12 +12,12 @@ use yii\web\View;
 ModuleAssets::register($this);
 
 ?>
-<div class="teacher-create main">
+<div class="teacher-update main">
 
     <div class="crumbs">
         <i class="fa fa-pencil"></i>
-        <span><?= Yii::t('app', '{Create}{Teacher}', [
-            'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
+        <span><?= Yii::t('app', '{Update}{Teacher}', [
+            'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')
         ]) ?></span>
     </div>
     

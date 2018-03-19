@@ -5,6 +5,7 @@ namespace common\models\vk\searchs;
 use common\models\vk\CourseNode;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 
 
 /**
@@ -41,6 +42,7 @@ class CourseNodeSearch extends CourseNode
      */
     public function search($params)
     {
+        $this->course_id = ArrayHelper::getValue($params, 'course_id');
         $query = CourseNode::find();
 
         // add conditions that should always apply here

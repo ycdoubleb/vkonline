@@ -2,9 +2,9 @@
 
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
+use kartik\widgets\AlertBlock;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Breadcrumbs;
@@ -179,6 +179,11 @@ AppAsset::register($this);
         <?= Breadcrumbs::widget([
             'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
         ]) ?>
+        <?= AlertBlock::widget([
+            'useSessionFlash' => TRUE,
+            'type' => AlertBlock::TYPE_GROWL,
+            'delay' => 0
+        ]);?>
         <?= Alert::widget() ?>
         <?= $content ?>
     </div>

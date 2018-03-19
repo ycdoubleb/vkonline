@@ -10,6 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Course */
 /* @var $form ActiveForm */
+
 ?>
 
 <div class="course-form">
@@ -29,7 +30,7 @@ use yii\widgets\ActiveForm;
     ]); ?>
 
     <?= $form->field($model, 'category_id')->widget(Select2::classname(),[
-        'data' => $allCategory, 'options' => ['prompt'=>'请选择...',]
+        'data' => $allCategory, 'options' => ['placeholder'=>'请选择...',]
      ]) ?>
 
     <?= $form->field($model, 'name')->textInput(['placeholder' => '请输入...', 'maxlength' => true]) ?>
@@ -39,7 +40,7 @@ use yii\widgets\ActiveForm;
         echo  $form->field($model, 'teacher_id', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding: 3px\">{$newAdd}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
         ])->widget(Select2::classname(),[
-            'data' => $allTeacher, 'options' => ['prompt'=>'请选择...',]
+            'data' => $allTeacher, 'options' => ['placeholder'=>'请选择...',]
         ]);
     ?>
     
@@ -57,7 +58,7 @@ use yii\widgets\ActiveForm;
             'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
             'browseLabel' => '选择上传图像...',
             'initialPreview' => [
-                $model->isNewRecord ?
+                $model->isNewRecord || empty($model->cover_img)?
                         Html::img(['/upload/course/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
                         Html::img([$model->cover_img], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
             ],

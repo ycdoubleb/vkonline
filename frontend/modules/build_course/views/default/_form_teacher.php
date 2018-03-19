@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 ?>
 
-<div class="course-form">
+<div class="teacher-form">
 
     <?php $form = ActiveForm::begin([
         'options'=>[

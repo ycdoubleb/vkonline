@@ -1,24 +1,26 @@
 <?php
 
-use common\models\vk\CourseNode;
+use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
+use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $model CourseNode */
+/* @var $model Course */
+
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t(null, "{Edit}{Node}：{$model->name}", [
-    'Edit' => Yii::t('app', 'Edit'), 'Node' => Yii::t('app', 'Node')
+$this->title = Yii::t(null, "{Close}{Course}：{$model->name}", [
+    'Close' => Yii::t('app', 'Close'), 'Course' => Yii::t('app', 'Course')
 ]);
 //$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
 //$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
 //$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
-<div class="course_frame-update main modal">
+<div class="course-close main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -29,9 +31,21 @@ $this->title = Yii::t(null, "{Edit}{Node}：{$model->name}", [
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body">
-                <?= $this->render('_form_frame',[
-                    'model' => $model,
-                ]) ?>
+                <?php $form = ActiveForm::begin([
+                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                    'fieldConfig' => [  
+                        'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
+                        'labelOptions' => [
+                            'class' => 'col-lg-12 col-md-12',
+                        ],  
+                    ], 
+                ]); ?>
+                
+                <?= Html::activeHiddenInput($model, 'id') ?>
+
+                <?= Html::encode("确定要关闭【{$model->name}】课程？") ?>
+
+                <?php ActiveForm::end(); ?>
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
@@ -45,24 +59,14 @@ $this->title = Yii::t(null, "{Edit}{Node}：{$model->name}", [
 
 <?php
 
-$actLog = Url::to(['actlog', 'course_id' => $model->course_id]);
 $js = 
 <<<JS
         
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$("#build-course-form").submit();return;
-        $.post("../default/edit-couframe?id=$model->id",$('#build-course-form').serialize(),function(rel){
-            if(rel['code'] == '200'){
-                $.each(rel['data'],function(key,value){
-                    $("#$model->id").find(' > div.head span.'+ key).html(value);
-                });
-                $("#act_log").load("$actLog");
-            }
-        });
+        $('#build-course-form').submit();
     });  
- 
-    
+        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
