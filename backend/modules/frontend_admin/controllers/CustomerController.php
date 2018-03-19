@@ -699,11 +699,13 @@ class CustomerController extends Controller
         
         $query->leftJoin(['Course' => Course::tableName()], 'Course.customer_id = Customer.id');
         $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');        //关联节点找相应的视频
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');               //关联查询视频
+        $query->leftJoin(['Video' => Video::tableName()], '((Video.node_id = Node.id AND Video.is_del = 0)'
+                . 'AND Video.is_ref = 0)');               //关联查询视频(引用的除外)
         $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id AND Attachment.is_del = 0'); //关联查询视频附件中间表
         //关联查询视频文件/关联查询视频附件
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0');
-        
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '((Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id)'
+                . 'AND Uploadfile.is_del = 0)');
+
         return $query->one();
     }
 }
