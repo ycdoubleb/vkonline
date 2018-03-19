@@ -95,7 +95,7 @@ class CustomerActLog extends ActiveRecord
      */
     public function getGood()
     {
-//        return $this->hasOne(Good::class, ['id' => 'good_id']);
+        return $this->hasOne(Good::class, ['id' => 'good_id']);
     }
     
     /**

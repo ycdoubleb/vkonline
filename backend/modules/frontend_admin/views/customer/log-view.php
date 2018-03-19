@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'title',
                         [
                             'attribute' => 'good_id',
-//                            'value' => $model->good->name,
+                            'value' => $model->good->name,
                         ],
                         [
                             'attribute' => 'content',

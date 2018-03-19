@@ -509,7 +509,7 @@ class CustomerController extends Controller
         if($customerActLog){
             $title = '续费';
             $start_time = time();
-            $end_time = $customerActLog[0]['end_time']+$addTime;
+            $end_time = ($customerActLog[0]['end_time'] < time()) ? $customerActLog[0]['end_time']+$addTime : time()+$addTime;
         } else {
             $title = '开通';
             $start_time = time();

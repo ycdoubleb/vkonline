@@ -215,7 +215,7 @@ class UserController extends Controller
                 ->where(['User.id' => $user_id])->one();
         $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.created_by) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
-                ->where(['User.id' => $user_id])->one();
+                ->where(['User.id' => $user_id, 'Video.is_del' => 0])->one();
         
         return array_merge($userCou, $userVid);
     }
