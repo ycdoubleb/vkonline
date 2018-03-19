@@ -92,7 +92,7 @@ $js =
         //$("#form-admin").submit();return;
         $.post("$adminUrl",$('#form-admin').serialize(),function(data){
             if(data['code'] == '200'){
-                $("#help-man").load("$admin");
+                $("#admin").load("$admin");
             }
         });
     });   

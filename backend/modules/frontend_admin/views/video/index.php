@@ -158,7 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return ($data['size'] != null) ? $data['size'] : null;
+                        return ($data['size'] != null) ? Yii::$app->formatter->asShortSize($data['size']) : null;
                     },
                     'contentOptions' => [
                         'style' => [

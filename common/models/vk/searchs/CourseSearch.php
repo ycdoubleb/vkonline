@@ -70,11 +70,12 @@ class CourseSearch extends Course
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');    //关联查询主讲老师
         $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');             //关联查询课程创建者
         $query->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id');//关联查询课程所属分类
-        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id');        //关联节点找相应的视频
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id');               //关联查询视频
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id'); //关联查询视频附件中间表
+        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');        //关联节点找相应的视频
+        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');               //关联查询视频
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id AND Attachment.is_del = 0'); //关联查询视频附件中间表
         //关联查询视频文件/关联查询视频附件
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id');     
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id '
+                . 'OR Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0');     
         
         $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id');        //关联查询标签中间表
         $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                 //关联查询标签

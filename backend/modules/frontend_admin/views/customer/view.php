@@ -2,6 +2,7 @@
 
 use backend\modules\system_admin\assets\SystemAssets;
 use common\models\vk\Customer;
+use common\models\vk\CustomerActLog;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -23,7 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="customer-view">
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Renew'), ['update', 'id' => $model->id], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Renew'), ['renew', 'id' => $model->id], 
+                ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
         <?= ($model->status == 0) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
             'class' => 'btn btn-info',
             'data' => [
@@ -68,15 +70,29 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Administrators'),
                         'value' => $customerAdmin,
                     ],
-                    'good_id',
+                    [
+                        'attribute' => 'good_id',
+                        'value' => !empty($model->good_id) ? $model->good->name : null,
+                    ],
                     [
                         'attribute' => 'status',
                         'format' => 'raw',
                         'value' => !empty($model->status) ? '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
                                     . Customer::$statusUser[$model->status] . '</span>' : null,
                     ],
-                    'expire_time',
-                    'renew_time',
+                    [
+                        'attribute' => 'expire_time',
+                        'label' => Yii::t('app', 'Start Time'),
+                        'value' => !empty($model->expire_time) ? date('Y-m-d H:s', $model->staEndTime->start_time) : null,
+                    ],
+                    [
+                        'attribute' => 'renew_time',
+                        'label' => Yii::t('app', '{Expire}{Time}',[
+                            'Expire' => Yii::t('app', 'Expire'),
+                            'Time' => Yii::t('app', 'Time'),
+                        ]),
+                        'value' => !empty($model->renew_time) ? date('Y-m-d H:i', $model->staEndTime->end_time) : null,
+                    ],
                     [
                         'attribute' => 'created_by',
                         'format' => 'raw',
@@ -101,7 +117,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ?>
                     </div>
                 </div>
-                <div id="help-man">
+                <div id="admin">
                     <center>加载中...</center>
                 </div>
             </div>
@@ -116,23 +132,26 @@ $this->params['breadcrumbs'][] = $this->title;
                     'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
                     'attributes' => [
                         [
-                            'attribute' => 'logo',
                             'label' => Yii::t('app', 'Total Capacity'),
                             'format' => 'raw',
-                            'value' => '',
+                            'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data) : null,
                         ],
                         [
-                            'attribute' => 'user_id',
                             'label' => Yii::t('app', '{Already}{Use}',[
                                 'Already' => Yii::t('app', 'Already'),
                                 'Use' => Yii::t('app', 'Use'),
                             ]),
-                            'value' => '',
+                            'format' => 'raw',
+                            'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
+                                '<span style="color:#929292">（'.(floor($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
                         ],
                         [
-                            'attribute' => 'user_id',
                             'label' => Yii::t('app', 'Surplus'),
-                            'value' => '',
+                            'format' => 'raw',
+                            'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace['size']) .
+                                '<span style="color:#929292">（'.((1 - floor($usedSpace['size'] / $model->good->data))*100).' % '.
+                                    ((((1 - floor($usedSpace['size'] / $model->good->data))*100)>10) ? '<span style="color:green"> 充足</span>' : 
+                                        '<span style="color:red"> 不足</span>') .'）</span>' : null,
                         ],
                     ],
                 ]) ?>   
@@ -236,153 +255,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'Record' => Yii::t('app', 'Record'),
             ]) ?></span>
         </div>
-        <?= GridView::widget([
-            'dataProvider' => $recordData,
-            'layout' => "{items}\n{summary}\n{pager}",
-            'columns' => [
-                [
-                    'class' => 'yii\grid\SerialColumn',
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Title'),
-                    'value' => function ($data){
-                        return $data['title'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Good ID'),
-                    'value' => function ($data){
-                        return $data['good_id'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Content'),
-                    'value' => function ($data){
-                        return !empty($data['content']) ? $data['content'] : '无';
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Start Time'),
-                    'value' => function ($data){
-                        return !empty($data['start_time']) ? date('Y-m-d H:i', $data['start_time']) : null;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'width' => '90px',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'End Time'),
-                    'value' => function ($data){
-                        return !empty($data['end_time']) ? date('Y-m-d H:i', $data['end_time']) : null;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'width' => '90px',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Created By'),
-                    'value' => function ($data){
-                        return $data['created_by'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', '{Operating}{Time}',[
-                        'Operating' => Yii::t('app', 'Operating'),
-                        'Time' => Yii::t('app', 'Time'),
-                    ]),
-                    'value' => function ($data){
-                        return !empty($data['created_at']) ? date('Y-m-d H:i', $data['created_at']) : null;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'width' => '90px',
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view}',
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'width' => '50px',
-                        ],
-                    ],
-                ],
-            ]
-        ])?>
+        <div id="actLog">
+            <center>加载中...</center>
+        </div>
     </div>
 </div>
 
@@ -390,18 +265,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $admin = Url::to(['admin-index', 'id' => $model->id]);
+$logindex = Url::to(['log-index', 'id' => $model->id]);
 
 $js = 
 <<<JS
-    //加载协作人员列表
-    $("#help-man").load("$admin"); 
+    //加载管理员列表
+    $("#admin").load("$admin"); 
+        
+    //加载管理员列表
+    $("#actLog").load("$logindex"); 
     
     /** 显示模态框 */
     window.showElemModal = function(elem){
         $(".myModal").html("");
         $('.myModal').modal("show").load(elem.attr("href"));
         return false;
-    }    
+    }
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>
