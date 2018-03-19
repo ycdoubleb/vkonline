@@ -13,7 +13,7 @@ ModuleAssets::register($this);
 ?>
 
 <div class="default-myCourse main">
-    
+     
     <p>
         <?= Html::a(Yii::t(null, '{Create}{Course}', [
             'Create' => Yii::t('app', 'Create'),'Course' => Yii::t('app', '微课')]), ['add-course'], [
