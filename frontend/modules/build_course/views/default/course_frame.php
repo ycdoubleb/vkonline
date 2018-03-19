@@ -1,97 +1,122 @@
 <?php
 
 use common\models\vk\Course;
+use common\models\vk\CourseNode;
+use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
-use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
 
 /* @var $this View */
-/* @var $dataProvider ActiveDataProvider */
+/* @var $nodes CourseNode */
+/* @var $model Video */
 
 ModuleAssets::register($this);
 
 //$this->title = Yii::t('app', 'Phase');
 //$this->params['breadcrumbs'][] = $this->title;
-
 ?>
 
 <div class="course_frame-index">
    
    <ul id="course_node" class="sortable list">
-        <?php foreach ($dataProvider as $index => $node): ?>
-        <li id="<?= $node->id ?>">
+        <?php foreach ($dataProvider as $index => $nodes): ?>
+        <li id="<?= $nodes->id ?>">
             <div class="head blue">
-                <?php if ($index == 0): ?>
-                <?= Html::a("<i class=\"fa fa-minus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'true','onclick'=>'replace($(this))']) ?>
-                <?php else: ?>
-                <?= Html::a("<i class=\"fa fa-plus-square-o\"></i><span class=\"name\">{$node->name}</span>", "#toggle_{$node->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
-                <?php endif; ?>
+                <?= Html::a("<i class=\"fa fa-plus-square-o\"></i><span class=\"name\">{$nodes->name}</span>", "#toggle_{$nodes->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
                 <div class="icongroup">
-                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-couframe', 'node_id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
-                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => $node->id], ['onclick'=>'showModal($(this));return false;']) ?>
-                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => $node->id], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-plus"></i>', ['add-video', 'node_id' => $nodes->id], ['onclick'=>'showModal($(this)); return false;']) ?>
+                    <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => $nodes->id], ['onclick'=>'showModal($(this));return false;']) ?>
+                    <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => $nodes->id], ['onclick'=>'showModal($(this)); return false;']) ?>
                     <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                 </div>
             </div>
-            <?php if ($index == 0): ?>
-            <div id="toggle_<?= $node->id ?>" class="collapse in nodes" aria-expanded="true">
-            <?php else: ?>
-            <div id="toggle_<?= $node->id ?>" class="collapse nodes" aria-expanded="false">  
-            <?php endif; ?>
+            <div id="toggle_<?= $nodes->id ?>" class="collapse nodes" aria-expanded="false">  
                 <!--子节点-->
                 <ul id="video" class="sortable list">
-                    <li id="1b95f700734759703e9fc5cb52025aa6">
+                    <?php foreach ($nodes->videos as $key => $model): ?>
+                    <li id="<?= $model->id ?>">
                         <div class="head gray">
-                            <?= Html::a("<i class=\"fa fa-play-circle\"></i><span class=\"name\">第一章</span>", '#id', ['data-toggle'=>'collapse','aria-expanded'=> 'true']) ?>
-                            <i class="fa fa-link"></i>
+                            <?= Html::a("<i class=\"fa fa-play-circle\"></i><span class=\"name\">{$model->name}</span>", "#toggle_{$model->id}", ['data-toggle'=>'collapse','aria-expanded'=> 'false']) ?>
+                            <i class="glyphicon glyphicon-link is_ref" style="display: <?= $model->is_ref ? 'inline-block' : 'none' ?>"></i>
                             <div class="icongroup">
-                                <?= Html::a('<i class="fa fa-eye"></i>', ['add-couframe','id'=> '1d3d74a07ed5b29af483e6299872eef4'], ['onclick'=>'showModal($(this)); return false;']) ?>
-                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-couframe','id' => 'id'], ['onclick'=>'showModal($(this));return false;']) ?>
-                                <?= Html::a('<i class="fa fa-times"></i>',['del-couframe', 'id' => 'id'], ['onclick'=>'showModal($(this)); return false;']) ?>
+                                <?= Html::a('<i class="fa fa-eye"></i>', ['view-video','id'=> $model->id], ['target' => '_blank']) ?>
+                                <?= Html::a('<i class="fa fa-pencil"></i>', ['edit-video','id' => $model->id], ['onclick'=>'showModal($(this));return false;']) ?>
+                                <?= Html::a('<i class="fa fa-times"></i>',['del-video', 'id' => $model->id], ['onclick'=>'showModal($(this)); return false;']) ?>
                                 <?= Html::a('<i class="fa fa-arrows"></i>', 'javascript:;',['class'=>'handle']) ?>
                             </div>
                         </div>
-                        <div id="id" class="collapse in" aria-expanded="true">
-                            <?php
-//                                echo DetailView::widget([
-//                                    'model' => $model,
-//                                    'options' => ['class' => 'table table-bordered detail-view '],
-//                                    'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
-//                                    'attributes' => [
-//                                        //['label' => '<span class="viewdetail-th-head">'.Yii::t('app', 'Course Info').'</span>', 'value' => ''],
-//                                        [
-//                                            'attribute' => 'id',
-//                                            'value' => !empty($model->category_id) ? $model->category->name : null,
-//                                        ],
-//                                        [
-//                                            'attribute' => 'name',
-//                                            'value' => $model->name,
-//                                        ],
-//                                        [
-//                                            'attribute' => 'teacher_id',
-//                                            'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
-//                                        ],
-//                                        [
-//                                            'attribute' => 'level',
-//                                            'value' => Course::$levelMap[$model->level],
-//                                        ],
-//                                        [
-//                                            'attribute' => 'created_at',
-//                                            'value' => date('Y-m-d H:i', $model->created_at),
-//                                        ],
-//                                        [
-//                                            'label' => Yii::t('app', '{Course}{Des}', ['Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')]),
-//                                            'format' => 'raw',
-//                                            'value' => "<div class=\"viewdetail-td-des\">{$model->des}</div>",
-//                                        ],
-//                                    ],
-//                                ])
-                           ?>
+                        <div id="toggle_<?= $model->id ?>" class="collapse" aria-expanded="false">  
+                            
+                            <?= DetailView::widget([
+                                'model' => $model,
+                                'options' => ['class' => 'table table-bordered detail-view'],
+                                'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+                                'attributes' => [
+                                    //['label' => '<span class="viewdetail-th-head">'.Yii::t('app', 'Course Info').'</span>', 'value' => ''],
+                                    [
+                                        'attribute' => 'ref_id',
+                                        'label' => Yii::t('app', 'Reference'),
+                                        'format' => 'raw',
+                                        'value' => !empty($model->ref_id) ? 
+                                            Html::a($model->reference->courseNode->course->name . ' / ' . $model->reference->courseNode->name . ' / ' .$model->reference->name, ['view-video', 'id' => $model->ref_id], ['target' => '_blank']) : NUll,
+                                    ],
+                                    [
+                                        'attribute' => 'node_id',
+                                        'label' => Yii::t('app', '{The}{Course}', ['The' => Yii::t('app', 'The'), 'Course' => Yii::t('app', 'Course')]),
+                                        'format' => 'raw',
+                                        'value' => !empty($model->node_id) ? $model->courseNode->course->name . ' / ' . $model->courseNode->name : null,
+                                    ],
+                                    [
+                                        'attribute' => 'level',
+                                        'label' => Yii::t('app', 'DataVisible Range'),
+                                        'format' => 'raw',
+                                        'value' => Course::$levelMap[$model->level],
+                                    ],
+                                    [
+                                        'attribute' => 'name',
+                                        'format' => 'raw',
+                                        'value' => $model->name,
+                                    ],
+                                    [
+                                        'attribute' => 'teacher_id',
+                                        'format' => 'raw',
+                                        'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
+                                    ],
+                                    [
+                                        'label' => Yii::t('app', 'Des'),
+                                        'format' => 'raw',
+                                        'value' => "<div class=\"viewdetail-td-des\">{$model->des}</div>",
+                                    ],
+                                    [
+                                        'attribute' => 'created_by',
+                                        'format' => 'raw',
+                                        'value' => !empty($model->created_by) ? $model->createdBy->nickname : null,
+                                    ],
+                                    [
+                                        'attribute' => 'created_at',
+                                        'format' => 'raw',
+                                        'value' => date('Y-m-d H:i', $model->created_at),
+                                    ],
+                                    [
+                                        'attribute' => 'updated_at',
+                                        'format' => 'raw',
+                                        'value' => date('Y-m-d H:i', $model->updated_at),
+                                    ],
+                                    [
+                                        'attribute' => 'source_id',
+                                        'label' => Yii::t('app', 'Video'),
+                                        'format' => 'raw',
+                                        'value' => !empty($model->source_id) ? "<video src=\"/{$model->source->path}\" width=\"300\" height=\"150\" controls=\"controls\">您的浏览器不支持 video 标签。</video>" : null,
+                                    ],
+                                ],
+                            ]) ?>
+                            
                         </div>
                     </li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
         </li>
@@ -174,14 +199,14 @@ $js =
 //    //过滤已经有标记的头部
 //    heads.after($('<i class="fa fa-link"></i>'))    
     
-    $(".cou-activity .new").each(function(index, item){
-        if(item != ''){
-            var section_new = $(item).parent().parent().parent().parent().prev("div").children("a"),
-                chapter_new = $(item).parent().parent().parent().parent().parent().parent().parent().prev("div").children("a");
-            section_new.after('<i class="fa fa-link"></i>');
-            chapter_new.after('<i class="fa fa-link"></i>');
-        }
-    });
+//    $(".cou-activity .new").each(function(index, item){
+//        if(item != ''){
+//            var section_new = $(item).parent().parent().parent().parent().prev("div").children("a"),
+//                chapter_new = $(item).parent().parent().parent().parent().parent().parent().parent().prev("div").children("a");
+//            section_new.after('<i class="fa fa-link"></i>');
+//            chapter_new.after('<i class="fa fa-link"></i>');
+//        }
+//    });
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

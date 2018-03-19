@@ -3,7 +3,6 @@
 namespace common\utils;
 
 use Exception;
-use FFMpeg\Coordinate\Dimension;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\FFProbe;
@@ -62,7 +61,7 @@ class FfmpegUtil {
      * @return string
      */
     static public function createVideoImageByUfileId($ufileId,$path){
-        $imagePath = "/upload/video/screenshots/$ufileId.jpg";
+        $imagePath = "upload/video/screenshots/$ufileId.jpg";
         $ffmpeg = FFMpeg::create(Yii::$app->params['ffmpeg']);
         $video = $ffmpeg->open($path);
         //$video->filters()->resize(new Dimension(640, 360))->synchronize();

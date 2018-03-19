@@ -22,6 +22,11 @@
     padding-right: 0px;
 }
 
+.main .file {
+    padding-left: 0;
+    color:rgb(102, 102, 102);
+}
+
 .main .form-control,
 .main .select2-selection {
     height: 40px !important;
@@ -92,6 +97,21 @@
     color: #fff;
 }
 
+.main .crumbs {
+    padding: 6px; 
+    margin-bottom: 15px; 
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .crumbs > i {
+    margin-right: 5px; 
+    font-size: 16px;
+}
+
+.main .crumbs > span {
+    color: #999;
+}
+
 /**
  * table表格th样式 
  */
@@ -148,8 +168,7 @@
 
 /************************************列表*******************************************/
 .main .list {
-    position: relative;
-    display: inline-block;
+    /*position: relative;*/
     width: 100%;
     height: auto;
     font-size: 0px;
@@ -178,9 +197,9 @@
 .list .item .pic .title {
 /*    position: absolute;
     top: 10px;
-    left: 10px;*/
+    left: 10px;
     width: 169px;
-    height: 103px;
+    height: 103px;*/
     margin: 10px auto;
     font-size: 20px;
     color: #fff;
@@ -323,6 +342,7 @@
 .frame .table {
     padding: 0;
     margin-bottom: 20px;
+    font-size: 14px;
     border: 1px #ddd solid;
 }
 
@@ -332,12 +352,23 @@
     overflow-y: auto;
 }
 
+.frame .table.right > .actlog {
+    max-height: 555px;
+    overflow-y: auto;
+    padding-bottom: 15px;
+}
+
 /**
  *  模态框样式
  */
 .main.modal {
     display: block;
     width: 100%;
+}
+
+.main.modal .modal-body.height {
+    max-height: 490px;
+    overflow-y: auto;
 }
 
 /**************************************最近联系*****************************************/
@@ -400,7 +431,17 @@
 .sortable .head.gray {
     padding-top: 8px;
     padding-bottom: 8px;
+    margin-bottom: 3px;
+    border: 1px solid rgba(204, 204, 204, 1);
     background-color: #eeeeee;
+}
+
+.sortable .head.gray + div {
+    margin-top: -4px;
+}
+
+.sortable .head.gray + div > .table {
+    margin-bottom: 3px;
 }
 
 .sortable .head.add {

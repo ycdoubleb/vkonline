@@ -3,6 +3,8 @@
 namespace common\models\vk\searchs;
 
 use common\models\User;
+use common\models\vk\Course;
+use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -95,6 +97,33 @@ class VideoSearch extends Video
                 ->andFilterWhere(['like', 'Tags.name', $tags]);
 
         $query->groupBy(['Video.id']);
+        
+        return $dataProvider;
+    }
+    
+    /**
+     * 
+     * @param string $id
+     * @return ActiveDataProvider
+     */
+    public function  relationSearch($id)
+    {
+        $query = (new Query())->select(['Course.name', 'User.nickname'])
+            ->from(['Video' => self::tableName()]);
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        $query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
+        
+        $query->andFilterWhere([
+            'Video.ref_id' => $id
+        ]);
+        
+        $query->groupBy('Course.id');
         
         return $dataProvider;
     }

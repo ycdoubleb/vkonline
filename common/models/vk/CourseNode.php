@@ -101,7 +101,7 @@ class CourseNode extends ActiveRecord
         if(parent::beforeSave($insert))
         {
             if($this->isNewRecord){
-                $nodes = self::getCouByNode(['course_id'=>$this->course_id]);
+                $nodes = self::getCouByNode(['course_id' => $this->course_id]);
                 ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
                 $counode = $nodes == null ? null : reset($nodes);
                 //设置等级
@@ -137,7 +137,9 @@ class CourseNode extends ActiveRecord
      */
     public function getVideos()
     {
-        return $this->hasMany(Video::class, ['node_id' => 'id']);
+        return $this->hasMany(Video::class, ['node_id' => 'id'])
+            ->where(['is_del' => 0])
+            ->orderBy(['sort_order' => SORT_ASC]);
     }
     
     /**
@@ -164,10 +166,10 @@ class CourseNode extends ActiveRecord
     public static function getCouNodeByPath($id)
     {
         self::$nodes = self::getCouByNode(['parent_id' => $id]);
-        if (isset(self::$nodes[0])) {
-            return self::$nodes[0];
+        if (self::$nodes != null) {
+            return self::$nodes;
         }
-        return [];
+        return null;
     }
     
     /**

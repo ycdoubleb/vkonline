@@ -146,7 +146,7 @@ class Course extends ActiveRecord
             }
 
             if ($this->isNewRecord) {
-                //设置默认头像
+                //设置默认
                 if (trim($this->cover_img) == ''){
                     $this->cover_img = '';
                 }

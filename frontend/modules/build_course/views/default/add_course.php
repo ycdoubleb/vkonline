@@ -14,7 +14,14 @@ ModuleAssets::register($this);
 
 ?>
 <div class="course-create main">
-
+    
+    <div class="crumbs">
+        <i class="fa fa-pencil"></i>
+        <span><?= Yii::t('app', '{Create}{Course}', [
+            'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
+        ]) ?></span>
+    </div>
+    
     <?= $this->render('_form_course', [
         'model' => $model,
         'allCategory' => $allCategory,

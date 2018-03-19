@@ -14,8 +14,17 @@ ModuleAssets::register($this);
 ?>
 <div class="course-update main">
 
-    <?= $this->render('_form', [
+    <div class="crumbs">
+        <i class="fa fa-pencil"></i>
+        <span><?= Yii::t('app', '{Update}{Course}', [
+            'Update' => Yii::t('app', 'Update'), 'Course' => Yii::t('app', 'Course')
+        ]) ?></span>
+    </div>
+    
+    <?= $this->render('_form_course', [
         'model' => $model,
+        'allCategory' => $allCategory,
+        'allTeacher' => $allTeacher,
     ]) ?>
 
 </div>

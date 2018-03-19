@@ -68,6 +68,7 @@ return [
     'Database' => '数据库',
     'Frame' => '框架',
     'Node' => '环节',
+    'Attachment' => '附件',
     
     //公共-操作
     'Add' => '添加',
@@ -123,6 +124,8 @@ return [
     'Cover Img' => '封面图片',
     'Fullname' => '姓名',
     'Privilege' => '权限',
+    'Action' => '动作',
+    'Reference' => '引用',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
@@ -225,6 +228,8 @@ return [
     
     //前台-协作人员
     'Help Man' => '协作人员',
+    //前台-查看视频
+    'Relation' => '关联',
     //前台-操作记录
     'Relative' => '相关',
 ];
