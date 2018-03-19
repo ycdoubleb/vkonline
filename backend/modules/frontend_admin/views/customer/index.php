@@ -100,6 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
@@ -109,6 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
@@ -135,6 +137,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'good_id',
                     'label' => Yii::t('app', 'Good ID'),
+                    'value' => function ($data){
+                        return !empty($data['good_id']) ? $data['good_id'] : null;
+                    },
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'good_id',
+                        'data' => $goods,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -174,9 +189,18 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'expire_time',
                     'label' => Yii::t('app', 'Expire'),
+                    'headerOptions' => [
+                        'style' => [
+                            'min-width' => '90px'
+                        ],
+                    ],
+                    'value' => function ($data){
+                        return !empty($data) ? date('Y-m-d H:i', $data['expire_time']) : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],

@@ -68,7 +68,9 @@ class Uploadfile extends ActiveRecord
             [['id'], 'string', 'max' => 32],
             [['app_id'], 'string', 'max' => 50],
             [['name', 'path', 'thumb_path'], 'string', 'max' => 255],
-            [['created_by','deleted_by'], 'string', 'max' => 36],
+            [['app_id'], 'string', 'max' => 50],
+            [['del_mark', 'is_del', 'is_fixed'], 'string', 'max' => 1],
+            [['id'], 'unique'],
         ];
     }
 

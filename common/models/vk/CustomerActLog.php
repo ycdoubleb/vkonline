@@ -28,6 +28,17 @@ use yii\db\ActiveRecord;
  */
 class CustomerActLog extends ActiveRecord
 {
+    /** 套餐时长 1年*/
+    const ONE_YEAR = 1;
+    /** 套餐时长 2年*/
+    const TWO_YEAR = 2;
+    
+    /** 套餐时长 */
+    public static $longTime = [
+        self::ONE_YEAR => '一年',
+        self::TWO_YEAR => '两年',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -42,7 +53,7 @@ class CustomerActLog extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     

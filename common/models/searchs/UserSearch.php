@@ -4,6 +4,7 @@ namespace common\models\searchs;
 
 use common\models\User;
 use common\models\vk\Course;
+use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\Video;
 use yii\base\Model;
@@ -46,8 +47,8 @@ class UserSearch extends User
     {
         $query = (new Query())
                 ->select(['User.id', 'User.username', 'User.nickname', 'User.sex', 'User.status', 'User.max_store',
-                            'Customer.name AS customer_id', 'COUNT(Course.created_by) AS course_num', 
-                            'COUNT(Video.created_by) AS video_num', 'User.created_at'])
+                            'Customer.name AS customer_id', 'COUNT(Course.id) AS course_num', 
+                            'COUNT(Video.id) AS video_num', 'User.created_at'])
                 ->from(['User' => User::tableName()]);
 
         // add conditions that should always apply here
@@ -66,8 +67,11 @@ class UserSearch extends User
         }
 
         $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id');  //关联查询所属客户
+        
+        $query->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id AND Video.is_del = 0');            //关联查询视频
         $query->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id');         //关联查询课程
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id');            //关联查询视频
+//        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');    //关联查询节点
+//        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');           //关联查询视频表
         
         // grid filtering conditions
         $query->andFilterWhere([

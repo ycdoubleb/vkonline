@@ -210,15 +210,14 @@ class UserController extends Controller
      */
     public function getUserCouVid($user_id)
     {
-        $userCouVid = (new Query())
-                ->select(['COUNT(Course.created_by) AS course_num', 'COUNT(Video.created_by) AS video_num'])
-                ->from(['User' => User::tableName()])
+        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.created_by) AS course_num'])
                 ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
+                ->where(['User.id' => $user_id])->one();
+        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.created_by) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
-                ->where(['User.id' => $user_id])
-                ->one();
-
-        return $userCouVid;
+                ->where(['User.id' => $user_id])->one();
+        
+        return array_merge($userCou, $userVid);
     }
 
 

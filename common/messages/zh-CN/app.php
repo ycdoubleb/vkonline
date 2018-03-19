@@ -45,6 +45,7 @@ return [
     'Updated At' => '更新时间',
     'Start Time' => '开始时间',
     'End Time' => '结束时间',
+    'Long Time' => '时长',
     
     //公共-导航
     'Home' => '首页',
@@ -95,6 +96,7 @@ return [
     'Prev' => '上一页',
     'Next' => '下一页',
     'Play' => '播放',
+    'Select' => '选择',
     
     //公共-属性
     'ID' => 'ID',

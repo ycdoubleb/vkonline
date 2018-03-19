@@ -10,7 +10,7 @@ use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
- * UploadfileSearch represents the model behind the search form about `common\models\Uploadfile`.
+ * UploadfileSearch represents the model behind the search form of `common\modules\webuploader\models\Uploadfile`.
  */
 class UploadfileSearch extends Uploadfile {
 
@@ -19,9 +19,8 @@ class UploadfileSearch extends Uploadfile {
      */
     public function rules() {
         return [
-            [['id', 'name', 'path', 'thumb_path', 'created_by'], 'safe'],
-            [['download_count', 'del_mark', 'is_del', 'is_fixed', 'created_at', 'updated_at'], 'integer'],
-            [['size'], 'float']
+            [['id', 'name', 'path', 'thumb_path', 'app_id', 'del_mark', 'is_del', 'is_fixed', 'created_by', 'deleted_by'], 'safe'],
+            [['download_count', 'size', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 

@@ -16,24 +16,28 @@ use yii\web\UploadedFile;
  * This is the model class for table "{{%customer}}".
  *
  * @property string $id
- * @property string $name 名称
- * @property string $domain 域名，不带http
- * @property string $logo logo
- * @property int $status 状态：0停用 1试用 10 正常
- * @property string $des 描述
- * @property string $expire_time 到期时间
- * @property string $renew_time 上次续费时间
- * @property string $good_id 套餐ID
- * @property string $invite_code 邀请码
- * @property string $province 省
- * @property string $city 市
- * @property string $district 区
- * @property string $twon 镇
- * @property string $address 详细地址
- * @property string $location 位置
- * @property string $created_by 创建人
- * @property string $created_at 创建时间
- * @property string $updated_at 更新时间
+ * @property string $name           名称
+ * @property string $domain         域名，不带http
+ * @property string $logo           logo
+ * @property int $status            状态：0停用 1试用 10 正常
+ * @property string $des            描述
+ * @property string $expire_time    到期时间
+ * @property string $renew_time     上次续费时间
+ * @property string $good_id        套餐ID
+ * @property string $invite_code    邀请码
+ * @property string $province       省
+ * @property string $city           市
+ * @property string $district       区
+ * @property string $twon           镇
+ * @property string $address        详细地址
+ * @property string $location       位置
+ * @property string $created_by     创建人
+ * @property string $created_at     创建时间
+ * @property string $updated_at     更新时间
+ * 
+ * @property CustomerAdmin $customer    获取客户的管理员
+ * @property Good $good                 获取客户的套餐
+ * @property AdminUser $gadminUser      获取客户的创建者
  */
 class Customer extends ActiveRecord
 {
@@ -61,7 +65,7 @@ class Customer extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     
@@ -126,6 +130,21 @@ class Customer extends ActiveRecord
         return $this->hasOne(CustomerAdmin::class, ['customer_id' => 'id']);
     }
     
+    /**
+     * 关联获取客户的套餐
+     * @return ActiveQuery
+     */
+    public function getGood()
+    {
+        return $this->hasOne(Good::class, ['id' => 'good_id']);
+    }
+    
+    public function getStaEndTime()
+    {
+        return $this->hasOne(CustomerActLog::class, ['customer_id' => 'id'])->orderBy('id desc');
+    }
+
+
     /**
      * 关联获取创建人
      * @return ActiveQuery

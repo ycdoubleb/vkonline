@@ -10,6 +10,7 @@ use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\CustomerActLog;
 use common\models\vk\CustomerAdmin;
+use common\models\vk\Good;
 use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
 use yii\base\Model;
@@ -56,7 +57,7 @@ class CustomerSearch extends Customer
         
         $query = (new Query())
                 ->select(['Customer.id', 'Region.name AS province', 'Region2.name AS city', 'Region3.name AS district',
-                        'Customer.name', 'Customer.domain', 'User.nickname AS user_id', 'Customer.good_id',
+                        'Customer.name', 'Customer.domain', 'User.nickname AS user_id', 'Good.name AS good_id',
                         'Customer.status', 'Customer.expire_time', 'AdminUser.nickname AS created_by'])
                 ->from(['Customer' => Customer::tableName()]);
         // add conditions that should always apply here
@@ -69,10 +70,11 @@ class CustomerSearch extends Customer
         $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Customer.created_by');    //关联查询创建人
         $query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()],
                 'CustomerAdmin.customer_id = Customer.id AND CustomerAdmin.level = 1');//关联查询管理员
-        $query->leftJoin(['User' => User::tableName()], 'User.id = CustomerAdmin.user_id');             //关联查询管理员
-        $query->leftJoin(['Region' => Region::tableName()], 'Region.id = Customer.province');           //关联查询省
-        $query->leftJoin(['Region2' => Region::tableName()], 'Region2.id = Customer.city');             //关联查询市
-        $query->leftJoin(['Region3' => Region::tableName()], 'Region3.id = Customer.district');         //关联查询区
+        $query->leftJoin(['User' => User::tableName()], 'User.id = CustomerAdmin.user_id');     //关联查询管理员姓名
+        $query->leftJoin(['Good' => Good::tableName()], 'Good.id = Customer.good_id');          //管理查询套餐
+        $query->leftJoin(['Region' => Region::tableName()], 'Region.id = Customer.province');   //关联查询省
+        $query->leftJoin(['Region2' => Region::tableName()], 'Region2.id = Customer.city');     //关联查询市
+        $query->leftJoin(['Region3' => Region::tableName()], 'Region3.id = Customer.district'); //关联查询区
         
         $this->load($params);
 
@@ -111,17 +113,19 @@ class CustomerSearch extends Customer
     {
         $allTotal = [];$thisMonth = [];$lastMonth = [];$asRate = [];
         //获取本月的起始时间戳和结束时间戳
+        $nowYear = date('Y', time()); $nowMonth = date('m', time());
         $beginThismonth = mktime(0, 0, 0, date('m'), 1, date('Y'));
         $endThismonth = mktime(23, 59, 59, date('m'), date('t'), date('Y'));
         //获取上个月的起始时间戳和结束时间戳
+        $preYear = date('Y',strtotime('-1 month')); $preMonth = date('m',strtotime('-1 month'));
         $beginLastMonth = strtotime(date('Y-m-01 00:00:00',strtotime('-1 month')));
         $endLastMonth = strtotime(date("Y-m-d 23:59:59", strtotime(-date('d').'day')));
         $query = (new Query())
-                ->select(['COUNT(Course.id) AS course_num', 'COUNT(Video.id) AS video_num', 'Play.play_count'])
+                ->select(['COUNT(Course.id) AS course_num', 'COUNT(Video.id) AS video_num', 'SUM(Play.play_count) AS play_count'])
                 ->from(['Course' => Course::tableName()]);
         
-        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id');    //关联查询节点
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id');           //关联查询视频表
+        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');    //关联查询节点
+        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');           //关联查询视频表
         $query->leftJoin(['Play' => PlayStatistics::tableName()], 'Play.video_id = Video.id');  //关联查询视频统计表
         
         $query->where(['Course.customer_id' => $id]);   //根据客户过滤
@@ -136,30 +140,32 @@ class CustomerSearch extends Customer
         //计算本月新增的数量
         $thisMonthQuery = clone $query;
         $thisMonthQuery->andFilterWhere(['between', 'Course.created_at', $beginThismonth, $endThismonth]);
+//        $thisMonthQuery->andFilterWhere(['Play.year' => $nowYear, 'Play.month' => $nowMonth]);
         $thisMonthData = $thisMonthQuery->one();
         $thisMonth[] = array_merge(['name' => '本月新增'], $thisMonthData);
 
         //计算上个月新增的数量
         $lastMonthQuery = clone $query;
         $lastMonthQuery->andFilterWhere(['between', 'Course.created_at', $beginLastMonth, $endLastMonth]);
+//        $lastMonthQuery->andFilterWhere(['Play.year' => $preYear, 'Play.month' => $preMonth]);
         $lastMonthData = $lastMonthQuery->one();
         $lastMonth[] = array_merge(['name' => '上个月新增'], $lastMonthData);
         
         //计算同比增长
         if($lastMonthData['course_num'] != 0){
-            $asRateCourse = ['course_num' => ($thisMonthData['course_num'] - $lastMonthData['course_num']) / $lastMonthData['course_num']];
+            $asRateCourse = ['course_num' => (($thisMonthData['course_num'] - $lastMonthData['course_num']) / $lastMonthData['course_num'] * 100).'%'];
         } else {
-            $asRateCourse = ['course_num' => 100];
+            $asRateCourse = ['course_num' => '100%'];
         }
         if($lastMonthData['video_num'] != 0){
-            $asRateVideo = ['video_num' => ($thisMonthData['video_num'] - $lastMonthData['video_num']) / $lastMonthData['video_num']];
+            $asRateVideo = ['video_num' => (($thisMonthData['video_num'] - $lastMonthData['video_num']) / $lastMonthData['video_num'] * 100).'%'];
         } else {
-            $asRateVideo = ['video_num' => 100];
+            $asRateVideo = ['video_num' => '100%'];
         }
         if($lastMonthData['play_count'] != 0){
-            $asRatePlay = ['play_count' => ($thisMonthData['play_count'] - $lastMonthData['play_count']) / $lastMonthData['play_count']];
+            $asRatePlay = ['play_count' => (($thisMonthData['play_count'] - $lastMonthData['play_count']) / $lastMonthData['play_count'] * 100).'%'];
         } else {
-            $asRatePlay = ['play_count' => 100];
+            $asRatePlay = ['play_count' => '100%'];
         }
         $asRate[] = array_merge(['name' => '同比'], $asRateCourse, $asRateVideo, $asRatePlay);
         
@@ -190,11 +196,12 @@ class CustomerSearch extends Customer
     public function searchActLog($id)
     {
         $query = (new Query())
-                ->select([ 'ActLog.id', 'ActLog.title', 'ActLog.good_id', 'ActLog.content', 'ActLog.start_time', 
+                ->select([ 'ActLog.id', 'ActLog.title', 'Good.name AS good_id', 'ActLog.content', 'ActLog.start_time', 
                     'ActLog.end_time', 'AdminUser.nickname AS created_by', 'ActLog.created_at'])
                 ->from(['ActLog' => CustomerActLog::tableName()]);
         
-        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = ActLog.created_by');
+        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = ActLog.created_by');  //关联查询创建者
+        $query->leftJoin(['Good' => Good::tableName()], 'Good.id = ActLog.good_id');        //关联查询套餐
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

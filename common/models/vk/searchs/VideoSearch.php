@@ -66,11 +66,13 @@ class VideoSearch extends Video
         $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');//关联查询所属客户
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');    //关联查询主讲老师
         $query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');             //关联查询课程创建者
-         $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id'); //关联查询视频附件中间表
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id'); //关联查询视频附件中间表
         //关联查询视频文件/关联查询视频附件
         $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id');     
         $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id');        //关联查询标签中间表
         $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                //关联查询标签
+        
+        $query->where(['Video.is_del' => 0]);
 
         $this->load($params);
 
