@@ -20,7 +20,7 @@ class UploadfileSearch extends Uploadfile {
     public function rules() {
         return [
             [['id', 'name', 'path', 'thumb_path', 'app_id', 'del_mark', 'is_del', 'is_fixed', 'created_by', 'deleted_by'], 'safe'],
-            [['download_count', 'size', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
+            [['download_count', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 
