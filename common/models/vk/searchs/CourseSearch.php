@@ -33,12 +33,6 @@ class CourseSearch extends Course
     private static $query;
     
     /**
-     *
-     * @var string 
-     */
-    public $keyword = null;
-
-    /**
      * @inheritdoc
      */
     public function rules()
@@ -67,16 +61,17 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
+        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $page = ArrayHelper::getValue($params, 'page'); //分页
+        $limit = ArrayHelper::getValue($params, 'limit'); //显示数量
+        
         self::getInstance();
         if(!$this->load($params)){
-            $this->keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
             $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
+            $this->category_id = ArrayHelper::getValue($params, 'category_id'); //分类id
             $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
             $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
-            $page = ArrayHelper::getValue($params, 'page'); //分页
-            $limit = ArrayHelper::getValue($params, 'limit', 6); //显示数量
         }
-        
         //条件查询
         self::$query->andFilterWhere([
             'Course.customer_id' => $this->customer_id,
@@ -88,7 +83,7 @@ class CourseSearch extends Course
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
-        self::$query->andFilterWhere(['like', 'Course.name', $this->keyword]);
+        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         //查询所有课程下的环节数
         $videoResult = self::findVideoByCourseNode()->asArray()->all();  
         //查询课程下的所有关注数
@@ -111,6 +106,7 @@ class CourseSearch extends Course
         $results = ArrayHelper::merge(ArrayHelper::index($videoResult, 'course_id'), 
                 ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
                 ArrayHelper::index($praiseResult, 'course_id')));
+        
         //合并查询后的结果
         foreach ($courses as $id => $item) {
             if(isset($results[$id])){
