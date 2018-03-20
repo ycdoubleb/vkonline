@@ -78,10 +78,11 @@ class User extends ActiveRecord implements IdentityInterface {
     public function scenarios() {
         return [
             self::SCENARIO_CREATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
             self::SCENARIO_UPDATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'email', 'phone', 'avatar'],
-            self::SCENARIO_DEFAULT => ['username', 'nickname']
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
+            self::SCENARIO_DEFAULT => 
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
         ];
     }
 
@@ -97,7 +98,7 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function behaviors() {
         return [
-            TimestampBehavior::className(),
+            TimestampBehavior::class,
         ];
     }
 

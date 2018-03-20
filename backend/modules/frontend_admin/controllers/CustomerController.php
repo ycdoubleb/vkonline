@@ -160,7 +160,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Deletes an existing Customer model.
+     * (停用)Deletes an existing Customer model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -172,12 +172,12 @@ class CustomerController extends Controller
         
         $model->status = Customer::STATUS_STOP;
         $model->save(false,['status']);
-
+            
         return $this->redirect(['index']);
     }
     
     /**
-     * Enables an existing User model.
+     * (启用)Enables an existing User model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -194,7 +194,7 @@ class CustomerController extends Controller
     }
     
     /**
-     * Lists all Customer models.
+     * (操作记录表)Lists all Customer models.
      * @return mixed
      */
     public function actionLogIndex($id)
@@ -220,7 +220,7 @@ class CustomerController extends Controller
     }
     
     /**
-     * Lists all CustomerAdmin models.
+     * (管理员表)Lists all CustomerAdmin models.
      * @return mixed
      */
     public function actionAdminIndex($id)
@@ -692,20 +692,39 @@ class CustomerController extends Controller
      */
     public function getUsedSpace($id)
     {
-        $query = (new Query())
-                ->select(['SUM(Uploadfile.size) AS size'])
-                ->from(['Customer' => Customer::tableName()])
-                ->where(['Customer.id' => $id]);
+        $files = $this->findCustomerFile($id)->all();
+        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
+        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
+        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
         
-        $query->leftJoin(['Course' => Course::tableName()], 'Course.customer_id = Customer.id');
-        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');        //关联节点找相应的视频
-        $query->leftJoin(['Video' => Video::tableName()], '((Video.node_id = Node.id AND Video.is_del = 0)'
-                . 'AND Video.is_ref = 0)');               //关联查询视频(引用的除外)
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id AND Attachment.is_del = 0'); //关联查询视频附件中间表
-        //关联查询视频文件/关联查询视频附件
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '((Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id)'
-                . 'AND Uploadfile.is_del = 0)');
-
+        $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
+            ->from(['Uploadfile' => Uploadfile::tableName()]);
+        
+        $query->where(['Uploadfile.is_del' => 0]);
+        $query->where(['Uploadfile.id' => $fileIds]);
+        
         return $query->one();
     }
+    
+    /**
+     * 查找客户关联的文件
+     * @param string $id
+     * @return Query
+     */
+    protected function findCustomerFile($id)
+    {
+        
+        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+            ->from(['Customer' => Customer::tableName()]);
+        
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.customer_id = Customer.id AND Video.is_del = 0 AND Video.is_ref = 0)');
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
+        
+        $query->andWhere(['Customer.id' => $id]);
+        
+        $query->groupBy('Video.source_id');
+        
+        return $query;
+    }
+
 }

@@ -80,7 +80,6 @@ class BannerController extends BaseController
 
         return $this->render('create', [
             'model' => $model,
-            'customer' => $this->getCustomer(),
         ]);
     }
 
@@ -101,7 +100,6 @@ class BannerController extends BaseController
 
         return $this->render('update', [
             'model' => $model,
-            'customer' => $this->getCustomer(),
         ]);
     }
 
@@ -133,20 +131,6 @@ class BannerController extends BaseController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-/**
-     * 查找所有客户
-     * @return array
-     */
-    public function getCustomer()
-    {
-        $customer = (new Query())
-                ->select(['id', 'name'])
-                ->from(['Customer' => Customer::tableName()])
-                ->all();
-
-        return ArrayHelper::map($customer, 'id', 'name');
     }
     
     /**

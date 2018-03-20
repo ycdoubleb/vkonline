@@ -74,6 +74,8 @@ class BannerSearch extends Banner
         ]);
 
         $query->andFilterWhere(['like', 'Banner.title', $this->title]);
+        
+        $query->groupBy('Banner.customer_id');
 
         return $dataProvider;
     }
