@@ -21,6 +21,7 @@ use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -78,9 +79,14 @@ class DefaultController extends Controller
         $searchModel = new CourseSearch();
         $result = $searchModel->searchResult(\Yii::$app->request->queryParams);
         
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['course']),
+        ]);
+        
         return $this->render('my_course', [
             'filters' => $result['filter'],
-            'dataProvider' => $result['data'],
+            'pagers' => $result['pager'],
+            'dataProvider' => $dataProvider,
         ]);
     }
     

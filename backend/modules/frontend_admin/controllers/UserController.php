@@ -13,6 +13,7 @@ use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -46,8 +47,13 @@ class UserController extends Controller
     public function actionIndex()
     {
         $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->search(Yii::$app->request->queryParams);
 
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['user']),
+            'key' => 'id'
+        ]);
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

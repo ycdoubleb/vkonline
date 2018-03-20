@@ -39,7 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer_id',
+                    'attribute' => 'customer.name',
+                    'label' => Yii::t('app', '{The}{Customer}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Customer' => Yii::t('app', 'Customer'),
+                    ]),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
@@ -116,7 +120,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'course_num',
+                    'attribute' => 'cour_num',
                     'label' => Yii::t('app', 'Course'),
                     'headerOptions' => [
                         'style' => [
@@ -124,7 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function($data) {
-                        return $data['course_num'] . ' 门';
+                        return (isset($data['cour_num']) ? $data['cour_num'] : 0 ). ' 门';
                     },
                     'contentOptions' => [
                         'style' => [
@@ -141,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function($data) {
-                        return $data['video_num'] . ' 个';
+                        return (isset($data['node_num']) ? $data['node_num'] : 0)  . ' 个';
                     },
                     'contentOptions' => [
                         'style' => [

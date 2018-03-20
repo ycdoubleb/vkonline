@@ -4,18 +4,25 @@ namespace common\models\searchs;
 
 use common\models\User;
 use common\models\vk\Course;
-use common\models\vk\CourseNode;
 use common\models\vk\Customer;
+use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * UserSearch represents the model behind the search form of `common\models\User`.
  */
 class UserSearch extends User
 {
+    /**
+     *
+     * @var Query 
+     */
+    private static $query;
+    
     /**
      * @inheritdoc
      */
@@ -45,51 +52,115 @@ class UserSearch extends User
      */
     public function search($params)
     {
-        $query = (new Query())
-                ->select(['User.id', 'User.username', 'User.nickname', 'User.sex', 'User.status', 'User.max_store',
-                            'Customer.name AS customer_id', 'COUNT(Course.id) AS course_num', 
-                            'COUNT(Video.id) AS video_num', 'User.created_at'])
-                ->from(['User' => User::tableName()]);
-
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'key' => 'id'
-        ]);
+        $this->getInstance();
+        
+//        $dataProvider = new ActiveDataProvider([
+//            'query' => $query,
+//            'key' => 'id'
+//        ]);
 
         $this->load($params);
 
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
+//        if (!$this->validate()) {
+//            // uncomment the following line if you do not want to return any records when validation fails
+//            // $query->where('0=1');
+//            return $dataProvider;
+//        }
 
-        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id');  //关联查询所属客户
         
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id AND Video.is_del = 0');            //关联查询视频
-        $query->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id');         //关联查询课程
-//        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');    //关联查询节点
-//        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');           //关联查询视频表
-        
-        // grid filtering conditions
-        $query->andFilterWhere([
+        //条件查询
+        self::$query->andFilterWhere([
             'customer_id' => $this->customer_id,
             'User.status' => $this->status,
             'max_store' => $this->max_store,
             'created_at' => $this->created_at,
         ]);
-
-        $query->andFilterWhere(['like', 'username', $this->username])
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'nickname', $this->nickname])
             ->andFilterWhere(['like', 'sex', $this->sex])
             ->andFilterWhere(['like', 'phone', $this->phone])
             ->andFilterWhere(['like', 'email', $this->email])
             ->andFilterWhere(['like', 'des', $this->des]);
-
-        $query->groupBy('User.id');         //根据用户ID分组
+        //课程数
+        $courses = $this->getUserCourseNumber();
+        //视频数
+        $videos = $this->getUserVideoNodeNumber();
         
-        return $dataProvider;
+        //添加字段and 关联查询
+        self::$query->addSelect(['User.*'])->with('customer');
+        //以user_id为索引
+        $users = ArrayHelper::index(self::$query->asArray()->all(), 'id');
+        $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
+                ArrayHelper::index($videos, 'created_by'));
+        //合并查询后的结果
+        foreach ($users as $id => $item) {
+            if(isset($results[$id])){
+                $users[$id] += $results[$id];
+            }
+        }
+        
+        return [
+            'filter' => $params,
+            'data' => [
+                'user' => $users
+            ],
+        ];
+    }
+    
+    /**
+     * 
+     * @return Query
+     */
+    protected function getInstance() {
+        if (self::$query == null) {
+            self::$query = $this->findUser();
+        }
+        return self::$query;
+    }
+    
+    /**
+     * 获取视频数量
+     * @return array
+     */
+    protected function getUserVideoNodeNumber()
+    {
+        $query = CourseSearch::findVideoByCourseNode();
+        $query->andWhere(['Video.created_by' => self::$query]);
+        
+        $query->addSelect(['Video.created_by']);
+        
+        $query->groupBy('Video.created_by');
+        
+        return $query->asArray()->all();
+    }
+    
+    /**
+     * 获取课程数量
+     * @return array
+     */
+    protected function getUserCourseNumber()
+    {
+        $query = CourseSearch::findCourse();
+        $query->where(['Course.created_by' => self::$query]);
+        
+        $query->addSelect(['Course.created_by', 'COUNT(Course.id) AS cour_num']);
+        
+        $query->groupBy('Course.created_by');
+        
+        return $query->asArray()->all();
+        
+    }
+
+    /**
+     * 获取用户
+     * @return Query
+     */
+    protected function findUser()
+    {
+        $query = self::find()->select(['User.id'])
+            ->from(['User' => self::tableName()]);
+        
+        return $query;
     }
 }

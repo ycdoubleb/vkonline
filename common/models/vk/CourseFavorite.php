@@ -62,4 +62,22 @@ class CourseFavorite extends ActiveRecord
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
+    
+    /**
+     * 查询课程关注
+     * @param array $condition  (Favorite.name => value)
+     * @return Query
+     */
+    public static function findCourseFavorite($condition)
+    {
+        $query = self::find()->select(['COUNT(Favorite.id) AS fav_num'])
+            ->addSelect(implode(",", array_keys($condition)))
+            ->from(['Favorite' => self::tableName()]);
+        
+        $query->where($condition);
+        
+        $query->groupBy(array_keys($condition));
+        
+        return $query;
+    }
 }
