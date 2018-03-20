@@ -77,7 +77,7 @@ class DefaultController extends Controller
     public function actionMyCourse()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->searchResult(\Yii::$app->request->queryParams);
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['created_by' => \Yii::$app->user->id]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),

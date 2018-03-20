@@ -36,7 +36,7 @@ class CourseSearch extends Course
      *
      * @var string 
      */
-    public $keyword;
+    public $keyword = null;
 
     /**
      * @inheritdoc
@@ -67,72 +67,15 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
-        $tags = ArrayHelper::getValue($params, 'CourseSearch.tags');
-        $query = (new Query())
-                ->select(['Course.id', 'Customer.name AS customer_id', 'Category.name AS category_id', 'Course.name',
-                            'Teacher.name AS teacher_id', 'User.nickname AS created_by', 'Course.is_publish',
-                            'Course.level', 'SUM(Uploadfile.size) AS size', 'Tags.name AS tags', 'Course.created_at'])
-                ->from(['Course' => Course::tableName()]);
-
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'key' => 'id',
-        ]);
-
-        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');//关联查询所属客户
-        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');    //关联查询主讲老师
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');             //关联查询课程创建者
-        $query->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id');//关联查询课程所属分类
-        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');        //关联节点找相应的视频
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');               //关联查询视频
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id AND Attachment.is_del = 0'); //关联查询视频附件中间表
-        //关联查询视频文件/关联查询视频附件
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '((Uploadfile.id = Video.source_id '
-                . 'OR Uploadfile.id = Attachment.file_id) AND Uploadfile.is_del = 0)');     
-        
-        $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id');        //关联查询标签中间表
-        $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                 //关联查询标签
-        
-        $this->load($params);
-        
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-            
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'Course.customer_id' => $this->customer_id,
-            'Course.category_id' => $this->category_id,
-            'Course.teacher_id' => $this->teacher_id,
-            'Course.created_by' => $this->created_by,
-            'Course.is_publish' => $this->is_publish,
-            'Course.level' => $this->level,
-        ]);
-
-        $query->andFilterWhere(['like', 'Course.name', $this->name])
-                ->andFilterWhere(['like', 'Tags.name', $tags]);
-        
-        $query->groupBy(['Course.id']);
-        
-        return $dataProvider;
-    }
-    
-    /**
-     * 搜索结果
-     * @param array $params
-     */
-    public function searchResult($params)
-    {
-        $this->keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
-        $page = ArrayHelper::getValue($params, 'page'); //分页
-        $limit = ArrayHelper::getValue($params, 'limit', 6); //显示数量
-        
         self::getInstance();
-        $this->load($params);
+        if(!$this->load($params)){
+            $this->keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+            $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
+            $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
+            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
+            $page = ArrayHelper::getValue($params, 'page'); //分页
+            $limit = ArrayHelper::getValue($params, 'limit', 6); //显示数量
+        }
         
         //条件查询
         self::$query->andFilterWhere([
@@ -144,6 +87,7 @@ class CourseSearch extends Course
             'Course.level' => $this->level,
         ]);
         //模糊查询
+        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         self::$query->andFilterWhere(['like', 'Course.name', $this->keyword]);
         //查询所有课程下的环节数
         $videoResult = self::findVideoByCourseNode()->asArray()->all();  
