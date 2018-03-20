@@ -7,7 +7,6 @@ use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
-use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\PraiseLog;
 use common\models\vk\TagRef;
@@ -18,7 +17,7 @@ use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use yii\data\ArrayDataProvider;
+use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -32,6 +31,12 @@ class CourseSearch extends Course
      * @var Query 
      */
     private static $query;
+    
+    /**
+     *
+     * @var string 
+     */
+    public $keyword;
 
     /**
      * @inheritdoc
@@ -122,14 +127,14 @@ class CourseSearch extends Course
      */
     public function searchResult($params)
     {
-        self::getInstance();
-        $videoResult = $this->findVideoByNode()->asArray()->all();
-        $favoriteResult = $this->findFavorite()->asArray()->all();
-        $praiseLogResult = $this->findPraiseLog()->asArray()->all();
-        self::$query->addSelect(['Course.*']);
+        $this->keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $page = ArrayHelper::getValue($params, 'page'); //分页
+        $limit = ArrayHelper::getValue($params, 'limit', 6); //显示数量
         
+        self::getInstance();
         $this->load($params);
         
+        //条件查询
         self::$query->andFilterWhere([
             'Course.customer_id' => $this->customer_id,
             'Course.category_id' => $this->category_id,
@@ -138,27 +143,44 @@ class CourseSearch extends Course
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
-
-        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Course.name', $this->keyword]);
+        //查询所有课程下的环节数
+        $videoResult = self::findVideoByCourseNode()->asArray()->all();  
+        //查询课程下的所有关注数
+        $favoriteResult = CourseFavorite::findCourseFavorite(['Favorite.course_id' => self::$query])->asArray()->all(); 
+        //查询课程下的所有点赞数
+        $praiseResult = PraiseLog::findUserPraiseLog(['Praise.course_id' => self::$query])->asArray()->all();
+        //关联查询
+        self::$query->with('category', 'customer', 'teacher', 'createdBy');
+        //添加字段
+        self::$query->addSelect(['Course.*']);
+        //显示数量
+        self::$query->offset(($page-1) * $limit)->limit($limit);
+        $courseResult = self::$query->asArray()->all();
+        //查课程总数
+        $totalCount = self::$query->count();
+        //课程分页
+        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        //以course_id为索引
+        $courses = ArrayHelper::index($courseResult, 'id');
+        $results = ArrayHelper::merge(ArrayHelper::index($videoResult, 'course_id'), 
+                ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
+                ArrayHelper::index($praiseResult, 'course_id')));
+        //合并查询后的结果
+        foreach ($courses as $id => $item) {
+            if(isset($results[$id])){
+                $courses[$id] += $results[$id];
+            }
+        }
         
-        self::$query->with('category', 'customer', 'teacher', 'createdBy')->asArray();
-        
-        $courseResult = self::$query->all();
-        
-        $course = ArrayHelper::index($courseResult, 'id');
-        $videoNode = ArrayHelper::index($videoResult, 'course_id');
-        $favorite = ArrayHelper::index($favoriteResult, 'course_id');
-        $praiseLog = ArrayHelper::index($praiseLogResult, 'course_id');
-        
-        $result = ArrayHelper::merge($course, ArrayHelper::merge($videoNode, ArrayHelper::merge($favorite, $praiseLog)));
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result),
-        ]);
-        
-        return $result = [
+        return [
             'filter' => $params,
-            'data' => $dataProvider,
+            'pager' => $pages,
+            'total' => $totalCount,
+            'data' => [
+                'course' => $courses
+            ],
         ];
     }
     
@@ -178,8 +200,9 @@ class CourseSearch extends Course
      * 查询课程环节
      * @return Query
      */
-    protected function findVideoByNode()
+    public static function findVideoByCourseNode()
     {
+        self::getInstance();
         $query = Video::find()
             ->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num'])
             ->from(['Video' => Video::tableName()]);
@@ -192,64 +215,14 @@ class CourseSearch extends Course
         
         return $query;
     }
-
-    /**
-     * 查询课程关注
-     * @return Query
-     */
-    protected function findFavorite()
-    {
-        $query = CourseFavorite::find()
-            ->select(['Favorite.course_id', 'COUNT(Favorite.id) AS fav_num'])
-            ->from(['Favorite' => CourseFavorite::tableName()]);
-        
-        $query->where(['Favorite.course_id' => self::$query]);
-        
-        $query->groupBy('Favorite.course_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查询课程点赞
-     * @return Query
-     */
-    protected function findPraiseLog()
-    {
-        $query = PraiseLog::find()
-            ->select(['PraiseLog.course_id', 'COUNT(PraiseLog.id) AS zan_num'])
-            ->from(['PraiseLog' => PraiseLog::tableName()]);
-        
-        $query->where(['type' => 1, 'PraiseLog.course_id' => self::$query]);
-        
-        $query->groupBy('PraiseLog.course_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查询课程进度
-     * @return Query
-     */
-    protected function findProgress()
-    {
-        $query = CourseProgress::find()->select(['Progress.*'])
-            ->from(['Progress' => CourseProgress::tableName()]);
-        
-        $query->where(['Progress.course_id' => self::$query]);
-        
-        $query->groupBy('Progress.course_id');
-        
-        return $query;
-    }
-
+   
     /**
      * 查询课程
      * @return Query
      */
-    protected static function findCourse() 
+    public static function findCourse() 
     {
-        $query = Course::find()->select(['Course.id'])
+        $query = self::find()->select(['Course.id'])
             ->from(['Course' => self::tableName()]);
         
         return $query;

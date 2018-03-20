@@ -2,9 +2,11 @@
 
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
+use yii\widgets\LinkPager;
 
 /* @var $this View */
 /* @var $model Course */
@@ -23,11 +25,11 @@ ModuleAssets::register($this);
             ]) ?>
     </p>
     
-    <?php $form = ActiveForm::begin(['id' => 'build-course-form']); ?>
+    <?php $form = ActiveForm::begin(['id' => 'build-course-form', 'method' => 'get',]); ?>
     
     <div class="col-xs-12 search-frame"> 
         <div class="search-text-input">
-            <?= Html::textInput('keyword', null, ['class' => 'form-control','placeholder' => '请输入关键字...']); ?>
+            <?= Html::textInput('keyword', ArrayHelper::getValue($filters, 'keyword'), ['class' => 'form-control','placeholder' => '请输入关键字...']); ?>
         </div>
         <div class = "search-btn-frame">
             <?= Html::a('<i class="fa fa-search"></i>', 'javascript:;', ['id' => 'submit', 'style' => 'float: left;']); ?>
@@ -53,7 +55,7 @@ ModuleAssets::register($this);
                 <div class="tuip">主讲：<span><?= $model['teacher']['name'] ?></span>
                     <?= Html::a('进入制作', ['view-course', 'id' => $model['id']], ['class' => 'into']) ?>
                 </div>
-                <div class="tuip">环节数：<span><?= isset($model['node_num']) ? $model['node_num'] : 0 ?>节</span>
+                <div class="tuip">环节数：<span><?= isset($model['node_num']) ? $model['node_num'] : 0 ?>&nbsp;节</span>
                     <?= Html::a('查看课程', 'javascript:;', ['class' => 'see']) ?>
                 </div>
             </div>
@@ -61,17 +63,30 @@ ModuleAssets::register($this);
         <?php endforeach; ?>
     </div>
     
-    <div class="page">
-        <?php
-//        LinkPager::widget([
-//            'pagination' => '',
-//            'options' => ['class' => 'pagination', 'style' => 'margin: 0px;border-radius: 0px;'],
-//            'prevPageCssClass' => 'page-prev',
-//            'nextPageCssClass' => 'page-next',
-//            'prevPageLabel' => '<i>&lt;</i>'.Yii::t('app', 'Prev Page'),
-//            'nextPageLabel' => Yii::t('app', 'Next Page').'<i>&gt;</i>',
-//            'maxButtonCount' => 5,
-//        ]); ?>
+    <div class="page center">
+        <?=  LinkPager::widget([
+            'pagination' => $pagers,
+            'options' => ['class' => 'pagination', 'style' => 'margin: 0px;border-radius: 0px;'],
+            'prevPageCssClass' => 'page-prev',
+            'nextPageCssClass' => 'page-next',
+            'prevPageLabel' => '<i>&lt;</i>'.Yii::t('app', 'Prev'),
+            'nextPageLabel' => Yii::t('app', 'Next').'<i>&gt;</i>',
+            'maxButtonCount' => 5,
+        ]); ?>
     </div>
     
 </div>
+
+<?php
+
+$js = 
+<<<JS
+   
+    /** 提交表单 */
+    $('#submit').click(function(){
+        $('#build-course-form').submit();
+    });
+
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

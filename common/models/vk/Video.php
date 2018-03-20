@@ -141,7 +141,7 @@ class Video extends ActiveRecord
         }
         
         if (parent::beforeSave($insert)) {
-            $nodes = self::getVideoByNode(['node_id' => $this->node_id]);
+            $nodes = self::getVideoNode(['node_id' => $this->node_id]);
             ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
             $counode = $nodes == null ? null : reset($nodes);
             $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
@@ -274,7 +274,7 @@ class Video extends ActiveRecord
      * @param array $condition  条件
      * @return Video
      */
-    public static function getVideoByNode($condition) 
+    public static function getVideoNode($condition) 
     {
         //数组合并
         $condition = array_merge(['is_del' => 0], $condition);

@@ -10,7 +10,7 @@ use yii\db\ActiveRecord;
  * This is the model class for table "{{%praise_log}}".
  *
  * @property string $id
- * @property int $type 点赞类型：1课程 2视频
+ * @property integer $type 点赞类型：1课程 2视频
  * @property string $course_id 课程ID
  * @property string $video_id 视频ID
  * @property string $user_id 用户ID
@@ -63,5 +63,24 @@ class PraiseLog extends ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+    
+    /**
+     * 查询用户点赞记录
+     * @param array $condition  (Praise.name => value)
+     * @param integer $type
+     * @return Query
+     */
+    public static function findUserPraiseLog($condition, $type = 1)
+    {
+        $query = self::find()->select(['COUNT(Praise.id) AS zan_num'])
+            ->addSelect(implode(",", array_keys($condition)))
+            ->from(['Praise' => self::tableName()]);
+        
+        $query->where(['type' => $type])->andWhere($condition);
+        
+        $query->groupBy(array_keys($condition));
+        
+        return $query;
     }
 }
