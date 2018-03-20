@@ -54,6 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'allowClear' => true,
                         ],
                     ]),
+                    'value' => function ($data){
+                        return !empty($data['customer_id']) ? $data['customer_id'] : '官网';
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -90,6 +93,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'min-width' => '90px'
                         ],
                     ],
+                    'value' => function ($data){
+                        return !empty($data['link']) ? $data['link'] : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -120,14 +126,18 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'sort_order',
                     'headerOptions' => [
                         'style' => [
-                            'width' => '60px'
+                            'width' => '55px'
                         ],
                     ],
                     'filter' => false,
-                    'class' => GridViewChangeSelfColumn::className(),
+                    'class' => GridViewChangeSelfColumn::class,
                     'plugOptions' => [
                         'type' => 'input',
-                    ]
+                    ],
+                    'disabled' => function($model, $key, $index){
+                        /* @var $model BannerSearch */
+                        return !empty($model->customer_id);
+                    },
                 ],
                 [
                     'attribute' => 'type',
@@ -152,7 +162,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Is' => Yii::t('app', 'Is'),
                         'Publish' => Yii::t('app', 'Publish'),
                     ]),
-                    'class' => GridViewChangeSelfColumn::className(),
+                    'class' => GridViewChangeSelfColumn::class,
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_publish',
@@ -217,6 +227,63 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}{update}{delete}',
+                    'buttons' => [
+                        'view' => function ($url, $data, $key) {
+                             $options = [
+                                'class' => '',
+                                'title' => Yii::t('app', 'View'),
+                                'aria-label' => Yii::t('app', 'View'),
+                                'data-pjax' => '0',
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
+                                'url' => ['view', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'conditions' => true,
+                                'adminOptions' => true,
+                            ];
+                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                        },
+                        'update' => function ($url, $data, $key) {
+                             $options = [
+                                'class' => 'btn btn-sm '.($data['customer_id'] ? 'disabled' : ' '),
+                                'style' => 'padding:0px; display:unset',
+                                'title' => Yii::t('app', 'Update'),
+                                'aria-label' => Yii::t('app', 'Update'),
+                                'data-pjax' => '0',
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="glyphicon glyphicon-pencil"></span>',
+                                'url' => ['update', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'conditions' => true,
+                                'adminOptions' => true,
+                            ];
+
+                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                        },
+                        'delete' => function ($url, $data, $key) {
+                            $options = [
+                                'class' => 'btn btn-sm '.($data['customer_id'] ? 'disabled' : ' '),
+                                'style' => 'padding:0px; display:unset',
+                                'title' => Yii::t('app', 'Delete'),
+                                'aria-label' => Yii::t('app', 'Delete'),
+                                'data-pjax' => '0',
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="glyphicon glyphicon-trash"></span>',
+                                'url' => ['delete', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'conditions' => true,
+                                'adminOptions' => true,
+                            ];
+
+                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
+                        },       
+                    ],
                 ],
             ],
         ]); ?>

@@ -26,10 +26,9 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'customer_id')->widget(Select2::classname(),[
-        'data' => $customer,
-        'hideSearch' => true,
-        'options' => ['placeholder' => '请选择...',]
+    <?= $form->field($model, 'customer_id')->textInput([
+        'placeholder' => '官网', 
+        'disabled' => true,
     ])?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
@@ -50,7 +49,8 @@ use yii\widgets\ActiveForm;
             'initialPreview' => [
                 $model->isNewRecord ?
                         Html::img('', ['class' => 'file-preview-image', 'width' => '213']) :
-                        Html::img(WEB_ROOT . $model->path, ['class' => 'file-preview-image', 'width' => '213']),
+                            $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['class' => 'file-preview-image', 'width' => '213']) :
+                                '<video src="'.WEB_ROOT . $model->path.'" controls="controls" class="file-preview-image" style="width:213px"></video>',
             ],
             'overwriteInitial' => true,
         ],

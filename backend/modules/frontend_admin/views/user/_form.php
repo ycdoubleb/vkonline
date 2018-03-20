@@ -30,19 +30,19 @@ use yii\widgets\ActiveForm;
         'options' => ['placeholder' => '请选择...',]
     ])?>
     
-    <?= $form->field($model, 'nickname')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称']) ?>
     
-    <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => '手机号']) ?>
     
     <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
     
     <?= $form->field($model, 'password2')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
     
-    <?= $form->field($model, 'sex')->radioList(User::$sexName); ?>
-    
     <?= $form->field($model, 'phone')->textInput(['minlength' => 6, 'maxlength' => 20]); ?>
 
     <?= $form->field($model, 'email')->textInput(['maxlength' => 200]) ?>
+    
+    <?= $form->field($model, 'sex')->radioList(User::$sexName); ?>
     
     <?= $form->field($model, 'avatar')->widget(FileInput::classname(), [
             'options' => [
@@ -59,16 +59,21 @@ use yii\widgets\ActiveForm;
                 'browseLabel' => '选择上传头像...',
                 'initialPreview' => [
                     $model->isNewRecord ?
-                            Html::img(WEB_ROOT . '/resources/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
+                            Html::img(WEB_ROOT . '/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
                             Html::img(WEB_ROOT . $model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
                 ],
                 'overwriteInitial' => true,
             ],
         ]); ?>
     
-    <?= $form->field($model, 'max_store')->textInput(['maxlength' => true]) ?>
+    <?php
+        $text = ' 设置用户最大上传空间，最小单位为 MB,如1204MB 为1G，默认为不限制';
+        echo $form->field($model, 'max_store',[
+        'template' => "{label}\n<div class=\"col-lg-3 col-md-3\">{input}</div>"
+            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999\">{$text}</div>\n<div class=\"col-lg-3 col-md-3\">{error}</div>",
+    ])->textInput(['maxlength' => true]); ?>
     
-    <?= $form->field($model, 'des')->textarea(['rows' => 5]) ?>
+    <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
 
     <div class="form-group" style="padding-left: 50px;">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

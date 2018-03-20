@@ -26,13 +26,13 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a(Yii::t('app', 'Renew'), ['renew', 'id' => $model->id], 
                 ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
-        <?= ($model->status == 0) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
+        <?= ($model->status == Customer::STATUS_STOP) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
             'class' => 'btn btn-info',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to enable this customer?'),
                 'method' => 'post',
             ],
-        ]) : Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
+        ]) : Html::a(Yii::t('app', 'Disable'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to disable this customer?'),
@@ -98,7 +98,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'format' => 'raw',
                         'value' => $model->userName->nickname,
                     ],
-                    'created_at:datetime',
+                    [
+                        'attribute' => 'created_at',
+                        'value' => !empty($model->created_at) ? date('Y-m-d H:i', $model->created_at) : null,
+                    ]
                 ],
             ]) ?>
         </div>

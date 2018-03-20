@@ -83,7 +83,7 @@ class Banner extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     
@@ -160,9 +160,9 @@ class Banner extends ActiveRecord
                 $array = explode('.', $string);
                 //获取后缀名，默认名为.jpg
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/customer/'));
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/banner/'));
                 $upload->saveAs($uploadpath . $file_name . '.' . $ext);
-                $this->path = '/upload/customer/' . $file_name . '.' . $ext . '?r=' . rand(1, 10000);
+                $this->path = '/upload/banner/' . $file_name . '.' . $ext . '?r=' . rand(1, 10000);
             }
             if (trim($this->path) == '') {
                 $this->path = $this->getOldAttribute('path');

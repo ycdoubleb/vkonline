@@ -94,6 +94,7 @@ return [
     'Backup' => '备份',
     'Enable' => '启用',
     'Disabled' => '禁用',
+    'Disable' => '停用',
     'Prev' => '上一页',
     'Next' => '下一页',
     'Play' => '播放',

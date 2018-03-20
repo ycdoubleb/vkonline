@@ -57,11 +57,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                        ],
+                    ]
                 ],
                 [
                     'attribute' => 'username',
-                ],
-                    ],
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -99,7 +99,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'status',
-//                    'class' => GridViewChangeSelfColumn::className(),
+                    'class' => GridViewChangeSelfColumn::class,
+                    'plugOptions' => [
+                        'values' => [0, 10],
+                    ],
                     'value' => function ($data){
                         return User::$statusIs[$data['status']];
                     },
