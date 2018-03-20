@@ -118,7 +118,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username', 'nickname', 'phone'], 'string', 'max' => 50],
 //            [['password_hash'], 'string', 'max' => 64],
             [['password_reset_token', 'email', 'avatar'], 'string', 'max' => 255],
-            [['sex'], 'string', 'max' => 1],
+            [['sex'], 'integer', 'max' => 1],
             [['status'], 'string', 'max' => 2],
             [['email'], 'email'],
             [['avatar'], 'image'],

@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'status',
                     'class' => GridViewChangeSelfColumn::class,
                     'plugOptions' => [
-                        'values' => [0, 10],
+                        'values' => [0,10],
                     ],
                     'value' => function ($data){
                         return User::$statusIs[$data['status']];
@@ -154,6 +154,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'max_store',
+                     'value' => function($data) {
+                        return Yii::$app->formatter->asShortSize($data['max_store']);
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',

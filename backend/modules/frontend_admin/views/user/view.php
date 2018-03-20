@@ -63,7 +63,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => Html::img(WEB_ROOT . $model->avatar, ['class' => 'img-circle', 'width' => '128px']),
                 ],
                 'email:email',
-                'max_store',
+                [
+                    'attribute' => 'max_store',
+                    'format' => 'raw',
+                    'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
+                        '（<span style="color:'.(($model->max_store/$usedSpace['size'] > 2) ? 'green' : 'red').'">已用'. Yii::$app->formatter->asShortSize($usedSpace['size']).'</span>）') :
+                            '<span style="color:green">已用'. Yii::$app->formatter->asShortSize($usedSpace['size']).'</span>'
+                    ,
+                ],
                 'des:ntext',
             ],
         ]) ?>
