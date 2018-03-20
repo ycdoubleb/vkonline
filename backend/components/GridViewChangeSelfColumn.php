@@ -41,6 +41,12 @@ class GridViewChangeSelfColumn extends DataColumn {
      */
     public $disabled = null;
 
+    /**
+     * 设置禁用启用
+     * @var bool|Function 
+     */
+    public $disabled = null;
+
     public function init() {
         $this->plugOptions = array_merge([
             //按钮显示，值为0 否，1 是
