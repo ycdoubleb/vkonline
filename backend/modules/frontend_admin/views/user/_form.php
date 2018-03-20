@@ -67,7 +67,7 @@ use yii\widgets\ActiveForm;
         ]); ?>
     
     <?php
-        $text = ' 设置用户最大上传空间，最小单位为 MB,如1204MB 为1G，默认为不限制';
+        $text = ' 设置用户最大上传空间，最小单位为 B,1073741824 B 为1G，默认为不限制';
         echo $form->field($model, 'max_store',[
         'template' => "{label}\n<div class=\"col-lg-3 col-md-3\">{input}</div>"
             . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999\">{$text}</div>\n<div class=\"col-lg-3 col-md-3\">{error}</div>",

@@ -2,6 +2,7 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
+use backend\components\BaseController;
 use common\models\searchs\UserSearch;
 use common\models\User;
 use common\models\vk\Course;
@@ -10,20 +11,21 @@ use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * @inheritdoc
@@ -76,6 +78,7 @@ class UserController extends Controller
         return $this->render('view', [
             'model' => $model,
             
+            'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($user_id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($user_id),     //已学课程数
             'videoProgress' => $this->getVideoProgress($user_id),       //已学视频数
@@ -207,6 +210,47 @@ class UserController extends Controller
                 ->all();
 
         return ArrayHelper::map($theCustomer, 'id', 'name');
+    }
+    
+    /**
+     * 查询已使用的空间
+     * @return array
+     */
+    public function getUsedSpace($id)
+    {
+        $files = $this->findUserFile($id)->all();
+        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
+        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
+        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        
+        $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
+            ->from(['Uploadfile' => Uploadfile::tableName()]);
+        
+        $query->where(['Uploadfile.is_del' => 0]);
+        $query->where(['Uploadfile.id' => $fileIds]);
+        
+        return $query->one();
+    }
+    
+    /**
+     * 查找用户关联的文件
+     * @param string $id
+     * @return Query
+     */
+    protected function findUserFile($id)
+    {
+        
+        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+            ->from(['User' => User::tableName()]);
+        
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.created_by = User.id AND Video.is_del = 0 AND Video.is_ref = 0)');
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
+        
+        $query->andWhere(['User.id' => $id]);
+        
+        $query->groupBy('Video.source_id');
+        
+        return $query;
     }
     
     /**
