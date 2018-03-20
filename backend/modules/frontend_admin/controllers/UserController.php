@@ -80,6 +80,7 @@ class UserController extends BaseController
             
             'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($user_id),             //用户自己创建的课程和视频
+            'studyTime' => $this->getStudyTime($user_id),               //用户学习时长
             'courseProgress' => $this->getCourseProgress($user_id),     //已学课程数
             'videoProgress' => $this->getVideoProgress($user_id),       //已学视频数
             'courseFavorite' => $this->getCourseFavorite($user_id),     //关注的课程数
@@ -260,17 +261,27 @@ class UserController extends BaseController
      */
     public function getUserCouVid($user_id)
     {
-        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.created_by) AS course_num'])
+        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.id) AS course_num'])
                 ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
                 ->where(['User.id' => $user_id])->one();
-        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.created_by) AS video_num'])
+        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.id) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
                 ->where(['User.id' => $user_id, 'Video.is_del' => 0])->one();
         
         return array_merge($userCou, $userVid);
     }
 
-
+    public function getStudyTime($user_id)
+    {
+        $studyTime = (new Query())->select(['SUM(VideoProgress.finish_time AS study_time)'])
+                ->from(['User' => User::tableName()])
+                ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
+                ->where(['User.id' => $user_id,])
+                ->one();
+        
+        return $studyTime;
+    }
+    
     /**
      * 获取学习完成的课程
      * @param string $user_id    用户ID

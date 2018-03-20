@@ -74,7 +74,7 @@ class VideoSearch extends Video
         $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id');        //关联查询标签中间表
         $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                //关联查询标签
         
-        $query->where(['Video.is_del' => 0]);
+        $query->where(['Video.is_del' => 0, 'Video.is_ref' => 0]);
 
         $this->load($params);
 

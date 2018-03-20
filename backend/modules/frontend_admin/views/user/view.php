@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label' => '总学习时长',
                     'format' => 'raw',
-                    'value' => null,
+                    'value' =>  $videoProgress['study_time'],
                 ],
                 [
                     'label' => '已学课程',

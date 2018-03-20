@@ -9,6 +9,7 @@ use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Teacher;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -42,7 +43,11 @@ class CourseController extends Controller
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $result['data']['course']
+        ]);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
