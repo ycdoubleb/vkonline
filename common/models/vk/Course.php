@@ -141,8 +141,8 @@ class Course extends ActiveRecord
                 //获取后缀名，默认为 png 
                 $ext = count($array) == 0 ? 'png' : $array[count($array) - 1];
                 $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/course/cover_imgs/'));
-                $upload->saveAs($uploadpath . md5($this->name) . '.' . $ext);
-                $this->cover_img = '/upload/course/cover_imgs/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
+                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
+                $this->cover_img = '/upload/course/cover_imgs/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
             }
 
             if ($this->isNewRecord) {
