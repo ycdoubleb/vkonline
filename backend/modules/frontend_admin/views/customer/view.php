@@ -1,8 +1,7 @@
 <?php
 
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\Customer;
-use common\models\vk\CustomerActLog;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -289,6 +288,6 @@ JS;
 ?>
 
 <?php
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>
 

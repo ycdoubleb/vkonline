@@ -1,7 +1,7 @@
 <?php
 
 use backend\components\GridViewChangeSelfColumn;
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\searchs\UserSearch;
 use common\models\User;
 use kartik\widgets\Select2;
@@ -158,11 +158,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'max_store',
-                     'value' => function($data) {
+                    'filter' => false,
+                    'value' => function($data) {
                         return Yii::$app->formatter->asShortSize($data['max_store']);
                     },
                     'contentOptions' => [
                         'style' => [
+                            'min-width' => '90px',
                             'text-align' => 'center',
                         ],
                     ],
@@ -196,5 +198,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>

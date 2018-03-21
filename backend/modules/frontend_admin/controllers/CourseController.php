@@ -168,7 +168,7 @@ class CourseController extends Controller
                 ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
                 ->all();
         
-        return ArrayHelper::map($category, 'name', 'name');
+        return ArrayHelper::map($category, 'id', 'name');
     }
     
     /**

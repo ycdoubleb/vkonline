@@ -226,6 +226,8 @@ return [
     'Banner' => '横幅',
     'Page' => '页',
     'Mode' => '方式',
+    'Distribution' => '分布',
+    'Survey' => '概况',
     
     //前台-协作人员
     'Help Man' => '协作人员',

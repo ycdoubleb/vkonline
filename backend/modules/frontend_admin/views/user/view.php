@@ -1,6 +1,6 @@
 <?php
 
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\User;
 use yii\helpers\Html;
 use yii\web\View;
@@ -67,8 +67,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'max_store',
                     'format' => 'raw',
                     'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
-                        '（<span style="color:'.(($model->max_store/$usedSpace['size'] > 2) ? 'green' : 'red').'">已用'. Yii::$app->formatter->asShortSize($usedSpace['size']).'</span>）') :
-                            '<span style="color:green">已用'. Yii::$app->formatter->asShortSize($usedSpace['size']).'</span>'
+                        '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
+                            (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
+                                '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
                     ,
                 ],
                 'des:ntext',
@@ -121,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label' => '总学习时长',
                     'format' => 'raw',
-                    'value' =>  $videoProgress['study_time'],
+                    'value' => Yii::$app->formatter->asDuration($studyTime['study_time']),
                 ],
                 [
                     'label' => '已学课程',
@@ -157,5 +158,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>
