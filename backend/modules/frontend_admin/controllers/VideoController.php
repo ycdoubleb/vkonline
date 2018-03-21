@@ -8,6 +8,7 @@ use common\models\vk\searchs\VideoSearch;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -41,13 +42,19 @@ class VideoController extends Controller
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $result = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['video']),
+            'key' => 'id',
+        ]);
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             
             'customer' => $this->getCustomer(),     //所属客户
+            'courseMap' => $result['data']['course'],//所属课程
             'teacher' => $this->getTeacher(),       //所有主讲老师
             'createdBy' => $this->getCreatedBy(),   //所有创建者
         ]);

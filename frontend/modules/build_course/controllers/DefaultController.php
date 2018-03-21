@@ -77,7 +77,8 @@ class DefaultController extends Controller
     public function actionMyCourse()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['created_by' => \Yii::$app->user->id]));
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
+            'created_by' => \Yii::$app->user->id, 'limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),
@@ -447,8 +448,20 @@ class DefaultController extends Controller
      */
     public function actionMyVideo()
     {
+        $searchModel = new VideoSearch();
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
+            'created_by' => \Yii::$app->user->id, 'limit' => 6]));
         
-        return $this->render('my_video');
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['video']),
+        ]);
+        
+        return $this->render('my_video', [
+            'filters' => $result['filter'],
+            'pagers' => $result['pager'],
+            'courseMap' => $result['data']['course'],
+            'dataProvider' => $dataProvider,
+        ]);
     }
     
     /**
@@ -593,7 +606,19 @@ class DefaultController extends Controller
      */
     public function actionMyTeacher()
     {
-        return $this->render('index');
+        $searchModel = new TeacherSearch();
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
+            'created_by' => \Yii::$app->user->id, 'limit' => 12]));
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['teacher']),
+        ]);
+        
+        return $this->render('my_teacher', [
+            'filters' => $result['filter'],
+            'pagers' => $result['pager'],
+            'dataProvider' => $dataProvider,
+        ]);
     }
     
     /**

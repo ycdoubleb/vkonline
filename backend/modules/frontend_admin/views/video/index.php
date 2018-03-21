@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer_id',
+                    'attribute' => 'customer.name',
                     'label' => Yii::t('app', '{The}{Customer}',[
                         'The' => Yii::t('app', 'The'),
                         'Customer' => Yii::t('app', 'Customer'),
@@ -41,6 +41,28 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
                         'data' => $customer,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'courseNode.course.name',
+                    'label' => Yii::t('app', '{The}{Course}',[
+                        'The' => Yii::t('app', 'The'),
+                        'Course' => Yii::t('app', 'Course'),
+                    ]),
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'name' => 'course_id',
+                        'data' => $courseMap,
                         'hideSearch' => true,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
@@ -66,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'teacher_id',
+                    'attribute' => 'teacher.name',
                     'label' => Yii::t('app', 'Teacher'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
@@ -85,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'created_by',
+                    'attribute' => 'createdBy.nickname',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
@@ -147,7 +169,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-//                    'attribute' => 'size',
+                    'attribute' => 'source.size',
                     'label' => Yii::t('app', '{Occupy}{Space}',[
                         'Occupy' => Yii::t('app', 'Occupy'),
                         'Space' => Yii::t('app', 'Space'),
@@ -158,7 +180,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return ($data['size'] != null) ? Yii::$app->formatter->asShortSize($data['size']) : null;
+                        return Yii::$app->formatter->asShortSize($data['source']['size']);
                     },
                     'contentOptions' => [
                         'style' => [
@@ -170,9 +192,9 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
-                    'value' => function ($data){
-                        return ($data['tags'] != null) ? $data['tags'] : null;
-                    },
+//                    'value' => function ($data){
+//                        return ($data['tags'] != null) ? $data['tags'] : null;
+//                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
