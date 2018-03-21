@@ -49,7 +49,7 @@ $utilsItems = [
     ],
     [
         'label' => '情景工具',
-        'url' => [Yii::$app->controller->action->id, 'utils' => 'qj_utils'],
+        'url' => 'javascript:;',//[Yii::$app->controller->action->id, 'utils' => 'qj_utils'],
         'icons' => Html::img(['/imgs/build_course/icons/icon_1-2.png']),
         'options' => ['class' => 'links disabled']
     ]
@@ -62,7 +62,7 @@ foreach ($menuItems as $item) {
 }
 //工具
 foreach ($utilsItems as $item) {
-    $utils .= ($reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
 $html = <<<Html
