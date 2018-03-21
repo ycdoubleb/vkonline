@@ -5,15 +5,11 @@ namespace common\models\vk\searchs;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
-use common\models\vk\Customer;
-use common\models\vk\TagRef;
-use common\models\vk\Tags;
-use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
-use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
+use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -22,6 +18,17 @@ use yii\helpers\ArrayHelper;
  */
 class VideoSearch extends Video
 {
+    /**
+     *
+     * @var Query 
+     */
+    private static $query;
+    /**
+     * 课程id
+     * @var string 
+     */
+    private $course_id;
+    
     /**
      * @inheritdoc
      */
@@ -47,84 +54,113 @@ class VideoSearch extends Video
      *
      * @param array $params
      *
-     * @return ActiveDataProvider
+     * @return ArrayDataProvider
      */
     public function search($params)
     {
-        $tags = ArrayHelper::getValue($params, 'VideoSearch.tags');
-        $query = (new Query())
-                ->select(['Video.id', 'Customer.name AS customer_id', 'Video.name', 'Teacher.name AS teacher_id', 
-                        'User.nickname AS created_by', 'Video.is_publish', 'Video.level', 'SUM(Uploadfile.size) AS size',
-                        'Tags.name AS tags', 'Video.created_at'])
-                ->from(['Video' => Video::tableName()]);
-
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'key' => 'id',
-        ]);
+        $this->course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $page = ArrayHelper::getValue($params, 'page'); //分页
+        $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
-        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');//关联查询所属客户
-        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');    //关联查询主讲老师
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');             //关联查询课程创建者
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id'); //关联查询视频附件中间表
-        //关联查询视频文件/关联查询视频附件
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id OR Uploadfile.id = Attachment.file_id');     
-        $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id');        //关联查询标签中间表
-        $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');                //关联查询标签
-        
-        $query->where(['Video.is_del' => 0]);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+        self::getInstance();
+        if(!$this->load($params)){
+            $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
+            $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
+            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
         }
         
-        // grid filtering conditions
-        $query->andFilterWhere([
+        //条件查询
+        self::$query->andFilterWhere([
             'Video.customer_id' => $this->customer_id,
+            'CourseNode.course_id' => $this->course_id,
             'Video.teacher_id' => $this->teacher_id,
             'Video.created_by' => $this->created_by,
             'Video.is_publish' => $this->is_publish,
             'Video.level' => $this->level,
+            'Video.is_del' => $this->level,
         ]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
+        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
+        
+        
+        //关联查询
+        self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
+        //添加字段
+        self::$query->addSelect(['Video.*']);
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        //显示数量
+        self::$query->offset(($page-1) * $limit)->limit($limit);
+        $viedoResult = self::$query->asArray()->all();
+        $courseMap = ArrayHelper::map($viedoResult, 'courseNode.course.id', 'courseNode.course.name');
+        //查询总数
+        $totalCount = self::$query->count();
+        //分页
+        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        //合并查询后的结果
+//        foreach ($courses as $id => $item) {
+//            if(isset($results[$id])){
+//                $courses[$id] += $results[$id];
+//            }
+//        }
+//        $videos = null;
+        return [
+            'filter' => $params,
+            'pager' => $pages,
+            'total' => $totalCount,
+            'data' => [
+                'course' => $courseMap,
+                'video' => $viedoResult
+            ],
+        ];
+    }
 
-        $query->andFilterWhere(['like', 'Video.name', $this->name])
-                ->andFilterWhere(['like', 'Tags.name', $tags]);
-
-        $query->groupBy(['Video.id']);
+    /**
+     * 查询相关课程
+     * @param string $id
+     * @return ArrayDataProvider
+     */
+    public function  relationSearch($id)
+    {
+        self::getInstance();
+        self::$query->addSelect(['Course.name', 'User.nickname']);
+        
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
+        
+        self::$query->andFilterWhere([ 'Video.ref_id' => $id]);
+        
+        self::$query->groupBy('Course.id');
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => self::$query->asArray()->all(),
+        ]);
         
         return $dataProvider;
     }
     
     /**
      * 
-     * @param string $id
-     * @return ActiveDataProvider
+     * @return Query
      */
-    public function  relationSearch($id)
+    protected static function getInstance() {
+        if (self::$query == null) {
+            self::$query = self::findVideo();
+        }
+        return self::$query;
+    }
+    
+    /**
+     * 查询视频
+     * @return Query
+     */
+    public static function findVideo() 
     {
-        $query = (new Query())->select(['Course.name', 'User.nickname'])
+        $query = self::find()->select(['Video.id'])
             ->from(['Video' => self::tableName()]);
         
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-        
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
-        $query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
-        
-        $query->andFilterWhere([
-            'Video.ref_id' => $id
-        ]);
-        
-        $query->groupBy('Course.id');
-        
-        return $dataProvider;
+        return $query;
     }
 }

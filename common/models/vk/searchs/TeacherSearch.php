@@ -6,13 +6,22 @@ use common\models\vk\Course;
 use common\models\vk\Teacher;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
+use yii\data\Pagination;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * TeacherSearch represents the model behind the search form of `common\models\vk\Teacher`.
  */
 class TeacherSearch extends Teacher
 {
+    /**
+     *
+     * @var Query 
+     */
+    private static $query;
+    
     /**
      * @inheritdoc
      */
@@ -38,42 +47,65 @@ class TeacherSearch extends Teacher
      *
      * @param array $params
      *
-     * @return ActiveDataProvider
+     * @return ArrayDataProvider
      */
     public function search($params)
     {
-        $query = Teacher::find();
+        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $page = ArrayHelper::getValue($params, 'page'); //分页
+        $limit = ArrayHelper::getValue($params, 'limit'); //显示数
 
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
+        self::getInstance();
+        if(!$this->load($params)){
+            $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
+            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
         }
+        
+//        if (!$this->validate()) {
+//            // uncomment the following line if you do not want to return any records when validation fails
+//            // $query->where('0=1');
+//            return $dataProvider;
+//        }
 
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+        //条件查询
+        self::$query->andFilterWhere([
+            'Teacher.customer_id' => $this->customer_id,
+            'Teacher.created_by' => $this->created_by,
+            'Teacher.sex' => $this->sex,
+            'Teacher.level' => $this->level,
+            'Teacher.created_at' => $this->created_at,
+            'Teacher.updated_at' => $this->updated_at,
         ]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'name', $this->name]);
+        self::$query->andFilterWhere(['like', 'name', $keyword]);
 
-        $query->andFilterWhere(['like', 'id', $this->id])
-            ->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'sex', $this->sex])
-            ->andFilterWhere(['like', 'avatar', $this->avatar])
-            ->andFilterWhere(['like', 'level', $this->level])
-            ->andFilterWhere(['like', 'customer_id', $this->customer_id])
-            ->andFilterWhere(['like', 'des', $this->des])
-            ->andFilterWhere(['like', 'created_by', $this->created_by]);
-
-        return $dataProvider;
+        //关联查询
+//        self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
+        //添加字段
+        self::$query->addSelect(['Teacher.*']);
+        //显示数量
+        self::$query->offset(($page-1) * $limit)->limit($limit);
+        $teacherResult = self::$query->asArray()->all();
+        //查询总数
+        $totalCount = self::$query->count();
+        //分页
+        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        //合并查询后的结果
+//        foreach ($courses as $id => $item) {
+//            if(isset($results[$id])){
+//                $courses[$id] += $results[$id];
+//            }
+//        }
+        
+        return [
+            'filter' => $params,
+            'pager' => $pages,
+            'total' => $totalCount,
+            'data' => [
+                'teacher' => $teacherResult
+            ],
+        ];
     }
     
     /**
@@ -83,21 +115,42 @@ class TeacherSearch extends Teacher
      */
     public function  relationSearch($id)
     {
-        $query = (new Query())->select(['Course.id', 'Course.name'])
-            ->from(['Teacher' => self::tableName()]);
+        self::getInstance();
+        self::$query->select(['Course.id', 'Course.name']);
         
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.teacher_id = Teacher.id');
+        
+        self::$query->andFilterWhere(['Course.teacher_id' => $id]);
+        
+        self::$query->groupBy('Course.id');
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => self::$query->asArray()->all(),
         ]);
-        
-        $query->leftJoin(['Course' => Course::tableName()], 'Course.teacher_id = Teacher.id');
-        
-        $query->andFilterWhere([
-            'Course.teacher_id' => $id
-        ]);
-        
-        $query->groupBy('Course.id');
         
         return $dataProvider;
+    }
+    
+    /**
+     * 
+     * @return Query
+     */
+    protected static function getInstance() {
+        if (self::$query == null) {
+            self::$query = self::findTeacher();
+        }
+        return self::$query;
+    }
+    
+    /**
+     * 查询老师
+     * @return Query
+     */
+    public static function findTeacher() 
+    {
+        $query = self::find()->select(['Teacher.id'])
+            ->from(['Teacher' => self::tableName()]);
+        
+        return $query;
     }
 }

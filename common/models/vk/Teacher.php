@@ -115,8 +115,8 @@ class Teacher extends ActiveRecord
                 //获取后缀名，默认为 jpg 
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
                 $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
-                $upload->saveAs($uploadpath . $this->name . '.' . $ext);
-                $this->avatar = '/upload/teacher/avatars/' . $this->name . '.' . $ext . '?rand=' . rand(0, 1000);
+                $upload->saveAs($uploadpath . md5($this->name) . '.' . $ext);
+                $this->avatar = '/upload/teacher/avatars/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
             }
 
             if ($this->isNewRecord) {

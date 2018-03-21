@@ -57,13 +57,13 @@ class CourseSearch extends Course
      *
      * @param array $params
      *
-     * @return ActiveDataProvider
+     * @return ArrayDataProvider
      */
     public function search($params)
     {
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $page = ArrayHelper::getValue($params, 'page'); //分页
-        $limit = ArrayHelper::getValue($params, 'limit'); //显示数量
+        $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
         if(!$this->load($params)){
@@ -97,9 +97,9 @@ class CourseSearch extends Course
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $courseResult = self::$query->asArray()->all();
-        //查课程总数
+        //查询总数
         $totalCount = self::$query->count();
-        //课程分页
+        //分页
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');

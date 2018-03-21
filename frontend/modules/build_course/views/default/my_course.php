@@ -19,13 +19,17 @@ ModuleAssets::register($this);
 <div class="default-myCourse main">
     
     <p>
-        <?= Html::a(Yii::t(null, '{Create}{Course}', [
+        <?= Html::a('<i class="fa fa-plus-circle"></i>&nbsp;' . Yii::t('app', '{Create}{Course}', [
             'Create' => Yii::t('app', 'Create'),'Course' => Yii::t('app', '微课')]), ['add-course'], [
                 'class' => 'btn btn-success'
             ]) ?>
     </p>
     
-    <?php $form = ActiveForm::begin(['id' => 'build-course-form', 'method' => 'get',]); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => 'build-course-form', 
+        'action' => array_merge(['my-course'], ['utils' => ArrayHelper::getValue($filters, 'utils')]),
+        'method' => 'get'
+    ]); ?>
     
     <div class="col-xs-12 search-frame"> 
         <div class="search-text-input">
@@ -39,6 +43,9 @@ ModuleAssets::register($this);
     <?php ActiveForm::end(); ?>
     
     <div class="list">
+        <?php if(count($dataProvider->allModels) <= 0): ?>
+        <h5>没有找到数据。</h5>
+        <?php endif; ?>
         <?php foreach ($dataProvider->allModels as $index => $model): ?>
         <div class="item <?= $index % 3 == 2 ? 'item-right' : null ?>">
             <div class="pic">
