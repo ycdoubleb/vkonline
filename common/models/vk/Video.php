@@ -88,7 +88,8 @@ class Video extends ActiveRecord
             [['source_duration'], 'number'], 
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
             [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
-            [['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
+            //[['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'node_id', 'teacher_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             //[['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'source_is_link'], 'integer', 'max' => 1],
             [['source_wh'], 'string', 'max' => 20],
@@ -152,8 +153,8 @@ class Video extends ActiveRecord
                 //获取后缀名，默认为 jpg 
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
                 $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/video/screenshots/'));
-                $upload->saveAs($uploadpath . md5($this->source_id) . '.' . $ext);
-                $this->img = '/upload/video/screenshots/' . md5($this->source_id) . '.' . $ext . '?rand=' . rand(0, 1000);
+                $upload->saveAs($uploadpath . $this->source_id . '.' . $ext);
+                $this->img = '/upload/video/screenshots/' . $this->source_id . '.' . $ext . '?rand=' . rand(0, 1000);
             }else {
                 //设置默认
                 $this->img = FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path);

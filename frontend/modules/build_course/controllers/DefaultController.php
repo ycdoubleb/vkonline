@@ -815,7 +815,7 @@ class DefaultController extends Controller
     protected function getVideoByReference()
     {
         $refs = [];
-        $vidos = Video::getVideoByNode([]);
+        $vidos = Video::getVideoNode([]);
         foreach ($vidos as $model) {
             $refs[] = [
                 'id' => $model->id,
