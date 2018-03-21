@@ -12,6 +12,7 @@ use Yii;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -93,14 +94,18 @@ class BannerController extends BaseController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        
+        if($model->customer_id){
+            throw new NotAcceptableHttpException('无权限操作！');
+        } else {
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
     }
 
     /**
@@ -112,9 +117,14 @@ class BannerController extends BaseController
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
+        $model = $this->findModel($id);
+        
+        if($model->customer_id){
+            throw new NotAcceptableHttpException('无权限操作！');
+        } else {
+            $model->delete();
+            return $this->redirect(['index']);
+        }
     }
 
     /**

@@ -51,4 +51,9 @@ class AdminUser extends User implements IdentityInterface
     {
         return array_merge(parent::attributeLabels(), ['guid' => Yii::t('app', 'Guid'),]);
     }
+    
+//    public function afterFind() {
+//        
+//        //parent::afterFind();
+//    }
 }

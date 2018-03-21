@@ -3,11 +3,17 @@
 namespace common\models;
 
 use common\models\vk\Customer;
+use common\models\vk\Good;
+use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
 
@@ -25,7 +31,7 @@ use yii\web\UploadedFile;
  * @property string $email                  邮箱
  * @property string $avatar                 头像
  * @property int $status                    状态：0 停用 10启用
- * @property string $max_store              最大存储空间（最小单位为B）
+ * @property bigint $max_store              最大存储空间（最小单位为B）
  * @property string $des                    简介
  * @property string $auth_key               认证
  * @property string $created_at             创建时间
@@ -34,6 +40,8 @@ use yii\web\UploadedFile;
  */
 class User extends ActiveRecord implements IdentityInterface {
 
+    public $byte;
+    
     /** 创建场景 */
     const SCENARIO_CREATE = 'create';
 
@@ -46,13 +54,16 @@ class User extends ActiveRecord implements IdentityInterface {
 
     /** 性别 保密 */
     const SEX_SECRECY = 0;
-    
     /** 性别 男 */
     const SEX_MALE = 1;
-
     /** 性别 女 */
     const SEX_WOMAN = 2;
-
+    
+    /** 空间大小 MB */
+    const MBYTE = 1024 * 1024;
+    /** 空间大小 GB */
+    const GBYTE = 1024 * 1024 * 1024;
+    
     /**
      * 性别
      * @var array 
@@ -64,25 +75,34 @@ class User extends ActiveRecord implements IdentityInterface {
     ];
     
     /**
-     *账号
+     * 账号
      * @var array 
      */
     public static $statusIs = [
         self::STATUS_STOP => '停用',
         self::STATUS_ACTIVE => '启用',
     ];
-
+    
+    /**
+     * 限定最大空间
+     * @var array 
+     */
+    public static $byteName = [
+         self::MBYTE => 'MB',    
+         self::GBYTE => 'GB',    
+    ];
+    
     /* 重复密码验证 */
     public $password2;
 
     public function scenarios() {
         return [
             self::SCENARIO_CREATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
             self::SCENARIO_UPDATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
             self::SCENARIO_DEFAULT => 
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
         ];
     }
 
@@ -112,7 +132,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['max_store', 'created_at', 'updated_at'], 'integer'],
+            [['created_at', 'updated_at'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname', 'phone'], 'string', 'max' => 50],
@@ -123,25 +143,39 @@ class User extends ActiveRecord implements IdentityInterface {
             [['email'], 'email'],
             [['avatar'], 'image'],
             [['password2'], 'compare', 'compareAttribute' => 'password_hash'],
-            [['avatar'], 'file', 'extensions' => 'jpg, png', 'mimeTypes' => 'image/jpeg, image/png']
+            [['avatar'], 'file', 'extensions' => 'jpg, png', 'mimeTypes' => 'image/jpeg, image/png'],
+            [['max_store'], 'checkMaxStore', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]]
         ];
     }
+    
+    /**
+     * 检查用户的存储空间是否超过限制
+     * @param bigint $attribute     max_store
+     * @param string $params
+     * @return boolean
+     */
+    public function checkMaxStore($attribute, $params)
+    {
+        $format = $this->getAttribute($attribute) * $this->byte;
+        $totalSize = Customer::findOne($this->customer_id);             //客户所拥有的存储空间
 
+        if((float)$format > $totalSize->good->data){
+            $this->addError($attribute, "用户的存储空间大于客户所拥有的存储空间！");  
+            return false;  
+        } else {
+            return true;
+        }
+    }
+    
     /**
      * @inheritdoc
      */
     public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', '{The}{Customer}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Customer' => Yii::t('app', 'Customer'),
-                    ]),
+            'customer_id' => Yii::t('app', '{The}{Customer}',['The' => Yii::t('app', 'The'),'Customer' => Yii::t('app', 'Customer'),]),
             'username' => Yii::t('app', 'Account Number'),
-            'nickname' => Yii::t('app', '{True}{Name}',[
-                        'True' => Yii::t('app', 'True'),
-                        'Name' => Yii::t('app', 'Name'),
-                    ]),
+            'nickname' => Yii::t('app', '{True}{Name}',['True' => Yii::t('app', 'True'),'Name' => Yii::t('app', 'Name'),]),
             'password_hash' => Yii::t('app', 'Password Hash'),
             'password2' => Yii::t('app', 'Password2'),
             'password_reset_token' => Yii::t('app', 'Password Reset Token'),
@@ -150,17 +184,14 @@ class User extends ActiveRecord implements IdentityInterface {
             'email' => Yii::t('app', 'Email'),
             'avatar' => Yii::t('app', 'Avatar'),
             'status' => Yii::t('app', 'Status'),
-            'max_store' => Yii::t('app', '{Storage}{Space}',[
-                        'Storage' => Yii::t('app', 'Storage'),
-                        'Space' => Yii::t('app', 'Space'),
-                    ]),
+            'max_store' => Yii::t('app', '{Storage}{Space}',['Storage' => Yii::t('app', 'Storage'),'Space' => Yii::t('app', 'Space'),]),
             'des' => Yii::t('app', 'Des'),
             'auth_key' => Yii::t('app', 'Auth Key'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-
+    
     /**
      * 关联获取所属客户
      * @return ActiveQuery
@@ -170,11 +201,17 @@ class User extends ActiveRecord implements IdentityInterface {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
     
+//    public function afterFind() {
+//        
+//        parent::afterFind();
+//    }
+    
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
+            $this->max_store = $this->max_store * $this->byte;
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
                 $string = $upload->name;
@@ -342,5 +379,5 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-
+    
 }

@@ -67,11 +67,12 @@ use yii\widgets\ActiveForm;
         ]); ?>
     
     <?php
-        $text = ' 设置用户最大上传空间，最小单位为 B,1073741824 B 为1G，默认为不限制';
+        $prompt = '1TB=1024GB，默认为不限制';
+        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 75%;']);
         echo $form->field($model, 'max_store',[
-        'template' => "{label}\n<div class=\"col-lg-3 col-md-3\">{input}</div>"
-            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999\">{$text}</div>\n<div class=\"col-lg-3 col-md-3\">{error}</div>",
-    ])->textInput(['maxlength' => true]); ?>
+        'template' => "{label}\n<div class=\"col-lg-1 col-md-1\" style=\"padding-right:3px\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding:0\">{$downList}</div>"
+            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999;padding:7px 0px\">{$prompt}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+    ])->textInput(['type' => 'number', 'maxlength' => true]); ?>
     
     <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
 

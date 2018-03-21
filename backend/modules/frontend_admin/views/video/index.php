@@ -1,6 +1,6 @@
 <?php
 
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\Course;
 use common\models\vk\searchs\VideoSearch;
 use kartik\widgets\Select2;
@@ -232,5 +232,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>

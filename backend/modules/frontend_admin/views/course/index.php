@@ -1,6 +1,6 @@
 <?php
 
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
 use kartik\widgets\Select2;
@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer_id',
+                    'attribute' => 'customer.name',
                     'label' => Yii::t('app', '{The}{Customer}',[
                         'The' => Yii::t('app', 'The'),
                         'Customer' => Yii::t('app', 'Customer'),
@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'category_id',
+                    'attribute' => 'category.name',
                     'label' => Yii::t('app', '{The}{Category}',[
                         'The' => Yii::t('app', 'The'),
                         'Category' => Yii::t('app', 'Category'),
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'teacher_id',
+                    'attribute' => 'teacher.name',
                     'label' => Yii::t('app', '{Main Speak}{Teacher}',[
                         'Main Speak' => Yii::t('app', 'Main Speak'),
                         'Teacher' => Yii::t('app', 'Teacher'),
@@ -110,7 +110,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'created_by',
+                    'attribute' => 'createdBy.nickname',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
@@ -182,9 +182,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'min-width' => '90px',
                         ],
                     ],
-                    'value' => function ($data){
-                        return ($data['size'] != null) ? Yii::$app->formatter->asShortSize($data['size']) : null;
-                    },
+//                    'value' => function ($data){
+//                        return ($data['size'] != null) ? Yii::$app->formatter->asShortSize($data['size']) : null;
+//                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -195,9 +195,9 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
-                    'value' => function ($data){
-                        return ($data['tags'] != null) ? $data['tags'] : null;
-                    },
+//                    'value' => function ($data){
+//                        return ($data['tags'] != null) ? $data['tags'] : null;
+//                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -235,5 +235,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>
