@@ -41,6 +41,8 @@ use yii\widgets\ActiveForm;
                 swf: '<?= $swfpath ?>' + '/Uploader.swf',
                 // 上传容器
                 container: '#video-uploader-container',
+                //文件个数限制
+                fileNumLimit: 1,
                 //自动上传
                 auto: false,
                 //每次上传都会传到服务器的固定参数
@@ -65,19 +67,21 @@ use yii\widgets\ActiveForm;
                 swf: '<?= $swfpath ?>' + '/Uploader.swf',
                 // 上传容器
                 container: '#attachment-uploader-container',
+                //文件个数限制
+                fileNumLimit: 0,
                 //自动上传
                 auto: false,
                 //每次上传都会传到服务器的固定参数
                 formData: {
                     _csrf: "<?= Yii::$app->request->csrfToken ?>",
                     //指定文件上传到的应用
-                    app_path: 'mcoline',
+                    app_path: 'vkonline',
                     //debug: 1,
                 }
             });
             //return;
             videoUploader.addCompleteFiles(<?= $files ?>);
-            videoUploader.setEnabled(false);
+            //videoUploader.setEnabled(false);
         }
         /**
          * 上传文件完成才可以提交

@@ -60,7 +60,7 @@ return [
     'Study' => '学习',
     'Center' => '中心',
     'Square' => '广场',
-    'Manage' => '管理',
+    'Admin' => '管理',
     'Detail' => '详情',
     'Info' => '信息',
     'Operating' => '操作',

@@ -67,6 +67,11 @@
             + '{%value%}'
             + '</div>'
             + '</div>';
+    /* 提示框 */
+    var TIPS_DOM = '<div class="alert alert-{%type%} alert-dismissible" role="alert">'
+            + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+            +'<strong>{%title%}!</strong> {%content%}'
+            +'</div>'
 
     /* 等待图标 */
     var STATUS_WAITING_ICON = '<i class="glyphicon glyphicon-time"></i>';
@@ -245,6 +250,17 @@
                 $ctlBtn.html('重新上传')
             }
         });
+        //uploader.on('beforeFileQueued',function(file){
+            //console.log(file);
+            //return false;
+        //});
+        uploader.on('beforeFileQueuedCheckfileNumLimit',function(file,count){
+            if(_self.getFileNum() + 1 > _self.config['fileNumLimit']){
+                 _self.alert('warning','警告','超出最大文件个数限制！');
+                return false;
+            }
+            return true;
+        });
         $ctlBtn.on('click', function () {
             var text = $ctlBtn.html();
             if (text == '开始上传' || text == '继续上传') {
@@ -258,12 +274,38 @@
                 $ctlBtn.html('暂停上传');
             }
         });
+        /**
+         * 显示警告信息
+         * @param {string} type     success,info,warning,danger
+         * @param {string} title    显示标题
+         * @param {string} content  提示内容
+         * @param {boolean} autohide  true|false 是否自动隐藏,默认为是
+         * @param {number} delaytime  延迟隐藏的时间，单位为毫秒，默认为2000
+         * @returns {void}
+         */
+        this.alert = function(type,title,content,autohide,delaytime){
+            var $alertContent = $(StringUtil.createDOM(TIPS_DOM,{type,title,content}));
+            $rootContainer.prepend($alertContent);
+            if(autohide == undefined || autohide){
+                setTimeout(function(){
+                    $alertContent.fadeOut($alertContent.remove);
+                },delaytime||2000)
+            }
+        }
 
         /*************************************************************************************
          *
          * publich method
          *
          *************************************************************************************/
+        /**
+         * 获取文件个数
+         * @returns {int}
+         */
+        this.getFileNum = function(){
+            return $list.find('input').length;
+        }
+        
         this.clearAll = function(){
             $list.empty();
         }

@@ -41,7 +41,7 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -58,6 +58,21 @@ $js =
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$("#build-course-form").submit();return;
+        if($('#video-name').val() == ''){
+            return;
+        }
+        if($('#video-teacher_id').val() == ''){
+            return;
+        }
+        if((tijiao() && isExist()) == false){
+            $('.field-video-source_id').addClass('has-error');
+            $('.field-video-source_id .help-block').html('视频文件不能为空或者必须是已上传。');
+            setTimeout(function(){
+                $('.field-video-source_id').removeClass('has-error');
+                $('.field-video-source_id .help-block').html('');
+            }, 3000);
+            return;
+        }
         $.post("../default/edit-video?id=$model->id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){
                 $.each(rel['data'],function(key, value){
@@ -70,6 +85,7 @@ $js =
                 $("#act_log").load("$actLog");
             }
         });
+        $('.myModal').modal('hide');
     });  
  
     
