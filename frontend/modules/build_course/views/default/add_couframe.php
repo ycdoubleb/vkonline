@@ -36,7 +36,7 @@ $this->title = Yii::t('app', "{Add}{Node}",[
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -44,7 +44,7 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 </div>
 
 <?php
-
+ 
 $actLog = Url::to(['actlog', 'course_id' => $course_id]);
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"", 
     $this->renderFile('@frontend/modules/build_course/views/default/view_couframe.php')));
@@ -54,6 +54,11 @@ $js =
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;
+        if($('#coursenode-name').val() == ''){
+            $('.field-coursenode-name').addClass('has-error');
+            $('.field-coursenode-name .help-block').html('名称不能为空。');
+            return;
+        }
         var items = '$domes';    
         $.post("../default/add-couframe?course_id=$course_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
@@ -72,6 +77,7 @@ $js =
                 $("#act_log").load("$actLog");
             }
         });
+        $('.myModal').modal('hide');
     });   
         
 JS;

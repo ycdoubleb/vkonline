@@ -42,7 +42,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -56,10 +56,29 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"",
     $this->renderFile('@frontend/modules/build_course/views/default/view_videoframe.php')));
 $js = 
 <<<JS
-            
+   
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;
+        if($('#video-name').val() == ''){
+            $('.field-video-name').addClass('has-error');
+            $('.field-video-name .help-block').html('名称不能为空。');
+            return;
+        }
+        if($('#video-teacher_id').val() == ''){
+            $('.field-video-teacher_id').addClass('has-error');
+            $('.field-video-teacher_id .help-block').html('主讲老师不能为空。');
+            return;
+        }
+        if((tijiao() && isExist()) == false){
+            $('.field-video-source_id').addClass('has-error');
+            $('.field-video-source_id .help-block').html('视频文件不能为空或者必须是已上传。');
+            setTimeout(function(){
+                $('.field-video-source_id').removeClass('has-error');
+                $('.field-video-source_id .help-block').html('');
+            }, 3000);
+            return;
+        }
         var items = '$domes';    
         $.post("../default/add-video?node_id=$model->node_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
@@ -74,6 +93,7 @@ $js =
                 $("#act_log").load("$actLog");
             }
         });
+        $('.myModal').modal('hide');
     });   
         
 JS;
