@@ -226,7 +226,7 @@ class Video extends ActiveRecord
     {
         return $this->hasOne(Uploadfile::class, ['id' => 'source_id']);
     }
-    
+        
     /**
      * 获取已上传的视频
      * @return ActiveQuery

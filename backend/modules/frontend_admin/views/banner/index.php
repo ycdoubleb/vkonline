@@ -244,7 +244,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'conditions' => true,
                                 'adminOptions' => true,
                             ];
-
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                         },
                         'delete' => function ($url, $data, $key) {
@@ -265,7 +264,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'conditions' => true,
                                 'adminOptions' => true,
                             ];
-
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
                         },       
                     ],

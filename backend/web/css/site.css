@@ -14,6 +14,10 @@ body {
     padding: 70px 15px 20px;
 }
 
+/*.wrap .table {
+    table-layout: fixed;
+}*/
+
 .footer {
     height: 60px;
     background-color: #f5f5f5;

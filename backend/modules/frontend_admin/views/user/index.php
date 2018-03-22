@@ -159,8 +159,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'max_store',
                     'filter' => false,
+                    'format' => 'raw',
                     'value' => function($data) {
-                        return Yii::$app->formatter->asShortSize($data['max_store']);
+                        return Yii::$app->formatter->asShortSize($data['max_store']) . ' / ' .
+                                '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
+                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 0) . '</span>';
                     },
                     'contentOptions' => [
                         'style' => [

@@ -3,10 +3,10 @@
 namespace common\models\searchs;
 
 use common\models\User;
-use common\models\vk\Course;
-use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -86,20 +86,21 @@ class UserSearch extends User
         $courses = $this->getUserCourseNumber();
         //视频数
         $videos = $this->getUserVideoNodeNumber();
-        
+        $videoSize = $this->findUsedSizeByUser()->asArray()->all();
+//        var_dump(ArrayHelper::index($videoSize, 'created_by'));exit;
         //添加字段and 关联查询
         self::$query->addSelect(['User.*'])->with('customer');
         //以user_id为索引
         $users = ArrayHelper::index(self::$query->asArray()->all(), 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
-                ArrayHelper::index($videos, 'created_by'));
+                ArrayHelper::index($videos, 'created_by'), ArrayHelper::index($videoSize, 'created_by'));
         //合并查询后的结果
         foreach ($users as $id => $item) {
             if(isset($results[$id])){
                 $users[$id] += $results[$id];
             }
         }
-        
+//        var_dump($users);exit;
         return [
             'filter' => $params,
             'data' => [
@@ -150,6 +151,49 @@ class UserSearch extends User
         
         return $query->asArray()->all();
         
+    }
+    
+    /**
+     * 获取用户所用空间大小
+     * @return Query
+     */
+    public function findUsedSizeByUser()
+    {
+        $files = $this->findUserFile()->all();
+        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
+        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
+        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        
+        $query = Uploadfile::find()
+                ->select(['Uploadfile.created_by', 'SUM(Uploadfile.size) AS user_size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()]);
+
+        $query->where(['Uploadfile.is_del' => 0]);
+        $query->where(['Uploadfile.id' => $fileIds]);
+        
+        $query->groupBy('Uploadfile.created_by');
+        
+        return $query;
+    }
+    
+    /**
+     * 查找用户关联的文件
+     * @param string $id
+     * @return Query
+     */
+    protected function findUserFile()
+    {
+        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+            ->from(['User' => User::tableName()]);
+        
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.created_by = User.id AND Video.is_del = 0 AND Video.is_ref = 0)');
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
+        
+        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
+        
+        $query->groupBy('Video.source_id');
+        
+        return $query;
     }
 
     /**

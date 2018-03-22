@@ -240,7 +240,6 @@ class UserController extends BaseController
      */
     protected function findUserFile($id)
     {
-        
         $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
             ->from(['User' => User::tableName()]);
         
