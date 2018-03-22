@@ -62,15 +62,21 @@ class CourseSearch extends Course
     public function search($params)
     {
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
         if(!$this->load($params)){
-            $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
+            $this->customer_id = ArrayHelper::getValue($params, 'customer_id', \Yii::$app->user->identity->customer_id); //客户id
             $this->category_id = ArrayHelper::getValue($params, 'category_id'); //分类id
             $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
             $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
+            $this->is_publish = ArrayHelper::getValue($params, 'is_publish'); //是否发布
+            $this->level = array_filter(explode(',', ArrayHelper::getValue($params, 'level'))); //可见范围
+            if(count($this->level) > 1){
+                $this->customer_id = null;
+            }
         }
         //条件查询
         self::$query->andFilterWhere([
@@ -81,19 +87,21 @@ class CourseSearch extends Course
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
-        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         //查询所有课程下的环节数
         $videoResult = self::findVideoByCourseNode()->asArray()->all();  
         //查询课程下的所有关注数
-        $favoriteResult = CourseFavorite::findCourseFavorite(['Favorite.course_id' => self::$query])->asArray()->all(); 
+        $favoriteResult = CourseFavorite::findCourseFavorite(['Favorite.course_id' => self::$query])->asArray()->all();
         //查询课程下的所有点赞数
         $praiseResult = PraiseLog::findUserPraiseLog(['Praise.course_id' => self::$query])->asArray()->all();
         //关联查询
         self::$query->with('category', 'customer', 'teacher', 'createdBy');
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
+        self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
+        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         //添加字段
         self::$query->addSelect(['Course.*']);
+        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $courseResult = self::$query->asArray()->all();

@@ -24,9 +24,8 @@ ModuleAssets::register($this);
     </p>
     
     <?php $form = ActiveForm::begin([
-        'id' => 'build-course-form', 
+        'id' => 'build-course-form', 'method' => 'get',
         'action' => array_merge(['my-teacher'], ['utils' => ArrayHelper::getValue($filters, 'utils')]),
-        'method' => 'get'
     ]); ?>
     
     <div class="col-xs-12 search-frame"> 

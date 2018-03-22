@@ -11,6 +11,10 @@ use yii\web\View;
 
 MainAssets::register($this);
 
+$this->title = Yii::t('app', '{Build}{Center}',[
+    'Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),
+]);
+
 ?>
 
 <?php
