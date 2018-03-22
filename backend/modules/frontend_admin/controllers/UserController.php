@@ -55,7 +55,7 @@ class UserController extends BaseController
             'allModels' => array_values($result['data']['user']),
             'key' => 'id'
         ]);
-        
+//        var_dump($dataProvider->models);exit;
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -80,6 +80,7 @@ class UserController extends BaseController
             
             'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($user_id),             //用户自己创建的课程和视频
+            'studyTime' => $this->getStudyTime($user_id),               //用户学习时长
             'courseProgress' => $this->getCourseProgress($user_id),     //已学课程数
             'videoProgress' => $this->getVideoProgress($user_id),       //已学视频数
             'courseFavorite' => $this->getCourseFavorite($user_id),     //关注的课程数
@@ -101,13 +102,13 @@ class UserController extends BaseController
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
-        }
+        } else {
+            return $this->render('create', [
+                'model' => $model,
 
-        return $this->render('create', [
-            'model' => $model,
-            
-            'customer' => $this->getCustomer(),
-        ]);
+                'customer' => $this->getCustomer(),
+            ]);
+        }
     }
 
     /**
@@ -124,13 +125,13 @@ class UserController extends BaseController
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
+        }else{
+            $model->max_store = ($model->max_store / User::MBYTE);
+            return $this->render('update', [
+                'model' => $model,
+                'customer' => $this->getCustomer(),
+            ]);
         }
-
-        return $this->render('update', [
-            'model' => $model,
-            
-            'customer' => $this->getCustomer(),
-        ]);
     }
 
     /**
@@ -260,17 +261,32 @@ class UserController extends BaseController
      */
     public function getUserCouVid($user_id)
     {
-        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.created_by) AS course_num'])
+        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.id) AS course_num'])
                 ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
                 ->where(['User.id' => $user_id])->one();
-        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.created_by) AS video_num'])
+        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.id) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
                 ->where(['User.id' => $user_id, 'Video.is_del' => 0])->one();
         
         return array_merge($userCou, $userVid);
     }
 
+    /**
+     * 获取用户总学习时长
+     * @param string $user_id   用户ID
+     * @return array
+     */
+    public function getStudyTime($user_id)
+    {
+        $studyTime = (new Query())->select(['SUM(VideoProgress.finish_time) AS study_time'])
+                ->from(['User' => User::tableName()])
+                ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
+                ->where(['User.id' => $user_id,])
+                ->one();
 
+        return $studyTime;
+    }
+    
     /**
      * 获取学习完成的课程
      * @param string $user_id    用户ID
@@ -282,10 +298,7 @@ class UserController extends BaseController
                 ->select(['COUNT(CourseProgress.user_id) AS cou_pro_num'])
                 ->from(['User' => User::tableName()])
                 ->leftJoin(['CourseProgress' => CourseProgress::tableName()], 'CourseProgress.user_id = User.id')
-                ->where([
-                        'CourseProgress.is_finish' => 1,
-                        'User.id' => $user_id,
-                    ])
+                ->where(['CourseProgress.is_finish' => 1,'User.id' => $user_id,])
                 ->one();
 
         return $courseProgress;
@@ -302,10 +315,7 @@ class UserController extends BaseController
                 ->select(['COUNT(VideoProgress.user_id) AS vid_pro_num'])
                 ->from(['User' => User::tableName()])
                 ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
-                ->where([
-                        'VideoProgress.is_finish' => 1,
-                        'User.id' => $user_id,
-                    ])
+                ->where(['VideoProgress.is_finish' => 1,'User.id' => $user_id,])
                 ->one();
 
         return $videoProgress;

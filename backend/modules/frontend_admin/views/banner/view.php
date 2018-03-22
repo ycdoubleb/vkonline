@@ -1,6 +1,6 @@
 <?php
 
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\Banner;
 use yii\helpers\Html;
 use yii\web\View;
@@ -23,7 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="banner-view customer">
 
     <p>
-        <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], 
+                ['class' => 'btn btn-primary '.($model->customer_id ? 'disabled' : ' ')]) ?>
         <?php
 //        Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
 //            'class' => 'btn btn-danger',
@@ -92,5 +93,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>

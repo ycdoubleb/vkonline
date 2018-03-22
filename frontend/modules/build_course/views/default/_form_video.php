@@ -164,8 +164,9 @@ $js =
     function tijiao(){
         //uploader,isFinish 是否已经完成所有上传
         //uploader.hasError 是否有上传错误的文件
-        //console.log(uploader.isFinish);
-        return video.isFinish && attachment.isFinish;
+        //console.log(video.isFinish);
+        
+        return video.isFinish;
     } 
     
     /**
@@ -201,7 +202,15 @@ $js =
             }
         });
     }
-        
+    /** 判断视频文件是否存在为空 */
+    window.isExist = function(){
+        var len = $('#video-container input[name="'+ 'Video[source_id][]'+'"]').length 
+        if(len <= 0){
+            return false;
+        }else{
+            return true;
+        }
+    } 
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

@@ -35,7 +35,7 @@ $this->title = Yii::t(null, "{Edit}{Node}：{$model->name}", [
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -52,6 +52,9 @@ $js =
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$("#build-course-form").submit();return;
+        if($('#coursenode-name').val() == ''){
+            return;
+        }
         $.post("../default/edit-couframe?id=$model->id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
                 $.each(rel['data'],function(key,value){
@@ -60,6 +63,7 @@ $js =
                 $("#act_log").load("$actLog");
             }
         });
+        $('.myModal').modal('hide');
     });  
  
     

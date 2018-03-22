@@ -1,7 +1,7 @@
 <?php
 
 use backend\components\GridViewChangeSelfColumn;
-use backend\modules\system_admin\assets\SystemAssets;
+use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
 use kartik\widgets\Select2;
@@ -226,25 +226,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view}{update}{delete}',
+                    'template' => '{view} {update}{delete}',
                     'buttons' => [
-                        'view' => function ($url, $data, $key) {
-                             $options = [
-                                'class' => '',
-                                'title' => Yii::t('app', 'View'),
-                                'aria-label' => Yii::t('app', 'View'),
-                                'data-pjax' => '0',
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => ['view', 'id' => $data['id']],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
-                        },
                         'update' => function ($url, $data, $key) {
                              $options = [
                                 'class' => 'btn btn-sm '.($data['customer_id'] ? 'disabled' : ' '),
@@ -270,6 +253,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'style' => 'padding:0px; display:unset',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),
+                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                'data-method' => 'post',
                                 'data-pjax' => '0',
                             ];
                             $buttonHtml = [
@@ -294,5 +279,5 @@ $this->params['breadcrumbs'][] = $this->title;
         
 JS;
     $this->registerJs($js, View::POS_READY);
-    SystemAssets::register($this);
+    FrontendAssets::register($this);
 ?>

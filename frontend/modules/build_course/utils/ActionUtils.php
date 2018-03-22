@@ -360,9 +360,8 @@ class ActionUtils
      */
     public function CreateVideo($model, $post)
     {
-        var_dump($post);exit;
         $ref_id = ArrayHelper::getValue($post, 'Video.ref_id');
-        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id');
+        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
         $files = ArrayHelper::getValue($post, 'files');     //文件
         if(!empty($ref_id)){
             $model->is_ref = 1;
@@ -403,7 +402,7 @@ class ActionUtils
         //获取所有旧属性值
         $oldAttr = $model->getOldAttributes();
         $ref_id = ArrayHelper::getValue($post, 'Video.ref_id');
-        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id');
+        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
         $files = ArrayHelper::getValue($post, 'files'); //文件
         
         if(!empty($ref_id)){
@@ -671,18 +670,19 @@ class ActionUtils
     private function saveVideoAttachment($video_id, $files)
     {
         $atts = [];
-        foreach ($files as $id) {
-            $atts[] = [
-                'video_id' => $video_id, 'file_id' => $id,
-                'created_at' => time(), 'updated_at' => time()
-            ];
+        if($files != null){
+            foreach ($files as $id) {
+                $atts[] = [
+                    'video_id' => $video_id, 'file_id' => $id,
+                    'created_at' => time(), 'updated_at' => time()
+                ];
+            }
+            //删除
+            Yii::$app->db->createCommand()->delete(VideoAttachment::tableName(), 
+                ['video_id' => $video_id])->execute();
         }
-        //删除
-        Yii::$app->db->createCommand()->delete(VideoAttachment::tableName(), 
-            ['video_id' => $video_id])->execute();
         //添加
         Yii::$app->db->createCommand()->batchInsert(VideoAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
-       
     }
 }
