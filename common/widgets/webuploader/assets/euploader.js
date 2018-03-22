@@ -279,15 +279,17 @@
          * @param {string} type     success,info,warning,danger
          * @param {string} title    显示标题
          * @param {string} content  提示内容
+         * @param {boolean} autohide  true|false 是否自动隐藏,默认为是
+         * @param {number} delaytime  延迟隐藏的时间，单位为毫秒，默认为2000
          * @returns {void}
          */
-        this.alert = function(type,title,content,autohide,hidetime){
+        this.alert = function(type,title,content,autohide,delaytime){
             var $alertContent = $(StringUtil.createDOM(TIPS_DOM,{type,title,content}));
             $rootContainer.prepend($alertContent);
             if(autohide == undefined || autohide){
                 setTimeout(function(){
                     $alertContent.fadeOut($alertContent.remove);
-                },hidetime||2000)
+                },delaytime||2000)
             }
         }
 
