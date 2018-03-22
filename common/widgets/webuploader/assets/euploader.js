@@ -255,8 +255,8 @@
             //return false;
         //});
         uploader.on('beforeFileQueuedCheckfileNumLimit',function(file,count){
-            if(_self.getFileNum() + count > _self.config['fileNumLimit']){
-                 _self.__alert('warning','警告','超出最大文件个数限制！');
+            if(_self.getFileNum() + 1 > _self.config['fileNumLimit']){
+                 _self.alert('warning','警告','超出最大文件个数限制！');
                 return false;
             }
             return true;
@@ -281,7 +281,7 @@
          * @param {string} content  提示内容
          * @returns {void}
          */
-        this.__alert = function(type,title,content,autohide,hidetime){
+        this.alert = function(type,title,content,autohide,hidetime){
             var $alertContent = $(StringUtil.createDOM(TIPS_DOM,{type,title,content}));
             $rootContainer.prepend($alertContent);
             if(autohide == undefined || autohide){
