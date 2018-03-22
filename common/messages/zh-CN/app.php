@@ -228,6 +228,7 @@ return [
     'Mode' => '方式',
     'Distribution' => '分布',
     'Survey' => '概况',
+    'Quote' => '引用',
     
     //前台-协作人员
     'Help Man' => '协作人员',

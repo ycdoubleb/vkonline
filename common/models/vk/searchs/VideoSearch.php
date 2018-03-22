@@ -6,8 +6,9 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
 use yii\db\Query;
@@ -23,11 +24,6 @@ class VideoSearch extends Video
      * @var Query 
      */
     private static $query;
-    /**
-     * 课程id
-     * @var string 
-     */
-    private $course_id;
     
     /**
      * @inheritdoc
@@ -58,7 +54,8 @@ class VideoSearch extends Video
      */
     public function search($params)
     {
-        $this->course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
@@ -73,23 +70,25 @@ class VideoSearch extends Video
         //条件查询
         self::$query->andFilterWhere([
             'Video.customer_id' => $this->customer_id,
-            'CourseNode.course_id' => $this->course_id,
             'Video.teacher_id' => $this->teacher_id,
             'Video.created_by' => $this->created_by,
             'Video.is_publish' => $this->is_publish,
             'Video.level' => $this->level,
-            'Video.is_del' => $this->level,
+            'Video.is_del' => 0,
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
-        
-        
+        //视频的所有附件
+        $attsResult = $this->findAttachmentByVideo()->asArray()->all();
+        self::$query->andFilterWhere(['CourseNode.course_id' => $course_id]);
+        self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
         //关联查询
         self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
         //添加字段
         self::$query->addSelect(['Video.*']);
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $viedoResult = self::$query->asArray()->all();
@@ -98,20 +97,24 @@ class VideoSearch extends Video
         $totalCount = self::$query->count();
         //分页
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        
+        //以video_id为索引
+        $videos = ArrayHelper::index($viedoResult, 'id');
+        $results = ArrayHelper::index($attsResult, 'video_id');
         //合并查询后的结果
-//        foreach ($courses as $id => $item) {
-//            if(isset($results[$id])){
-//                $courses[$id] += $results[$id];
-//            }
-//        }
-//        $videos = null;
+        foreach ($videos as $id => $item) {
+            if(isset($results[$id])){
+                $videos[$id] += $results[$id];
+            }
+        }
+        
         return [
             'filter' => $params,
             'pager' => $pages,
             'total' => $totalCount,
             'data' => [
                 'course' => $courseMap,
-                'video' => $viedoResult
+                'video' => $videos
             ],
         ];
     }
@@ -150,6 +153,26 @@ class VideoSearch extends Video
             self::$query = self::findVideo();
         }
         return self::$query;
+    }
+    
+    /**
+     * 查询附件
+     * @return Query
+     */
+    public static function findAttachmentByVideo()
+    {
+        self::getInstance();
+        $query = VideoAttachment::find()
+            ->select(['Attachment.video_id', 'SUM(Uploadfile.size) AS att_size'])
+            ->from(['Attachment' => VideoAttachment::tableName()]);
+        
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0)');
+        
+        $query->where(['Attachment.is_del' => 0, 'Attachment.video_id' => self::$query]);
+        
+        $query->groupBy('Attachment.video_id');
+        
+        return $query;
     }
     
     /**

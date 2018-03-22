@@ -42,12 +42,12 @@ $this->title = Yii::t('app', 'Survey');
                 [
                     'label' => Yii::t('app', 'Customer'),
                     'format' => 'raw',
-                    'value' => !empty($customerInfo) ? count($customerInfo) : '0' . ' 个',
+                    'value' => !empty($customerInfo) ? count($customerInfo) . ' 个' : '0 个',
                 ],
                 [
                     'label' => Yii::t('app', 'User'),
                     'format' => 'raw',
-                    'value' => !empty($totalUser) ? $totalUser : '0' . ' 个',
+                    'value' => !empty($totalUser) ? $totalUser . ' 个' : '0 个',
                 ],
             ],
         ]) 
@@ -59,6 +59,34 @@ $this->title = Yii::t('app', 'Survey');
             <i class="icon fa fa-database"></i>
             <span><?= Yii::t('app', 'Storage') ?></span>
         </div>
+        <?= DetailView::widget([
+            'model' => $usedSpace,
+            'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+            'attributes' => [
+                [
+                    'label' => Yii::t('app', 'Total Capacity'),
+                    'format' => 'raw',
+                    'value' => Yii::$app->formatter->asShortSize($totalSize),
+                ],
+                [
+                    'label' => Yii::t('app', '{Already}{Use}',[
+                        'Already' => Yii::t('app', 'Already'),
+                        'Use' => Yii::t('app', 'Use'),
+                    ]),
+                    'format' => 'raw',
+                    'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
+                        '<span style="color:#929292">（'.(floor($usedSpace['size'] / $totalSize) * 100).' %）</span>' : null,
+                ],
+                [
+                    'label' => Yii::t('app', 'Surplus'),
+                    'format' => 'raw',
+                    'value' => Yii::$app->formatter->asShortSize($totalSize - $usedSpace['size']) .
+                        '<span style="color:#929292">（'.((1 - floor($usedSpace['size'] / $totalSize))*100).' % '.
+                            ((((1 - floor($usedSpace['size'] / $totalSize))*100)>10) ? '<span style="color:green"> 充足</span>' : 
+                                '<span style="color:red"> 不足</span>') .'）</span>',
+                ],
+            ],
+        ])?>
     </div>
     <!--资源统计-->
     <div class="frame">
@@ -78,11 +106,11 @@ $map = [];
 foreach ($customerInfo as $key => $sceneInfo){
     $map_x = $sceneInfo['X(location)'];                 //经度
     $map_y = $sceneInfo['Y(location)'];                 //纬度
-    $map_address = $sceneInfo['address'];               //地址
+    $map_customer = '客户名：' . $sceneInfo['name'] . '<br/>' . '地址：' . $sceneInfo['address'];  //客户信息
     $map[] = [
         'x' => $map_x,
         'y' => $map_y,
-        'ads' => $map_address,
+        'customer' => $map_customer,
     ];
 }   
 $maps = json_encode($map); 
@@ -102,7 +130,7 @@ $js = <<<JS
     for (var i in data_info) {
         var point = new BMap.Point(data_info[i].x, data_info[i].y);
         var marker = new BMap.Marker(point);
-        var content = data_info[i].ads;
+        var content = data_info[i].customer;
         addClickHandler(content, marker); //添加点击事件
         markers.push(marker);
     };
@@ -113,8 +141,8 @@ $js = <<<JS
 
     var opts = {
         width : 200,            // 信息窗口宽度
-        height: 60,             // 信息窗口高度
-        title : "地址：" ,       // 信息窗口标题
+        height: 80,             // 信息窗口高度
+        title : "<span style=\"font-weight:bold\">客户信息</span>" ,       // 信息窗口标题
         enableMessage:true      //设置允许信息窗发送短息
     };
     function addClickHandler(content,marker){       //点击事件

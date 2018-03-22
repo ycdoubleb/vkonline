@@ -6,6 +6,7 @@ use common\models\vk\searchs\CourseSearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
@@ -41,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
                         'data' => $customer,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -63,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'category_id',
                         'data' => $category,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -97,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'teacher_id',
                         'data' => $teacher,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -111,11 +112,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'createdBy.nickname',
+                    'label' => Yii::t('app', 'Created By'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
                         'data' => $createdBy,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -130,6 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'is_publish',
                     'label' => Yii::t('app', 'Status'),
+                    'format' => 'raw',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_publish',
@@ -141,7 +144,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['is_publish'] != null) ? Course::$publishStatus[$data['is_publish']] : null;
+                        return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
+                                    Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -152,6 +156,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [   //可见范围
                     'attribute' => 'level',
                     'label' => Yii::t('app', 'DataVisible Range'),
+                    'format' => 'raw',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'level',
@@ -163,7 +168,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['level'] != null) ? Course::$levelMap[$data['level']] : null;
+                        return ($data['level'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
+                                    Course::$levelMap[$data['level']] . '</span>' : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -172,7 +178,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-//                    'attribute' => 'size',
+                    'attribute' => 'size',
                     'label' => Yii::t('app', '{Occupy}{Space}',[
                         'Occupy' => Yii::t('app', 'Occupy'),
                         'Space' => Yii::t('app', 'Space'),
@@ -182,9 +188,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'min-width' => '90px',
                         ],
                     ],
-//                    'value' => function ($data){
-//                        return ($data['size'] != null) ? Yii::$app->formatter->asShortSize($data['size']) : null;
-//                    },
+                    'value' => function ($data){
+                        return !empty($data['video_size']) ? Yii::$app->formatter->asShortSize($data['video_size'], 1) : '0';
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -225,6 +231,26 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}',
+                    'buttons' => [
+                        'view' => function ($url, $data, $key) {
+                             $options = [
+                                'class' => 'btn btn-sm '.($data['is_publish'] == 0 ? 'disabled' : ' '),
+                                'style' => 'padding:0px; display:unset',
+                                'title' => Yii::t('app', 'Update'),
+                                'aria-label' => Yii::t('app', 'Update'),
+                                'data-pjax' => '0',
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
+                                'url' => ['view', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'conditions' => true,
+                                'adminOptions' => true,
+                            ];
+                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                        },
+                    ],
                 ],
             ],
         ]); ?>

@@ -6,6 +6,8 @@ use common\models\vk\searchs\VideoSearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
@@ -41,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
                         'data' => $customer,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -50,6 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
@@ -59,19 +62,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         'The' => Yii::t('app', 'The'),
                         'Course' => Yii::t('app', 'Course'),
                     ]),
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'name' => 'course_id',
-                        'data' => $courseMap,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
+                    'filter' => Html::input('text', 'VideoSearch[course_name]', 
+                            ArrayHelper::getValue($filters, 'VideoSearch.course_name'), ['class' => 'form-control']),
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
@@ -84,6 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
@@ -94,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'teacher_id',
                         'data' => $teacher,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -108,11 +105,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'createdBy.nickname',
+                    'label' => Yii::t('app', 'Created By'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'created_by',
                         'data' => $createdBy,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -127,6 +125,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'is_publish',
                     'label' => Yii::t('app', 'Status'),
+                    'format' => 'raw',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'is_publish',
@@ -138,17 +137,20 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['is_publish'] != null) ? Course::$publishStatus[$data['is_publish']] : null;
+                        return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
+                                    Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                     },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'width' => '65px'
                         ],
                     ],
                 ],
                 [   //可见范围
                     'attribute' => 'level',
                     'label' => Yii::t('app', 'DataVisible Range'),
+                    'format' => 'raw',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'attribute' => 'level',
@@ -160,7 +162,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return ($data['level'] != null) ? Course::$levelMap[$data['level']] : null;
+                        return ($data['level'] != null) ?  '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
+                                Course::$levelMap[$data['level']] . '</span>' : null;
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'attribute' => 'is_ref',
+                    'label' => Yii::t('app', 'Quote'),
+                    'format' => 'raw',
+                    'filter' => false,
+                    'value' => function ($data) {
+                        return $data['is_ref'] == 1 ? '<span style="color:red">引用</span>' : '<span style="color:green">原创</span>';
                     },
                     'contentOptions' => [
                         'style' => [
@@ -170,9 +187,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'source.size',
-                    'label' => Yii::t('app', '{Occupy}{Space}',[
-                        'Occupy' => Yii::t('app', 'Occupy'),
-                        'Space' => Yii::t('app', 'Space'),
+                    'label' => Yii::t('app', '{Video}{Size}',[
+                        'Video' => Yii::t('app', 'Video'),
+                        'Size' => Yii::t('app', 'Size'),
                     ]),
                     'headerOptions' => [
                         'style' => [
@@ -180,7 +197,26 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return Yii::$app->formatter->asShortSize($data['source']['size']);
+                        return Yii::$app->formatter->asShortSize($data['source']['size'], 1);
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', '{Attachment}{Size}',[
+                        'Attachment' => Yii::t('app', 'Attachment'),
+                        'Size' => Yii::t('app', 'Size'),
+                    ]),
+                    'headerOptions' => [
+                        'style' => [
+                            'min-width' => '90px',
+                        ],
+                    ],
+                    'value' => function ($data){
+                        return Yii::$app->formatter->asShortSize((isset($data['att_size']) ? $data['att_size'] : 0), 1);
                     },
                     'contentOptions' => [
                         'style' => [
@@ -222,6 +258,26 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}',
+                    'buttons' => [
+                        'view' => function ($url, $data, $key) {
+                             $options = [
+                                'class' => 'btn btn-sm '.($data['is_publish'] == 0 ? 'disabled' : ' '),
+                                'style' => 'padding:0px; display:unset',
+                                'title' => Yii::t('app', 'Update'),
+                                'aria-label' => Yii::t('app', 'Update'),
+                                'data-pjax' => '0',
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
+                                'url' => ['view', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'conditions' => true,
+                                'adminOptions' => true,
+                            ];
+                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                        },
+                    ],
                 ],
             ],
         ]); ?>

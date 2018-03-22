@@ -54,7 +54,7 @@ class VideoController extends Controller
             'dataProvider' => $dataProvider,
             
             'customer' => $this->getCustomer(),     //所属客户
-            'courseMap' => $result['data']['course'],//所属课程
+            'filters' => $result['filter'],         //过滤条件
             'teacher' => $this->getTeacher(),       //所有主讲老师
             'createdBy' => $this->getCreatedBy(),   //所有创建者
         ]);

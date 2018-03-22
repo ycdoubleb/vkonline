@@ -2,21 +2,15 @@
 
 namespace common\models\vk\searchs;
 
-use common\models\User;
-use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
-use common\models\vk\Customer;
 use common\models\vk\PraiseLog;
-use common\models\vk\TagRef;
-use common\models\vk\Tags;
-use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
@@ -84,8 +78,10 @@ class CourseSearch extends Course
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
+        //查询课程下的所有视频数
+        $videoResult = $this->findVideoByCourse()->asArray()->all();
         //查询所有课程下的环节数
-        $videoResult = self::findVideoByCourseNode()->asArray()->all();  
+        $nodeResult = self::findVideoByCourseNode()->asArray()->all();  
         //查询课程下的所有关注数
         $favoriteResult = CourseFavorite::findCourseFavorite(['Favorite.course_id' => self::$query])->asArray()->all(); 
         //查询课程下的所有点赞数
@@ -103,17 +99,18 @@ class CourseSearch extends Course
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
-        $results = ArrayHelper::merge(ArrayHelper::index($videoResult, 'course_id'), 
-                ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
-                ArrayHelper::index($praiseResult, 'course_id')));
-        
+        $results = ArrayHelper::merge(ArrayHelper::index($nodeResult, 'course_id'), 
+                        ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
+                            ArrayHelper::index($praiseResult, 'course_id')), 
+                    ArrayHelper::index($videoResult, 'course_id'));
+
         //合并查询后的结果
         foreach ($courses as $id => $item) {
             if(isset($results[$id])){
                 $courses[$id] += $results[$id];
             }
         }
-        
+
         return [
             'filter' => $params,
             'pager' => $pages,
@@ -155,7 +152,45 @@ class CourseSearch extends Course
         
         return $query;
     }
-   
+    
+    /**
+     * 查询视频
+     * @return Query
+     */
+    public static function findVideoByCourse()
+    {
+        self::getInstance();
+        $query = Video::find()
+//            ->distinct('Uploadfile.id')     //过滤相同的文件ID
+            ->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS video_size'])
+            ->from(['Video' => Video::tableName()]);
+        
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Video.source_id AND Uploadfile.is_del = 0)');
+        
+        $query->where(['Video.is_del' => 0, 'Video.is_ref' => 0, 'CourseNode.course_id' => self::$query]);
+
+        $query->groupBy('CourseNode.course_id');
+//        var_dump($query->asArray()->all());exit;
+        return $query;
+    }
+    
+    protected function findCourseFile()
+    {
+        $query = (new Query())->select(['Course.id', 'Video.source_id', 'Attachment.file_id'])
+                ->from(['Course' => Course::tableName()]);
+        
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.course_id = Course.id AND CourseNode.is_del = 0)');
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.node_id = CourseNode.id AND Video.is_del = 0 AND Video.is_ref = 0)');
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
+
+        $query->andWhere(['Course.id' => self::$query]);
+        
+        $query->groupBy('Video.source_id');
+        
+        return $query;
+    }
+    
     /**
      * 查询课程
      * @return Query
