@@ -12,6 +12,7 @@ use yii\db\ActiveRecord;
  * @property string $id
  * @property string $name 文件名
  * @property string $path 备份文件路径
+ * @property integer $size 备份文件大小
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
@@ -55,6 +56,7 @@ class Dbbackup extends ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
             'path' => Yii::t('app', 'Path'),
+            'size' => Yii::t('app', 'Size'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
