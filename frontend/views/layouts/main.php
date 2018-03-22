@@ -5,6 +5,7 @@ use frontend\assets\AppAsset;
 use kartik\widgets\AlertBlock;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Breadcrumbs;
@@ -62,14 +63,14 @@ AppAsset::register($this);
                 //'options' => ['class' => 'pull-left'],
             ],
             [
-                'label' => Yii::t('app', 'Course'), 'url' => ['/site/index']
+                'label' => Yii::t('app', 'Course'), 'url' => ['/course/default']
             ],
             [
-                'label' => Yii::t('app', 'Video'), 'url' => ['/site/index']
+                'label' => Yii::t('app', 'Video'), 'url' => ['/video/default']
             ],
             [
-                'label' => Yii::t(null, '{Study}{Center}', ['Study' => Yii::t('app', 'Study'),'Center' => Yii::t('app', 'Center'),]), 
-                'url' => ['/site/index']
+                'label' => Yii::t('app', '{Study}{Center}', ['Study' => Yii::t('app', 'Study'),'Center' => Yii::t('app', 'Center'),]), 
+                'url' => ['/study_center/default']
             ],
             [
                 'label' => Yii::t('app', 'Square'), 'url' => ['/site/index']
@@ -78,16 +79,16 @@ AppAsset::register($this);
         //右边导航
         $rightMenuItems = [
             [
-                'label' => Yii::t(null, '{Build}{Center}',['Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),]), 
+                'label' => Yii::t('app', '{Build}{Center}',['Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/build_course/default']
             ],
             [
-                'label' => Yii::t(null, '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
+                'label' => Yii::t('app', '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/site/index']
             ],
             [
-                'label' => Yii::t(null, '{Manage}{Center}',['Manage' => Yii::t('app', 'Manage'),'Center' => Yii::t('app', 'Center')]), 
-                'url' => ['/site/index']
+                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
+                'url' => ['/admin_center/default']
             ],
 //            ['label' => 'About', 'url' => ['/site/about']],
 //            ['label' => 'Contact', 'url' => ['/site/contact']],
@@ -157,12 +158,37 @@ AppAsset::register($this);
 //        . Html::endForm()
 //        . '</li>';
     }
+    
+    $moduleId = Yii::$app->controller->module->id;   //模块ID
+    if($moduleId == 'app-frontend'){
+        //站点经过首页或登录，直接获取当前路由
+        $route = Yii::$app->controller->getRoute();
+    }else{
+        $urls = [];
+        $vals = [];
+        $leftMenuUrls = ArrayHelper::getColumn($leftMenuItems, 'url');
+        $rightMenuUrls = ArrayHelper::getColumn($rightMenuItems, 'url');
+        $menuUrls = array_merge($leftMenuUrls, $rightMenuUrls);
+        foreach ($menuUrls as $url){
+            $urls[] = array_filter(explode('/', $url[0]));
+        }
+        foreach($urls as $val){
+            $vals[$val[1]] = implode('/', $val);
+        }
+        try{
+            $route = substr($vals[$moduleId], 0);
+        } catch (Exception $ex) {
+             $route = Yii::$app->controller->getRoute();    
+        }
+    }
+    
     //左边
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-left'],
         'encodeLabels' => false,
         'items' => $leftMenuItems,
         'activateParents' => true,
+        'route' => $route,
     ]);
     //右边
     echo Nav::widget([
@@ -170,6 +196,7 @@ AppAsset::register($this);
         'encodeLabels' => false,
         'items' => $rightMenuItems,
         'activateParents' => true,
+        'route' => $route,
     ]);
     
     NavBar::end();
