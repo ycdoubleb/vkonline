@@ -6,6 +6,7 @@ use common\models\vk\searchs\CustomerSearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -18,6 +19,7 @@ $this->title = Yii::t('app', '{Customer}{List}',[
     'List' => Yii::t('app', 'List'),
 ]);
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="customer-index customer">
     <p>
@@ -120,7 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'filter' => Select2::widget([
                         'model' => $searchModel,
                         'name' => 'customerAdmin',
-                        'value' => $valueCusAdm,
+                        'value' => ArrayHelper::getValue($filters, 'customerAdmin'),
                         'data' => $customerAdmin,
                         'hideSearch' => true,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
@@ -161,6 +163,17 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Surplus' => Yii::t('app', 'Surplus'),
                         'Space' => Yii::t('app', 'Space'),
                     ]),
+                    'format' => 'raw',
+                    'value' => function($data) {
+                        return Yii::$app->formatter->asShortSize(isset($data['customer_size']) ? $data['data'] - $data['customer_size'] : $data['data'], 1) .
+                                '（<span style="color:' . (isset($data['customer_size']) ? (((100 - floor($data['customer_size'] / $data['data'] * 100)) > 10) ? 'green' : 'red') : 'green') . '">' . 
+                                    (isset($data['customer_size']) ? sprintf("%.2f", ($data['data']-$data['customer_size'])/$data['data'] * 100) . '%' : '100%') . '</span>）';
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
                 ],
                 [
                     'attribute' => 'status',
