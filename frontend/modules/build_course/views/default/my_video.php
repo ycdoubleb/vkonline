@@ -19,9 +19,8 @@ ModuleAssets::register($this);
 <div class="default-myVideo main">
     
     <?php $form = ActiveForm::begin([
-        'id' => 'build-course-form', 
+        'id' => 'build-course-form', 'method' => 'get',
         'action' => array_merge(['my-video'], ['utils' => ArrayHelper::getValue($filters, 'utils')]),
-        'method' => 'get'
     ]); ?>
     
     <div class="col-xs-12 search-frame"> 

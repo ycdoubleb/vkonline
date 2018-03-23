@@ -127,6 +127,7 @@ return [
     'Privilege' => '权限',
     'Action' => '动作',
     'Reference' => '引用',
+    'Keyword' => '关键字',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
