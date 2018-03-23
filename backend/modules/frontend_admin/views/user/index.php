@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
                         'data' => $customer,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -161,9 +161,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     'filter' => false,
                     'format' => 'raw',
                     'value' => function($data) {
-                        return Yii::$app->formatter->asShortSize($data['max_store']) . ' / ' .
+                        return Yii::$app->formatter->asShortSize($data['max_store'], 1) . ' / ' .
                                 '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
-                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 0) . '</span>';
+                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
                     },
                     'contentOptions' => [
                         'style' => [

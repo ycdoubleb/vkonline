@@ -151,8 +151,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             'label' => Yii::t('app', 'Surplus'),
                             'format' => 'raw',
                             'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace['size']) .
-                                '<span style="color:#929292">（'.((1 - floor($usedSpace['size'] / $model->good->data))*100).' % '.
-                                    ((((1 - floor($usedSpace['size'] / $model->good->data))*100)>10) ? '<span style="color:green"> 充足</span>' : 
+                                '<span style="color:#929292">（' . sprintf("%.2f", ($model->good->data - $usedSpace['size']) / $model->good->data * 100) . ' % '.
+                                    (((100 - floor($usedSpace['size'] / $model->good->data *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
                                         '<span style="color:red"> 不足</span>') .'）</span>' : null,
                         ],
                     ],
@@ -196,7 +196,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label' => Yii::t('app', 'Course'),
                     'value' => function ($data){
-                        return $data['course_num'];
+                        return isset($data['cour_num']) ? $data['cour_num'] : null;
                     },
                     'headerOptions' => [
                         'style' => [
@@ -212,7 +212,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label' => Yii::t('app', 'Video'),
                     'value' => function ($data){
-                        return $data['video_num'];
+                        return isset($data['node_num']) ? $data['node_num'] : null;
                     },
                     'headerOptions' => [
                         'style' => [
@@ -231,7 +231,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'Play' => Yii::t('app', 'Play'),
                     ]),
                     'value' => function ($data){
-                        return $data['play_count'];
+                        return isset($data['play_count']) ? $data['play_count'] : null;
                     },
                     'headerOptions' => [
                         'style' => [

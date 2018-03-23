@@ -1,6 +1,8 @@
 <?php
 
 use backend\modules\frontend_admin\assets\FrontendAssets;
+use yii\data\ArrayDataProvider;
+use yii\grid\GridView;
 use yii\web\View;
 use yii\widgets\DetailView;
 
@@ -81,9 +83,9 @@ $this->title = Yii::t('app', 'Survey');
                     'label' => Yii::t('app', 'Surplus'),
                     'format' => 'raw',
                     'value' => Yii::$app->formatter->asShortSize($totalSize - $usedSpace['size']) .
-                        '<span style="color:#929292">（'.((1 - floor($usedSpace['size'] / $totalSize))*100).' % '.
-                            ((((1 - floor($usedSpace['size'] / $totalSize))*100)>10) ? '<span style="color:green"> 充足</span>' : 
-                                '<span style="color:red"> 不足</span>') .'）</span>',
+                        '<span style="color:#929292">（' . sprintf("%.2f", ($totalSize - $usedSpace['size']) / $totalSize * 100) . ' % '.
+                                    (((100 - floor($usedSpace['size'] / $totalSize *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
+                                        '<span style="color:red"> 不足</span>') .'）</span>',
                 ],
             ],
         ])?>
@@ -97,6 +99,83 @@ $this->title = Yii::t('app', 'Survey');
                 'Statistics' => Yii::t('app', 'Statistics'),
             ]) ?></span>
         </div>
+        <?= GridView::widget([
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => $resourceData,
+                'pagination' => FALSE,
+            ]),
+            'layout' => "{items}",
+            'columns' => [
+                [
+                    'label' => '',
+                    'value' => function ($data){
+                        return $data['name'];
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                            'width' => '130px'
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', 'Course'),
+                    'value' => function ($data){
+                        return isset($data['cour_num']) ? $data['cour_num'] : null;
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', 'Video'),
+                    'value' => function ($data){
+                        return isset($data['video_num']) ? $data['video_num'] : null;
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', '{Video}{Play}',[
+                        'Video' => Yii::t('app', 'Video'),
+                        'Play' => Yii::t('app', 'Play'),
+                    ]),
+                    'value' => function ($data){
+                        return isset($data['play_count']) ? $data['play_count'] : null;
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+            ]
+        ])?>
     </div>
 </div>
 

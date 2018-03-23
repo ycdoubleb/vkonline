@@ -87,7 +87,6 @@ class UserSearch extends User
         //视频数
         $videos = $this->getUserVideoNodeNumber();
         $videoSize = $this->findUsedSizeByUser()->asArray()->all();
-//        var_dump(ArrayHelper::index($videoSize, 'created_by'));exit;
         //添加字段and 关联查询
         self::$query->addSelect(['User.*'])->with('customer');
         //以user_id为索引
@@ -100,7 +99,7 @@ class UserSearch extends User
                 $users[$id] += $results[$id];
             }
         }
-//        var_dump($users);exit;
+
         return [
             'filter' => $params,
             'data' => [
@@ -178,7 +177,6 @@ class UserSearch extends User
     
     /**
      * 查找用户关联的文件
-     * @param string $id
      * @return Query
      */
     protected function findUserFile()
