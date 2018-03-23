@@ -23,11 +23,13 @@ ModuleAssets::register($this);
     <img src="/imgs/build_course/images/u5303.png" />
 </header>
 
-<div class="content">
-
+<div id="tips" class="content">
+    
     <div class="course-default-index main">
-
-       <?php $form = ActiveForm::begin(['id' => 'course-form','action' => ['index'],'method' => 'get']); ?>
+        
+        <?php $form = ActiveForm::begin(['id' => 'course-form',
+           'action' => ['index', '#' => 'tips'],'method' => 'get',
+        ]); ?>
 
         <div class="col-xs-12 search-frame">
             <label class="col-lg-1 col-md-1 form-label">
@@ -71,8 +73,9 @@ ModuleAssets::register($this);
                 <?= Html::a('<i class="fa fa-search"></i>&nbsp;'.Yii::t('app', '{Search}{Course}', ['Search' => Yii::t('app', 'Search'), 'Course' => Yii::t('app', 'Course')]), 
                         'javascript:;', ['id' => 'submit', 'class' => 'btn btn-success']); ?>
             </div>
+            <?php if(!empty(Yii::$app->user->identity->customer_id)): ?>
             <div class="col-lg-3 col-md-3" style="padding: 6px 15px">
-                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', '1,2' => '全网'], [
+                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', 1), [1 => '内网', 2 => '全网'], [
                     'itemOptions' => [
                         'labelOptions' => [
                             'style' => 'margin-right: 30px; margin-bottom: 0'
@@ -80,6 +83,7 @@ ModuleAssets::register($this);
                     ]
                 ]); ?>
             </div>
+            <?php endif; ?>
         </div>
         
         <?php ActiveForm::end(); ?>
@@ -88,6 +92,19 @@ ModuleAssets::register($this);
             <div class="result">
                 <i class="fa fa-list"></i>
                 <span>搜索结果</span>
+            </div>
+            <div class="sort">
+                <ul>
+                    <li id="zan_count">
+                        <?= Html::a('口碑', array_merge(['index'], array_merge($filters, ['sort' => 'zan_count', '#' => 'tips'])), ['id' => 'zan_count', 'data-sort' => 'zan_count']) ?>
+                    </li>
+                    <li id="favorite_count">
+                        <?= Html::a('人气', array_merge(['index'], array_merge($filters, ['sort' => 'favorite_count', '#' => 'tips'])), ['id' => 'favorite_count', 'data-sort' => 'favorite_count']) ?>
+                    </li>
+                    <li id="created_at">
+                        <?= Html::a('时间', array_merge(['index'], array_merge($filters, ['sort' => 'created_at', '#' => 'tips'])), ['id' => 'created_at', 'data-sort' => 'created_at']) ?>
+                    </li>
+                </ul>
             </div>
         </div>
         
@@ -137,9 +154,12 @@ ModuleAssets::register($this);
     
 <?php
 
+$sort = ArrayHelper::getValue($filters, 'sort', 'created_at');
 $js = 
 <<<JS
-   
+    $(".filter .sort ul li[id=$sort]").addClass('active');
+    $(".filter .sort ul li > a[id=$sort]").addClass('desc');
+        
     /** 提交表单 */
     $('#submit').click(function(){
         $('#course-form').submit();

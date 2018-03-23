@@ -6,9 +6,11 @@ use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
 use common\models\vk\PraiseLog;
+use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
+use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
@@ -55,21 +57,36 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
+        $moduleId = Yii::$app->controller->module->id;  //当前模块id
+        $level = ArrayHelper::getValue($params, 'level');   //搜索等级
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
-        if(!$this->load($params)){
-            $this->customer_id = ArrayHelper::getValue($params, 'customer_id', \Yii::$app->user->identity->customer_id); //客户id
+        if(!empty($params) && !$this->load($params)){
+            $customerId = Yii::$app->user->identity->customer_id;  //当前用户的客户id
             $this->category_id = ArrayHelper::getValue($params, 'category_id'); //分类id
-            $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
-            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
-            $this->is_publish = ArrayHelper::getValue($params, 'is_publish'); //是否发布
-            $this->level = array_filter(explode(',', ArrayHelper::getValue($params, 'level'))); //可见范围
-            if(count($this->level) > 1){
-                $this->customer_id = null;
+            //选择内网搜索的情况下
+            if(!empty($customerId) && $level == self::INTRANET_LEVEL){
+                self::$query->andFilterWhere([
+                    'Course.customer_id' => $customerId,
+                    'Course.level' => self::INTRANET_LEVEL,
+                    'Course.is_publish' => 1,
+                ]);
+            //选择全网搜索的情况下
+            }else if(!empty($customerId) && $level == self::PUBLIC_LEVEL){
+                self::$query->andFilterWhere(
+                    ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]]
+                );
+                self::$query->andFilterWhere(['Course.is_publish' => 1]);
+            //客户id为空并且模块是course的情况下
+            }else if(empty($customerId) && $moduleId == 'course'){
+                self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
+            }else{
+                self::$query->andFilterWhere(['Course.created_by' => Yii::$app->user->id]);
             }
         }
         //条件查询
@@ -81,6 +98,8 @@ class CourseSearch extends Course
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
+        //查询课程下的所有视频数
+        $videoResult = self::findUploadfileSizeByCourseId()->asArray()->all();
         //查询所有课程下的环节数
         $nodeResult = self::findVideoByCourseNode()->asArray()->all();  
         //查询课程下的所有关注数
@@ -94,8 +113,10 @@ class CourseSearch extends Course
         self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
         self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         //添加字段
-        self::$query->addSelect(['Course.*']);
+        self::$query->select(['Course.*']);
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
+        //排序
+        self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $courseResult = self::$query->asArray()->all();
@@ -160,10 +181,10 @@ class CourseSearch extends Course
     }
     
     /**
-     * 查询视频
+     * 查询课程的占用空间
      * @return Query
      */
-    public static function findVideoByCourse()
+    public static function findUploadfileSizeByCourseId()
     {
         self::getInstance();
         $query = Video::find()
@@ -171,29 +192,14 @@ class CourseSearch extends Course
             ->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS video_size'])
             ->from(['Video' => Video::tableName()]);
         
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
         $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Video.source_id AND Uploadfile.is_del = 0)');
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        
         
         $query->where(['Video.is_del' => 0, 'Video.is_ref' => 0, 'CourseNode.course_id' => self::$query]);
 
-        $query->groupBy('CourseNode.course_id');
-//        var_dump($query->asArray()->all());exit;
-        return $query;
-    }
-    
-    protected function findCourseFile()
-    {
-        $query = (new Query())->select(['Course.id', 'Video.source_id', 'Attachment.file_id'])
-                ->from(['Course' => Course::tableName()]);
-        
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.course_id = Course.id AND CourseNode.is_del = 0)');
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.node_id = CourseNode.id AND Video.is_del = 0 AND Video.is_ref = 0)');
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
-
-        $query->andWhere(['Course.id' => self::$query]);
-        
-        $query->groupBy('Video.source_id');
-        
+        $query->groupBy('CourseNode.course_id, Video.source_id');
+        //var_dump($query->asArray()->all());exit;
         return $query;
     }
     

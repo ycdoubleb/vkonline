@@ -125,7 +125,48 @@
 }
 
 .main .filter .result {
+    display: inline-block;
+    float: left;
     font-size: 14px;
+}
+
+.main .filter .sort {
+    display: inline-block;
+    float: right;
+    font-size: 14px;
+}
+
+.main .filter .sort > ul {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.main .filter .sort > ul > li {
+    float: left;
+    height: 40px;
+    padding: 10px 7px;
+    margin: -10px 5px;
+}
+
+.main .filter .sort > ul > li > a {
+    display: block;
+    padding: 0 7px;
+    margin: -10px -7px;
+    color: #999;
+    line-height: 40px;
+    text-decoration: none;
+}
+
+.main .filter .sort > ul > li.active,
+.main .filter .sort > ul > li:hover {
+    border-bottom: 2px #337ab7 solid;
+    /*cursor: pointer;*/
+}
+
+.main .filter .sort > ul > li.active > a,
+.main .filter .sort > ul > li:hover > a {
+    color: #337ab7;
 }
 
 /*********************分页****************************/

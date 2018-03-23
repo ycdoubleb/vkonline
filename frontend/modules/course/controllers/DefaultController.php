@@ -45,12 +45,13 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->search(array_merge(['limit' => 8, 'is_publish' => 1, 'level' => 1], Yii::$app->request->queryParams));
+        $result = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),
         ]);
         
+        unset($result['filter']['limit']);
         return $this->render('index', [
             'filters' => $result['filter'],
             'pagers' => $result['pager'],
