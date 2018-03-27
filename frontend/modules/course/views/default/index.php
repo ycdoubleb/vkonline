@@ -20,7 +20,7 @@ ModuleAssets::register($this);
 ?>
 
 <header class="header">
-    <img src="/imgs/build_course/images/u5303.png" />
+    <?= Html::img(['/imgs/course/images/u5303.png']) ?>
 </header>
 
 <div id="tips" class="content">
@@ -28,7 +28,7 @@ ModuleAssets::register($this);
     <div class="course-default-index main">
         
         <?php $form = ActiveForm::begin(['id' => 'course-form',
-           'action' => ['index', '#' => 'tips'],'method' => 'get',
+           'action' => ['result', '#' => 'tips'],'method' => 'get',
         ]); ?>
 
         <div class="col-xs-12 search-frame">
@@ -73,9 +73,8 @@ ModuleAssets::register($this);
                 <?= Html::a('<i class="fa fa-search"></i>&nbsp;'.Yii::t('app', '{Search}{Course}', ['Search' => Yii::t('app', 'Search'), 'Course' => Yii::t('app', 'Course')]), 
                         'javascript:;', ['id' => 'submit', 'class' => 'btn btn-success']); ?>
             </div>
-            <?php if(!empty(Yii::$app->user->identity->customer_id)): ?>
             <div class="col-lg-3 col-md-3" style="padding: 6px 15px">
-                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', 1), [1 => '内网', 2 => '全网'], [
+                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', '1,2' => '全网'], [
                     'itemOptions' => [
                         'labelOptions' => [
                             'style' => 'margin-right: 30px; margin-bottom: 0'
@@ -83,7 +82,6 @@ ModuleAssets::register($this);
                     ]
                 ]); ?>
             </div>
-            <?php endif; ?>
         </div>
         
         <?php ActiveForm::end(); ?>
@@ -119,8 +117,8 @@ ModuleAssets::register($this);
                         <span><?= $model['name'] ?></span>
                     </div>
                     <div class="float"> 
-                        <span><?= isset($model['fav_num']) ? $model['fav_num'] : 0 ?><i class="fa fa-star"></i></span>
-                        <span><?= isset($model['zan_num']) ? $model['zan_num'] : 0 ?><i class="fa fa-thumbs-up"></i></span>
+                        <span><?= $model['favorite_count'] ?><i class="fa fa-star"></i></span>
+                        <span><?= $model['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>
                     </div>
                 </div>
                 <div class="cont">
@@ -129,7 +127,7 @@ ModuleAssets::register($this);
                         <span class="nodenum">环节数：<span><?= isset($model['node_num']) ? $model['node_num'] : 0 ?>&nbsp;节</span></span>
                     </div>
                     <div class="tuip">时间：<span><?= date('Y-m-d', $model['created_at']) ?></span>
-                        <?= Html::a('查看课程', 'javascript:;', ['class' => 'see']) ?>
+                        <?= Html::a('查看课程', ['view', 'id' => $model['id']], ['class' => 'see']) ?>
                     </div>
                 </div>
             </div>
