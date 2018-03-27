@@ -66,8 +66,8 @@ class PostCategory extends ActiveRecord
             [['parent_id', 'created_at', 'updated_at'], 'integer'],
             [['parent_id_path', 'app_id', 'des', 'icon', 'href'], 'string', 'max' => 255],
             [['name'], 'string', 'max' => 50],
-            [['is_show', 'sort_order'], 'string', 'max' => 1], 
-            [['level'], 'string', 'max' => 2], 
+            [['is_show', 'sort_order'], 'integer'], 
+            [['level'], 'integer'], 
         ];
     }
     
@@ -120,7 +120,9 @@ class PostCategory extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'parent_id' => Yii::t('app', 'Parent ID'),
+            'parent_id' => Yii::t('app', '{Parent}ID',[
+                'Parent' => \Yii::t('app', 'Parent'),
+            ]),
             'parent_id_path' => Yii::t('app', '{Parent}{ID}{Path}',[
                 'Parent' => \Yii::t('app', 'Parent'),
                 'ID' => \Yii::t('app', 'ID'),

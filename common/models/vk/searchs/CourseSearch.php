@@ -2,9 +2,11 @@
 
 namespace common\models\vk\searchs;
 
+use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
+use common\models\vk\Customer;
 use common\models\vk\PraiseLog;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
@@ -98,8 +100,8 @@ class CourseSearch extends Course
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
-        //查询课程下的所有视频数
-        $videoResult = self::findUploadfileSizeByCourseId()->asArray()->all();
+        //查询课程的占用空间
+        $courseSize = $this->findCourseSize();
         //查询所有课程下的环节数
         $nodeResult = self::findVideoByCourseNode()->asArray()->all();  
         //查询课程下的所有关注数
@@ -129,7 +131,7 @@ class CourseSearch extends Course
         $results = ArrayHelper::merge(ArrayHelper::index($nodeResult, 'course_id'), 
                         ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
                             ArrayHelper::index($praiseResult, 'course_id')), 
-                    ArrayHelper::index($videoResult, 'course_id'));
+                    ArrayHelper::index($courseSize, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {
@@ -182,27 +184,79 @@ class CourseSearch extends Course
     
     /**
      * 查询课程的占用空间
+     * @return array
+     */
+    public static function findCourseSize()
+    {
+        $videoSize = self::findCourseSizeByVideo()->all();      //视频的占用空间
+        $fileSize = self::findCourseSizeByFile()->all();        //附件的占用空间
+        $totalSize = ArrayHelper::merge($videoSize,$fileSize);  //合并
+        $result = [];
+        foreach ($totalSize as $item){
+            $itemId = ArrayHelper::getValue($item, 'course_id');    //取出课程ID
+            $itemSize = ArrayHelper::getValue($item, 'course_size');//取出课程对应的大小
+            $arr = [$itemId => $itemSize];                          //合并为数组
+            foreach ($arr as $k => $val) {
+                //若键值$k(课程ID)相同即把$val(占用大小)相加
+                if(!isset($result[$k])){
+                    $result[$k] = $val;
+                } else {
+                    $result[$k] += $val;
+                }
+            }
+        };
+        
+        $courseSize = [];
+        foreach ($result as $key => $value) {
+            //转换为对应的数据形式
+            $courseSize[] = [
+                'course_id' => $key,
+                'course_size' => $value
+            ];
+        }
+      
+        return $courseSize;
+    }
+
+    /**
+     * 查询课程下的视频占用空间
      * @return Query
      */
-    public static function findUploadfileSizeByCourseId()
+    public static function findCourseSizeByVideo()
     {
-        self::getInstance();
-        $query = Video::find()
-//            ->distinct('Uploadfile.id')     //过滤相同的文件ID
-            ->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS video_size'])
-            ->from(['Video' => Video::tableName()]);
+        $query = (new Query())->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS course_size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()]);
         
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Video.source_id AND Uploadfile.is_del = 0)');
+        $query->distinct('Video.source_id');            //过滤相同的视频文件ID
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.source_id = Uploadfile.id AND Video.is_del = 0 AND Uploadfile.is_del = 0)');
         $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $query->where(['Video.is_ref' => 0]);
         
+        $query->groupBy('Video.id');
         
-        $query->where(['Video.is_del' => 0, 'Video.is_ref' => 0, 'CourseNode.course_id' => self::$query]);
-
-        $query->groupBy('CourseNode.course_id, Video.source_id');
-        //var_dump($query->asArray()->all());exit;
         return $query;
     }
     
+    /**
+     * 查询课程下的附件占用空间
+     * @return Query
+     */
+    public static function findCourseSizeByFile()
+    {
+        $query = (new Query())->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS course_size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()]);
+        
+        $query->distinct('VideoAttachment.file_id');                //过滤相同附文件ID
+        $query->leftJoin(['VideoAttachment' => VideoAttachment::tableName()], '(VideoAttachment.file_id = Uploadfile.id AND VideoAttachment.is_del = 0 AND Uploadfile.is_del = 0)');
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoAttachment.video_id AND VideoAttachment.is_del = 0)');
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $query->where(['Video.is_ref' => 0]);
+        
+        $query->groupBy('Video.id');
+        
+        return $query;
+    }
+
     /**
      * 查询课程
      * @return Query

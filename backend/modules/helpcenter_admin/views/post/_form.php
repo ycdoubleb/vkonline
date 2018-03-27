@@ -88,7 +88,7 @@ $js =
         $("#post-category_id").attr("data-add", "true");
         $("#post-category_id").html("");
         $('#select2-post-category_id-container').html('<span class="select2-selection__placeholder">请选择...</span>');
-        $.post("/helpcenter_admin/post/search-cats?id="+$(this).val(),function(data)
+        $.post("/admin/helpcenter_admin/post/search-cats?id="+$(this).val(),function(data)
         {
             $('<option/>').val('').text(this['name']).appendTo($('#post-category_id'));
             $.each(data['data'],function()

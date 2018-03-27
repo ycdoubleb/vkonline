@@ -55,7 +55,7 @@ class UserController extends BaseController
             'allModels' => array_values($result['data']['user']),
             'key' => 'id'
         ]);
-//        var_dump($dataProvider->models);exit;
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

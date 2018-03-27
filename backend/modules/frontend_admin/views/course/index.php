@@ -189,7 +189,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return !empty($data['video_size']) ? Yii::$app->formatter->asShortSize($data['video_size'], 1) : '0';
+                        return !empty($data['course_size']) ? Yii::$app->formatter->asShortSize($data['course_size'], 1) : '0';
                     },
                     'contentOptions' => [
                         'style' => [

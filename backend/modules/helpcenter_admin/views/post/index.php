@@ -265,6 +265,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => [
                     'style' => [
                         'text-align' => 'center',
+                        'min-width' => '90px'
                     ]
                 ],
                 'value' => function($data) {
@@ -272,7 +273,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'contentOptions' => [
                     'style' => [
-                        'text-align' => 'center'
+                        'text-align' => 'center',
+                        'white-space' => 'unset',
                     ]
                 ],
             ],
@@ -281,7 +283,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filter' => FALSE,
                 'headerOptions' => [
                     'style' => [
-                        'text-align' => 'center'
+                        'text-align' => 'center',
+                        'min-width' => '90px'
                     ]
                 ],
                 'value' => function($data) {
@@ -290,6 +293,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => [
                     'style' => [
                         'text-align' => 'center',
+                        'white-space' => 'unset',
                     ]
                 ],
             ],

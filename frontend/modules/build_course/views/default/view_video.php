@@ -94,7 +94,7 @@ ModuleAssets::register($this);
                         'label' => Yii::t('app', 'Video'),
                         'format' => 'raw',
                         'value' => !empty($model->source_id) ? 
-                            "<video src=\"/{$model->source->path}\" width=\"300\" height=\"150\" controls=\"controls\" poster=\"{$model->img}\">" .
+                            "<video src=\"/{$model->source->path}\" width=\"300\" height=\"150\" controls=\"controls\" poster=\"/{$model->img}\">" .
                                 "您的浏览器不支持 video 标签。" . 
                             "</video>" : null,
                     ],
