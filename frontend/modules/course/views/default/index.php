@@ -119,6 +119,9 @@ $this->title = Yii::t('app', 'Course');
                     <div class="title">
                         <span><?= $model['name'] ?></span>
                     </div>
+                    <?php if($model['cover_img'] != ''){
+                        echo Html::img([$model['cover_img']], ['width' => '100%', 'height' => '147px']);
+                    } ?>
                     <div class="float"> 
                         <span><?= $model['favorite_count'] ?><i class="fa fa-star"></i></span>
                         <span><?= $model['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>

@@ -209,11 +209,8 @@
 }
 
 .list .item .pic .title {
-/*    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 169px;
-    height: 103px;*/
+    position: absolute;
+    width: 100%;
     margin: 10px auto;
     font-size: 20px;
     color: #fff;

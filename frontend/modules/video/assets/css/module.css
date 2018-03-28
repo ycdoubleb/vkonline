@@ -209,11 +209,8 @@
 }
 
 .list .item .pic .title {
-/*    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 169px;
-    height: 103px;*/
+    position: absolute;
+    width: 100%;
     margin: 10px auto;
     font-size: 20px;
     color: #fff;
@@ -247,8 +244,25 @@
     margin-right: 20px;
 }
 
+.list .item .pic .float > span.right {
+    float: right;
+    margin-right: 0;
+}
+
 .list .item .pic .float > span > i {
     margin-left: 5px;
+}
+
+.list .item .pic .duration {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    height: 25px;
+    padding: 0 5px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 25px;
+    background-color: rgba(0, 0, 0, .5);
 }
 
 .list .item .cont {
