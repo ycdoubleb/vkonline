@@ -69,6 +69,7 @@ return [
     'Frame' => '框架',
     'Node' => '环节',
     'Attachment' => '附件',
+    'Catalog' => '目录',
     
     //公共-操作
     'Add' => '添加',

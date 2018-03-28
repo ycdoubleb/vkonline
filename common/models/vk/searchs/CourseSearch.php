@@ -104,10 +104,6 @@ class CourseSearch extends Course
         $courseSize = $this->findCourseSize();
         //查询所有课程下的环节数
         $nodeResult = self::findVideoByCourseNode()->asArray()->all();  
-        //查询课程下的所有关注数
-        $favoriteResult = CourseFavorite::findCourseFavorite(['Favorite.course_id' => self::$query])->asArray()->all();
-        //查询课程下的所有点赞数
-        $praiseResult = PraiseLog::findUserPraiseLog(['Praise.course_id' => self::$query])->asArray()->all();
         //关联查询
         self::$query->with('category', 'customer', 'teacher', 'createdBy');
         //模糊查询
@@ -129,9 +125,7 @@ class CourseSearch extends Course
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($nodeResult, 'course_id'), 
-                        ArrayHelper::merge(ArrayHelper::index($favoriteResult, 'course_id'), 
-                            ArrayHelper::index($praiseResult, 'course_id')), 
-                    ArrayHelper::index($courseSize, 'course_id'));
+                   ArrayHelper::index($videoResult, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {
