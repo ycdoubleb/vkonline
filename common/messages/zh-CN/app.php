@@ -232,6 +232,9 @@ return [
     'Survey' => '概况',
     'Quote' => '引用',
     
+    'Special' => '专题',
+    'Column' => '栏',
+    
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-查看视频
