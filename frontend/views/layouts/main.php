@@ -88,7 +88,7 @@ AppAsset::register($this);
             ],
             [
                 'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
-                'url' => ['/admin_center/default']
+                'url' => ['/admin_center/default', 'id' => Yii::$app->user->identity->customer_id]
             ],
 //            ['label' => 'About', 'url' => ['/site/about']],
 //            ['label' => 'Contact', 'url' => ['/site/contact']],

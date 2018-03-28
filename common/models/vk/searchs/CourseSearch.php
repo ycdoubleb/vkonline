@@ -208,7 +208,7 @@ class CourseSearch extends Course
         
         $courseSize = [];
         foreach ($result as $key => $value) {
-            //转换为对应的数据形式
+            //转换为对应的数组形式
             $courseSize[] = [
                 'course_id' => $key,
                 'course_size' => $value
