@@ -17,6 +17,8 @@ use yii\widgets\LinkPager;
 MainAssets::register($this);
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', 'Course');
+
 ?>
 
 <header class="header">

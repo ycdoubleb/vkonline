@@ -18,6 +18,8 @@ use yii\widgets\ActiveForm;
 MainAssets::register($this);
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', 'Course');
+
 ?>
 
 <style type="text/css">

@@ -232,13 +232,13 @@ return [
     'Survey' => '概况',
     'Quote' => '引用',
     
-    'Special' => '专题',
-    'Column' => '栏',
-    
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-查看视频
     'Relation' => '关联',
     //前台-操作记录
     'Relative' => '相关',
+    //前台-管理中心
+    'Special' => '专题',
+    'Column' => '栏',
 ];
