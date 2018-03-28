@@ -59,12 +59,18 @@ class VideoSearch extends Video
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
+        $customerId = ArrayHelper::getValue($params, 'id');
         
         self::getInstance();
         if(!$this->load($params)){
             $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
             $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
             $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
+        }
+        
+        //前台管理中心查看用户时根据客户ID过滤数据
+        if($customerId){
+            self::$query->andFilterWhere(['Video.customer_id' => $customerId]);
         }
         
         //条件查询

@@ -14,6 +14,7 @@
     padding-right: 0;
     display: inline-block
 }
+
 .main
 .frame-title {
     padding: 10px 0 28px 10px;
@@ -21,6 +22,7 @@
     line-height: 20px;
     background-color: rgba(153, 153, 153, 1);
 }
+
 .main
 .frame-title .icon {
     float: left; 
@@ -56,4 +58,18 @@
     color: #000000;
     float: left;
     font-weight: bold;
+}
+
+/***  用户模块  **/
+.user-create .frame .frame-title, .user-update .frame .frame-title {
+    color: #999999;
+    background-color: #f2f2f2;
+    margin-bottom: 10px;
+}
+
+/***  宣传栏模块  **/
+.banner-create .frame .frame-title, .banner-update .frame .frame-title {
+    color: #999999;
+    background-color: #f2f2f2;
+    margin-bottom: 10px;
 }

@@ -53,7 +53,7 @@ class UserSearch extends User
     public function search($params)
     {
         $this->getInstance();
-        
+        $customerId = ArrayHelper::getValue($params, 'id');
 //        $dataProvider = new ActiveDataProvider([
 //            'query' => $query,
 //            'key' => 'id'
@@ -66,7 +66,11 @@ class UserSearch extends User
 //            // $query->where('0=1');
 //            return $dataProvider;
 //        }
-
+        
+        //前台管理中心查看用户时根据客户ID过滤数据
+        if($customerId){
+            self::$query->andFilterWhere(['customer_id' => $customerId]);
+        }
         
         //条件查询
         self::$query->andFilterWhere([
