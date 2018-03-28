@@ -37,7 +37,7 @@ ModuleAssets::register($this);
             </label>
             <div class="col-lg-11 col-md-11 remove">
                 <div class="search-drop-downList">
-                    <?= Select2::widget(['name' => 'category_id', 'data' => [], 
+                    <?= Select2::widget(['name' => 'category_id', 'data' => $allCategory, 
                         'value' => ArrayHelper::getValue($filters, 'category_id'),
                         'options' => ['class' => 'form-control', 'placeholder' => '请选择 课程分类'],
                         'pluginOptions' => ['allowClear' => true],
@@ -73,6 +73,7 @@ ModuleAssets::register($this);
                 <?= Html::a('<i class="fa fa-search"></i>&nbsp;'.Yii::t('app', '{Search}{Course}', ['Search' => Yii::t('app', 'Search'), 'Course' => Yii::t('app', 'Course')]), 
                         'javascript:;', ['id' => 'submit', 'class' => 'btn btn-success']); ?>
             </div>
+            <?php if(!empty(Yii::$app->user->identity->customer_id)): ?>
             <div class="col-lg-3 col-md-3" style="padding: 6px 15px">
                 <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', '1,2' => '全网'], [
                     'itemOptions' => [
@@ -82,6 +83,7 @@ ModuleAssets::register($this);
                     ]
                 ]); ?>
             </div>
+            <?php endif; ?>
         </div>
         
         <?php ActiveForm::end(); ?>

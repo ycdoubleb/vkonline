@@ -125,7 +125,7 @@ class CourseSearch extends Course
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($nodeResult, 'course_id'), 
-                   ArrayHelper::index($videoResult, 'course_id'));
+                   ArrayHelper::index($courseSize, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {

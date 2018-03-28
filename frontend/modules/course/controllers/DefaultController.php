@@ -2,6 +2,7 @@
 
 namespace frontend\modules\course\controllers;
 
+use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
@@ -64,6 +65,7 @@ class DefaultController extends Controller
         
         unset($result['filter']['limit']);
         return $this->render('index', [
+            'allCategory' => Category::getCatsByLevel(1, true),
             'filters' => $result['filter'],
             'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
