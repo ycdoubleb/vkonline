@@ -2,12 +2,8 @@
 
 namespace common\models\vk\searchs;
 
-use common\models\User;
 use common\models\vk\Course;
-use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
-use common\models\vk\Customer;
-use common\models\vk\PraiseLog;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
@@ -59,8 +55,9 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
-        $moduleId = Yii::$app->controller->module->id;  //当前模块id
-        $level = ArrayHelper::getValue($params, 'level');   //搜索等级
+        $moduleId = Yii::$app->controller->module->id;   //模块ID
+        $customerId = !empty(\Yii::$app->user->identity->customer_id) ? \Yii::$app->user->identity->customer_id : null;  //客户id
+        $level = ArrayHelper::getValue($params, 'level', self::INTRANET_LEVEL);   //搜索等级
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
@@ -68,38 +65,46 @@ class CourseSearch extends Course
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
-        if(!empty($params) && !$this->load($params)){
-            $customerId = Yii::$app->user->identity->customer_id;  //当前用户的客户id
-            $this->category_id = ArrayHelper::getValue($params, 'category_id'); //分类id
-            //选择内网搜索的情况下
-            if(!empty($customerId) && $level == self::INTRANET_LEVEL){
-                self::$query->andFilterWhere([
-                    'Course.customer_id' => $customerId,
-                    'Course.level' => self::INTRANET_LEVEL,
-                    'Course.is_publish' => 1,
-                ]);
-            //选择全网搜索的情况下
-            }else if(!empty($customerId) && $level == self::PUBLIC_LEVEL){
-                self::$query->andFilterWhere(
-                    ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]]
-                );
-                self::$query->andFilterWhere(['Course.is_publish' => 1]);
-            //客户id为空并且模块是course的情况下
-            }else if(empty($customerId) && $moduleId == 'course'){
-                self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
-            }else{
-                self::$query->andFilterWhere(['Course.created_by' => Yii::$app->user->id]);
-            }
+        //选择内网搜索的情况下
+        if($customerId != null && $level == self::INTRANET_LEVEL){
+            self::$query->andFilterWhere([
+                'Course.customer_id' => $customerId,
+                'Course.level' => self::INTRANET_LEVEL,
+                'Course.is_publish' => 1,
+            ]);
+        }
+        //选择全网搜索的情况下
+        if($customerId != null && $level == self::PUBLIC_LEVEL){
+            self::$query->andFilterWhere(['and', 
+                ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]], 
+                ['Course.is_publish' => 1]
+            ]);
+        }
+        //客户id为空 and 模块id为课程的情况下
+        if($customerId == null && $moduleId == 'course'){
+            self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
+        }
+        //模块id为建课中心的情况下
+        if($moduleId == 'build_course'){
+            self::$query->andFilterWhere(['Course.created_by' => \Yii::$app->user->id]);
+        }
+        //模块id为管理中心的情况下
+        if($moduleId == 'admin_center'){
+            self::$query->andFilterWhere(['Course.customer_id' => $customerId]);
         }
         //条件查询
-        self::$query->andFilterWhere([
-            'Course.customer_id' => $this->customer_id,
-            'Course.category_id' => $this->category_id,
-            'Course.teacher_id' => $this->teacher_id,
-            'Course.created_by' => $this->created_by,
-            'Course.is_publish' => $this->is_publish,
-            'Course.level' => $this->level,
-        ]);
+        if($this->load($params)){
+            self::$query->andFilterWhere([
+                'Course.customer_id' => $this->customer_id,
+                'Course.category_id' => $this->category_id,
+                'Course.teacher_id' => $this->teacher_id,
+                'Course.created_by' => $this->created_by,
+                'Course.is_publish' => $this->is_publish,
+                'Course.level' => $this->level,
+            ]);
+        }else{
+            self::$query->andFilterWhere(['Course.category_id' => ArrayHelper::getValue($params, 'category_id')]);
+        }
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
         //查询所有课程下的环节数
@@ -108,8 +113,8 @@ class CourseSearch extends Course
         self::$query->with('category', 'customer', 'teacher', 'createdBy');
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
-        self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
         self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
+        self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
         //添加字段
         self::$query->select(['Course.*']);
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
