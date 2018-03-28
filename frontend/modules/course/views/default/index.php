@@ -43,7 +43,6 @@ $this->title = Yii::t('app', 'Course');
                         'value' => ArrayHelper::getValue($filters, 'category_id'),
                         'options' => ['class' => 'form-control', 'placeholder' => '请选择 课程分类'],
                         'pluginOptions' => ['allowClear' => true],
-                        'pluginEvents' => ['change' => 'function(){ selectLog($(this));}']
                     ]) ?>
                 </div>
             </div>
@@ -77,7 +76,7 @@ $this->title = Yii::t('app', 'Course');
             </div>
             <?php if(!empty(Yii::$app->user->identity->customer_id)): ?>
             <div class="col-lg-3 col-md-3" style="padding: 6px 15px">
-                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', '1,2' => '全网'], [
+                <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', 2 => '全网'], [
                     'itemOptions' => [
                         'labelOptions' => [
                             'style' => 'margin-right: 30px; margin-bottom: 0'
