@@ -1,0 +1,329 @@
+/***************************************main-公共****************************************/
+.main {
+    display: inline-block;
+    width: 1000px;
+    height: auto;
+    padding-left: 35px;
+    font-size: 14px;
+}
+
+.main > p,
+.main .search-frame {
+    padding: 0;
+    margin: 0 0 15px;
+}
+
+.search-frame > label {
+    text-align: center;
+}
+
+.main .form-label {
+    padding: 10px 0 !important;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: #999;
+    font-weight: normal;
+    padding-right: 0px;
+}
+
+.main .form-control,
+.main .select2-selection {
+    height: 40px !important;
+    padding: 10px 24px 10px 12px !important;
+    border-radius: 0 !important;
+}
+
+.main .select2-selection__arrow {
+    height: 38px !important;
+    border-left: none !important;
+}
+
+/*********************面包屑****************************/
+.main .crumbs {
+    padding: 6px; 
+    margin-bottom: 15px; 
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .crumbs > i {
+    margin-right: 5px; 
+    font-size: 16px;
+}
+
+.main .crumbs > span {
+    color: #999;
+}
+
+/*********************搜索框架****************************/
+.search-frame div.remove {
+    padding: 0;
+}
+
+.search-frame .search-drop-downList,
+.search-frame .search-text-input {
+    float: left;
+    width: 100%;
+    height: auto;
+    padding-right: 45px;
+    border: 1px #ccc solid;
+}
+
+.search-frame .search-drop-downList {
+    padding-right: 0px;
+    margin-bottom: -20px;
+    border: none;
+}
+
+.search-frame .search-drop-downList > select,
+.search-frame .search-text-input > input {
+    height: 38px !important;
+    font-size: 14px;
+    border: none;
+}
+
+.search-frame .search-drop-downList > select:focus,
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-text-input > input:focus {
+    outline: 0;
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.search-frame .search-btn-frame {
+    position: absolute;
+    top: 0;
+    right: 0;
+    float: right;
+    padding: 9px 15px;
+    background-color: #00cc99;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.search-frame .search-btn-frame > a,
+.search-frame .search-btn-frame > a:focus,
+.search-frame .search-btn-frame > a:hover {
+    font-size: 16px;
+    color: #fff;
+}
+
+/*********************过滤****************************/
+.main .filter {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    padding: 10px 15px;
+    margin: 30px 0;
+    font-size: 0px;
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .filter .result {
+    display: inline-block;
+    float: left;
+    font-size: 14px;
+}
+
+.main .filter .sort {
+    display: inline-block;
+    float: right;
+    font-size: 14px;
+}
+
+.main .filter .sort > ul {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.main .filter .sort > ul > li {
+    float: left;
+    height: 40px;
+    padding: 10px 7px;
+    margin: -10px 5px;
+}
+
+.main .filter .sort > ul > li > a {
+    display: block;
+    padding: 0 7px;
+    margin: -10px -7px;
+    color: #999;
+    line-height: 40px;
+    text-decoration: none;
+}
+
+.main .filter .sort > ul > li.active,
+.main .filter .sort > ul > li:hover {
+    border-bottom: 2px #337ab7 solid;
+    /*cursor: pointer;*/
+}
+
+.main .filter .sort > ul > li.active > a,
+.main .filter .sort > ul > li:hover > a {
+    color: #337ab7;
+}
+
+/*********************分页****************************/
+.main .page {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.main .page.center {
+    text-align: center;
+}
+
+/************************************列表*******************************************/
+.main .list {
+    /*position: relative;*/
+    width: 100%;
+    height: auto;
+    font-size: 0px;
+}
+
+.list .item {
+    display: inline-block;
+    width: 260px;
+    margin-right: 90px;
+    margin-bottom: 30px;
+    font-size: 0px;
+}
+
+.list .item.item-right {
+    margin-right: 0 !important;
+}
+
+.list .item .pic {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 147px;
+    background-color: #26bfcd; 
+}
+
+.list .item .pic .title {
+    position: absolute;
+    width: 100%;
+    margin: 10px auto;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    line-height: 103px;
+}
+
+.list .item .pic .avatars {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 95px;
+    height: 112px;
+}
+
+.list .item .pic .float {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 33px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 33px;
+    background-color: rgba(0, 0, 0, .6);
+}
+
+.list .item .pic .float > span {
+    margin-right: 20px;
+}
+
+.list .item .pic .float > span.right {
+    float: right;
+    margin-right: 0;
+}
+
+.list .item .pic .float > span > i {
+    margin-left: 5px;
+}
+
+.list .item .pic .duration {
+    position: absolute;
+    top: 10px;
+    right: 5px;
+    height: 25px;
+    padding: 0 5px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 25px;
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.list .item .cont {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #999;
+    background-color: #f2f2f2; 
+}
+
+.list .item .cont .name,
+.list .item .cont .tuip {
+    padding: 12px 0;
+    text-align: left;
+}
+
+.list .item .cont .tuip {
+    position: relative;
+    border-top: dashed 1px #dedede;
+}
+
+.list .item .cont .name > span,
+.list .item .cont .tuip > span {
+    color: #666;
+}
+
+.list .item .cont .tuip > a,
+.list .item .cont .tuip .nodenum,
+.list .item .cont .tuip .labels {
+    float: right;
+    text-decoration: none;
+}
+
+.list .item .cont .tuip > a.into {
+    color: #0099FF;
+}
+
+.list .item .cont .tuip > a.see {
+    color: #FE862E;
+}
+
+.list .item .cont .tuip > a.play {
+    font-size: 18px;
+    color: #4bd127;
+}
+
+.list .item .cont .tuip .labels {
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+.list .item .cont .tuip .labels > span {
+    display: block;
+    float: left;
+    padding: 2px;
+    margin-right: 3px;
+    font-size: 14px;
+    background-color: #fff;
+}

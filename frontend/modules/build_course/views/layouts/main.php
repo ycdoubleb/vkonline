@@ -43,7 +43,6 @@ $menuItems = [
     ],
 ];
 //工具
-
 $utilsItems = [
     [
         'label' => '板书工具',
@@ -59,14 +58,18 @@ $utilsItems = [
     ]
 ];
 //导航
-foreach ($menuItems as $item) {
+end($menuItems);
+$lastIndex = key($menuItems);
+foreach ($menuItems as $index => $item) {
     $actionId = strstr(Yii::$app->controller->action->id, '-');
     $action = strstr($item['url'][0], '-');
-    $menu .= ($actionId == $action ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $menu .= ($actionId == $action ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+        Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 //工具
 foreach ($utilsItems as $item) {
-    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').
+       Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
 $html = <<<Html

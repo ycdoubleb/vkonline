@@ -1,4 +1,4 @@
-<div class="study_center-default-index">
+<div class="study_center-default-index main">
     <h1><?= $this->context->action->uniqueId ?></h1>
     <p>
         This is the view content for action "<?= $this->context->action->id ?>".
