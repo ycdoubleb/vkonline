@@ -158,7 +158,7 @@ class UserSearch extends User
      */
     public function findUsedSizeByUser()
     {
-        $files = $this->findUserFile()->all();
+        $files = $this->findUserFile()->asArray()->all();
         $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
         $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
         $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
@@ -181,7 +181,8 @@ class UserSearch extends User
      */
     protected function findUserFile()
     {
-        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+        self::getInstance();
+        $query = User::find()->select(['Video.source_id', 'Attachment.file_id'])
             ->from(['User' => User::tableName()]);
         
         $query->leftJoin(['Video' => Video::tableName()], '(Video.created_by = User.id AND Video.is_del = 0 AND Video.is_ref = 0)');

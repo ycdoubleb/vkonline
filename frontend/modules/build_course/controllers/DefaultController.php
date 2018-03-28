@@ -815,12 +815,14 @@ class DefaultController extends Controller
     {
         $refs = [];
         $vidos = Video::getVideoNode([]);
-        foreach ($vidos as $model) {
-            $refs[] = [
-                'id' => $model->id,
-                'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
-                        ' / ' . $model->name .'（'. $model->teacher->name .'）'
-            ];
+        if($vidos != null){
+            foreach ($vidos as $model) {
+                $refs[] = [
+                    'id' => $model->id,
+                    'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
+                            ' / ' . $model->name .'（'. $model->teacher->name .'）'
+                ];
+            }
         }
         
         return ArrayHelper::map($refs, 'id', 'name');

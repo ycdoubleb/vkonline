@@ -84,7 +84,7 @@ class Post extends ActiveRecord
             [['content'], 'string'],
             [['name'], 'string', 'max' => 50],
             [['title'], 'string', 'max' => 255],
-            [['can_comment', 'is_show', 'sort_order'], 'string', 'max' => 1],
+//            [['can_comment', 'is_show', 'sort_order'], 'string', 'max' => 1],
             [['created_by'], 'string', 'max' => 32],
         ];
     }
@@ -96,8 +96,8 @@ class Post extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'category_id' => Yii::t('app', '{Belong}{Category}',[
-                'Belong' => Yii::t('app', 'Belong'),
+            'category_id' => Yii::t('app', '{The}{Category}',[
+                'The' => Yii::t('app', 'The'),
                 'Category' => Yii::t('app', 'Category'),
             ]),
             'name' => Yii::t('app', 'Name'),

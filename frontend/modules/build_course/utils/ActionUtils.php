@@ -416,20 +416,22 @@ class ActionUtils
         try
         {  
             $isEqual = $oldAttr['source_id'] !== $model->source_id;
-            if($model->save() && (!empty($newAttr) || $isEqual)){
-                $oldRef = Video::findOne($oldAttr['ref_id']);
-                $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
-                $oldVideo = Uploadfile::findOne($oldAttr['source_id']);
+            if($model->save()){
                 $this->saveVideoAttachment($model->id, $files);
-                $oldRefName = !empty($oldRef) ? $oldRef->courseNode->course->name . ' / ' . $oldRef->courseNode->name . ' / ' . $oldRef->name : '空';
-                $this->saveCourseActLog(['action' => '修改', 'title' => "视频管理", 'course_id' => $model->courseNode->course_id,
-                    'content'=>"调整 【{$model->courseNode->name} >> {$oldAttr['name']}】 以下属性：\n\r".
-                        ($oldAttr['ref_id'] !== $model->ref_id ? "引用：【旧】{$oldRefName}>>【新】{$model->courseNode->course->name} / {$model->courseNode->name} / {$model->name},\n\r" : null).
-                        ($oldAttr['name'] !== $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
-                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).
-                        ($isEqual ? "视频：【旧】{$oldVideo->name} >>【新】{$model->source->name}" : null),
-                ]);
+                if(!empty($newAttr) && $isEqual){
+                    $oldRef = Video::findOne($oldAttr['ref_id']);
+                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
+                    $oldVideo = Uploadfile::findOne($oldAttr['source_id']);
+                    $oldRefName = !empty($oldRef) ? $oldRef->courseNode->course->name . ' / ' . $oldRef->courseNode->name . ' / ' . $oldRef->name : '空';
+                    $this->saveCourseActLog(['action' => '修改', 'title' => "视频管理", 'course_id' => $model->courseNode->course_id,
+                        'content'=>"调整 【{$model->courseNode->name} >> {$oldAttr['name']}】 以下属性：\n\r".
+                            ($oldAttr['ref_id'] !== $model->ref_id ? "引用：【旧】{$oldRefName}>>【新】{$model->courseNode->course->name} / {$model->courseNode->name} / {$model->name},\n\r" : null).
+                            ($oldAttr['name'] !== $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
+                            ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).
+                            ($isEqual ? "视频：【旧】{$oldVideo->name} >>【新】{$model->source->name}" : null),
+                    ]);
+                }
             }else{
                 throw new Exception($model->getErrors());
             }
