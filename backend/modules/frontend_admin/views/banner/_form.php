@@ -66,7 +66,10 @@ use yii\widgets\ActiveForm;
         'pluginOptions' => [
             'onText' => Yii::t('app', 'Y'),
             'offText' => Yii::t('app', 'N'),
-        ]
+        ],
+        'containerOptions' => [
+            'class' => '',
+        ],
     ]) ?>
 
     <?= $form->field($model, 'sort_order')->textInput() ?>

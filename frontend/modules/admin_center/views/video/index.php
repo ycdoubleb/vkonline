@@ -18,19 +18,16 @@ $this->title = Yii::t('app', '{Video}{List}',[
     'Video' => Yii::t('app', 'Video'),
     'List' => Yii::t('app', 'List'),
 ]);
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="video-index main">
 
     <div class="frame">
-        <div class="frame-title">
-            <i class="icon fa fa-list-ul"></i>
-            <span><?= Yii::t('app', 'List') ?></span>
-        </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
+            'tableOptions' => ['class' => 'table table-striped table-list'],
             'columns' => [
                 [
                     'attribute' => 'courseNode.course.name',
@@ -169,7 +166,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
+                            'min-width' => '80px',
                         ],
                     ],
                     'value' => function ($data){
@@ -188,7 +185,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
+                            'min-width' => '80px',
                         ],
                     ],
                     'value' => function ($data){

@@ -12,11 +12,7 @@ $this->title = Yii::t('app', '{Create}{User}',[
     'Create' => Yii::t('app', 'Create'),
     'User' => Yii::t('app', 'User'),
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{User}{List}',[
-    'User' => Yii::t('app', 'User'),
-    'List' => Yii::t('app', 'List'),
-]), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="user-create main">
     <div class="frame">

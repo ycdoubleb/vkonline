@@ -14,11 +14,7 @@ $this->title = Yii::t('app', '{Propaganda}{Page}{Detail}',[
     'Page' => Yii::t('app', 'Page'),
     'Detail' => Yii::t('app', 'Detail'),
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Propaganda}{List}',[
-    'Propaganda' => Yii::t('app', 'Propaganda'),
-    'List' => Yii::t('app', 'List'),
-]), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="banner-view main">
 
@@ -28,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <div class="frame">
         <div class="frame-title">
-            <i class="icon fa fa-file-text-o"></i>
+            <i class="icon fa fa-file-text"></i>
             <span><?= Yii::t('app', '{Basic}{Info}',[
                 'Basic' => Yii::t('app', 'Basic'),
                 'Info' => Yii::t('app', 'Info'),
@@ -42,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
-                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path) : 
+                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['width' => '820px']) : 
                         '<video src="'.WEB_ROOT . $model->path.'" controls="controls"></video>',
                 ],
                 'link',
@@ -68,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'format' => 'raw',
 //                    'value' => !empty($model->created_by) ? $model->adminUser->nickname : null,
 //                ],
-                'des',
+                'des:ntext',
 //                'created_at:datetime',
 //                'updated_at:datetime',
             ],

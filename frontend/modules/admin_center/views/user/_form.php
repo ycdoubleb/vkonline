@@ -25,11 +25,8 @@ use yii\widgets\ActiveForm;
             'labelOptions' => ['class' => 'col-lg-2 col-md-2 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
         ],
     ]); ?>
-    <?= $form->field($model, 'customer_id')->widget(Select2::classname(),[
-        'data' => $customer,
-        'hideSearch' => true,
-        'options' => ['placeholder' => '请选择...',]
-    ])?>
+    
+    <?= Html::hiddenInput('User[customer_id]', Yii::$app->user->identity->customer_id) ?>
     
     <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称'])->label(Yii::t('app', 'Name')) ?>
     
@@ -60,8 +57,8 @@ use yii\widgets\ActiveForm;
                 'browseLabel' => '选择上传头像...',
                 'initialPreview' => [
                     $model->isNewRecord ?
-                            Html::img(WEB_ROOT . '/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
-                            Html::img(WEB_ROOT . $model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
+                            Html::img('/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']) :
+                            Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']),
                 ],
                 'overwriteInitial' => true,
             ],
@@ -69,7 +66,7 @@ use yii\widgets\ActiveForm;
     
     <?php
         $prompt = '1TB=1024GB，默认为不限制';
-        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 75%;']);
+        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 83%;']);
         echo $form->field($model, 'max_store',[
         'template' => "{label}\n<div class=\"col-lg-1 col-md-1\" style=\"padding-right:3px\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding:0\">{$downList}</div>"
             . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999;padding:7px 0px\">{$prompt}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
@@ -77,8 +74,8 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
 
-    <div class="form-group" style="padding-left: 50px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <div class="form-group" style="padding-left: 180px;">
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Submit') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>
