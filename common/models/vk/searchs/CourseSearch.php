@@ -55,8 +55,8 @@ class CourseSearch extends Course
      */
     public function search($params)
     {
-        $moduleId = Yii::$app->controller->module->id;   //模块ID
-        $customerId = !empty(\Yii::$app->user->identity->customer_id) ? \Yii::$app->user->identity->customer_id : null;  //客户id
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        $customerId = !empty(\Yii::$app->user->identity->customer_id) ? \Yii::$app->user->identity->customer_id : null;  //当前客户id
         $level = ArrayHelper::getValue($params, 'level', self::INTRANET_LEVEL);   //搜索等级
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
@@ -65,24 +65,27 @@ class CourseSearch extends Course
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
-        //选择内网搜索的情况下
-        if($customerId != null && $level == self::INTRANET_LEVEL){
-            self::$query->andFilterWhere([
-                'Course.customer_id' => $customerId,
-                'Course.level' => self::INTRANET_LEVEL,
-                'Course.is_publish' => 1,
-            ]);
-        }
-        //选择全网搜索的情况下
-        if($customerId != null && $level == self::PUBLIC_LEVEL){
-            self::$query->andFilterWhere(['and', 
-                ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]], 
-                ['Course.is_publish' => 1]
-            ]);
-        }
-        //客户id为空 and 模块id为课程的情况下
-        if($customerId == null && $moduleId == 'course'){
-            self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
+        //模块id为课程的情况下
+        if($moduleId == 'course'){
+            //选择内网搜索的情况下
+            if($customerId != null && $level == self::INTRANET_LEVEL){
+                self::$query->andFilterWhere([
+                    'Course.customer_id' => $customerId,
+                    'Course.level' => self::INTRANET_LEVEL,
+                    'Course.is_publish' => 1,
+                ]);
+            }
+            //选择全网搜索的情况下
+            if($customerId != null && $level == self::PUBLIC_LEVEL){
+                self::$query->andFilterWhere(['and', 
+                    ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]], 
+                    ['Course.is_publish' => 1]
+                ]);
+            }
+            //当前客户id为空的情况下
+            if($customerId == null){
+                self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
+            }
         }
         //模块id为建课中心的情况下
         if($moduleId == 'build_course'){

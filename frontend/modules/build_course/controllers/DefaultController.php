@@ -448,8 +448,7 @@ class DefaultController extends Controller
     public function actionMyVideo()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
-            'created_by' => \Yii::$app->user->id, 'limit' => 6]));
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
