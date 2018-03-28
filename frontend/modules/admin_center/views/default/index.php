@@ -21,7 +21,7 @@ ModuleAssets::register($this);
         <!--左侧-基本信息-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-file-text-o"></i>
+                <i class="icon fa fa-file-text"></i>
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),

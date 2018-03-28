@@ -1,0 +1,50 @@
+.user-form .file-input {
+    display: inline-block;
+    font-size: 12px;
+}
+
+.user-form .file-preview {
+    border-radius: 0;
+}
+
+.user-form .file-preview .fileinput-remove {
+    z-index: 1030;
+}
+
+.user-form .krajee-default.file-preview-frame {
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    text-align: center;
+}
+
+.user-form .krajee-default.file-preview-frame .kv-file-content {
+    width: 100%;
+    height: 100%;
+}
+
+.user-form .krajee-default.file-preview-frame .file-thumbnail-footer {
+    height: auto;
+    padding: 2px;
+}
+
+.user-form .krajee-default .file-footer-caption {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+
+.user-form .krajee-default .file-caption-info, 
+.user-form .krajee-default .file-size-info {
+    width: auto;
+    height: auto;
+}
+
+.user-form .file-actions {
+    font-size: 12px;
+}
+
+.user-form .btn-kv {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+}

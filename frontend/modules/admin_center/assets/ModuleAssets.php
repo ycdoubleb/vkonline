@@ -19,7 +19,8 @@ use const YII_DEBUG;
 class ModuleAssets extends AssetBundle {
     public $sourcePath = '@frontend/modules/admin_center/assets';
     public $css = [
-       'css/module.css',
+        'css/module.css',
+        'css/fileInput.css',
     ];
     public $js = [
     ];

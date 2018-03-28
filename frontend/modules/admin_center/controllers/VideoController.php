@@ -3,7 +3,6 @@
 namespace frontend\modules\admin_center\controllers;
 
 use common\models\User;
-use common\models\vk\Customer;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
@@ -49,6 +48,7 @@ class VideoController extends Controller
     {
         $searchModel = new VideoSearch();
         $result = $searchModel->search(Yii::$app->request->queryParams);
+        $customerId = \Yii::$app->user->identity->customer_id;
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
@@ -58,77 +58,10 @@ class VideoController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            
-            'customer' => $this->getCustomer(),     //所属客户
             'filters' => $result['filter'],         //过滤条件
-            'teacher' => $this->getTeacher(),       //所有主讲老师
-            'createdBy' => $this->getCreatedBy(),   //所有创建者
+            'teacher' => $this->getTeacher($customerId),       //所有主讲老师
+            'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
         ]);
-    }
-
-    /**
-     * Displays a single Video model.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Video model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = new Video();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Updates an existing Video model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Deletes an existing Video model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
     }
 
     /**
@@ -148,30 +81,17 @@ class VideoController extends Controller
     }
     
     /**
-     * 查找所属客户
-     * @return array
-     */
-    public function getCustomer()
-    {
-        $customer = (new Query())
-                ->select(['Customer.id', 'Customer.name'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id')
-                ->all();
-
-        return ArrayHelper::map($customer, 'id', 'name');
-    }
-    
-    /**
      * 查找所有主讲老师
+     * @param string $customerId    客户ID
      * @return array
      */
-    public function getTeacher()
+    public function getTeacher($customerId)
     {
         $teacher = (new Query())
                 ->select(['Video.teacher_id AS id', 'Teacher.name'])
                 ->from(['Video' => Video::tableName()])
                 ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
+                ->where(['Video.customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($teacher, 'id', 'name');
@@ -179,14 +99,16 @@ class VideoController extends Controller
     
     /**
      * 查找所有创建者
+     * @param string $customerId    客户ID
      * @return array
      */
-    public function getCreatedBy()
+    public function getCreatedBy($customerId)
     {
         $createdBy = (new Query())
                 ->select(['Video.created_by AS id', 'User.nickname AS name'])
                 ->from(['Video' => Video::tableName()])
                 ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
+                ->where(['Video.customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($createdBy, 'id', 'name');

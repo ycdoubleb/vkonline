@@ -20,7 +20,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         //'filterModel' => $searchModel,
-        'tableOptions' => ['class' => 'table table-striped table-list'],
         'layout' => "{items}\n{summary}\n{pager}",
         'summaryOptions' => [
             //'class' => 'summary',
@@ -37,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 'headerOptions' => [
                     'style' => [
-                        'width' => '110px',
+                        'width' => '125px',
                         'text-align' => 'center',
                     ],
                 ],

@@ -13,11 +13,6 @@ $this->title = Yii::t('app', '{User}{Info}',[
     'User' => Yii::t('app', 'User'),
     'Info' => Yii::t('app', 'Info'),
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Customer}{List}',[
-    'Customer' => Yii::t('app', 'Customer'),
-    'List' => Yii::t('app', 'List'),
-]), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="user-view main">
@@ -40,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!--基本信息-->
     <div class="frame">
         <div class="frame-title">
-            <i class="icon fa fa-file-text-o"></i>
+            <i class="icon fa fa-file-text"></i>
             <span><?= Yii::t('app', '{Basic}{Info}',[
                 'Basic' => Yii::t('app', 'Basic'),
                 'Info' => Yii::t('app', 'Info'),

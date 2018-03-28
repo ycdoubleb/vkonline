@@ -4,7 +4,6 @@ use backend\components\GridViewChangeSelfColumn;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
 use frontend\modules\admin_center\assets\ModuleAssets;
-use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -18,7 +17,6 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
     'Propaganda' => Yii::t('app', 'Propaganda'),
     'List' => Yii::t('app', 'List'),
 ]);
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="banner-index main">
@@ -28,14 +26,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     
     <div class="frame">
-        <div class="frame-title">
-            <i class="icon fa fa-list-ul"></i>
-            <span><?= Yii::t('app', 'List') ?></span>
-        </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             //'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
+            'tableOptions' => ['class' => 'table table-striped table-list'],
             'columns' => [
                 [
                     'attribute' => 'title',

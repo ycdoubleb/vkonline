@@ -17,19 +17,16 @@ $this->title = Yii::t('app', '{Course}{List}',[
     'Course' => Yii::t('app', 'Course'),
     'List' => Yii::t('app', 'List'),
 ]);
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="course-index main">
 
     <div class="frame">
-        <div class="frame-title">
-            <i class="icon fa fa-list-ul"></i>
-            <span><?= Yii::t('app', 'List') ?></span>
-        </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
+            'tableOptions' => ['class' => 'table table-striped table-list'],
             'columns' => [
                 [
                     'attribute' => 'category.name',
@@ -162,7 +159,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
+                            'min-width' => '80px',
                         ],
                     ],
                     'value' => function ($data){

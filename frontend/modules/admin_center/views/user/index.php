@@ -18,7 +18,7 @@ $this->title = Yii::t('app', '{User}{List}',[
     'User' => Yii::t('app', 'User'),
     'List' => Yii::t('app', 'List'),
 ]);
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="user-index main">
     <p>
@@ -28,14 +28,11 @@ $this->params['breadcrumbs'][] = $this->title;
         ]), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <div class="frame">
-        <div class="frame-title">
-            <i class="icon fa fa-list-ul"></i>
-            <span><?= Yii::t('app', 'List') ?></span>
-        </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
+            'tableOptions' => ['class' => 'table table-striped table-list'],
             'columns' => [
                 [
                     'attribute' => 'username',

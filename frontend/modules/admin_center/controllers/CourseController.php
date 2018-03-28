@@ -5,7 +5,6 @@ namespace frontend\modules\admin_center\controllers;
 use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
-use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Teacher;
 use Yii;
@@ -50,6 +49,7 @@ class CourseController extends Controller
     {
         $searchModel = new CourseSearch();
         $result = $searchModel->search(Yii::$app->request->queryParams);
+        $customerId = \Yii::$app->user->identity->customer_id;
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $result['data']['course']
@@ -58,11 +58,9 @@ class CourseController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            
-            'customer' => $this->getCustomer(),     //所属客户
-            'category' => $this->getCategory(),     //所有分类
-            'teacher' => $this->getTeacher(),       //所有主讲老师
-            'createdBy' => $this->getCreatedBy(),   //所有创建者
+            'category' => $this->getCategory($customerId),     //所有分类
+            'teacher' => $this->getTeacher($customerId),       //所有主讲老师
+            'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
         ]);
     }
 
@@ -83,30 +81,18 @@ class CourseController extends Controller
     }
     
     /**
-     * 查找所属客户
-     * @return array
-     */
-    public function getCustomer()
-    {
-        $customer = (new Query())
-                ->select(['Customer.id', 'Customer.name'])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id')
-                ->all();
-
-        return ArrayHelper::map($customer, 'id', 'name');
-    }
-    
-    /**
+     * 
      * 查找所有分类
+     * @param string $customerId    客户ID
      * @return array
      */
-    public function getCategory()
+    public function getCategory($customerId)
     {
         $category = (new Query())
                 ->select(['Category.id', 'Category.name'])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
+                ->where(['customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($category, 'id', 'name');
@@ -114,14 +100,16 @@ class CourseController extends Controller
     
     /**
      * 查找所有主讲老师
+     * @param string $customerId    客户ID
      * @return array
      */
-    public function getTeacher()
+    public function getTeacher($customerId)
     {
         $teacher = (new Query())
                 ->select(['Course.teacher_id AS id', 'Teacher.name'])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id')
+                ->where(['Course.customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($teacher, 'id', 'name');
@@ -129,14 +117,16 @@ class CourseController extends Controller
     
     /**
      * 查找所有创建者
+     * @param string $customerId    客户ID
      * @return array
      */
-    public function getCreatedBy()
+    public function getCreatedBy($customerId)
     {
         $createdBy = (new Query())
                 ->select(['Course.created_by AS id', 'User.nickname AS name'])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by')
+                ->where(['Course.customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($createdBy, 'id', 'name');

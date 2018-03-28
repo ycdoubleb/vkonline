@@ -2,17 +2,11 @@
 
 namespace frontend\modules\admin_center\controllers;
 
-use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
-use common\models\User;
-use common\models\vk\Customer;
 use Yii;
-use yii\db\Query;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /* 
@@ -53,9 +47,6 @@ class BannerController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            
-            'customer' => $this->getTheCustomer(),      //所属客户
-            'createdBy' => $this->getCreatedBy(),       //所有创建者
         ]);
     }
 
@@ -121,13 +112,10 @@ class BannerController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $model->delete();
         
-        if($model->customer_id){
-            throw new NotAcceptableHttpException('无权限操作！');
-        } else {
-            $model->delete();
-            return $this->redirect(['index']);
-        }
+        return $this->redirect(['index']);
+        
     }
 
     /**
@@ -145,34 +133,5 @@ class BannerController extends Controller
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
-    
-    /**
-     * 查找所属客户
-     * @return array
-     */
-    public function getTheCustomer()
-    {
-        $theCustomer = (new Query())
-                ->select(['Customer.id', 'Customer.name'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
-                ->all();
 
-        return ArrayHelper::map($theCustomer, 'id', 'name');
-    }
-    
-    /**
-     * 查找所有创建者
-     * @return array
-     */
-    public function getCreatedBy()
-    {
-        $createdBy = (new Query())
-                ->select(['Banner.created_by AS id', 'User.nickname AS name'])
-                ->from(['Banner' => Banner::tableName()])
-                ->leftJoin(['User' => AdminUser::tableName()], 'User.id = Banner.created_by')
-                ->all();
-        
-        return ArrayHelper::map($createdBy, 'id', 'name');
-    }
 }

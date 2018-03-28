@@ -2,7 +2,6 @@
 
 use common\models\Banner;
 use kartik\widgets\FileInput;
-use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
 use yii\web\View;
@@ -26,10 +25,7 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'customer_id')->textInput([
-        'placeholder' => '官网', 
-        'disabled' => true,
-    ])?>
+    <?= Html::hiddenInput('Banner[customer_id]', Yii::$app->user->identity->customer_id) ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
@@ -48,9 +44,9 @@ use yii\widgets\ActiveForm;
             'browseLabel' => '选择上传文件...',
             'initialPreview' => [
                 $model->isNewRecord ?
-                        Html::img('', ['class' => 'file-preview-image', 'width' => '213']) :
-                            $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['class' => 'file-preview-image', 'width' => '213']) :
-                                '<video src="'.WEB_ROOT . $model->path.'" controls="controls" class="file-preview-image" style="width:213px"></video>',
+                        Html::img('', ['class' => 'file-preview-image', 'height' => '230px']) :
+                            $model->type == 1 ? Html::img($model->path, ['class' => 'file-preview-image', 'width' => '500px']) :
+                                '<video src="'.$model->path.'" controls="controls" class="file-preview-image" style="height:230px"></video>',
             ],
             'overwriteInitial' => true,
         ],
@@ -66,15 +62,18 @@ use yii\widgets\ActiveForm;
         'pluginOptions' => [
             'onText' => Yii::t('app', 'Y'),
             'offText' => Yii::t('app', 'N'),
-        ]
+        ],
+        'containerOptions' => [
+            'class' => '',
+        ],
     ]) ?>
 
     <?= $form->field($model, 'sort_order')->textInput() ?>
 
     <?= $form->field($model, 'des')->textarea(['rows' => 5]) ?>
 
-    <div class="form-group" style="padding-left: 50px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <div class="form-group" style="padding-left: 180px;">
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Submit') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

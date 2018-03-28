@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Banner;
+use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\web\View;
 
 /* @var $this View */
@@ -11,17 +12,27 @@ $this->title = Yii::t('app', '{Update}{Banner}: {nameAttribute}', [
     'Banner' => Yii::t('app', 'Banner'),
     'nameAttribute' => $model->title,
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Propaganda}{List}',[
-    'Propaganda' => Yii::t('app', 'Propaganda'),
-    'List' => Yii::t('app', 'List'),
-]), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
-<div class="banner-update">
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+<div class="banner-update main">
+    <div class="frame">
+        <div class="frame-title">
+            <i class="icon fa fa-edit"></i>
+            <span><?= Yii::t('app', '{Create}{User}',[
+                'Create' => Yii::t('app', 'Create'),
+                'User' => Yii::t('app', 'User'),
+            ]) ?></span>
+        </div>
+        <?= $this->render('_form', [
+            'model' => $model,
+        ]) ?>
+    </div>
 </div>
+
+<?php
+    $js = <<<JS
+        
+JS;
+    $this->registerJs($js, View::POS_READY);
+    ModuleAssets::register($this);
+?>
