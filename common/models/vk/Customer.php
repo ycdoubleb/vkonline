@@ -139,6 +139,10 @@ class Customer extends ActiveRecord
         return $this->hasOne(Good::class, ['id' => 'good_id']);
     }
     
+    /**
+     * 关联获取开始结束时间
+     * @return ActiveQuery
+     */
     public function getStaEndTime()
     {
         return $this->hasOne(CustomerActLog::class, ['customer_id' => 'id'])->orderBy('id desc');

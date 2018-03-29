@@ -48,17 +48,17 @@ use yii\widgets\DetailView;
                                     . Customer::$statusUser[$model->status] . '</span>' : null,
                     ],
                     [
-                        'attribute' => 'expire_time',
+//                        'attribute' => 'expire_time',
                         'label' => Yii::t('app', 'Start Time'),
-                        'value' => !empty($model->expire_time) ? date('Y-m-d H:s', $model->staEndTime->start_time) : null,
+                        'value' => !empty($model->staEndTime->start_time) ? date('Y-m-d H:i', $model->staEndTime->start_time) : null,
                     ],
                     [
-                        'attribute' => 'renew_time',
+                        'attribute' => 'expire_time',
                         'label' => Yii::t('app', '{Expire}{Time}',[
                             'Expire' => Yii::t('app', 'Expire'),
                             'Time' => Yii::t('app', 'Time'),
                         ]),
-                        'value' => !empty($model->renew_time) ? date('Y-m-d H:i', $model->staEndTime->end_time) : null,
+                        'value' => !empty($model->expire_time) ? date('Y-m-d H:i', $model->expire_time) : null,
                     ],
                 ],
             ]) ?>

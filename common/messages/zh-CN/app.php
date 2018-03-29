@@ -231,6 +231,7 @@ return [
     'Distribution' => '分布',
     'Survey' => '概况',
     'Quote' => '引用',
+    'Opening' => '开通',
     
     //前台-协作人员
     'Help Man' => '协作人员',

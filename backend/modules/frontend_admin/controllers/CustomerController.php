@@ -173,8 +173,26 @@ class CustomerController extends Controller
         
         $model->status = Customer::STATUS_STOP;
         $model->save(false,['status']);
+        
+        $customerActLog = (new Query())->select(['good_id', 'start_time'])->from(CustomerActLog::tableName())
+                ->where(['customer_id' => $id])->orderBy('id desc')->one();
+        $values[] = [
+            'customer_id' => $id,
+            'title' => '停用',
+            'good_id' => $customerActLog['good_id'],
+            'content' => '到期停用！',
+            'start_time' => $customerActLog['start_time'],
+            'end_time' => time(),
+            'created_by' => \Yii::$app->user->id,
+            'created_at' => time(),
+            'updated_at' => time(),
+        ];
+        /** 添加$values数组到表里 */
+        Yii::$app->db->createCommand()->batchInsert(CustomerActLog::tableName(), [
+            'customer_id','title','good_id','content','start_time','end_time','created_by','created_at','updated_at'
+        ],$values)->execute();
             
-        return $this->redirect(['index']);
+        return $this->redirect(['view']);
     }
     
     /**
@@ -507,7 +525,7 @@ class CustomerController extends Controller
         $customer_id = ArrayHelper::getValue($post, 'CustomerActLog.customer_id');       //客户id
         $good_id = ArrayHelper::getValue($post, 'CustomerActLog.good_id');               //用户id
         $content = ArrayHelper::getValue($post, 'CustomerActLog.content');               //内容
-        $longTime = ArrayHelper::getValue($post, 'CustomerActLog.start_time');           //权限
+        $longTime = ArrayHelper::getValue($post, 'CustomerActLog.start_time');           //时长
 
         $addTime = ($longTime==1) ? 365*24*60*60 : 2*365*24*60*60;
         $customerActLog = (new Query())->select(['customer_id', 'end_time'])->from(CustomerActLog::tableName())
@@ -661,34 +679,39 @@ class CustomerController extends Controller
         $customer_id = ArrayHelper::getValue($post, 'CustomerAdmin.customer_id');       //客户id
         $user_id = ArrayHelper::getValue($post, 'CustomerAdmin.user_id');               //用户id
         $level = ArrayHelper::getValue($post, 'CustomerAdmin.level');                   //权限
-        //过滤已经添加的管理员
-        $courseUsers = (new Query())->select(['user_id'])
-                ->from(CustomerAdmin::tableName())
-                ->where(['customer_id'=>$customer_id])
-                ->all();
-        $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
         
-        $values = [];
-        if(!in_array($user_id, $userIds)){
-            $values[] = [
-                'customer_id' => $customer_id,
-                'user_id' => $user_id,
-                'level' => $level,
-                'created_by' => \Yii::$app->user->id,
-                'created_at' => time(),
-                'updated_at' => time(),
-            ];
-        }
-        
-        /** 添加$values数组到表里 */
-        $num = Yii::$app->db->createCommand()->batchInsert(CustomerAdmin::tableName(), [
-            'customer_id','user_id','level','created_by','created_at','updated_at'
-        ],$values)->execute();
-        
-        if($num > 0){
-            return ['code' => 200];
+        if($user_id == null){
+            return false;
         } else {
-            return ['code' => 400];
+            //过滤已经添加的管理员
+            $courseUsers = (new Query())->select(['user_id'])
+                    ->from(CustomerAdmin::tableName())
+                    ->where(['customer_id'=>$customer_id])
+                    ->all();
+            $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
+
+            $values = [];
+            if(!in_array($user_id, $userIds)){
+                $values[] = [
+                    'customer_id' => $customer_id,
+                    'user_id' => $user_id,
+                    'level' => $level,
+                    'created_by' => \Yii::$app->user->id,
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ];
+            }
+
+            /** 添加$values数组到表里 */
+            $num = Yii::$app->db->createCommand()->batchInsert(CustomerAdmin::tableName(), [
+                'customer_id','user_id','level','created_by','created_at','updated_at'
+            ],$values)->execute();
+
+            if($num > 0){
+                return ['code' => 200];
+            } else {
+                return ['code' => 400];
+            }
         }
     }
    
