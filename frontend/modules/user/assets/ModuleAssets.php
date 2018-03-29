@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace frontend\modules\study_center\assets;
+namespace frontend\modules\user\assets;
 
 use yii\web\AssetBundle;
 use const YII_DEBUG;
@@ -17,7 +17,7 @@ use const YII_DEBUG;
  * @author Administrator
  */
 class ModuleAssets extends AssetBundle {
-    public $sourcePath = '@frontend/modules/study_center/assets';
+    public $sourcePath = '@frontend/modules/user/assets';
     public $css = [
        'css/module.css',
     ];

@@ -264,3 +264,94 @@
     font-size: 14px;
     background-color: #fff;
 }
+
+/**
+ * table表格th样式 
+ */
+.main .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格th-head样式 
+ */
+.main .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/**
+ * table表格td-head样式 
+ */
+.main .viewdetail-td-head {
+    color: #000000;
+    float: right;
+    font-weight: bold;
+}
+
+/**
+ * table表格td样式 
+ */
+.main .viewdetail-td {
+    min-width: 100px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格td-des样式 
+ */
+.main .viewdetail-td-des {
+    height: 65px;
+    display:table-cell;
+    vertical-align:middle; 
+}
+
+/**
+ * 设置表格内容中部对齐
+ */
+.main .table > tbody > tr > td{
+    vertical-align: middle;
+}
+
+.main .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.frame .title {
+    padding: 10px 15px;
+    color: #fff;
+    text-align: left;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.frame .title > i {
+    float: left; 
+    margin: 3px 5px 0 0;
+}
+
+.frame .title > span {
+    display: block;
+    float: left;
+}
+
+.frame .title > .btngroup {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+}
+
+.frame .table {
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px #ddd solid;
+}
