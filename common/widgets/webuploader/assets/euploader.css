@@ -23,59 +23,146 @@
 .euploader-list {}
 
 /*========================================================
+ *
  * 列表项样式
+ *
  *======================================================*/
 /* input */
 .euploader-item-input {
     width: 1px;
 }
 /* 状态图标 */
-.euploader-item-status {
-    width: 30px;
-}
+.euploader-item-status {}
 /* 文件名 */
 .euploader-item-filename {
     color: #333;
 }
 /* 状态 */
-.euploader-item-state {
+.euploader-item-state {}
+/* 文件大小 */
+.euploader-item-size {}
+/* 按钮 */
+.euploader-item-btns {}
+
+
+/* 等待状态 */
+.euploader-item-waiting {}
+.euploader-item-waiting .state-color {color: #ccc}
+
+/* 上传中状态 */
+.euploader-item-uploading {}
+.euploader-item-uploading .state-color {color: #000}
+
+/* 成功状态 */
+.euploader-item-succeed {}
+.euploader-item-succeed .state-color {color: #5cb85c}
+
+/* 失败状态 */
+.euploader-item-fail {}
+.euploader-item-fail .state-color {color: #d9534f}
+
+/* 已存状态 */
+.euploader-item-exist {}
+.euploader-item-exist .state-color {color: #2196f3}
+
+/* 已上传状态 */
+.euploader-item-done {}
+.euploader-item-done .state-color {color: #ccc}
+
+/*========================================================
+ * 文件列表项样式
+ *======================================================*/
+
+/* 状态图标 */
+.filelist-status {
+    width: 30px;
+}
+/* 文件名 */
+.filelist-filename {
+    color: #333;
+}
+/* 状态 */
+.filelist-state {
     width: 300px;
 }
 /* 文件大小 */
-.euploader-item-size {
+.filelist-size {
     width: 95px;
     color: #ccc;
 }
 /* 按钮 */
-.euploader-item-btns {
+.filelist-btns {
     width: 50px;
 }
+/*========================================================
+ * 图片列表项样式
+ *======================================================*/
+/* 状态图标 */
+.tile-item {
+    position: relative;
+    display: inline-block;
+    width: 128px;
+    height: 128px;
+    border: solid 1px #ccc;
+    margin: 10px 10px 0 0;
+    overflow: hidden;
+}
+/* 信息 */
+.tile-info {
+    position: absolute;
+    display: inline-block;
+    top:-30px;
+    width: 128px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.9);
+}
 
-/* 等待状态 */
-.euploader-item-waiting {}
-.euploader-item-waiting .euploader-item-status {color: #ccc}
-.euploader-item-waiting .euploader-item-state {color: #ccc}
+/* 状态图标 */
+.tile-status {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+/* 文件名 */
+.tile-filename {
+    color: #333;
+}
+/* 状态 */
+.tile-state {
+    position: absolute;
+    top: 5px;
+    width: 100%;
+    text-align: center
+}
+/* 文件大小 */
+.tile-size {
+    color: #999;
+    position: absolute;
+    bottom: 0px;
+    height: 30px;
+    text-align: center;
+    width: 128px;
+    background: rgba(255, 255, 255, 0.8);
+}
+/* 按钮 */
+.tile-btns {
+     position: absolute;
+     top: 5px;
+     right: 5px;
+ }
+.tile-btns .euploader-del-btn{
+    color: #d9534f;
+}
+/* 图片 */
+.tile-img {}
 
-/* 上传中状态 */
-.euploader-item-uploading {}
-.euploader-item-uploading .euploader-item-status {color: #000}
-.euploader-item-uploading .euploader-item-state {color: #000}
-
-/* 成功状态 */
-.euploader-item-succeed {}
-.euploader-item-succeed .euploader-item-status {color: #5cb85c}
-.euploader-item-succeed .euploader-item-state {color: #5cb85c}
-
-/* 失败状态 */
-.euploader-item-fail {}
-.euploader-item-fail .euploader-item-status {color: #d9534f}
-.euploader-item-fail .euploader-item-state {color: #d9534f}
-
-/* 已存状态 */
-.euploader-item-exist {}
-.euploader-item-exist .euploader-item-status {color: #2196f3}
-.euploader-item-exist .euploader-item-state {color: #2196f3}
-
+/* 图片 */
+.tile-playicon {
+    display: inline-block;
+    position: absolute;
+    left: 3px;
+    bottom: 0px;
+}
 
 
 
