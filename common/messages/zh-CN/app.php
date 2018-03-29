@@ -241,4 +241,7 @@ return [
     //前台-管理中心
     'Special' => '专题',
     'Column' => '栏',
+    'Produce' => '生成',
+    'Copy' => '复制',
+    'Prompt' => '提示',
 ];

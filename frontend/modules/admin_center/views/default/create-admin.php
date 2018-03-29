@@ -15,11 +15,10 @@ $this->title = Yii::t('app', '{Add}{Administrators}',[
     'Add' => Yii::t('app', 'Add'),
     'Administrators' => Yii::t('app', 'Administrators')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Customer'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
-<div class="customer-create-admin customer">
+<div class="customer-create-admin main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

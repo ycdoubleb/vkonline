@@ -13,11 +13,9 @@ $this->title = Yii::t(null, "{Delete}{Administrators}：{$model->user->nickname}
     'Delete' => Yii::t('app', 'Delete'),
     'Administrators' => Yii::t('app', 'Administrators')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Customer'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
-<div class="customer-delete-admin customer">
+<div class="customer-delete-admin main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

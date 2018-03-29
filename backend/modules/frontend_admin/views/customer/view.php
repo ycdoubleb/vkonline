@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <!--左侧-基本信息-->
         <div class="col-xs-6 frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-file-text-o"></i>
+                <i class="icon fa fa-file-text"></i>
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
@@ -145,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]),
                             'format' => 'raw',
                             'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
-                                '<span style="color:#929292">（'.(floor($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
+                                '<span style="color:#929292">（'. sprintf("%.2f", ($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
                         ],
                         [
                             'label' => Yii::t('app', 'Surplus'),

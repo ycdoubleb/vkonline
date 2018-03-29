@@ -5,9 +5,9 @@ namespace common\models\searchs;
 use common\models\AdminUser;
 use common\models\Banner;
 use common\models\vk\Customer;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
 
 /**
  * BannerSearch represents the model behind the search form of `common\models\Banner`.
@@ -43,7 +43,8 @@ class BannerSearch extends Banner
      */
     public function search($params)
     {
-        $customerId = ArrayHelper::getValue($params, 'id');
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
         
         $query = Banner::find()
                 ->select(['Banner.id', 'Customer.name AS customer_id', 'Banner.title', 'Banner.path', 'Banner.link',
@@ -69,8 +70,8 @@ class BannerSearch extends Banner
             return $dataProvider;
         }
 
-        //前台管理中心查看用户时根据客户ID过滤数据
-        if($customerId){
+        //模块id为管理中心的情况下
+        if($moduleId == 'admin_center'){
             $query->andFilterWhere(['customer_id' => $customerId]);
         }
         

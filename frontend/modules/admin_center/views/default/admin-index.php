@@ -8,11 +8,11 @@ use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
+/* @var $model CustomerAdmin */
 /* @var $searchModel CustomerSearch */
 /* @var $dataProvider ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Customer');
-$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <div class="customer-admin-index">
@@ -38,11 +38,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'style' => [
                         'width' => '125px',
                         'text-align' => 'center',
+                        'color' => '#666666',
                     ],
                 ],
                 'contentOptions' =>[
                     'style' => [
                         'text-align' => 'center',
+                        'color' => '#666666',
                     ]
                 ],
             ],
@@ -51,11 +53,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value'=> function ($model) {
                     /* @var $model CustomerAdmin */
-                    return CustomerAdmin::$levelName[$model->level];
+                    return '<span style="color:' . ($model->level == 2 ? '#666666' : '') . '">' . 
+                                CustomerAdmin::$levelName[$model->level] . '</span>';
                 },
                 'headerOptions' => [
                     'style' => [
                         'text-align' => 'left',
+                        'color' => '#666666',
                     ],
                 ],
                 'contentOptions' =>[
@@ -71,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'view' => function ($url, $model, $key) {
                         /* @var $model CustomerAdmin */
                          $options = [
-                            'style' => '',
+                            'style' => 'color:#666666',
                             'title' => Yii::t('yii', 'View'),
                             'aria-label' => Yii::t('yii', 'View'),
                             'data-pjax' => '0',
@@ -89,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'update' => function ($url, $model, $key) {
                         /* @var $model CustomerAdmin */
                          $options = [
-                            'style' => '',
+                            'style' => 'color:#666666',
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
@@ -107,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     },
                     'delete' => function ($url, $model, $key) {
                         $options = [
-                            'style' => '',
+                            'style' => 'color:#666666',
                             'title' => Yii::t('yii', 'Delete'),
                             'aria-label' => Yii::t('yii', 'Delete'),
                             'data-pjax' => '0',

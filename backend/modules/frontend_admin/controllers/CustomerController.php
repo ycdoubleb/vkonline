@@ -242,20 +242,25 @@ class CustomerController extends Controller
     {
         $model = new CustomerAdmin(['customer_id' => $id]);
         $model->loadDefaultValues();
-
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            $result = $this->CreateAdmin($model, Yii::$app->request->post());
-            return [
-                'code' => $result ? 200 : 404,
-                'message' => ''
-            ];
-
+        $adminNum = count($this->getCustomerAdmin($id)['view']);   //客户管理员
+        
+        if($adminNum >= 3){
+            return $this->renderAjax('info-index', ['info' => '管理员数量不能超过3人！']);
         } else {
-            return $this->renderAjax('create-admin', [
-                'model' => $model,
-                'admins' => $this->getCustomerManList($id),
-            ]);
+            if ($model->load(Yii::$app->request->post())) {
+                Yii::$app->getResponse()->format = 'json';
+                $result = $this->CreateAdmin($model, Yii::$app->request->post());
+                return [
+                    'code' => $result ? 200 : 404,
+                    'message' => ''
+                ];
+
+            } else {
+                return $this->renderAjax('create-admin', [
+                    'model' => $model,
+                    'admins' => $this->getCustomerManList($id),
+                ]);
+            }
         }
     }
     

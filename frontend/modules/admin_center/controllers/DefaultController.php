@@ -26,24 +26,20 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        $id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'id');
-
+        $id = Yii::$app->user->identity->customer_id;
         $searchModel = new CustomerSearch();
         $resourceData = $searchModel->searchResources($id);
         $recordData = $searchModel->searchActLog($id);
-        
+
         return $this->render('index',[
             'model' => Customer::findOne($id),
             'resourceData' => $resourceData,
             'recordData' => $recordData,
-            'customerAdmin' => $this->getCustomerAdmin($id)['view']['0']['nickname'],   //客户管理员
+            'customerAdmin' => $this->getCustomerAdmin($id),   //客户管理员
             'usedSpace' => $this->getUsedSpace($id),
         ]);
     }
-    
-    
-    
-    
+
     /**
      * (管理员表)Lists all CustomerAdmin models.
      * @return mixed
@@ -51,7 +47,7 @@ class DefaultController extends Controller
     public function actionAdminIndex($id)
     {
         $searchModel = new CustomerSearch();
-        
+
         return $this->renderAjax('admin-index', [
             'dataProvider' => $searchModel->searchCustomerAdmin(['customer_id' => $id]),
         ]);
@@ -66,20 +62,25 @@ class DefaultController extends Controller
     {
         $model = new CustomerAdmin(['customer_id' => $id]);
         $model->loadDefaultValues();
+        $adminNum = count($this->getCustomerAdmin($id));   //客户管理员
 
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            $result = $this->CreateAdmin($model, Yii::$app->request->post());
-            return [
-                'code' => $result ? 200 : 404,
-                'message' => ''
-            ];
-
+        if($adminNum >= 3){
+            return $this->renderAjax('info-index', ['info' => '管理员数量不能超过3人！']);
         } else {
-            return $this->renderAjax('create-admin', [
-                'model' => $model,
-                'admins' => $this->getCustomerManList($id),
-            ]);
+            if ($model->load(Yii::$app->request->post())) {
+                Yii::$app->getResponse()->format = 'json';
+                $result = $this->CreateAdmin($model, Yii::$app->request->post());
+                return [
+                    'code' => $result ? 200 : 404,
+                    'message' => ''
+                ];
+
+            } else {
+                return $this->renderAjax('create-admin', [
+                    'model' => $model,
+                    'admins' => $this->getCustomerManList($id),
+                ]);
+            }
         }
     }
     
@@ -92,19 +93,27 @@ class DefaultController extends Controller
     public function actionUpdateAdmin($id)
     {
         $model = CustomerAdmin::findOne($id);
-                
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            $result = $this->UpdateAdmin($model);
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
-            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        $userId = Yii::$app->user->id;
+        $userLevel = CustomerAdmin::find()->where(['user_id' => $userId])->one();   //当前用户的管理员等级
+             
+        if($model->user_id == $userId){
+            return $this->renderAjax('info-index', ['info' => '自己不能更改自己！']);
+        } elseif ($userLevel->level >= $model->level) {
+            return $this->renderAjax('info-index', ['info' => '不能更改权限等级比自己高或相同的管理员！']);
         } else {
-            return $this->renderAjax('update-admin', [
-                'model' => $model,
-            ]);
+            if ($model->load(Yii::$app->request->post())) {
+                Yii::$app->getResponse()->format = 'json';
+                $result = $this->UpdateAdmin($model);
+                return [
+                    'code'=> $result ? 200 : 404,
+                    'message' => ''
+                ];
+                //return $this->redirect(['default/view', 'id' => $model->course_id]);
+            } else {
+                return $this->renderAjax('update-admin', [
+                    'model' => $model,
+                ]);
+            }
         }
     }
     
@@ -117,22 +126,65 @@ class DefaultController extends Controller
     public function actionDeleteAdmin($id)
     {
         $model = CustomerAdmin::findOne($id);
-        
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            $result = $this->DeleteAdmin($model);
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
-            //return $this->redirect(['default/view', 'id' => $model->course_id]);
+        $userId = Yii::$app->user->id;
+        $userLevel = CustomerAdmin::find()->where(['user_id' => $userId])->one();   //当前用户的管理员等级
+
+        if($model->user_id == $userId){
+            return $this->renderAjax('info-index', ['info' => '自己不能删除自己！']);
+        } elseif ($userLevel->level >= $model->level) {
+            return $this->renderAjax('info-index', ['info' => '不能删除权限等级比自己高或相同的管理员！']);
         } else {
-            return $this->renderAjax('delete-admin',[
-                'model' => $model
-            ]);
+            if ($model->load(Yii::$app->request->post())) {
+                Yii::$app->getResponse()->format = 'json';
+                $result = $this->DeleteAdmin($model);
+                return [
+                    'code'=> $result ? 200 : 404,
+                    'message' => ''
+                ];
+                //return $this->redirect(['default/view', 'id' => $model->course_id]);
+            } else {
+                return $this->renderAjax('delete-admin',[
+                    'model' => $model
+                ]);
+            }
         }
     }
+    
+    /**
+     * (邀请码)Lists all Customer models.
+     * @return mixed
+     */
+    public function actionInviteCodeIndex($id)
+    {
+        $model = Customer::findOne(['id' => $id]);
+        $totalUser = count(User::findAll(['customer_id' => $id]));
         
+        return $this->renderAjax('invite-code-index', [
+            'model' => $model,
+            'totalUser' => $totalUser,
+        ]);
+    }
+    
+    /**
+     * (生成邀请码)Lists all Customer models.
+     * @return mixed
+     */
+    public function actionCreateInviteCode($id)
+    {
+        $model = Customer::findOne(['id' => $id]);
+        $str='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';  
+        $randStr = str_shuffle($str);       //打乱字符串  
+        $rands= substr($randStr,0,6);       //substr(string,start,length);返回字符串的一部分 
+        
+        $model->invite_code = $rands;
+        
+        if($model->save()){
+            return 200;
+        } else {
+            return 400;
+        }
+    }
+
     /**
      * 添加管理员操作
      * @param CustomerAdmin $model
@@ -254,6 +306,7 @@ class DefaultController extends Controller
     
     /**
      * 获取该客户下的所有人
+     * @param string $id   客户ID
      * @return array
      */
     public function getCustomerManList($id)
@@ -272,38 +325,26 @@ class DefaultController extends Controller
 
         return ArrayHelper::map($users, 'id', 'nickname');
     }
-    
-    /**
-     * 查询客户表
-     * @return array
-     */
-    public function getQuery()
-    {
-        return (new Query())->from(['Customer' => Customer::tableName()]);
-    }
-    
+
     /**
      * 查询客户管理员
-     * @param int $id   客户ID
+     * @param string $id   客户ID
      * @return array
      */
-    public function getCustomerAdmin($id = null)
+    public function getCustomerAdmin($id)
     {
-        $customerAdmin = $this->getQuery()
-                ->select(['User.id', 'User.nickname'])
-                ->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.customer_id = Customer.id')//关联查询管理员
+        $customerAdmin = (new Query())->select(['User.id', 'User.nickname', 'CustomerAdmin.level'])
+                ->from(['CustomerAdmin' => CustomerAdmin::tableName()])
                 ->leftJoin(['User' => User::tableName()], 'User.id = CustomerAdmin.user_id')             //关联查询管理员
-                ->andFilterWhere(['Customer.id'=> $id])
+                ->andFilterWhere(['CustomerAdmin.customer_id'=> $id])
                 ->all();
 
-        return [
-            'index' => ArrayHelper::map($customerAdmin, 'id', 'nickname'),
-            'view' => $customerAdmin,
-        ];
+        return $customerAdmin;
     }
     
     /**
      * 查询已使用的空间
+     * @param string $id   客户ID
      * @return array
      */
     public function getUsedSpace($id)
@@ -324,12 +365,11 @@ class DefaultController extends Controller
     
     /**
      * 查找客户关联的文件
-     * @param string $id
+     * @param string $id   客户ID
      * @return Query
      */
     protected function findCustomerFile($id)
     {
-        
         $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
             ->from(['Customer' => Customer::tableName()]);
         

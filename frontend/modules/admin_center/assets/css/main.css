@@ -21,16 +21,9 @@
     display: inline-block;
     float: left;
     background-color: rgba(242, 242, 242, 1);
-    border-bottom-right-radius: 10px;
-    border-bottom-left-radius: 10px;
 }
 
 .content > .subnav > .menu {
-    width: 200px;
-    height: auto;
-}
-
-.content > .subnav > .utils {
     width: 200px;
     height: auto;
 }
@@ -60,10 +53,16 @@
 
 .content > .subnav ul > li {
     padding: 14px 15px;
+    border-bottom: 1px dotted #d2d2d2;
 }
 
 .content > .subnav ul > li.active  {
     background-color: #d2d2d2;
+    border-bottom: none;
+}
+
+.content > .subnav ul > li.remove {
+    border-bottom: none;
 }
 
 .content > .subnav ul > li > a.links,
@@ -87,14 +86,6 @@
 .content > .subnav ul > li.active > a.links > i {
     color: #333;
     font-weight: 700;
-}
-
-.content > .subnav > .utils > ul > li {
-    padding: 25px;
-}
-
-.content > .subnav > .utils > ul > li.active {
-    background-color: rgba(92, 184, 92, 1)
 }
 
 .content > .subnav ul > li > a.disabled,

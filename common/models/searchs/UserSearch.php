@@ -7,6 +7,7 @@ use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -53,7 +54,8 @@ class UserSearch extends User
     public function search($params)
     {
         $this->getInstance();
-        $customerId = ArrayHelper::getValue($params, 'id');
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
 //        $dataProvider = new ActiveDataProvider([
 //            'query' => $query,
 //            'key' => 'id'
@@ -67,8 +69,8 @@ class UserSearch extends User
 //            return $dataProvider;
 //        }
         
-        //前台管理中心查看用户时根据客户ID过滤数据
-        if($customerId){
+        //模块id为管理中心的情况下
+        if($moduleId == 'admin_center'){
             self::$query->andFilterWhere(['customer_id' => $customerId]);
         }
         
