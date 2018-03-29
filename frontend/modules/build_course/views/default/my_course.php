@@ -26,9 +26,8 @@ ModuleAssets::register($this);
     </p>
     
     <?php $form = ActiveForm::begin([
-        'id' => 'build-course-form', 
+        'id' => 'build-course-form', 'method' => 'get',
         'action' => array_merge(['my-course'], ['utils' => ArrayHelper::getValue($filters, 'utils')]),
-        'method' => 'get'
     ]); ?>
     
     <div class="col-xs-12 search-frame"> 
@@ -53,8 +52,8 @@ ModuleAssets::register($this);
                     <span><?= $model['name'] ?></span>
                 </div>
                 <div class="float"> 
-                    <span><?= isset($model['fav_num']) ? $model['fav_num'] : 0 ?><i class="fa fa-star"></i></span>
-                    <span><?= isset($model['zan_num']) ? $model['zan_num'] : 0 ?><i class="fa fa-thumbs-up"></i></span>
+                    <span><?= $model['favorite_count'] ?><i class="fa fa-star"></i></span>
+                    <span><?= $model['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>
                 </div>
             </div>
             <div class="cont">
@@ -63,7 +62,7 @@ ModuleAssets::register($this);
                     <?= Html::a('进入制作', ['view-course', 'id' => $model['id']], ['class' => 'into']) ?>
                 </div>
                 <div class="tuip">环节数：<span><?= isset($model['node_num']) ? $model['node_num'] : 0 ?>&nbsp;节</span>
-                    <?= Html::a('查看课程', 'javascript:;', ['class' => 'see']) ?>
+                    <?= Html::a('查看课程', ['/course/default/view', 'id' => $model['id']], ['class' => 'see']) ?>
                 </div>
             </div>
         </div>

@@ -43,8 +43,8 @@ class PraiseLog extends ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'integer'],
-            [['type'], 'string', 'max' => 1],
+            [['type', 'created_at', 'updated_at'], 'integer'],
+            //[['type'], 'string', 'max' => 1],
             [['course_id', 'video_id', 'user_id'], 'string', 'max' => 32],
         ];
     }
@@ -63,24 +63,5 @@ class PraiseLog extends ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
-    }
-    
-    /**
-     * 查询用户点赞记录
-     * @param array $condition  (Praise.name => value)
-     * @param integer $type
-     * @return Query
-     */
-    public static function findUserPraiseLog($condition, $type = 1)
-    {
-        $query = self::find()->select(['COUNT(Praise.id) AS zan_num'])
-            ->addSelect(implode(",", array_keys($condition)))
-            ->from(['Praise' => self::tableName()]);
-        
-        $query->where(['type' => $type])->andWhere($condition);
-        
-        $query->groupBy(array_keys($condition));
-        
-        return $query;
     }
 }

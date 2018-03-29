@@ -13,9 +13,12 @@ use common\models\vk\CustomerAdmin;
 use common\models\vk\Good;
 use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -24,6 +27,12 @@ use yii\helpers\ArrayHelper;
  */
 class CustomerSearch extends Customer
 {
+    /**
+     *
+     * @var Query 
+     */
+    private static $query;
+    
     /**
      * @inheritdoc
      */
@@ -54,38 +63,15 @@ class CustomerSearch extends Customer
     public function search($params)
     {
         $customerAdmin = ArrayHelper::getValue($params, 'customerAdmin');    //获取查找的客户管理员ID
-        
-        $query = (new Query())
-                ->select(['Customer.id', 'Region.name AS province', 'Region2.name AS city', 'Region3.name AS district',
-                        'Customer.name', 'Customer.domain', 'User.nickname AS user_id', 'Good.name AS good_id',
-                        'Customer.status', 'Customer.expire_time', 'AdminUser.nickname AS created_by'])
-                ->from(['Customer' => Customer::tableName()]);
-        // add conditions that should always apply here
+        $page = ArrayHelper::getValue($params, 'page');         //分页
+        $limit = ArrayHelper::getValue($params, 'limit');       //显示数
 
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'key' => 'id',
-        ]);
-
-        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Customer.created_by');    //关联查询创建人
-        $query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()],
-                'CustomerAdmin.customer_id = Customer.id AND CustomerAdmin.level = 1');//关联查询管理员
-        $query->leftJoin(['User' => User::tableName()], 'User.id = CustomerAdmin.user_id');     //关联查询管理员姓名
-        $query->leftJoin(['Good' => Good::tableName()], 'Good.id = Customer.good_id');          //管理查询套餐
-        $query->leftJoin(['Region' => Region::tableName()], 'Region.id = Customer.province');   //关联查询省
-        $query->leftJoin(['Region2' => Region::tableName()], 'Region2.id = Customer.city');     //关联查询市
-        $query->leftJoin(['Region3' => Region::tableName()], 'Region3.id = Customer.district'); //关联查询区
+        self::getInstance();
         
         $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-
-        // grid filtering conditions
-        $query->andFilterWhere([
+        
+        // 条件查询
+        self::$query->andFilterWhere([
             'Customer.created_by' => $this->created_by,
             'expire_time' => $this->expire_time,
             'good_id' => $this->good_id,
@@ -96,12 +82,49 @@ class CustomerSearch extends Customer
             'CustomerAdmin.user_id' => $customerAdmin,
         ]);
 
-        $query->andFilterWhere(['like', 'Customer.name', $this->name])
+        // 模糊查询
+        self::$query->andFilterWhere(['like', 'Customer.name', $this->name])
             ->andFilterWhere(['like', 'domain', $this->domain]);
-
-        $query->groupBy(['Customer.id']);
         
-        return $dataProvider;
+        //添加字段
+        self::$query->addSelect(['Customer.*', 'Region.name AS province', 'Region2.name AS city', 'Region3.name AS district',
+            'User.nickname AS user_id', 'Good.name AS good_id', 'Good.data', 'AdminUser.nickname AS created_by']);
+        
+        self::$query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Customer.created_by');    //关联查询创建人
+        self::$query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()],
+                'CustomerAdmin.customer_id = Customer.id AND CustomerAdmin.level = 1');//关联查询管理员
+        self::$query->leftJoin(['User' => User::tableName()], 'User.id = CustomerAdmin.user_id');     //关联查询管理员姓名
+        self::$query->leftJoin(['Good' => Good::tableName()], 'Good.id = Customer.good_id');          //管理查询套餐
+        self::$query->leftJoin(['Region' => Region::tableName()], 'Region.id = Customer.province');   //关联查询省
+        self::$query->leftJoin(['Region2' => Region::tableName()], 'Region2.id = Customer.city');     //关联查询市
+        self::$query->leftJoin(['Region3' => Region::tableName()], 'Region3.id = Customer.district'); //关联查询区
+                
+        //显示数量
+        self::$query->offset(($page-1) * $limit)->limit($limit);
+        $customerResult = self::$query->asArray()->all();
+        //查询总数
+        $totalCount = self::$query->count();
+        //分页
+        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        //以customer_id为索引
+        $customers = ArrayHelper::index($customerResult, 'id');
+        $usedSize = ArrayHelper::index($this->findUsedSizeByCustomer(), 'id');
+
+        //合并查询后的结果
+        foreach ($customers as $id => $item) {
+            if(isset($usedSize[$id])){
+                $customers[$id] += $usedSize[$id];
+            }
+        }
+
+        return [
+            'filter' => $params,
+            'pager' => $pages,
+            'total' => $totalCount,
+            'data' => [
+                'customer' => $customers,
+            ],
+        ];;
     }
         
     /**
@@ -111,7 +134,6 @@ class CustomerSearch extends Customer
      */
     public function searchResources($id)
     {
-        $allTotal = [];$thisMonth = [];$lastMonth = [];$asRate = [];
         //获取本月的起始时间戳和结束时间戳
         $nowYear = date('Y', time()); $nowMonth = date('m', time());
         $beginThismonth = mktime(0, 0, 0, date('m'), 1, date('Y'));
@@ -120,55 +142,89 @@ class CustomerSearch extends Customer
         $preYear = date('Y',strtotime('-1 month')); $preMonth = date('m',strtotime('-1 month'));
         $beginLastMonth = strtotime(date('Y-m-01 00:00:00',strtotime('-1 month')));
         $endLastMonth = strtotime(date("Y-m-d 23:59:59", strtotime(-date('d').'day')));
-        $query = (new Query())
-                ->select(['COUNT(Course.id) AS course_num', 'COUNT(Video.id) AS video_num', 'SUM(Play.play_count) AS play_count'])
-                ->from(['Course' => Course::tableName()]);
         
-        $query->leftJoin(['Node' => CourseNode::tableName()], 'Node.course_id = Course.id AND Node.is_del = 0');    //关联查询节点
-        $query->leftJoin(['Video' => Video::tableName()], 'Video.node_id = Node.id AND Video.is_del = 0');           //关联查询视频表
-        $query->leftJoin(['Play' => PlayStatistics::tableName()], 'Play.video_id = Video.id');  //关联查询视频统计表
-        
-        $query->where(['Course.customer_id' => $id]);   //根据客户过滤
+        //课程数
+        $courseQuery = $this->getCustomerCourseNumber($id);
+        //视频数
+        $videoQuery = $this->getCustomerVideoNodeNumber($id);
+        //视频播放数
+        $playQuery = $this->getVideoPlayNumber($id);
         
         //计算总数
-        $totleQuery = clone $query;
-        $totalData = $totleQuery->one();
-        if(count($totalData)){
-            $allTotal[] = array_merge(['name' => '总数'], $totalData);
+        $totleCourse = clone $courseQuery;
+        $totalVideo = clone $videoQuery;
+        $totalPlay = clone $playQuery;
+        $totalData = ArrayHelper::merge(ArrayHelper::index($totleCourse->asArray()->all(), 'customer_id'),
+                                    ArrayHelper::index($totalVideo->asArray()->all(), 'customer_id'), 
+                                ArrayHelper::index($totalPlay->all(), 'customer_id'));
+        if(count($totalData)){ 
+            $allTotal[] = array_merge(['name' => '总数'], $totalData[$id]);
+        } else {
+            $allTotal[] = ['name' => '总数'];
         }
-        
+
         //计算本月新增的数量
-        $thisMonthQuery = clone $query;
-        $thisMonthQuery->andFilterWhere(['between', 'Course.created_at', $beginThismonth, $endThismonth]);
-//        $thisMonthQuery->andFilterWhere(['Play.year' => $nowYear, 'Play.month' => $nowMonth]);
-        $thisMonthData = $thisMonthQuery->one();
-        $thisMonth[] = array_merge(['name' => '本月新增'], $thisMonthData);
+        $thisMonthCourse = clone $courseQuery;
+        $thisMonthVideo = clone $videoQuery;
+        $thisMonthPlay = clone $playQuery;
+        $thisMonthCourse->andFilterWhere(['between', 'Course.created_at', $beginThismonth, $endThismonth]);
+        $thisMonthVideo->andFilterWhere(['between', 'Video.created_at', $beginThismonth, $endThismonth]);
+        $thisMonthPlay->andFilterWhere(['Play.year' => $nowYear, 'Play.month' => $nowMonth]);
+        $thisMonthData = ArrayHelper::merge(ArrayHelper::index($thisMonthCourse->asArray()->all(), 'customer_id'),
+                                    ArrayHelper::index($thisMonthVideo->asArray()->all(), 'customer_id'), 
+                                ArrayHelper::index($thisMonthPlay->all(), 'customer_id'));
+        if(count($thisMonthData)){ 
+            $thisMonth[] = array_merge(['name' => '本月新增'], $thisMonthData[$id]);
+        } else {
+            $thisMonth[] = ['name' => '本月新增'];
+        }
 
         //计算上个月新增的数量
-        $lastMonthQuery = clone $query;
-        $lastMonthQuery->andFilterWhere(['between', 'Course.created_at', $beginLastMonth, $endLastMonth]);
-//        $lastMonthQuery->andFilterWhere(['Play.year' => $preYear, 'Play.month' => $preMonth]);
-        $lastMonthData = $lastMonthQuery->one();
-        $lastMonth[] = array_merge(['name' => '上个月新增'], $lastMonthData);
-        
+        $lastMonthCourse = clone $courseQuery;
+        $lastMonthVideo = clone $videoQuery;
+        $lastMonthPlay = clone $playQuery;
+        $lastMonthCourse->andFilterWhere(['between', 'Course.created_at', $beginLastMonth, $endLastMonth]);
+        $lastMonthVideo->andFilterWhere(['between', 'Video.created_at', $beginLastMonth, $endLastMonth]);
+        $lastMonthPlay->andFilterWhere(['Play.year' => $preYear, 'Play.month' => $preMonth]);
+        $lastMonthData = ArrayHelper::merge(ArrayHelper::index($lastMonthCourse->asArray()->all(), 'customer_id'),
+                                    ArrayHelper::index($lastMonthVideo->asArray()->all(), 'customer_id'), 
+                                ArrayHelper::index($lastMonthPlay->all(), 'customer_id'));
+        if(count($lastMonthData)){ 
+            $lastMonth[] = array_merge(['name' => '上个月新增'], $lastMonthData[$id]);
+        } else {
+            $lastMonth[] = ['name' => '上个月新增'];
+        }
+
         //计算同比增长
-        if($lastMonthData['course_num'] != 0){
-            $asRateCourse = ['course_num' => (($thisMonthData['course_num'] - $lastMonthData['course_num']) / $lastMonthData['course_num'] * 100).'%'];
+        if(isset($lastMonthData[$id]['cour_num'])){
+            if(isset($thisMonthData[$id]['cour_num'])){
+                $asRateCourse = ['cour_num' => (($thisMonthData[$id]['cour_num'] - $lastMonthData[$id]['cour_num']) / $lastMonthData[$id]['cour_num'] * 100).'%'];
+            } else {
+                $asRateCourse = ['cour_num' => '0%'];
+            }
         } else {
-            $asRateCourse = ['course_num' => '100%'];
+            $asRateCourse = ['cour_num' => '100%'];
         }
-        if($lastMonthData['video_num'] != 0){
-            $asRateVideo = ['video_num' => (($thisMonthData['video_num'] - $lastMonthData['video_num']) / $lastMonthData['video_num'] * 100).'%'];
+        if(isset($lastMonthData[$id]['node_num'])){
+            if(isset($thisMonthData[$id]['node_num'])){
+                $asRateVideo = ['node_num' => (($thisMonthData[$id]['node_num'] - $lastMonthData[$id]['node_num']) / $lastMonthData[$id]['node_num'] * 100).'%'];
+            } else {
+                $asRateVideo = ['node_num' => '0%'];
+            }
         } else {
-            $asRateVideo = ['video_num' => '100%'];
+            $asRateVideo = ['node_num' => '100%'];
         }
-        if($lastMonthData['play_count'] != 0){
-            $asRatePlay = ['play_count' => (($thisMonthData['play_count'] - $lastMonthData['play_count']) / $lastMonthData['play_count'] * 100).'%'];
+        if(isset($lastMonthData[$id]['play_count'])){
+            if(isset($thisMonthData[$id]['play_count'])){
+                $asRatePlay = ['play_count' => (($thisMonthData[$id]['play_count'] - $lastMonthData[$id]['play_count']) / $lastMonthData[$id]['play_count'] * 100).'%'];
+            } else {
+                $asRatePlay = ['play_count' => '0%'];
+            }
         } else {
             $asRatePlay = ['play_count' => '100%'];
         }
         $asRate[] = array_merge(['name' => '同比'], $asRateCourse, $asRateVideo, $asRatePlay);
-        
+
         return array_merge($allTotal, $thisMonth, $lastMonth, $asRate);
     }
     
@@ -210,5 +266,124 @@ class CustomerSearch extends Customer
         $query->where(['ActLog.customer_id' => $id]);   //根据客户过滤
         
         return $dataProvider;
+    }
+    
+    /**
+     * 
+     * @return Query
+     */
+    protected static function getInstance() {
+        if (self::$query == null) {
+            self::$query = self::findCustomer();
+        }
+        return self::$query;
+    }
+    
+    /**
+     * 获取客户已使用的空间
+     * @return array
+     */
+    public function findUsedSizeByCustomer()
+    {
+        $files = $this->findCustomerFile()->all();
+        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
+        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
+        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        
+        $query = (new Query())->select(['Customer.id', 'SUM(Uploadfile.size) AS customer_size'])
+            ->from(['Uploadfile' => Uploadfile::tableName()]);
+        
+        $query->leftJoin(['User' => User::tableName()],'Uploadfile.created_by = User.id');
+        $query->leftJoin(['Customer' => Customer::tableName()],'Customer.id = User.customer_id');
+        
+        $query->where(['Uploadfile.is_del' => 0]);
+        $query->where(['Uploadfile.id' => $fileIds]);
+        
+        return $query->all();
+    }
+    
+    /**
+     * 查找客户关联的文件
+     * @return Query
+     */
+    protected function findCustomerFile()
+    {
+        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+            ->from(['Customer' => Customer::tableName()]);
+        
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.customer_id = Customer.id AND Video.is_del = 0 AND Video.is_ref = 0)');
+        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
+
+//        $query->andWhere(['Customer.id' => self::$query]);
+
+        $query->groupBy('Video.source_id');
+        
+        return $query;
+    }
+    
+    /**
+     * 获取课程数量
+     * @param type $id      客户ID
+     * @return Query
+     */
+    protected function getCustomerCourseNumber($id)
+    {
+        $query = CourseSearch::findCourse();
+        $query->where(['Course.customer_id' => $id]);
+        
+        $query->addSelect(['Course.customer_id', 'COUNT(Course.id) AS cour_num']);
+        
+        $query->groupBy('Course.customer_id');
+        
+        return $query;
+    }
+        
+    /**
+     * 获取视频数量
+     * @param type $id      客户ID
+     * @return Query
+     */
+    protected function getCustomerVideoNodeNumber($id)
+    {
+        $query = CourseSearch::findVideoByCourseNode();
+        $query->andWhere(['Video.customer_id' => $id]);
+        
+        $query->addSelect(['Video.customer_id']);
+        
+        $query->groupBy('Video.customer_id');
+        
+        return $query;
+    }
+    
+    /**
+     * 获取视频播放次数
+     * @param type $id      客户ID
+     * @return Query
+     */
+    protected function getVideoPlayNumber($id)
+    {
+        $query = (new Query())->select(['Customer.id AS customer_id', 'SUM(Play.play_count) AS play_count'])
+                ->from(['Customer' => Customer::tableName()]);
+        
+        $query->leftJoin(['Course' => Course::tableName()], 'Course.customer_id = Customer.id');
+        $query->leftJoin(['Play' => PlayStatistics::tableName()], 'Play.course_id = Course.id');
+        
+        $query->where(['Customer.id' => $id]);
+        
+        $query->groupBy('Customer.id');
+        
+        return $query;
+    }
+
+    /**
+     * 查询客户
+     * @return Query
+     */
+    public static function findCustomer() 
+    {
+        $query = self::find()->select(['Customer.id'])
+            ->from(['Customer' => self::tableName()]);
+        
+        return $query;
     }
 }

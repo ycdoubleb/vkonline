@@ -1,0 +1,86 @@
+/***************************************公共****************************************/
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    padding-left: 35px;
+    font-size: 14px;
+}
+
+.main .frame {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.main
+.frame-title {
+    padding: 10px 0 28px 10px;
+    color: #ffffff;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.main
+.frame-title .icon {
+    float: left; 
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.main
+.frame-title>span {
+    display: block;
+    float: left;
+}
+
+.main .frame
+.frame-title>.framebtn {
+    position: absolute;
+    margin-top: -6px;
+    right: 6px;
+}
+
+/** table表格th样式 */
+.main .viewdetail-th {
+    color: #666666;
+    width: 13%;
+    font-weight: normal;
+    text-align: center;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/** table表格th-head样式 */
+.main .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/***  用户模块  **/
+.admin_center-default-index .frame .frame-title {
+    color: #000000;
+    background-color: #d2d2d2;
+}
+
+/***  用户模块  **/
+.user-create .frame .frame-title, .user-update .frame .frame-title {
+    color: #999999;
+    background-color: #f2f2f2;
+    margin-bottom: 10px;
+}
+
+/***  宣传栏模块  **/
+.banner-create .frame .frame-title, .banner-update .frame .frame-title {
+    color: #999999;
+    background-color: #f2f2f2;
+    margin-bottom: 10px;
+}
+
+.banner-form .krajee-default.file-preview-frame .kv-file-content {
+    width: 750px;
+    height: 230px;
+}

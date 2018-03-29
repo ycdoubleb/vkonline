@@ -69,6 +69,7 @@ return [
     'Frame' => '框架',
     'Node' => '环节',
     'Attachment' => '附件',
+    'Catalog' => '目录',
     
     //公共-操作
     'Add' => '添加',
@@ -127,6 +128,7 @@ return [
     'Privilege' => '权限',
     'Action' => '动作',
     'Reference' => '引用',
+    'Keyword' => '关键字',
   
     //提示消息
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
@@ -228,6 +230,7 @@ return [
     'Mode' => '方式',
     'Distribution' => '分布',
     'Survey' => '概况',
+    'Quote' => '引用',
     
     //前台-协作人员
     'Help Man' => '协作人员',
@@ -235,4 +238,7 @@ return [
     'Relation' => '关联',
     //前台-操作记录
     'Relative' => '相关',
+    //前台-管理中心
+    'Special' => '专题',
+    'Column' => '栏',
 ];

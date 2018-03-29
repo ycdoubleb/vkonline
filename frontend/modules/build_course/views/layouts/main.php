@@ -11,6 +11,10 @@ use yii\web\View;
 
 MainAssets::register($this);
 
+$this->title = Yii::t('app', '{Build}{Center}',[
+    'Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),
+]);
+
 ?>
 
 <?php
@@ -20,26 +24,25 @@ $reutils = ArrayHelper::getValue(Yii::$app->request->queryParams, 'utils', 'bs_u
 //导航
 $menuItems = [
     [
-        'label' => Yii::t(null, '{My}{Course}', ['My' => Yii::t('app', 'My'), 'Course' => Yii::t('app', 'Course')]),
+        'label' => Yii::t('app', '{My}{Course}', ['My' => Yii::t('app', 'My'), 'Course' => Yii::t('app', 'Course')]),
         'url' => ['my-course', 'utils' => $reutils],
         'icons' => '<i class="fa fa-book"></i>', 
         'options' => ['class' => 'links']
     ],
     [
-        'label' => Yii::t(null, '{My}{Video}', ['My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')]),
+        'label' => Yii::t('app', '{My}{Video}', ['My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')]),
         'url' => ['my-video', 'utils' => $reutils],
         'icons' => '<i class="glyphicon glyphicon-facetime-video"></i>', 
         'options' => ['class' => 'links']
     ],
     [
-        'label' => Yii::t(null, '{My}{Teacher}', ['My' => Yii::t('app', 'My'), 'Teacher' => Yii::t('app', 'Teacher')]),
+        'label' => Yii::t('app', '{My}{Teacher}', ['My' => Yii::t('app', 'My'), 'Teacher' => Yii::t('app', 'Teacher')]),
         'url' => ['my-teacher', 'utils' => $reutils],
         'icons' => '<i class="fa fa-user-secret"></i>', 
         'options' => ['class' => 'links']
     ],
 ];
 //工具
-
 $utilsItems = [
     [
         'label' => '板书工具',
@@ -55,14 +58,18 @@ $utilsItems = [
     ]
 ];
 //导航
-foreach ($menuItems as $item) {
+end($menuItems);
+$lastIndex = key($menuItems);
+foreach ($menuItems as $index => $item) {
     $actionId = strstr(Yii::$app->controller->action->id, '-');
     $action = strstr($item['url'][0], '-');
-    $menu .= ($actionId == $action ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $menu .= ($actionId == $action ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+        Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 //工具
 foreach ($utilsItems as $item) {
-    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').
+       Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
 $html = <<<Html

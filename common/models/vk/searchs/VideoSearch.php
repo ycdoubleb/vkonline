@@ -6,8 +6,10 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Video;
+use common\models\vk\VideoAttachment;
+use common\modules\webuploader\models\Uploadfile;
+use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
 use yii\db\Query;
@@ -23,11 +25,6 @@ class VideoSearch extends Video
      * @var Query 
      */
     private static $query;
-    /**
-     * 课程id
-     * @var string 
-     */
-    private $course_id;
     
     /**
      * @inheritdoc
@@ -58,38 +55,74 @@ class VideoSearch extends Video
      */
     public function search($params)
     {
-        $this->course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
+        $level = ArrayHelper::getValue($params, 'level', self::INTRANET_LEVEL);   //搜索等级
+        $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         self::getInstance();
-        if(!$this->load($params)){
-            $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
-            $this->teacher_id = ArrayHelper::getValue($params, 'teacher_id'); //老师id
-            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
+        //模块id为课程的情况下
+        if($moduleId == 'video'){
+            //选择内网搜索的情况下
+            if($customerId != null && $level == self::INTRANET_LEVEL){
+                self::$query->andFilterWhere([
+                    'Video.customer_id' => $customerId,
+                    'Video.level' => self::INTRANET_LEVEL,
+                    'Video.is_publish' => 1,
+                ]);
+            }
+            //选择全网搜索的情况下
+            if($customerId != null && $level == self::PUBLIC_LEVEL){
+                self::$query->andFilterWhere(['and', 
+                    ['or', ['Video.customer_id' => $customerId], ['Video.level' => self::PUBLIC_LEVEL]], 
+                    ['Video.is_publish' => 1]
+                ]);
+            }
+            //当前客户id为空的情况下
+            if($customerId == null){
+                self::$query->andFilterWhere(['Video.level' => self::PUBLIC_LEVEL, 'Video.is_publish' => 1]);
+            }
         }
-        
+        //模块id为建课中心的情况下
+        if($moduleId == 'build_course'){
+            self::$query->andFilterWhere(['Video.created_by' => \Yii::$app->user->id]);
+        }
+        //模块id为管理中心的情况下
+        if($moduleId == 'admin_center'){
+            self::$query->andFilterWhere(['Video.customer_id' => $customerId]);
+        }
         //条件查询
-        self::$query->andFilterWhere([
-            'Video.customer_id' => $this->customer_id,
-            'CourseNode.course_id' => $this->course_id,
-            'Video.teacher_id' => $this->teacher_id,
-            'Video.created_by' => $this->created_by,
-            'Video.is_publish' => $this->is_publish,
-            'Video.level' => $this->level,
-            'Video.is_del' => $this->level,
-        ]);
+        if($this->load($params)){
+            self::$query->andFilterWhere([
+                'Video.customer_id' => $this->customer_id,
+                'Video.teacher_id' => $this->teacher_id,
+                'Video.created_by' => $this->created_by,
+                'Video.is_publish' => $this->is_publish,
+                'Video.level' => $this->level,
+            ]);
+        }
+        //必要条件
+        self::$query->andFilterWhere(['Video.is_del' => 0,]);
+        //视频的所有附件
+        $attsResult = $this->findAttachmentByVideo()->asArray()->all();
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
-        
-        
+        self::$query->andFilterWhere(['CourseNode.course_id' => $course_id]);
+        self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
         //关联查询
         self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
         //添加字段
-        self::$query->addSelect(['Video.*']);
+        self::$query->select(['Video.*']);
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        //排序
+        self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $viedoResult = self::$query->asArray()->all();
@@ -98,20 +131,24 @@ class VideoSearch extends Video
         $totalCount = self::$query->count();
         //分页
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
+        
+        //以video_id为索引
+        $videos = ArrayHelper::index($viedoResult, 'id');
+        $results = ArrayHelper::index($attsResult, 'video_id');
         //合并查询后的结果
-//        foreach ($courses as $id => $item) {
-//            if(isset($results[$id])){
-//                $courses[$id] += $results[$id];
-//            }
-//        }
-//        $videos = null;
+        foreach ($videos as $id => $item) {
+            if(isset($results[$id])){
+                $videos[$id] += $results[$id];
+            }
+        }
+        
         return [
             'filter' => $params,
             'pager' => $pages,
             'total' => $totalCount,
             'data' => [
                 'course' => $courseMap,
-                'video' => $viedoResult
+                'video' => $videos
             ],
         ];
     }
@@ -150,6 +187,26 @@ class VideoSearch extends Video
             self::$query = self::findVideo();
         }
         return self::$query;
+    }
+    
+    /**
+     * 查询附件
+     * @return Query
+     */
+    public static function findAttachmentByVideo()
+    {
+        self::getInstance();
+        $query = VideoAttachment::find()
+            ->select(['Attachment.video_id', 'SUM(Uploadfile.size) AS att_size'])
+            ->from(['Attachment' => VideoAttachment::tableName()]);
+        
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0)');
+        
+        $query->where(['Attachment.is_del' => 0, 'Attachment.video_id' => self::$query]);
+        
+        $query->groupBy('Attachment.video_id');
+        
+        return $query;
     }
     
     /**

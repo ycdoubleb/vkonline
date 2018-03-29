@@ -77,8 +77,7 @@ class DefaultController extends Controller
     public function actionMyCourse()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
-            'created_by' => \Yii::$app->user->id, 'limit' => 6]));
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),
@@ -449,8 +448,7 @@ class DefaultController extends Controller
     public function actionMyVideo()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, [
-            'created_by' => \Yii::$app->user->id, 'limit' => 6]));
+        $result = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
@@ -816,12 +814,14 @@ class DefaultController extends Controller
     {
         $refs = [];
         $vidos = Video::getVideoNode([]);
-        foreach ($vidos as $model) {
-            $refs[] = [
-                'id' => $model->id,
-                'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
-                        ' / ' . $model->name .'（'. $model->teacher->name .'）'
-            ];
+        if($vidos != null){
+            foreach ($vidos as $model) {
+                $refs[] = [
+                    'id' => $model->id,
+                    'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
+                            ' / ' . $model->name .'（'. $model->teacher->name .'）'
+                ];
+            }
         }
         
         return ArrayHelper::map($refs, 'id', 'name');

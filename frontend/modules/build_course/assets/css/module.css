@@ -16,6 +16,7 @@
 
 .main .form-label {
     padding: 10px 0 !important;
+    margin-bottom: 0;
     font-size: 14px;
     color: #999;
     font-weight: normal;
@@ -43,6 +44,23 @@
     border-left: none !important;
 }
 
+/*********************面包屑****************************/
+.main .crumbs {
+    padding: 6px; 
+    margin-bottom: 15px; 
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .crumbs > i {
+    margin-right: 5px; 
+    font-size: 16px;
+}
+
+.main .crumbs > span {
+    color: #999;
+}
+
+/*********************搜索框架****************************/
 .search-frame .search-drop-downList,
 .search-frame .search-text-input {
     float: left;
@@ -98,16 +116,7 @@
     color: #fff;
 }
 
-.main .page {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-}
-
-.main .page.center {
-    text-align: center;
-}
-
+/*********************面包屑****************************/
 .main .crumbs {
     padding: 6px; 
     margin-bottom: 15px; 
@@ -122,6 +131,18 @@
 .main .crumbs > span {
     color: #999;
 }
+
+/*********************分页****************************/
+.main .page {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+.main .page.center {
+    text-align: center;
+}
+
 
 /**
  * table表格th样式 

@@ -2,9 +2,9 @@
 
 namespace common\models\helpcenter\searchs;
 
+use common\models\AdminUser;
 use common\models\helpcenter\Post;
 use common\models\helpcenter\PostCategory;
-use common\models\User;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\Query;
@@ -51,7 +51,7 @@ class PostSearch extends Post
                 ->select([
                     'Post.id','Post.name','Post.title','Post.content','Post.view_count','Post.comment_count',
                     'Post.can_comment','Post.is_show','Post.like_count','Post.unlike_count','Post.sort_order',
-                    'Post.created_at','Post.updated_at','PostCategory.name AS categoryName','User.nickname AS created_by',
+                    'Post.created_at','Post.updated_at','PostCategory.name AS categoryName','AdminUser.nickname AS created_by',
                 ])
                 ->from(['Post' => Post::tableName()]);
         
@@ -72,7 +72,7 @@ class PostSearch extends Post
         //查询所属分类
         $query->leftJoin(['PostCategory' => PostCategory::tableName()], 'PostCategory.id = Post.category_id');
         //关联查询创建者
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Post.created_by');
+        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Post.created_by');
         
         // grid filtering conditions
         $query->andFilterWhere([

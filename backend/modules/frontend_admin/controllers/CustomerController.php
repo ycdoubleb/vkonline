@@ -5,8 +5,6 @@ namespace backend\modules\frontend_admin\controllers;
 use common\models\AdminUser;
 use common\models\Region;
 use common\models\User;
-use common\models\vk\Course;
-use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\CustomerActLog;
 use common\models\vk\CustomerAdmin;
@@ -16,6 +14,7 @@ use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -49,17 +48,19 @@ class CustomerController extends Controller
      */
     public function actionIndex()
     {
-        $params = Yii::$app->request->queryParams;
-        $customerAdmin = ArrayHelper::getValue($params, 'customerAdmin');    //获取查找的客户管理员ID
-        
         $searchModel = new CustomerSearch();
-        $dataProvider = $searchModel->search($params);
+        $result = $searchModel->search(Yii::$app->request->queryParams);
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['customer']),
+            'key' => 'id',
+        ]);
 
         return $this->render('index', [
-            'valueCusAdm' => $customerAdmin,
-            
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            
+            'filters' => $result['filter'],         //过滤条件
             'province' => $this->getProvince(),     //省
             'city' => $this->getCity(),             //市
             'district' => $this->getDistrict(),     //区

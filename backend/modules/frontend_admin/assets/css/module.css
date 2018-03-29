@@ -59,6 +59,11 @@ and open the template in the editor.
     text-align: center;
 }
 
+.customer .table > thead > tr > th, .table > tbody > tr > th, 
+.table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+    padding: 8px 4px;
+}
+
 /********* customer-view样式 ***********/
 /** table表格th样式 */
 .customer-view .viewdetail-th {
