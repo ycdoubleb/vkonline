@@ -58,10 +58,12 @@ class FfmpegUtil {
      * 创建视频截图并返回图片路径
      * @param string $ufileId   文件id
      * @param string $path      文件路径
+     * @param string $targetPath 保存路径
      * @return string
      */
-    static public function createVideoImageByUfileId($ufileId,$path){
-        $imagePath = "upload/video/screenshots/$ufileId.jpg";
+    static public function createVideoImageByUfileId($ufileId,$path,$targetPath=''){
+        $imagePath = $targetPath == '' ? "upload/video/screenshots/$ufileId.jpg" : "$targetPath/$ufileId.jpg";
+        $imagePath = str_replace('//', '/', $imagePath);    //删除多余的分隔
         $ffmpeg = FFMpeg::create(Yii::$app->params['ffmpeg']);
         $video = $ffmpeg->open($path);
         //$video->filters()->resize(new Dimension(640, 360))->synchronize();

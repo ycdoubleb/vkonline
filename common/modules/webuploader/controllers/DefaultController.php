@@ -1,10 +1,12 @@
 <?php
+
 namespace common\modules\webuploader\controllers;
 
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\imagine\Image;
 use yii\web\Controller;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -21,8 +23,49 @@ class DefaultController extends Controller {
      * @return string
      */
     public function actionIndex() {
-        //var_dump(Yii::$app->getRequest()->post());exit;
+
         return $this->render('index');
+    }
+
+    /**
+     * 获取文件列表
+     */
+    public function actionGetFiles($file_num = 10) {
+        \Yii::$app->getResponse()->format = 'json';
+        $results = Uploadfile::find()->limit($file_num)->orderBy('created_at desc')->asArray()->all();
+        return [
+            'code' => 0,
+            'data' => $results,
+        ];
+    }
+
+    public function beforeAction($action) {
+        if (parent::beforeAction($action)) {
+
+            header("Access-Control-Allow-Origin:*");
+            header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+            header("Access-Control-Allow-Methods: GET, POST, PUT,DELETE");
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+            header("Cache-Control: no-store, no-cache, must-revalidate");
+            header("Cache-Control: post-check=0, pre-check=0", false);
+            header("Pragma: no-cache");
+
+            // Support CORS
+            // header("Access-Control-Allow-Origin: *");
+            // other CORS headers if any...
+            if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+                exit; // finish preflight CORS requests here
+            }
+            if (!empty($_REQUEST['debug'])) {
+                $random = rand(0, intval($_REQUEST['debug']));
+                if ($random === 0) {
+                    header("HTTP/1.0 500 Internal Server Error");
+                    exit;
+                }
+            }
+        };
+        return parent::beforeAction($action);
     }
 
     /**
@@ -39,26 +82,6 @@ class DefaultController extends Controller {
          * Contributing: http://www.plupload.com/contributing
          */
         // Make sure file is not cached (as it happens for example on iOS devices)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        // Support CORS
-        // header("Access-Control-Allow-Origin: *");
-        // other CORS headers if any...
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            exit; // finish preflight CORS requests here
-        }
-        if (!empty($_REQUEST['debug'])) {
-            $random = rand(0, intval($_REQUEST['debug']));
-            if ($random === 0) {
-                header("HTTP/1.0 500 Internal Server Error");
-                exit;
-            }
-        }
-        // header("HTTP/1.0 500 Internal Server Error");
-        // exit;
         // 5 minutes execution time
         @set_time_limit(5 * 60);
         // Uncomment this one to fake upload time
@@ -66,10 +89,10 @@ class DefaultController extends Controller {
         // Settings
         // $targetDir = ini_get("upload_tmp_dir") . DIRECTORY_SEPARATOR . "plupload";
         //应用web路径，默认会放本应用的web下，通过设置root_path可改变目标路径
-        $root_path = isset($_REQUEST["root_path"]) ? $_REQUEST["root_path"].'/' : '';
+        $root_path = isset($_REQUEST["root_path"]) ? $_REQUEST["root_path"] . '/' : '';
         $dir_path = isset($_REQUEST["dir_path"]) ? '/' . $_REQUEST["dir_path"] : '';
-        $targetDir = $root_path.'upload/webuploader/upload_tmp';
-        $uploadDir = $root_path.'upload/webuploader/upload' . $dir_path;
+        $targetDir = $root_path . 'upload/webuploader/upload_tmp';
+        $uploadDir = $root_path . 'upload/webuploader/upload' . $dir_path;
         $cleanupTargetDir = true; // Remove old files
         $maxFileAge = 5 * 3600; // Temp file age in seconds
         // Create target dir
@@ -156,34 +179,6 @@ class DefaultController extends Controller {
      * 上传文件前检查，通过md5判断文件有没有上传过，或者在上传过程中断了
      */
     public function actionCheckFile() {
-        /**
-         * upload.php
-         *
-         * Copyright 2013, Moxiecode Systems AB
-         * Released under GPL License.
-         *
-         * License: http://www.plupload.com/license
-         * Contributing: http://www.plupload.com/contributing
-         */
-        // Make sure file is not cached (as it happens for example on iOS devices)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        // Support CORS
-        // header("Access-Control-Allow-Origin: *");
-        // other CORS headers if any...
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            exit; // finish preflight CORS requests here
-        }
-        if (!empty($_REQUEST['debug'])) {
-            $random = rand(0, intval($_REQUEST['debug']));
-            if ($random === 0) {
-                header("HTTP/1.0 500 Internal Server Error");
-                exit;
-            }
-        }
         if (!isset($_REQUEST['fileMd5'])) {
             die('{"jsonrpc" : "2.0", "error" : {"code": 200, "message": "fileMd5 不能为空!"}, "id" : "id"}');
         }
@@ -206,36 +201,6 @@ class DefaultController extends Controller {
      * 检查分片是否存在
      */
     public function actionCheckChunk() {
-        /**
-         * upload.php
-         *
-         * Copyright 2013, Moxiecode Systems AB
-         * Released under GPL License.
-         *
-         * License: http://www.plupload.com/license
-         * Contributing: http://www.plupload.com/contributing
-         */
-        // Make sure file is not cached (as it happens for example on iOS devices)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        // Support CORS
-        // header("Access-Control-Allow-Origin: *");
-        // other CORS headers if any...
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            exit; // finish preflight CORS requests here
-        }
-        if (!empty($_REQUEST['debug'])) {
-            $random = rand(0, intval($_REQUEST['debug']));
-            if ($random === 0) {
-                header("HTTP/1.0 500 Internal Server Error");
-                exit;
-            }
-        }
-        // header("HTTP/1.0 500 Internal Server Error");
-        // exit;
         // 5 minutes execution time
         @set_time_limit(5 * 60);
         //分片md5和文件md5
@@ -257,41 +222,13 @@ class DefaultController extends Controller {
      * 合并分片
      */
     public function actionMergeChunks() {
-        /**
-         * upload.php
-         *
-         * Copyright 2013, Moxiecode Systems AB
-         * Released under GPL License.
-         *
-         * License: http://www.plupload.com/license
-         * Contributing: http://www.plupload.com/contributing
-         */
-        // Make sure file is not cached (as it happens for example on iOS devices)
-        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-        header("Cache-Control: no-store, no-cache, must-revalidate");
-        header("Cache-Control: post-check=0, pre-check=0", false);
-        header("Pragma: no-cache");
-        // Support CORS
-        // header("Access-Control-Allow-Origin: *");
-        // other CORS headers if any...
-        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-            exit; // finish preflight CORS requests here
-        }
-        if (!empty($_REQUEST['debug'])) {
-            $random = rand(0, intval($_REQUEST['debug']));
-            if ($random === 0) {
-                header("HTTP/1.0 500 Internal Server Error");
-                exit;
-            }
-        }
         //应用
         $app_id = isset($_REQUEST["app_id"]) ? $_REQUEST["app_id"] : '';
         //应用web路径，默认会放本应用的web下，通过设置root_path可改变目标路径
-        $root_path = isset($_REQUEST["root_path"]) ? $_REQUEST["root_path"].'/' : '';
+        $root_path = isset($_REQUEST["root_path"]) ? $_REQUEST["root_path"] . '/' : '';
         $dir_path = isset($_REQUEST["dir_path"]) ? '/' . $_REQUEST["dir_path"] : '';
-        $targetDir = $root_path.'upload/webuploader/upload_tmp';
-        $uploadDir = $root_path.'upload/webuploader/upload' . $dir_path;
+        $targetDir = $root_path . 'upload/webuploader/upload_tmp';
+        $uploadDir = $root_path . 'upload/webuploader/upload' . $dir_path;
         $cleanupTargetDir = true; // Remove old files
         $maxFileAge = 5 * 3600; // Temp file age in seconds
         // Create target dir
@@ -347,6 +284,17 @@ class DefaultController extends Controller {
                     flock($out, LOCK_UN);
                 }
                 @fclose($out);
+                /**
+                 * 创建缩略图
+                 */
+                $makeThumb = isset($_REQUEST["makeThumb"]) ? (integer) $_REQUEST["makeThumb"] : 0;
+                $thumbPath = '';
+                if ($makeThumb) {
+                    $thumbPath = $this->createThumb($uploadPath, 
+                            ArrayHelper::getValue($_REQUEST, 'thumbWidth', 128), 
+                            ArrayHelper::getValue($_REQUEST, 'thumbHeight', null), 
+                            ArrayHelper::getValue($_REQUEST, 'thumbMode', \Imagine\Image\ManipulatorInterface::THUMBNAIL_OUTBOUND));
+                }
                 /*
                  * 写入数据库
                  */
@@ -356,7 +304,7 @@ class DefaultController extends Controller {
                 $dbFile->del_mark = 0;          //重置删除标志
                 $dbFile->is_fixed = isset($_REQUEST['is_fixed']) ? $_REQUEST['is_fixed'] : 1;          //设置永久标志
                 $dbFile->created_by = Yii::$app->user->id;
-                $dbFile->thumb_path = '';
+                $dbFile->thumb_path = $thumbPath;
                 $dbFile->size = $fileSize;
                 $dbFile->app_id = $app_id;
                 if ($dbFile->save()) {
@@ -447,6 +395,80 @@ class DefaultController extends Controller {
         }
     }
 
+    /**
+     * 创建文件缩略图，只会对视频和图片生成缩略图
+     * @param string $filepath      文件路径
+     * @param type $width           缩略图宽度
+     * @param type $height          缩略图高度
+     * @param type $mode            模式：outbound填满高宽，inset等比缩放
+     * @return string   生成缩略图路径
+     */
+    private function createThumb($filepath, $width = 128, $height = null, $mode = \Imagine\Image\ManipulatorInterface::THUMBNAIL_OUTBOUND) {
+        //需要生成缩略图的文件
+        $filter = [
+            'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
+            'image' => ['jpg', 'jpeg', 'png', 'gif'],
+        ];
+
+        $fileinfo = pathinfo($filepath);
+        $type = '';
+        foreach ($filter as $key => $filters) {
+            if (in_array(strtolower($fileinfo['extension']), $filters)) {
+                $type = $key;
+                break;
+            }
+        }
+        if ($type == '') {
+            //其它文件不创建缩略图，返回''
+            return "imgs/upload_filetype_icons/".$this->getExt($fileinfo['extension']).'.png';
+        }
+        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg';
+        $this->mkdir($fileinfo['dirname'] . '/thumbs/');
+        Image::$thumbnailBackgroundColor = '000';
+        switch ($type) {
+            case 'video':
+                //创建视频缩略图
+                //先截屏视频，再创建缩略图
+                $filepath = \common\utils\FfmpegUtil::createVideoImageByUfileId($fileinfo['filename'], $filepath, $fileinfo['dirname'] . '/thumbs/');
+            case 'image':
+                //创建图片缩略图
+                Image::thumbnail($filepath, $width, $height, $mode)->save($thumbpath);
+                break;
+        }
+        return $thumbpath;
+    }
+
+    /**
+     * 获取对应文件类型图标
+     * @param suffix        文件后缀
+     * @returns {string}
+     * @private
+     */
+    private function getExt($suffix) {
+        //无法生成缩略图的文件图标
+        $exts = [
+            'doc' => ['doc', 'docx'],
+            'xls' => ['xls', 'xlsx'],
+            'ppt' => ['ppt', 'pptx'],
+            'ai' => ['ai'],
+            'audio' => ['mp3', 'wma'],
+            'gif' => ['gif'],
+            'jpg' => ['jpg', 'jpeg'],
+            'pdf' => ['pdf'],
+            'psd' => ['psd'],
+            'video' => ['mp4', 'avi', 'mpg', 'wmv', 'rmvb', 'rm', 'mov'],
+            'zip' => ['zip', 'rar', 'tar', 'gz'],
+        ];
+        $ext = 'other';
+        $suffix = strtolower($suffix);
+        foreach ($exts as $key => $ext_arr) {
+            if (in_array($suffix, $ext_arr)) {
+                return $key;
+            }
+        }
+        return $ext;
+    }
+
     /** 获取header range信息 
      * 
      * 1、bytes=100-200     第100到第200字节
@@ -472,7 +494,7 @@ class DefaultController extends Controller {
             }
             return $range;
         }
-        return null;//['start' => 0,'end' => $file_size];
+        return null; //['start' => 0,'end' => $file_size];
     }
 
     /**
@@ -480,9 +502,9 @@ class DefaultController extends Controller {
      * @param string $path
      */
     private function mkdir($path) {
-        if(!file_exists($path)){
-            if(!(@mkdir($path, 0777, true))){
-                throw new HttpException(500,'创建目录失败');
+        if (!file_exists($path)) {
+            if (!(@mkdir($path, 0777, true))) {
+                throw new HttpException(500, '创建目录失败');
             }
         }
     }
