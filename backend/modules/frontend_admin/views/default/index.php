@@ -77,7 +77,7 @@ $this->title = Yii::t('app', 'Survey');
                     ]),
                     'format' => 'raw',
                     'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
-                        '<span style="color:#929292">（'.(floor($usedSpace['size'] / $totalSize) * 100).' %）</span>' : null,
+                        '<span style="color:#929292">（' . sprintf("%.2f", ($usedSpace['size'] / $totalSize) * 100) .' %）</span>' : null,
                 ],
                 [
                     'label' => Yii::t('app', 'Surplus'),

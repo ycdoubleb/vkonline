@@ -23,8 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="customer-view">
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Renew'), ['renew', 'id' => $model->id], 
-                ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
+        <?= Html::a(($model->good_id != null) ? Yii::t('app', 'Renew') : Yii::t('app', 'Opening'), 
+                ['renew', 'id' => $model->id], ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
         <?= ($model->status == Customer::STATUS_STOP) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
             'class' => 'btn btn-info',
             'data' => [
@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <!--左侧-基本信息-->
         <div class="col-xs-6 frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-file-text-o"></i>
+                <i class="icon fa fa-file-text"></i>
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
@@ -76,21 +76,21 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'status',
                         'format' => 'raw',
-                        'value' => !empty($model->status) ? '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
-                                    . Customer::$statusUser[$model->status] . '</span>' : null,
+                        'value' => '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
+                                    . Customer::$statusUser[$model->status] . '</span>',
+                    ],
+                    [
+//                        'attribute' => 'expire_time',
+                        'label' => Yii::t('app', 'Start Time'),
+                        'value' => !empty($model->staEndTime->start_time) ? date('Y-m-d H:i', $model->staEndTime->start_time) : null,
                     ],
                     [
                         'attribute' => 'expire_time',
-                        'label' => Yii::t('app', 'Start Time'),
-                        'value' => !empty($model->expire_time) ? date('Y-m-d H:s', $model->staEndTime->start_time) : null,
-                    ],
-                    [
-                        'attribute' => 'renew_time',
                         'label' => Yii::t('app', '{Expire}{Time}',[
                             'Expire' => Yii::t('app', 'Expire'),
                             'Time' => Yii::t('app', 'Time'),
                         ]),
-                        'value' => !empty($model->renew_time) ? date('Y-m-d H:i', $model->staEndTime->end_time) : null,
+                        'value' => !empty($model->expire_time) ? date('Y-m-d H:i', $model->expire_time) : null,
                     ],
                     [
                         'attribute' => 'created_by',
@@ -145,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ]),
                             'format' => 'raw',
                             'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
-                                '<span style="color:#929292">（'.(floor($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
+                                '<span style="color:#929292">（'. sprintf("%.2f", ($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
                         ],
                         [
                             'label' => Yii::t('app', 'Surplus'),

@@ -1,6 +1,5 @@
 <?php
 
-use common\models\mconline\McbsCourseUser;
 use common\models\vk\CustomerAdmin;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
@@ -9,17 +8,15 @@ use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $model McbsCourseUser */
+/* @var $model CustomerAdmin */
 
 $this->title = Yii::t('app', "{Edit}{Administrators}：{$model->user->nickname}", [
     'Edit' => Yii::t('app', 'Edit'),
     'Administrators' => Yii::t('app', 'Administrators')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Customer'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
-<div class="customer-update-admin customer">
+<div class="customer-update-admin main modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

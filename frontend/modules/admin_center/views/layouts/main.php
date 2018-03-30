@@ -50,7 +50,7 @@ $menuItems = [
     [
         'label' => Yii::t('app', 'Special'),
         'url' => ['special/index', 'id' => $customerId],
-        'icons' => '<i class="fa fa-user"></i>', 
+        'icons' => '<i class="fa fa-tasks"></i>', 
         'options' => ['class' => 'links']
     ],
     [
@@ -62,9 +62,12 @@ $menuItems = [
 ];
 
 //导航
-foreach ($menuItems as $item) {
+end($menuItems);
+$lastIndex = key($menuItems);
+foreach ($menuItems as $index => $item) {
     $itemController = explode("/", $item['url'][0]);
-    $menu .= (in_array($controllerId, $itemController) ? '<li class="active">' : '<li class="">').Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $menu .= (in_array($controllerId, $itemController) ? '<li class="active">' : 
+            ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
 $html = <<<Html

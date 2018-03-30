@@ -33,8 +33,8 @@ class CustomerAdmin extends ActiveRecord
      * @var  array
      */
     public static $levelName = [
-        self::MAIN => '主管理员',
-        self::VICE => '副管理员',
+        self::MAIN => '主',
+        self::VICE => '副',
     ];
     
     /**

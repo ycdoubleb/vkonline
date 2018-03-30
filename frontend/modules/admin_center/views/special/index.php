@@ -1,24 +1,21 @@
 <?php
 
 use frontend\modules\admin_center\assets\ModuleAssets;
+use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 
-
-ModuleAssets::register($this);
-
 ?>
 
 <div class="default-index main">
-    <h1><?= $this->context->action->uniqueId ?></h1>
-    <p>
-        This is the view content for action "<?= $this->context->action->id ?>".
-        The action belongs to the controller "<?= get_class($this->context) ?>"
-        in the "<?= $this->context->module->id ?>" module.
-    </p>
-    <p>
-        You may customize this page by editing the following file:<br>
-        <code><?= __FILE__ ?></code>
-    </p>
+    <?= Html::img('/imgs/admin_center/images/404.jpg', ['width' => '100%']) ?>
 </div>
+
+<?php
+    $js = <<<JS
+        
+JS;
+    $this->registerJs($js, View::POS_READY);
+    ModuleAssets::register($this);
+?>

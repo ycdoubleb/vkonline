@@ -55,7 +55,7 @@ $this->title = Yii::t('app', '{User}{Info}',[
                 [
                     'attribute' => 'avatar',
                     'format' => 'raw',
-                    'value' => Html::img(WEB_ROOT . $model->avatar, ['class' => 'img-circle', 'width' => '128px']),
+                    'value' => Html::img(WEB_ROOT . $model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']),
                 ],
                 'email:email',
                 [

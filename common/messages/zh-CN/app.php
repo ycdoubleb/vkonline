@@ -233,6 +233,7 @@ return [
     'Distribution' => '分布',
     'Survey' => '概况',
     'Quote' => '引用',
+    'Opening' => '开通',
     
     //前台-协作人员
     'Help Man' => '协作人员',
@@ -243,4 +244,7 @@ return [
     //前台-管理中心
     'Special' => '专题',
     'Column' => '栏',
+    'Produce' => '生成',
+    'Copy' => '复制',
+    'Prompt' => '提示',
 ];

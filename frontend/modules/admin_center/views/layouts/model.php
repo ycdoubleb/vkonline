@@ -1,11 +1,3 @@
-<?php
-
-use common\widgets\ueditor\UeditorAsset;
-
-/** 模态框 ///加载富文本编辑器 */
-    
-?>
-
 <div class="modal fade myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -24,7 +16,3 @@ use common\widgets\ueditor\UeditorAsset;
        </div>
     </div> 
 </div>
-
-<?php
-    UeditorAsset::register($this);
-
