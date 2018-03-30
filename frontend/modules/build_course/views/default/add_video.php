@@ -56,7 +56,9 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"",
     $this->renderFile('@frontend/modules/build_course/views/default/view_videoframe.php')));
 $js = 
 <<<JS
-   
+    
+    window.onloadUploader();    //加载文件上传  
+        
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;

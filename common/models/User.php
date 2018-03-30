@@ -127,7 +127,7 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function rules() {
         return [
-            [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE]],
+            [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['username', 'nickname', 'email'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
@@ -211,7 +211,6 @@ class User extends ActiveRecord implements IdentityInterface {
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
-            $this->max_store = $this->max_store * $this->byte;
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
                 $string = $upload->name;
@@ -224,25 +223,32 @@ class User extends ActiveRecord implements IdentityInterface {
             }
             
             if ($this->scenario == self::SCENARIO_CREATE) {
+                $this->max_store = $this->max_store * $this->byte;
                 $this->setPassword($this->password_hash);
+                $this->generateAuthKey();
                 //设置默认头像
-                if (trim($this->avatar) == '')
+                if (trim($this->avatar) == ''){
                     $this->avatar = '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
-                if (trim($this->password_hash) == '')
+                if (trim($this->password_hash) == ''){
                     $this->password_hash = $this->getOldAttribute('password_hash');
-                else
+                }else{
                     $this->setPassword($this->password_hash);
-
-                if (trim($this->avatar) == '')
+                }
+                if($this->max_store == $this->getOldAttribute('max_store')){
+                    $this->max_store == $this->getOldAttribute('max_store');
+                }else{
+                    $this->max_store = $this->max_store * $this->byte;
+                }
+                if (trim($this->avatar) == ''){
                     $this->avatar = $this->getOldAttribute('avatar');
+                }
             }
 
-            if ($this->scenario == self::SCENARIO_CREATE)
-                $this->generateAuthKey();
-
-            if (trim($this->nickname) == '')
+            if (trim($this->nickname) == ''){
                 $this->nickname = $this->username;
+            }
 
             return true;
         }

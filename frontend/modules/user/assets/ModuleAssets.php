@@ -20,6 +20,7 @@ class ModuleAssets extends AssetBundle {
     public $sourcePath = '@frontend/modules/user/assets';
     public $css = [
        'css/module.css',
+       'css/fileInput.css',
     ];
     public $js = [
     ];

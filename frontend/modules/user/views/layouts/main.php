@@ -24,13 +24,13 @@ $actionId = Yii::$app->controller->action->id;  //当前actionID
 $menuItems = [
     [
         'label' => '概况',
-        'url' => ['index'],
+        'url' => ['index', 'id' => Yii::$app->user->id],
         'icons' => '<i class="fa fa-bar-chart"></i>', 
         'options' => ['class' => 'links']
     ],
     [
         'label' => Yii::t('app', '{Basic}{Info}', ['Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info')]),
-        'url' => ['info'],
+        'url' => ['info', 'id' => Yii::$app->user->id],
         'icons' => '<i class="fa fa-file-text"></i>', 
         'options' => ['class' => 'links']
     ],

@@ -14,6 +14,8 @@ use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\db\Query;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -24,12 +26,40 @@ use yii\web\NotFoundHttpException;
 class DefaultController extends Controller
 {
     /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ]
+        ];
+    }
+    
+    /**
      * Renders the index view for the module
      * @return string
      */
     public function actionIndex($id)
     {
         $model = $this->findModel($id);
+        
+        if($model->id != Yii::$app->user->id){
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
         
         return $this->render('index', [
             'model' => $model,
@@ -48,9 +78,42 @@ class DefaultController extends Controller
      * Renders the index view for the module
      * @return string
      */
-    public function actionInfo()
+    public function actionInfo($id)
     {
-        return $this->render('info');
+        $model = $this->findModel($id);
+        
+        if($model->id != Yii::$app->user->id){
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+        
+        return $this->render('info', [
+            'model' => $model,
+        ]);
+    }
+    
+    /**
+     * Updates an existing User model.
+     * If update is successful, the browser will be redirected to the 'view' page.
+     * @param string $id
+     * @return mixed
+     * @throws NotFoundHttpException if the model cannot be found
+     */
+    public function actionUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $model->scenario = User::SCENARIO_UPDATE;
+        
+        if($model->id != Yii::$app->user->id){
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+       
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['info', 'id' => $model->id]);
+        }else{
+            return $this->render('update', [
+                'model' => $model,
+            ]);
+        }
     }
     
     /**

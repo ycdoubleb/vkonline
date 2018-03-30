@@ -10,14 +10,39 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
+//Yii::$app->formatter->sizeFormatBase = 1000;
+
 ?>
 
 <div class="user-default-index main">
     
+    <!--储存空间-->
+    <div class="col-xs-12 frame">
+        <div class="col-xs-12 title">
+            <i class="fa fa-bar-chart"></i>
+            <span><?= Yii::t('app', '{Storage}{Space}',['Storage' => Yii::t('app', 'Storage'),'Space' => Yii::t('app', 'Space'),]) ?></span>
+        </div>
+        <?= DetailView::widget([
+            'model' => $model,
+            'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+            'attributes' => [
+                [
+                    'label' => '总大小',
+                    'format' => 'raw',
+                    'value' => Yii::$app->formatter->asShortSize($model->max_store),
+                ],
+                [
+                    'label' => '已用',
+                    'format' => 'raw',
+                    'value' => Yii::$app->formatter->asShortSize($usedSpace['size']). '（'. ($model->max_store != 0 ? sprintf('%.2f', $usedSpace['size'] / $model->max_store * 100) : 0) . '%）',
+                ],
+            ],
+        ]) ?>
+    </div>
     <!--建设数据-->
     <div class="col-xs-12 frame">
         <div class="col-xs-12 title">
-            <i class="icon fa fa-bar-chart"></i>
+            <i class="fa fa-cubes"></i>
             <span><?= Yii::t('app', '{Build}{Data}',[
                 'Build' => Yii::t('app', 'Build'),
                 'Data' => Yii::t('app', 'Data'),
@@ -31,15 +56,15 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', 'Course'),
                     'format' => 'raw',
                     'value' => $userCouVid['course_num'] . ' 门' .
-                        Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['course/', ['created_by' => $model->id]]),
+                        Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/default/my-course'], [
+                            ' class' => 'btn btn-xs btn-default', 'style' => 'float: right']),
                 ],
                 [
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => $userCouVid['video_num'] . ' 个' .
-                        Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['video/', ['created_by' => $model->id]]),
+                        Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/default/my-video'], [
+                            ' class' => 'btn btn-xs btn-default', 'style' => 'float: right']),
                 ],
             ],
         ]) ?>
@@ -47,7 +72,7 @@ ModuleAssets::register($this);
     <!--学习数据-->
     <div class="col-xs-12 frame">
         <div class="col-xs-12 title">
-            <i class="icon fa fa-bar-chart"></i>
+            <i class="fa fa-bar-chart"></i>
             <span><?= Yii::t('app', '{Study}{Data}',[
                 'Study' => Yii::t('app', 'Study'),
                 'Data' => Yii::t('app', 'Data'),

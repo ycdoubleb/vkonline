@@ -55,6 +55,8 @@ $actLog = Url::to(['actlog', 'course_id' => $model->courseNode->course_id]);
 $js = 
 <<<JS
         
+    window.onloadUploader();    //加载文件上传  
+        
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$("#build-course-form").submit();return;
