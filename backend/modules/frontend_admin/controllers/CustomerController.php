@@ -20,6 +20,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\Controller;
+use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -170,48 +171,37 @@ class CustomerController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        
-        $model->status = Customer::STATUS_STOP;
-        $model->save(false,['status']);
-        
-        $customerActLog = (new Query())->select(['good_id', 'start_time'])->from(CustomerActLog::tableName())
-                ->where(['customer_id' => $id])->orderBy('id desc')->one();
-        $values[] = [
-            'customer_id' => $id,
-            'title' => '停用',
-            'good_id' => $customerActLog['good_id'],
-            'content' => '到期停用！',
-            'start_time' => $customerActLog['start_time'],
-            'end_time' => time(),
-            'created_by' => \Yii::$app->user->id,
-            'created_at' => time(),
-            'updated_at' => time(),
-        ];
-        /** 添加$values数组到表里 */
-        Yii::$app->db->createCommand()->batchInsert(CustomerActLog::tableName(), [
-            'customer_id','title','good_id','content','start_time','end_time','created_by','created_at','updated_at'
-        ],$values)->execute();
-            
-        return $this->redirect(['view']);
+        //查找到最新的一条记录
+        $customerActLog = (new Query())->select(['good_id', 'start_time', 'end_time'])->from(CustomerActLog::tableName())
+                    ->where(['customer_id' => $id])->orderBy('id desc')->one();
+        if(time() < $customerActLog['end_time']){
+            throw new NotAcceptableHttpException('套餐未到期，不能停用！');
+        } else {
+            $model->status = Customer::STATUS_STOP;
+            $model->expire_time = time();
+            if($model->save()){
+                //组装数据
+                $values[] = [
+                    'customer_id' => $id,
+                    'title' => '停用',
+                    'good_id' => $customerActLog['good_id'],
+                    'content' => '到期停用！',
+                    'start_time' => $customerActLog['start_time'],
+                    'end_time' => time(),
+                    'created_by' => \Yii::$app->user->id,
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ];
+                /** 添加$values数组到表里 */
+                Yii::$app->db->createCommand()->batchInsert(CustomerActLog::tableName(), [
+                    'customer_id','title','good_id','content','start_time','end_time','created_by','created_at','updated_at'
+                ],$values)->execute();
+
+                return $this->redirect(['view']);
+            }
+        }
     }
-    
-    /**
-     * (启用)Enables an existing User model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionEnable($id)
-    {
-        $model = $this->findModel($id);
-        
-        $model->status = Customer::STATUS_ACTIVE;
-        $model->save(false,['status']);
-        
-        return $this->redirect(['index']);
-    }
-    
+
     /**
      * (操作记录表)Lists all Customer models.
      * @return mixed
@@ -504,7 +494,9 @@ class CustomerController extends Controller
             if($results['code'] == 400){
                 throw new Exception($model->getErrors());
             }
-            
+            $customermModel = $this->findModel($model->customer_id);
+            $customermModel->status = Customer::STATUS_ACTIVE;
+            $customermModel->save(false,['status']);
             $trans->commit();  //提交事务
             return true;
             Yii::$app->getSession()->setFlash('success','操作成功！');

@@ -6,7 +6,6 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
-use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;

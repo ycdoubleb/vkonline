@@ -10,6 +10,7 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\CustomerAdmin;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\models\vk\VideoFavorite;
@@ -20,6 +21,7 @@ use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -144,11 +146,20 @@ class UserController extends BaseController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $userId = Yii::$app->user->id;
+        $adminModel = CustomerAdmin::find()->where(['user_id' => $id])->one();
+        $userLevel = CustomerAdmin::find()->where(['user_id' => $userId])->one();   //当前用户的管理员等级
         
-        $model->status = User::STATUS_STOP;
-        $model->save(false,['status']);
-        
-        return $this->redirect(['index']);
+        if($userId == $model->id){
+            throw new NotAcceptableHttpException('不能禁用自己！');
+        } elseif ($userLevel->level >= $adminModel->level) {
+            throw new NotAcceptableHttpException('不能禁用权限比自己高的用户！');
+        } else {
+            $model->status = User::STATUS_STOP;
+            $model->save(false,['status']);
+
+            return $this->redirect(['index']);
+        }
     }
     
     /**

@@ -44,8 +44,8 @@ use yii\widgets\DetailView;
                     [
                         'attribute' => 'status',
                         'format' => 'raw',
-                        'value' => !empty($model->status) ? '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
-                                    . Customer::$statusUser[$model->status] . '</span>' : null,
+                        'value' => '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
+                                    . Customer::$statusUser[$model->status] . '</span>',
                     ],
                     [
 //                        'attribute' => 'expire_time',
