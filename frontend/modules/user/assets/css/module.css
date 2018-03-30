@@ -1,0 +1,158 @@
+/***************************************main-公共****************************************/
+.main {
+    display: inline-block;
+    width: 1000px;
+    height: auto;
+    padding-left: 35px;
+    font-size: 14px;
+}
+
+.main > p,
+.main .search-frame {
+    padding: 0;
+    margin: 0 0 15px;
+}
+
+.search-frame > label {
+    text-align: center;
+}
+
+.main .form-label {
+    padding: 10px 0 !important;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: #999;
+    font-weight: normal;
+    padding-right: 0px;
+}
+
+.main .form-control {
+    height: 40px !important;
+    padding: 10px 24px 10px 12px !important;
+    border-radius: 0 !important;
+}
+
+.main textarea.form-control {
+    height: auto !important;
+}
+
+.main .table {
+/*    table-layout: fixed;*/
+}
+
+.main .table .td-table {
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.main .table .td-table > a > i {
+    font-size: 18px;
+    color: #4bd127;
+}
+
+/*********************面包屑****************************/
+.main .crumbs {
+    padding: 7px; 
+    margin-bottom: 15px; 
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .crumbs > i {
+    margin-right: 5px; 
+    font-size: 16px;
+}
+
+.main .crumbs > span {
+    color: #999;
+}
+
+/**
+ * table表格th样式 
+ */
+.main .viewdetail-th {
+    color: #666666;
+    width: 23%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格th-head样式 
+ */
+.main .viewdetail-th-head {
+    color: #000000;
+    float: left;
+    font-weight: bold;
+}
+
+/**
+ * table表格td-head样式 
+ */
+.main .viewdetail-td-head {
+    color: #000000;
+    float: right;
+    font-weight: bold;
+}
+
+/**
+ * table表格td样式 
+ */
+.main .viewdetail-td {
+    min-width: 100px;
+    vertical-align: middle;
+}
+
+/**
+ * table表格td-des样式 
+ */
+.main .viewdetail-td-des {
+    height: 65px;
+    display:table-cell;
+    vertical-align:middle; 
+}
+
+/**
+ * 设置表格内容中部对齐
+ */
+.main .table > tbody > tr > td{
+    vertical-align: middle;
+}
+
+.main .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.frame .title {
+    padding: 10px 15px;
+    color: #fff;
+    text-align: left;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+
+.frame .title > i {
+    float: left; 
+    margin: 3px 5px 0 0;
+}
+
+.frame .title > span {
+    display: block;
+    float: left;
+}
+
+.frame .title > .btngroup {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+}
+
+.frame .table {
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border: 1px #ddd solid;
+}

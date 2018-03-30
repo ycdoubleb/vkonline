@@ -46,7 +46,7 @@
 
 /*********************面包屑****************************/
 .main .crumbs {
-    padding: 6px; 
+    padding: 7px; 
     margin-bottom: 15px; 
     background-color: rgba(242, 242, 242, 1);
 }
@@ -116,22 +116,6 @@
     color: #fff;
 }
 
-/*********************面包屑****************************/
-.main .crumbs {
-    padding: 6px; 
-    margin-bottom: 15px; 
-    background-color: rgba(242, 242, 242, 1);
-}
-
-.main .crumbs > i {
-    margin-right: 5px; 
-    font-size: 16px;
-}
-
-.main .crumbs > span {
-    color: #999;
-}
-
 /*********************分页****************************/
 .main .page {
     display: inline-block;
@@ -142,7 +126,6 @@
 .main .page.center {
     text-align: center;
 }
-
 
 /**
  * table表格th样式 

@@ -26,32 +26,24 @@
     padding-right: 0px;
 }
 
-.main .form-control,
-.main .select2-selection {
+.main .form-control {
     height: 40px !important;
     padding: 10px 24px 10px 12px !important;
     border-radius: 0 !important;
 }
 
-.main .select2-selection__arrow {
-    height: 38px !important;
-    border-left: none !important;
+.main .table {
+/*    table-layout: fixed;*/
 }
 
-/*********************面包屑****************************/
-.main .crumbs {
-    padding: 6px; 
-    margin-bottom: 15px; 
-    background-color: rgba(242, 242, 242, 1);
+.main .table .td-table {
+    font-size: 14px;
+    white-space: nowrap;
 }
 
-.main .crumbs > i {
-    margin-right: 5px; 
-    font-size: 16px;
-}
-
-.main .crumbs > span {
-    color: #999;
+.main .table .td-table > a > i {
+    font-size: 18px;
+    color: #4bd127;
 }
 
 /*********************搜索框架****************************/
@@ -114,61 +106,6 @@
     color: #fff;
 }
 
-/*********************过滤****************************/
-.main .filter {
-    display: inline-block;
-    width: 100%;
-    height: auto;
-    padding: 10px 15px;
-    margin: 30px 0;
-    font-size: 0px;
-    background-color: rgba(242, 242, 242, 1);
-}
-
-.main .filter .result {
-    display: inline-block;
-    float: left;
-    font-size: 14px;
-}
-
-.main .filter .sort {
-    display: inline-block;
-    float: right;
-    font-size: 14px;
-}
-
-.main .filter .sort > ul {
-    padding-left: 0;
-    margin-bottom: 0;
-    list-style: none;
-}
-
-.main .filter .sort > ul > li {
-    float: left;
-    height: 40px;
-    padding: 10px 7px;
-    margin: -10px 5px;
-}
-
-.main .filter .sort > ul > li > a {
-    display: block;
-    padding: 0 7px;
-    margin: -10px -7px;
-    color: #999;
-    line-height: 40px;
-    text-decoration: none;
-}
-
-.main .filter .sort > ul > li.active,
-.main .filter .sort > ul > li:hover {
-    border-bottom: 2px #337ab7 solid;
-    /*cursor: pointer;*/
-}
-
-.main .filter .sort > ul > li.active > a,
-.main .filter .sort > ul > li:hover > a {
-    color: #337ab7;
-}
 
 /*********************分页****************************/
 .main .page {

@@ -86,98 +86,88 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
-
-    window.video;
-    window.attachment;
-    //加载视频文件上传  
-    window.video = new Wskeee.Uploader({
-        name: 'Video[source_id]',
-        // 文件接收服务端。
-        server: '/webuploader/default/upload',
-        //检查文件是否存在
-        checkFile: '/webuploader/default/check-file',
-        //分片合并
-        mergeChunks: '/webuploader/default/merge-chunks',
-        //flash上传组件
-        swf: '$swfpath' + '/Uploader.swf',
-        // 上传容器
-        container: '#video-container',
-        //自动上传
-        auto: false,
-        //验证文件总数量, 超出则不允许加入队列
-        fileNumLimit: 1,
-        //指定选择文件的按钮容器
-        pick: {
-            id:  '#video .euploader-btns > div',
-            multiple: false,
-        },
-        //指定接受哪些类型的文件
-        accept: {
-            extensions: 'mp4',
-        },
-        //每次上传都会传到服务器的固定参数
-        formData: {
-            _csrf: "$csrfToken",
-            //指定文件上传到的应用
-            dir_path: 'frontend',
-            app_id: "$app_id",
-            //debug: 1,
-            name: 'source_id',
-
-        }
-    });
-    //加载附件文件上传  
-    window.attachment = new Wskeee.Uploader({
-        // 文件接收服务端。
-        server: '/webuploader/default/upload',
-        //检查文件是否存在
-        checkFile: '/webuploader/default/check-file',
-        //分片合并
-        mergeChunks: '/webuploader/default/merge-chunks',
-        //flash上传组件
-        swf: '$swfpath' + '/Uploader.swf',
-        // 上传容器
-        container: '#attachment-container',
-        //自动上传
-        auto: false,
-        pick: {
-            id:  '#attachment .euploader-btns > div',
-        },
-        //每次上传都会传到服务器的固定参数
-        formData: {
-            _csrf: "$csrfToken",
-            //指定文件上传到的应用
-            dir_path: 'frontend',
-            app_id: "$app_id",
-            //debug: 1,
-        }
-    });
-    window.video.addCompleteFiles($videoFile);
-    if($model->is_ref){
-        window.video.setEnabled(false);
-    }
-    window.attachment.addCompleteFiles($attFiles);
-    /**
-     * 上传文件完成才可以提交
-     * @returns {Wskeee.Uploader.isFinish}
-     */
-    function tijiao(){
-        //uploader,isFinish 是否已经完成所有上传
-        //uploader.hasError 是否有上传错误的文件
-        //console.log(video.isFinish);
-        
-        return video.isFinish;
-    } 
     
+    window.videoUploader;
+    window.attachmentUploader;
+    //加载文件上传  
+    window.onloadUploader = function () {
+        require(['euploader'], function (euploader) {
+            //公共配置
+            var config = {
+                swf: "$swfpath" + "/Uploader.swf",
+                // 文件接收服务端。
+                server: '/webuploader/default/upload',
+                //检查文件是否存在
+                checkFile: '/webuploader/default/check-file',
+                //分片合并
+                mergeChunks: '/webuploader/default/merge-chunks',
+                //自动上传
+                auto: false,
+                formData: {
+                    _csrf: "$csrfToken",
+                    //指定文件上传到的应用
+                    app_id: "$app_id",
+                    //同时创建缩略图
+                    makeThumb: 1
+                }
+
+            };
+            //视频配置
+            var config1 = $.extend({
+                name: 'Video[source_id]',
+                // 上传容器
+                container: '#video-container',
+                //验证文件总数量, 超出则不允许加入队列
+                fileNumLimit: 1,
+                //指定选择文件的按钮容器
+                pick: {
+                    id:  '#video .euploader-btns > div',
+                    multiple: false,
+                },
+                //指定接受哪些类型的文件
+                accept: {
+                    extensions: 'mp4',
+                },
+            }, config);
+            //视频
+            window.videoUploader = new euploader.Uploader(config1, euploader.FilelistView/*euploader.TileView*/);
+            //附件配置
+            var config2 = $.extend({
+                // 上传容器
+                container: '#attachment-container',
+                //指定选择文件的按钮容器
+                pick: {
+                    id:  '#attachment .euploader-btns > div',
+                },
+            }, config);
+            //附件
+            window.attachmentUploader = new euploader.Uploader(config2, euploader.FilelistView);
+
+            window.videoUploader.addCompleteFiles($videoFile);
+            if($model->is_ref){
+                videoUploader.setEnabled(false);
+            }
+            window.attachmentUploader.addCompleteFiles($attFiles);
+        });
+    }
     /**
-     * 侦听模态框关闭事件，销毁 uploader 实例
-     *
-     */
+    * 上传文件完成才可以提交
+    * @returns {Wskeee.Uploader.isFinish}
+    */
+    function tijiao() {
+       //uploader,isFinish() 是否已经完成所有上传
+       return window.videoUploader.isFinish();
+    }
+    /**
+    * 侦听模态框关闭事件，销毁 uploader 实例
+    *
+    */
     $('.myModal').on('hidden.bs.modal',function(){
         $('.myModal').off('hidden.bs.modal');
-        window.video.destroy();
-        window.attachment.destroy();
-    });
+        window.videoUploader.destroy();
+        window.attachmentUploader.destroy();
+    });    
+        
     //主讲老师下拉选择赋值
     $('#video-teacher_id').change(function(){
         $('#video-teacher_id-hidden').val($(this).val());
@@ -187,16 +177,16 @@ $js =
         //var selectValue = elem.find('option:selected').val();
         $.post("../default/cite-video?id=" + elem.val(), function(rel){
             if(rel['code'] == '200'){
-                window.video.clearAll();
-                window.attachment.clearAll();
+                window.videoUploader.clearAll();
+                window.attachmentUploader.clearAll();
                 $('#video-name').val(rel['data']['video']['name']);
                 $('#video-teacher_id').val(rel['data']['video']['teacher_id']).attr('disabled', 'disabled');
                 $('#video-teacher_id-hidden').val(rel['data']['video']['teacher_id']);
                 $('#video-teacher_id-add').remove();
                 $('#video-des').val(rel['data']['video']['des']);
-                window.video.addCompleteFiles(rel['data']['source']);
-                window.video.setEnabled(false);
-                window.attachment.addCompleteFiles(rel['data']['atts']);
+                window.videoUploader.addCompleteFiles(rel['data']['source']);
+                window.videoUploader.setEnabled(false);
+                window.attachmentUploader.addCompleteFiles(rel['data']['atts']);
             }else{
                 alert(rel['message']);
             }

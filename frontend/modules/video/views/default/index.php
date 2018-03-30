@@ -122,7 +122,7 @@ $this->title = Yii::t('app', 'Video');
                     <div class="name">课程：<span><?= $model['courseNode']['course']['name'] ?></span></div>
                     <div class="tuip">名称：<span><?= $model['name'] ?></span></div>
                     <div class="tuip">主讲：<span><?= $model['teacher']['name'] ?></span>
-                        <?= Html::a('<i class="fa fa-play-circle"></i>', 'javascript:;', ['class' => 'play']) ?>
+                        <?= Html::a('<i class="fa fa-play-circle"></i>', ['/study_center/default/play', 'id' => $model['id']], ['class' => 'play']) ?>
                     </div>
                 </div>
             </div>

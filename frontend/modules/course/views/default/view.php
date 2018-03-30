@@ -95,7 +95,7 @@ $this->title = Yii::t('app', 'Course');
                                 <?php foreach($nodes->videos as $video): ?>
                                 <li>
                                     <div class="head nodes">
-                                        <?= Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", 'javascript:;') ?>
+                                        <?= Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['/study_center/default/play', 'id' => $model->id]) ?>
                                     </div>
                                 </li>
                                 <?php endforeach; ?>

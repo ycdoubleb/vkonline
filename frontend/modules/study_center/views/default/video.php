@@ -15,7 +15,7 @@ ModuleAssets::register($this);
 
 ?>
 
-<div class="study_center-default-course main">
+<div class="study_center-default-video main">
     
     <?php $form = ActiveForm::begin(['id' => 'study-center-form', 'method' => 'get']); ?>
     
@@ -57,7 +57,7 @@ ModuleAssets::register($this);
                 <div class="name">课程：<span><?= $model['course']['name'] ?></span></div>
                 <div class="tuip">名称：<span><?= $model['video']['name'] ?></span></div>
                 <div class="tuip">主讲：<span><?= $model['video']['teacher']['name'] ?></span>
-                    <?= Html::a('<i class="fa fa-play-circle"></i>', 'javascript:;', ['class' => 'play']) ?>
+                    <?= Html::a('<i class="fa fa-play-circle"></i>', ['play', 'id' => $model['video_id']], ['class' => 'play']) ?>
                 </div>
             </div>
         </div>

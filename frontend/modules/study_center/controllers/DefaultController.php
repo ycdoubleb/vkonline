@@ -4,6 +4,7 @@ namespace frontend\modules\study_center\controllers;
 
 use common\models\vk\searchs\CourseFavoriteSearch;
 use common\models\vk\searchs\VideoFavoriteSearch;
+use common\models\vk\searchs\VideoProgressSearch;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\web\Controller;
@@ -60,5 +61,30 @@ class DefaultController extends Controller
             'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
         ]);
+    }
+    
+    /**
+     * Renders the index view for the module
+     * @return string
+     */
+    public function actionHistory()
+    {
+        $searchModel = new VideoProgressSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        return $this->render('history', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    /**
+     * Renders the index view for the module
+     * @return string
+     */
+    public function actionPlay()
+    {
+        $this->layout = '@app/views/layouts/main';
+        return $this->render('play');
     }
 }
