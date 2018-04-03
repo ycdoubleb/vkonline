@@ -48,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'model' => $searchModel,
                         'attribute' => 'customer_id',
                         'data' => $customer,
-                        'hideSearch' => true,
+                        'hideSearch' => false,
                         'options' => ['placeholder' => Yii::t('app', 'All')],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -200,6 +200,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'allowClear' => true,
                         ],
                     ]),
+                    'value' => function ($data) {
+                        return !empty($data->created_by) ? $data->created_by : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',

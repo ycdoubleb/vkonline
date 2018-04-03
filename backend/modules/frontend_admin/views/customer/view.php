@@ -33,8 +33,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a(Yii::t('app', 'Courses'), ['/frontend_admin/course/index', ['customer_id' => $model->id]], ['class' => 'btn btn-default']) ?>
-        <?= Html::a(Yii::t('app', 'Users'), ['/frontend_admin/user/index', ['customer_id' => $model->id]], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Courses'), ["/frontend_admin/course?CourseSearch%5Bcustomer_id%5D=$model->id"], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Users'), ["/frontend_admin/user?UserSearch%5Bcustomer_id%5D=$model->id"], ['class' => 'btn btn-default']) ?>
     </p>
     <div class="frame">
         <!--左侧-基本信息-->

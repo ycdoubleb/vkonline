@@ -151,10 +151,10 @@ class BannerController extends BaseController
     {
         $theCustomer = (new Query())
                 ->select(['Customer.id', 'Customer.name'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
+                ->from(['Banner' => Banner::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id')
                 ->all();
-
+        
         return ArrayHelper::map($theCustomer, 'id', 'name');
     }
     

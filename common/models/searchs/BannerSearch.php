@@ -4,6 +4,7 @@ namespace common\models\searchs;
 
 use common\models\AdminUser;
 use common\models\Banner;
+use common\models\User;
 use common\models\vk\Customer;
 use Yii;
 use yii\base\Model;
@@ -49,7 +50,7 @@ class BannerSearch extends Banner
         $query = Banner::find()
                 ->select(['Banner.id', 'Customer.name AS customer_id', 'Banner.title', 'Banner.path', 'Banner.link',
                     'Banner.target', 'Banner.sort_order', 'Banner.type', 'Banner.is_publish',
-                    'AdminUser.nickname AS created_by', 'Banner.created_at'])
+                    'IF(User.nickname IS NULL,  AdminUser.nickname, User.nickname) AS created_by', 'Banner.created_at'])
                 ->from(['Banner' => Banner::tableName()]);
 
         // add conditions that should always apply here
@@ -60,7 +61,8 @@ class BannerSearch extends Banner
         ]);
 
         $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id');//关联查询所属客户
-        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by');//关联查询创建人
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Banner.created_by');//关联查询创建人
+        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by');//关联查询创建人(非客户)
         
         $this->load($params);
 
@@ -69,10 +71,10 @@ class BannerSearch extends Banner
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        
         //模块id为管理中心的情况下
         if($moduleId == 'admin_center'){
-            $query->andFilterWhere(['customer_id' => $customerId]);
+            $query->andFilterWhere(['Banner.customer_id' => $customerId]);
         }
         
         // grid filtering conditions

@@ -27,5 +27,9 @@ return [
         'admin_center' => [
             'class' => 'frontend\modules\admin_center\Module',
         ],
+        //帮助中心
+        'help_center' => [
+            'class' => 'frontend\modules\help_center\Module',
+        ],
     ],
 ];

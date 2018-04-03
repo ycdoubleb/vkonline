@@ -1,0 +1,269 @@
+/* 
+    模块的样式
+    例如：.default-index .样式名 {
+            样式...
+        }
+*/
+/****************** default--->index----样式 ******************/
+.help-index{
+    text-align: center;
+    color: #999999;
+    padding-top: 160px
+}
+
+.skin-blue .logo {
+    margin-top: -8px;
+}
+
+.skin-blue .main-sidebar{
+    position: fixed;
+}
+
+/****************** default--->view----样式 ******************/
+.post-view{
+    padding-top: 70px;
+}
+
+.post-view .post-header{
+    border-bottom: 1px #999999 solid;
+}
+
+/***更改bootstrap下btn的样式***/
+.post-view .btn{
+    padding: 0px;
+    vertical-align: unset;
+}
+
+.post-view .post-header .post-title, .post-caozuo{
+    margin-top: 5px;
+    display: inline-block
+}
+
+.post-view .post-header .post-title{
+    min-width: 200px;
+}
+
+.post-view .post-header .post-caozuo{
+    float: right;
+}
+
+.post-view .post-header .post-caozuo .caozuo{
+    margin-top: 16px;
+    margin-bottom: 4px;
+}
+
+#thumbs-up{
+    display: inline-block
+}
+
+#thumbs-down{
+    display: inline-block
+}
+
+.post-view .caozuo .fa{
+    font-size: 16px;
+    color: #9d9d9d;
+    vertical-align: middle;
+    margin-top: -5px;
+}
+
+.fa.fa-thumbs-up, .fa.fa-thumbs-down{
+    color: #337ab7;
+}
+
+.post-view .font{
+    font-size: 14px;
+    color: #000;
+}
+
+.post-view .thumbs-up{
+    margin-left: 25px;
+    display: inline-block;
+}
+
+.post-view .thumbs-down{
+    margin-left: 25px;
+    display: inline-block;
+}
+
+.post-view .post-content{
+    padding: 10px 60px 0px 60px;
+    margin-bottom: 10px;
+    min-height: 520px;
+}
+
+.post-view .post-content .post-title{
+    font-size: 16pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0px 20px 0px;
+}
+
+.post-view .updated_at{
+    width: 100%;
+    height: 30px;
+    margin-bottom: 10px;
+    color: #999999;
+    border-bottom: 1px #999999 solid;
+}
+
+.post-view .updated_at .time{
+    float: right;
+}
+
+.post-view .page{
+    width: 100%;
+    height: 22px;
+    margin-bottom: 30px;
+}
+
+.post-view .page-left{
+    float: left;
+}
+
+.post-view .page-right{
+    float: right;
+}
+
+.post-content img {
+    border: 1px solid #c5bebe;
+}
+
+/********* default-view-评论模块 样式 ***********/
+.default-view .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.default-view
+.frame-title {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    color: #ffffff;
+    line-height: 20px;
+    background-color: rgba(153, 153, 153, 1);
+}
+.default-view
+.frame-title .icon {
+    float: left; 
+    margin-top: 3px;
+    margin-right: 5px;
+}
+
+.default-view
+.frame-title>span {
+    display: block;
+    float: left;
+}
+
+.default-view
+.frame-table {
+    margin-bottom: 20px;
+    padding-right: 0;
+    padding-left: 0;
+    border: 1px #ddd solid;
+}
+
+.default-view .message {
+    height: 470px;
+    border: 1px #cccccc solid;
+}
+
+.default-view .meslist {
+    width: 100%;
+    height: 388px;
+    padding-left: 75px;
+    padding-right: 15px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.default-view
+.time-vertical {
+    list-style-type: none;
+    border-left: 1px solid #eee;
+    padding: 0px;
+    margin-bottom: 0;
+}
+
+.default-view
+.time-vertical li {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.default-view
+.time-vertical li b:before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #cccccc;
+    border-radius: 10px;
+    background: #cccccc;
+}
+ 
+.default-view
+.time-vertical li .img-circle {
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 5px;
+    left: -65px;
+    background-color: #ccc;
+}
+
+.default-view
+.time-vertical li .mes-frame {
+    display: inline-block;
+    margin-left: 20px;
+    padding: 10px;
+    color: #666666;
+    border-radius: 6px;
+    background-color: #ededed;
+}
+
+.default-view
+.time-vertical li .username {
+    color: #cccccc;
+}
+
+.default-view
+.time-vertical li .time {
+    color: #999999;
+}
+
+.default-view .mesform {
+    height: 80px;
+    padding: 10px;
+    position: relative;
+    background-color: #ddd;
+}
+
+.default-view .mesinput {
+   padding: 0;
+}
+
+.default-view
+.mesinput textarea {
+   width: 100%;
+   height: 60px;
+   padding: 10px;
+}
+
+.default-view .mesbtn {
+   padding-right: 0;
+   padding-left: 10px;
+}
+
+.default-view .mesbtn>a {
+   width: 100%;
+   height: 60px;
+   padding-top: 20px;
+   padding-bottom: 20px;
+}
+

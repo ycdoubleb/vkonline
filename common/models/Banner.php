@@ -93,6 +93,7 @@ class Banner extends ActiveRecord
     public function rules()
     {
         return [
+            [['type', 'target'], 'required'],
             [['created_at', 'updated_at', 'type', 'is_publish', 'sort_order'], 'integer'],
             [['customer_id', 'created_by'], 'string', 'max' => 32],
             [['title'], 'string', 'max' => 50],
@@ -139,6 +140,15 @@ class Banner extends ActiveRecord
     public function getAdminUser()
     {
         return $this->hasOne(AdminUser::class, ['id' => 'created_by']);
+    }
+    
+    /**
+     * 关联获取创建者(属于客户的)
+     * @return ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
     
     /**
