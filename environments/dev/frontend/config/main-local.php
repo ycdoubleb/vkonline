@@ -32,6 +32,10 @@ $config = [
         'user' => [
             'class' => 'frontend\modules\user\Module',
         ],
+        //帮助中心
+        'help_center' => [
+            'class' => 'frontend\modules\help_center\Module',
+        ],
     ],
 ];
 

@@ -23,23 +23,18 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="customer-view">
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(($model->good_id != null) ? Yii::t('app', 'Renew') : Yii::t('app', 'Opening'), 
+        <?= ($model->status == Customer::STATUS_STOP) ?  Html::a(Yii::t('app', 'Enable'), ['renew', 'id' => $model->id], ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) :
+            Html::a(($model->good_id != null) ? Yii::t('app', 'Renew') : Yii::t('app', 'Opening'), 
                 ['renew', 'id' => $model->id], ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
-        <?= ($model->status == Customer::STATUS_STOP) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
-            'class' => 'btn btn-info',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to enable this customer?'),
-                'method' => 'post',
-            ],
-        ]) : Html::a(Yii::t('app', 'Disable'), ['delete', 'id' => $model->id], [
+        <?= ($model->status == Customer::STATUS_STOP) ? '' : Html::a(Yii::t('app', 'Disable'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to disable this customer?'),
                 'method' => 'post',
             ],
         ]) ?>
-        <?= Html::a(Yii::t('app', 'Courses'), ['/frontend_admin/course/index', ['customer_id' => $model->id]], ['class' => 'btn btn-default']) ?>
-        <?= Html::a(Yii::t('app', 'Users'), ['/frontend_admin/user/index', ['customer_id' => $model->id]], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Courses'), ["/frontend_admin/course?CourseSearch%5Bcustomer_id%5D=$model->id"], ['class' => 'btn btn-default']) ?>
+        <?= Html::a(Yii::t('app', 'Users'), ["/frontend_admin/user?UserSearch%5Bcustomer_id%5D=$model->id"], ['class' => 'btn btn-default']) ?>
     </p>
     <div class="frame">
         <!--左侧-基本信息-->
