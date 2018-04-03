@@ -264,3 +264,364 @@
     font-size: 14px;
     background-color: #fff;
 }
+
+/***************************************内容****************************************/
+.content.center .main {
+    width: 1200px;
+    padding-left: 0;
+}
+
+.main .video {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+}
+
+.video .title {
+    padding: 10px 15px;
+    background-color: #f2f2f2;
+}
+
+.video .title > span,
+.video .title > a {
+    color: #999;
+}
+
+.video .title > span > i,
+.video .title > a > i {
+    float: left;
+    margin-right: 5px;
+    font-size: 20px;
+}
+
+.video .title > a.right {
+    float: right;
+}
+
+.video .player {
+    position: relative;
+    display: inline-block;
+    float: left;
+    width: 945px;
+    height: 500px;
+    background-color: #000;
+}
+
+/**************************************目录*****************************************/
+.video .catalog {
+    position: absolute;
+    right: 0px;
+    display: inline-block;
+    float: right;
+    width: 255px;
+    height: 500px;
+    overflow-y: auto;
+    background-color: #2c2e30;
+}
+
+.main .sortable {
+    padding:0;
+    margin: 0;
+}
+
+.sortable li {
+    list-style: none outside none;
+    cursor: normal;
+}
+
+.sortable .head {
+    position: relative;
+    padding: 10px;
+    margin: 0;
+    font-size: 14px;
+    border-bottom: 1px #ccc solid;
+    background-color: #3f4345;
+}
+
+.sortable .foot {
+    background-color: #2c2e30;
+}
+
+.sortable .head.remove,
+.sortable .foot.remove {
+    border-bottom: none;
+}
+
+.sortable .nodes {
+    padding: 10px 10px 10px 35px;
+    border-bottom: 1px #cccccc80 dashed;
+    background-color: #2c2e30;
+}
+
+.sortable .head > a {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 20px;
+    text-align: left;
+    text-decoration: none;
+}
+
+.sortable .head > a > i{
+    float: left;
+    margin-right: 5px;
+    font-size: 20px;
+}
+
+.sortable .head .number {
+   color: #ccc;
+}
+
+.sortable .nodes > a >  i {
+    display: none;
+    float: right;
+    color: #4bd127;
+}
+
+.sortable .nodes.active,
+.sortable .nodes:hover {
+    background-color: #131316;
+    cursor: pointer;
+}
+
+.sortable .nodes:hover i {
+    display: block;
+}
+
+/*******************播放量、点赞量、收藏**********************/
+.main > .iframe {
+    padding: 0;
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+.main > .iframe > a {
+    text-decoration: none;
+}
+
+.main > .iframe .watch, 
+.main > .iframe .zan,
+.main > .iframe .fave {
+    margin-right: 25px;
+    color: #131316;
+    text-align: left;
+}
+
+.main > .iframe .fave .favenum {
+    font-size: 13px;
+    color: #ccc;
+}
+
+.main > .iframe .watch > i,
+.main > .iframe .zan > i,
+.main > .iframe .fave > i {
+    margin-left: 10px; 
+}
+
+.main > .iframe .fave.right {
+    float: right;
+    margin-right: 0;
+}
+
+.main > .iframe .fave.right > i {
+    margin-right: 10px; 
+}
+
+/*******************标签页*********************/
+.main .tabs {
+    display: inline-block;
+    width: 860px;
+    padding: 10px;
+    margin-top: 40px;
+    background-color: #f2f2f2;
+}
+
+.main .tabs > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.main .tabs > ul > li {
+    float: left;
+    height: 40px;
+    padding: 10px 7px;
+    margin: -10px 5px;
+}
+
+.main .tabs > ul > li > a {
+    display: block;
+    padding: 0 7px;
+    margin: -10px -7px;
+    color: #999;
+    line-height: 40px;
+    text-decoration: none;
+}
+
+.main .tabs > ul > li.active,
+.main .tabs > ul > li:hover {
+    border-bottom: 2px #337ab7 solid;
+    /*cursor: pointer;*/
+}
+
+.main .tabs > ul > li.active > a,
+.main .tabs > ul > li:hover > a {
+    color: #337ab7;
+}
+.main .tab-content {
+    display: inline-block;
+    width: 860px;
+}
+
+.main .tab-content .target {
+    padding: 0 15px;
+    color: #999;
+    text-indent: 30px;
+}
+
+/********************留言*****************************/
+.main .frame {
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block
+}
+
+.frame .table {
+    padding: 0;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.frame .msglist {
+    width: 100%;
+    min-height: 388px;
+    padding-left: 75px;
+    padding-right: 15px;
+    position: relative;
+    overflow-y: auto;
+}
+
+.frame .time-vertical {
+    list-style-type: none;
+    border-left: 1px solid #eee;
+    padding: 0px;
+    margin-bottom: 0;
+}
+
+.frame .time-vertical li {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.frame .time-vertical li b:before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -5px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #cccccc;
+    border-radius: 10px;
+    background: #cccccc;
+}
+ 
+.frame .time-vertical li .img-circle {
+    width: 45px;
+    height: 45px;
+    position: absolute;
+    top: 5px;
+    left: -65px;
+    background-color: #ccc;
+}
+
+.frame .time-vertical li .arrow {
+    position: absolute;
+    top: 25px;
+    left: 10px;
+    width: 10px;
+    height: 10px;
+    margin-top: -10px;
+    border-width: 10px 10px 10px 0;
+    border-color: #ededed;
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-style: solid;
+}
+
+.frame .time-vertical li .msg-frame {
+    display: inline-block;
+    width: 755px;
+    margin-left: 20px;
+    padding: 10px;
+    color: #666;
+    background-color: #ededed;
+}
+
+.frame .time-vertical li .username {
+    color: #333;
+}
+
+.frame .time-vertical li .time {
+    margin-left: 5px;
+    color: #9d9b9b;
+}
+
+.frame .msgform {
+    height: 80px;
+    padding: 10px;
+    position: relative;
+    background-color: #ddd;
+}
+
+.frame .msginput {
+   padding: 0;
+}
+
+.frame .msginput textarea {
+   width: 100%;
+   height: 60px;
+   padding: 10px;
+}
+
+.frame .msgbtn {
+   padding-right: 0;
+   padding-left: 10px;
+}
+
+.frame .msgbtn > a {
+   width: 100%;
+   height: 60px;
+   padding-top: 20px;
+   padding-bottom: 20px;
+}
+
+/********************侧栏*****************************/
+.main .sidebars {
+    display: inline-block;
+    float: right;
+    width: 310px;
+    margin-top: -45px;
+    margin-left: 30px;
+}
+
+.main .sidebars > h2 {
+    margin: 0 0 30px;
+}
+
+.main .sidebars .teacher {
+    text-align: center;
+}
+
+.main .sidebars .teacher > p {
+    margin: 15px 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.main .sidebars .teacher .des {
+    color: #666;
+    text-align: left;
+}

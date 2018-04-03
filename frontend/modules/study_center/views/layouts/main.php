@@ -24,13 +24,13 @@ $actionId = Yii::$app->controller->action->id;  //当前actionID
 $menuItems = [
     [
         'label' => '我关注的课程',
-        'url' => ['favorite'],
+        'url' => ['my-favorite'],
         'icons' => '<i class="fa fa-star"></i>', 
         'options' => ['class' => 'links']
     ],
     [
         'label' => '我收藏的视频',
-        'url' => ['collect'],
+        'url' => ['my-collect'],
         'icons' => '<i class="fa fa-heart"></i>', 
         'options' => ['class' => 'links']
     ],

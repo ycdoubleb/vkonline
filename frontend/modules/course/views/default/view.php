@@ -32,18 +32,18 @@ $this->title = Yii::t('app', 'Course');
     <div class="content center">
         <div class="course">
             <h2><?= $model->name ?></h2>
-            <p>环节数：<span><?= $video['node_num'] ?>&nbsp;节</span></p>
+            <p>环节数：<span><?= $videoNum['node_num'] ?>&nbsp;节</span></p>
         </div>
-        <div class="follow">
-            <div class="follow-btns"></div>
+        <div class="share">
+            <div class="share-btns"></div>
         </div>
-        <p>
+        <div class="iframe">
             <?php
                 if($favorite->isNewRecord){
-                    echo Html::a("<span class=\"star\">{$model->favorite_count}<i class=\"fa fa-star-o\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'false']);
+                    echo Html::a("<span class=\"fave\">{$model->favorite_count}<i class=\"fa fa-star-o\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'false']);
                 }else{
-                    echo Html::a("<span class=\"star\">{$model->favorite_count}<i class=\"fa fa-star\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'true']);
-                    echo '<span class="star right"><i class="fa fa-star"></i>已关注</span>';
+                    echo Html::a("<span class=\"fave\">{$model->favorite_count}<i class=\"fa fa-star\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'true']);
+                    echo '<span class="fave right"><i class="fa fa-star"></i>已关注</span>';
                 }
                 if($praise->isNewRecord){
                     echo Html::a("<span class=\"zan\">{$model->zan_count}<i class=\"fa fa-thumbs-o-up\"></i></span>", ['praise', 'id' => $model->id], ['id' => 'praise', 'data-toggled' => 'false']);
@@ -51,7 +51,7 @@ $this->title = Yii::t('app', 'Course');
                     echo Html::a("<span class=\"zan\">{$model->zan_count}<i class=\"fa fa-thumbs-up\"></i></span>", ['praise', 'id' => $model->id], ['id' => 'praise', 'data-toggled' => 'true']);
                 }
             ?>
-        </p>
+        </div>
     </div>
 </header>
 
@@ -73,8 +73,8 @@ $this->title = Yii::t('app', 'Course');
         <div class="tab-content">
             <div id="catalog" class="tab-pane fade active in"  role="tabpanel" aria-labelledby="catalog-tab">
                 <ul class="sortable list">
-                    <?php $endNodes = end($dataProvider); ?>
-                    <?php foreach($dataProvider as $index => $nodes): ?>
+                    <?php $endNodes = end($courseNodes); ?>
+                    <?php foreach($courseNodes as $index => $nodes): ?>
                     <li id="<?= $nodes->id ?>">
                         <div class="head <?= $nodes->id == $endNodes->id ? 'remove' : ''?>">
                             <?php  
@@ -95,7 +95,7 @@ $this->title = Yii::t('app', 'Course');
                                 <?php foreach($nodes->videos as $video): ?>
                                 <li>
                                     <div class="head nodes">
-                                        <?= Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['/study_center/default/play', 'id' => $model->id]) ?>
+                                        <?= Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['/study_center/default/play', 'id' => $video->id]) ?>
                                     </div>
                                 </li>
                                 <?php endforeach; ?>
@@ -109,7 +109,7 @@ $this->title = Yii::t('app', 'Course');
                 <div class="col-xs-12 frame">
                     <div class="col-xs-12 table">
                         <div id="msg_list" class="msglist">
-                            <?= $this->render('message', ['dataProvider' => $msgProvider]) ?>
+                            <?= $this->render('message', ['dataProvider' => $msgDataProvider]) ?>
                         </div>
                         <div class="msgform">
                             <div class="col-xs-11 msginput">
@@ -166,11 +166,11 @@ $js =
         $.get($(this).attr('href'), function(rel){
             if(rel['code'] == '200'){
                 if(elem.attr('data-toggled') == 'false'){
-                    elem.find('span.star').html(rel['data'] + '<i class="fa fa-star"></i>');
+                    elem.find('span.fave').html(rel['data'] + '<i class="fa fa-star"></i>');
                     elem.attr('data-toggled', true);
-                    elem.parent('p').append('<span class="star right"><i class="fa fa-star"></i>已关注</span>');
+                    elem.parent('.iframe').append('<span class="fave right"><i class="fa fa-star"></i>已关注</span>');
                 }else{
-                    elem.find('span.star').html(rel['data'] + '<i class="fa fa-star-o"></i>');
+                    elem.find('span.fave').html(rel['data'] + '<i class="fa fa-star-o"></i>');
                     elem.attr('data-toggled', false);
                     elem.siblings('span').remove();
                 }

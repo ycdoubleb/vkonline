@@ -20,7 +20,7 @@
 }
 
 .header .course,
-.header .follow {
+.header .share {
     display: inline-block;
     padding: 0 15px;
     margin-top: 30px;
@@ -28,43 +28,43 @@
     color: #fff;
 }
 
-.header .follow {
+.header .share {
     float: right;
     height: 105px;
 }
 
-.header.filling .content > p {
+.header.filling .content > .iframe {
     padding: 0px 30px;
     margin-top: 75px;
     font-size: 16px;
 }
 
-.header.filling .content > p > a {
+.header.filling .content > .iframe  > a {
     text-decoration: none;
 }
 
-.header.filling .content > p .star, 
-.header.filling .content > p .zan {
+.header.filling .content > .iframe  .fave, 
+.header.filling .content > .iframe  .zan {
     margin-right: 25px;
     color: #ccc;
     text-align: left;
 }
 
-.header.filling .content > p .star > i,
-.header.filling .content > p .zan > i  {
+.header.filling .content > .iframe  .fave > i,
+.header.filling .content > .iframe  .zan > i  {
     margin-left: 10px; 
 }
 
-.header.filling .content > p .star.right {
+.header.filling .content > .iframe .fave.right {
     float: right;
 }
 
-.header.filling .content > p .star.right > i {
+.header.filling .content > .iframe .fave.right > i {
     margin-right: 10px; 
 }
 
 .header .course > h2,
-.header .follow .follow-btns {
+.header .share .share-btns {
     margin: 25px 15px;
 }
 
