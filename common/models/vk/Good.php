@@ -20,6 +20,17 @@ use yii\db\ActiveRecord;
  */
 class Good extends ActiveRecord
 {
+    /** 套餐类型-容量套餐 */
+    const SIZE_TYPE = 1;
+    
+    /**
+     * 套餐类型
+     * @var array 
+     */
+    public static $sizeType = [
+        self::SIZE_TYPE => '容量套餐',
+    ];
+    
     /**
      * @inheritdoc
      */
@@ -27,10 +38,10 @@ class Good extends ActiveRecord
     {
         return '{{%good}}';
     }
-    
+
     /**
      * @inheritdoc
-     */
+     */    
     public function behaviors() 
     {
         return [
@@ -44,7 +55,6 @@ class Good extends ActiveRecord
     public function rules()
     {
         return [
-            [['data'], 'float'],
             [['price', 'created_at', 'updated_at'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['type'], 'string', 'max' => 1],

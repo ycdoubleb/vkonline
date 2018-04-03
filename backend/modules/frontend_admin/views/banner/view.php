@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
-                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path ,['width' => '680px']) : 
+                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path ,['max-width' => '680px']) : 
                         '<video src="'.WEB_ROOT . $model->path.'" controls="controls"></video>',
                 ],
                 'link',
@@ -81,7 +81,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'format' => 'raw',
                     'value' => !empty($model->customer_id) ? $model->user->nickname : $model->adminUser->nickname,
                 ],
-                'des',
+                'des:ntext',
                 'created_at:datetime',
                 'updated_at:datetime',
             ],
