@@ -49,6 +49,7 @@ use yii\web\UploadedFile;
  * @property User $teacher 获取老师
  * @property Video $reference 获取引用视频
  * @property Uploadfile $source 获取源视频
+ * @property VideoProgress $progress 获取视频播放进度
  */
 class Video extends ActiveRecord
 {
@@ -256,6 +257,14 @@ class Video extends ActiveRecord
     public function getSource()
     {
         return $this->hasOne(Uploadfile::class, ['id' => 'source_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getProgress()
+    {
+        return $this->hasOne(VideoProgress::class, ['video_id' => 'id']);
     }
         
     /**

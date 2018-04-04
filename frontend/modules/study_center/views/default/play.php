@@ -32,11 +32,13 @@ ModuleAssets::register($this);
         
         <div class="video">
             <div class="title">
-                <span><i class="fa fa-play-circle"></i><?= $model->name ?></span>
+                <span><i class="fa fa-video-camera"></i><?= $model->name ?></span>
                 <?= Html::a('<i class="fa fa-bars"></i>', 'javascript:;', ['id' => 'bars', 'class' => 'right']) ?>
             </div>
             <div class="player">
-                <video id="myVideo" src="/<?= $model->source->path ?>" width="100%" height="500" poster="<?= '/' . $model->img ?>"></video>
+                <!--<i class="fa fa-pause-circle-o"></i>-->
+                <?= Html::a('<i class="fa fa-play-circle-o"></i>', 'javascript:;') ?>
+                <video id="myVideo" src="/<?= $model->source->path ?>" width="100%" height="500"></video>
             </div>
             <div class="catalog">
                 <ul class="sortable list">
@@ -145,27 +147,47 @@ ModuleAssets::register($this);
 $msgType = CourseMessage::VIDEO_TYPE;
 $js = 
 <<<JS
-        
-    saveVideoProgress();
-    function saveVideoProgress(){
-        setTimeout(function () {
-            var video = document.getElementById('myVideo');
-            console.log(video.currentTime.toFixed(0));
-            saveVideoProgress();
+    var myVideo = document.getElementById('myVideo');
+    var timeOut;
+    myVideo.currentTime = {$model->progress->last_time};
+    window.saveProgress = function(){
+        timeOut = setTimeout(function () {
+            $.post("../default/save-progress",{'course_id': "{$model->courseNode->course_id}",
+                'video_id': "{$model->id}",'last_time': myVideo.currentTime.toFixed(0),
+            })
+            saveProgress();
         }, 1000);
     }
+    
+    myVideo.onclick = function(){
+        if(myVideo.paused){
+            myVideo.play();
+            //myVideo.previousElementSibling.innerHTML = '<i class="fa fa-play-circle-o"></i>';
+            myVideo.previousElementSibling.style.cssText = "display: none";
+            saveProgress();
+        }else{
+            myVideo.pause();
+            clearTimeout(timeOut);
+            myVideo.previousElementSibling.innerHTML = '<i class="fa fa-pause-circle-o"></i>';
+            myVideo.previousElementSibling.style.cssText = "display: block";
+        }
+    };
+        
         
     //显示和隐藏目录 
     $("#bars").click(function(){
         if($(".catalog").css("right") == "0px"){
             $(".catalog").animate({right: "-255px"}, 500, 'linear');
             $(".player").animate({width: "100%"}, 500, 'linear');
+            //填充父级div的高宽大小，也就是铺满整个div
+            $("#myVideo").css({"object-fit": "fill"});
         }else{
-            $(".player").animate({width: "945px"}, 500, 'linear');
+            $(".player").animate({width: "945px"}, 500, 'linear', function(){
+                $("#myVideo").css({"object-fit": "contain"});
+            });
             $(".catalog").animate({right: 0}, 500, 'linear');
         }
     });    
-        
     //替换图标
     window.replace = function (elem){
         if(elem.attr('aria-expanded') == 'true'){
@@ -174,7 +196,7 @@ $js =
             elem.children('i').removeClass('fa-plus-square').addClass('fa-minus-square');
         }
     }
-    //点击关注
+    //点击收藏
     $('#collect').click(function(e){
         e.preventDefault();
         var elem = $(this);

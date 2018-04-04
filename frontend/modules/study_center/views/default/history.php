@@ -25,18 +25,18 @@ ModuleAssets::register($this);
         'columns' => [
             //['class' => 'yii\grid\SerialColumn'],
             [
-                'attribute' => 'video_id',
+                'attribute' => 'course_id',
                 'format' => 'raw',
                 'value'=> function($model){
                     /* @var $model VideoProgress */;
-                    return $model->course->name.$model->video->courseNode->name;
+                    return !empty($model->course_id) ? $model->course->name : null;
                 },
                 'headerOptions' => [
                     'class'=>[
                         'th' => 'hidden-lg hidden-md hidden-sm hidden-xs',
                     ],
                     'style' => [
-                        'width' => '250px',
+                        'width' => '90px',
                     ],
                 ],
                 'contentOptions' =>[
@@ -44,7 +44,31 @@ ModuleAssets::register($this);
                         'td' => 'td-table'
                     ],
                     'style' => [
-                        'width' => '250px',
+                        'width' => '90px',
+                    ],
+                ],
+            ],
+            [
+                'attribute' => 'video_id',
+                'format' => 'raw',
+                'value'=> function($model){
+                    /* @var $model VideoProgress */;
+                    return !empty($model->video_id) ? $model->video->name : null;
+                },
+                'headerOptions' => [
+                    'class'=>[
+                        'th' => 'hidden-lg hidden-md hidden-sm hidden-xs',
+                    ],
+                    'style' => [
+                        'width' => '300px',
+                    ],
+                ],
+                'contentOptions' =>[
+                    'class' => [
+                        'td' => 'td-table'
+                    ],
+                    'style' => [
+                        'width' => '300px',
                     ],
                 ],
             ],
@@ -53,7 +77,7 @@ ModuleAssets::register($this);
                 'format' => 'raw',
                 'value'=> function($model){
                     /* @var $model VideoProgress */
-                    return $model->video->teacher->name;
+                    return !empty($model->video_id) ? $model->video->teacher->name : null;
                 },
                 'headerOptions' => [
                     'class'=>[
@@ -78,7 +102,7 @@ ModuleAssets::register($this);
                 'format' => 'raw',
                 'value'=> function($model){
                     /* @var $model VideoProgress */
-                    return Yii::$app->formatter->asRelativeTime($model->last_time);
+                    return Yii::$app->formatter->asRelativeTime($model->updated_at);
                 },
                 'headerOptions' => [
                     'class'=>[

@@ -4,6 +4,7 @@ namespace frontend\modules\study_center\controllers;
 
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
+use common\models\vk\CourseProgress;
 use common\models\vk\PlayStatistics;
 use common\models\vk\PraiseLog;
 use common\models\vk\searchs\CourseFavoriteSearch;
@@ -12,12 +13,14 @@ use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoProgressSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
+use common\models\vk\VideoProgress;
 use frontend\modules\study_center\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -140,6 +143,33 @@ class DefaultController extends Controller
         ]);
     }
     
+    /**
+     * 
+     */
+    public function actionSaveProgress()
+    {
+        $course_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'course_id');
+        $video_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'video_id');
+        
+        $model = $this->findVideoProgress($course_id, $video_id);
+        $model->last_time = ArrayHelper::getValue(\Yii::$app->request->post(), 'last_time');
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {          
+            if(\Yii::$app->request->isPost && $model->save()){
+                $course = $this->findCourseProgress($course_id);
+                $course->last_video = $video_id;
+                $course->save();
+            }
+            
+            $trans->commit();  //提交事务
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+        }
+    }
+
     /**
      * 点击收藏 
      * @param string $id    //video_id
@@ -268,7 +298,7 @@ class DefaultController extends Controller
      * 根据其主键值找到 Video 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return model Video
+     * @return Video 
      * @throws NotFoundHttpException
      */
     protected function findModel($id)
@@ -282,10 +312,10 @@ class DefaultController extends Controller
     
     /**
      * 基于其course_id、video_id 和 user_id找到 VideoFavorite 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
+     * 如果找不到模型，则返回 new VideoFavorite()
      * @param string $course_id
      * @param string $video_id
-     * @return model CourseFavorite
+     * @return CourseFavorite 
      */
     protected function findFavoriteModel($course_id, $video_id)
     {
@@ -299,10 +329,10 @@ class DefaultController extends Controller
     
     /**
      * 基于其type、course_id、video_id 和 user_id找到 PraiseLog 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
+     * 如果找不到模型，则返回 new PraiseLog()
      * @param string $course_id
      * @param string $video_id
-     * @return model PraiseLog
+     * @return PraiseLog 
      */
     protected function findPraiseModel($course_id, $video_id)
     {
@@ -322,7 +352,7 @@ class DefaultController extends Controller
     
     /**
      * 基于其year、month、course_id 和 video_id找到 PlayStatistics 模型。
-     * 如果当前月存在播放量，则播放量加 1， 否者新建
+     * 如果当前月存在播放量，则播放量加 1， 否则新建
      * @param string $course_id
      * @param string $video_id
      */
@@ -345,6 +375,51 @@ class DefaultController extends Controller
         }
     }
 
+    /**
+     * 基于其course_id、video_id 和 user_id找到 VideoProgress 模型。
+     * 如果找不到模型，则返回 new VideoProgress()
+     * @param string $course_id
+     * @param string $video_id
+     * @return VideoProgress 
+     */
+    protected function findVideoProgress($course_id, $video_id)
+    {
+        $model = VideoProgress::findOne([
+            'course_id' => $course_id, 'video_id' => $video_id,
+            'user_id' => \Yii::$app->user->id
+        ]);
+        
+        if($model !== null){
+            return $model;
+        }else{
+            return new VideoProgress([
+                'course_id' => $course_id, 'video_id' => $video_id,
+                'user_id' => \Yii::$app->user->id
+            ]);
+        }
+    }
+    
+    /**
+     * 基于其course_id 和 user_id找到 CourseProgress 模型。
+     * 如果找不到模型，则返回 new CourseProgress()
+     * @param string $course_id
+     * @return CourseProgress 
+     */
+    protected function findCourseProgress($course_id)
+    {
+        $model = CourseProgress::findOne([
+            'course_id' => $course_id, 'user_id' => \Yii::$app->user->id
+        ]);
+        
+        if($model !== null){
+            return $model;
+        }else{
+            return new CourseProgress([
+                'course_id' => $course_id, 'user_id' => \Yii::$app->user->id
+            ]);
+        }
+    }
+    
     /**
      * 查询所有课程节点
      * @param string $course_id
