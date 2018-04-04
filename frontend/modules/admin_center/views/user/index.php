@@ -36,17 +36,17 @@ $this->title = Yii::t('app', '{User}{List}',[
             'columns' => [
                 [
                     'attribute' => 'username',
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '135px',
                         ],
                     ],
                 ],
                 [
                     'attribute' => 'nickname',
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '105px',
                         ],
                     ],
                 ],
@@ -65,9 +65,9 @@ $this->title = Yii::t('app', '{User}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -90,9 +90,9 @@ $this->title = Yii::t('app', '{User}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -101,34 +101,24 @@ $this->title = Yii::t('app', '{User}{List}',[
                     'label' => Yii::t('app', 'Course'),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
+                            'width' => '105px',
                         ],
                     ],
                     'value' => function($data) {
                         return (isset($data['cour_num']) ? $data['cour_num'] : 0 ). ' 门';
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'attribute' => 'video_num',
                     'label' => Yii::t('app', 'Video'),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
+                            'width' => '105px',
                         ],
                     ],
                     'value' => function($data) {
                         return (isset($data['node_num']) ? $data['node_num'] : 0)  . ' 个';
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'attribute' => 'max_store',
@@ -139,10 +129,9 @@ $this->title = Yii::t('app', '{User}{List}',[
                                 '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
                                     Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px',
-                            'text-align' => 'center',
+                            'width' => '155px',
                         ],
                     ],
                 ],
@@ -152,9 +141,14 @@ $this->title = Yii::t('app', '{User}{List}',[
                     'value' => function ($data){
                         return !empty($data['created_at']) ? date('Y-m-d H:i', $data['created_at']) : null;
                     },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '120px'
+                        ],
+                    ],
                     'contentOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'font-size' => '13px',
                         ],
                     ],
                 ],

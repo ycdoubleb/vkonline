@@ -35,13 +35,15 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         'The' => Yii::t('app', 'The'),
                         'Course' => Yii::t('app', 'Course'),
                     ]),
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '120px'
+                        ],
+                    ],
                     'filter' => Html::input('text', 'VideoSearch[course_name]', 
                             ArrayHelper::getValue($filters, 'VideoSearch.course_name'), ['class' => 'form-control']),
                     'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'white-space' => 'unset',
-                        ],
+                        'class' => 'course-name',
                     ],
                 ],
                 [
@@ -50,11 +52,13 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         'Video' => Yii::t('app', 'Video'),
                         'Name' => Yii::t('app', 'Name'),
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
-                            'white-space' => 'unset',
+                            'width' => '120px'
                         ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
                     ],
                 ],
                 [
@@ -70,9 +74,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px'
                         ],
                     ],
                 ],
@@ -89,9 +93,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px'
                         ],
                     ],
                 ],
@@ -113,10 +117,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                     Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
-                            'width' => '65px'
+                            'width' => '75px'
                         ],
                     ],
                 ],
@@ -138,9 +141,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         return ($data['level'] != null) ?  '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                 Course::$levelMap[$data['level']] . '</span>' : null;
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px'
                         ],
                     ],
                 ],
@@ -152,9 +155,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     'value' => function ($data) {
                         return $data['is_ref'] == 1 ? '<span style="color:red">引用</span>' : '<span style="color:green">原创</span>';
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '40px'
                         ],
                     ],
                 ],
@@ -166,17 +169,12 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '80px',
+                            'width' => '75px',
                         ],
                     ],
                     'value' => function ($data){
                         return Yii::$app->formatter->asShortSize($data['source']['size'], 1);
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'label' => Yii::t('app', '{Attachment}{Size}',[
@@ -185,17 +183,12 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '80px',
+                            'width' => '75px',
                         ],
                     ],
                     'value' => function ($data){
                         return Yii::$app->formatter->asShortSize((isset($data['att_size']) ? $data['att_size'] : 0), 1);
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
 //                    'attribute' => 'tags',
@@ -204,9 +197,9 @@ $this->title = Yii::t('app', '{Video}{List}',[
 //                    'value' => function ($data){
 //                        return ($data['tags'] != null) ? $data['tags'] : null;
 //                    },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '125px',
                         ],
                     ],
                 ],
@@ -214,7 +207,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     'attribute' => 'created_at',
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px'
+                            'width' => '75px'
                         ],
                     ],
                     'filter' => false,
@@ -223,8 +216,8 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     },
                     'contentOptions' => [
                         'style' => [
-                            'text-align' => 'center',
                             'white-space' => 'unset',
+                            'font-size' => '13px',
                         ],
                     ],
                 ],
@@ -236,13 +229,13 @@ $this->title = Yii::t('app', '{Video}{List}',[
                              $options = [
                                 'class' => 'btn btn-xs btn-default '.($data['is_publish'] == 0 ? 'disabled' : ' '),
                                 'style' => '',
-                                'title' => Yii::t('app', 'Update'),
-                                'aria-label' => Yii::t('app', 'Update'),
+                                'title' => Yii::t('app', 'Viewo'),
+                                'aria-label' => Yii::t('app', 'Viewo'),
                                 'data-pjax' => '0',
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => ['view', 'id' => $data['id']],
+                                'url' => ['/study_center/default/view', 'id' => $data['id']],
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'conditions' => true,

@@ -60,7 +60,7 @@ use yii\web\View;
             [
                 'label' => Yii::t('app', '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/help_center/default/index', 'app_id' => 'app-frontend'],
-                'linkOptions' => ['target'=>'_blank'],
+//                'linkOptions' => ['target'=>'_blank'],
             ],
             [
                 'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
