@@ -3,17 +3,11 @@
 namespace common\models;
 
 use common\models\vk\Customer;
-use common\models\vk\Good;
-use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
-use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\Query;
-use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 use yii\web\UploadedFile;
 
@@ -34,6 +28,7 @@ use yii\web\UploadedFile;
  * @property bigint $max_store              最大存储空间（最小单位为B）
  * @property string $des                    简介
  * @property string $auth_key               认证
+ * @property int $is_official 是否为官网资源：0否 1是
  * @property string $created_at             创建时间
  * @property string $updated_at             更新时间
  * @property string $password write-only password
@@ -132,7 +127,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at'], 'integer'],
+            [['created_at', 'updated_at', 'is_official'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname', 'phone'], 'string', 'max' => 50],
@@ -187,6 +182,7 @@ class User extends ActiveRecord implements IdentityInterface {
             'max_store' => Yii::t('app', '{Storage}{Space}',['Storage' => Yii::t('app', 'Storage'),'Space' => Yii::t('app', 'Space'),]),
             'des' => Yii::t('app', 'Des'),
             'auth_key' => Yii::t('app', 'Auth Key'),
+            'is_official' => Yii::t('app', 'Is Official'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];

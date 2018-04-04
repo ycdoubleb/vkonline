@@ -32,7 +32,9 @@ class VideoSearch extends Video
     public function rules()
     {
         return [
-            [['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'name', 'source_level', 'source_wh', 'source_bitrate', 'content_level', 'des', 'level', 'img', 'is_ref', 'is_recommend', 'is_publish', 'sort_order', 'created_by'], 'safe'],
+            [['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'name', 'source_level', 'source_wh',
+                'source_bitrate', 'content_level', 'des', 'level', 'img', 'is_ref', 'is_recommend', 'is_publish',
+                'is_official', 'sort_order', 'created_by'], 'safe'],
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
         ];
     }

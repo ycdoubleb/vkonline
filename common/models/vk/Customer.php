@@ -32,6 +32,7 @@ use yii\web\UploadedFile;
  * @property string $address        详细地址
  * @property string $location       位置
  * @property string $created_by     创建人
+ * @property int $is_official       是否为官网资源：0否 1是
  * @property string $created_at     创建时间
  * @property string $updated_at     更新时间
  * 
@@ -77,7 +78,7 @@ class Customer extends ActiveRecord
         return [
 //            [['id'], 'required'],
             [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon',
-               'status', 'created_at', 'updated_at'], 'integer'],
+               'status', 'created_at', 'updated_at', 'is_official'], 'integer'],
             [['location'], 'string'],
             [['id', 'created_by'], 'string', 'max' => 32],
             [['name', 'domain', 'logo', 'des', 'address'], 'string', 'max' => 255],
@@ -116,6 +117,7 @@ class Customer extends ActiveRecord
             'address' => Yii::t('app', 'Address'),
             'location' => Yii::t('app', 'Location'),
             'created_by' => Yii::t('app', 'Created By'),
+            'is_official' => Yii::t('app', 'Is Official'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];

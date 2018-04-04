@@ -26,6 +26,7 @@ use yii\web\UploadedFile;
  * @property string $zan_count      赞
  * @property string $favorite_count 收藏数
  * @property string $created_by     创建人
+ * @property int $is_official       是否为官网资源：0否 1是
  * @property string $created_at     创建时间
  * @property string $updated_at     更新时间
  * 
@@ -93,7 +94,8 @@ class Course extends ActiveRecord
         return [
             //[['id'], 'required'],
             [['category_id', 'name', 'teacher_id'], 'required'],
-            [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
+            [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
+                'is_official', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             //[['level', 'is_recommend', 'is_publish'], 'string', 'max' => 1],
@@ -122,6 +124,7 @@ class Course extends ActiveRecord
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
             'created_by' => Yii::t('app', 'Created By'),
+            'is_official' => Yii::t('app', 'Is Official'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];

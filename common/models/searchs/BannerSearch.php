@@ -22,7 +22,7 @@ class BannerSearch extends Banner
     {
         return [
             [['id', 'created_at', 'updated_at'], 'integer'],
-            [['customer_id', 'title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'des', 'created_by'], 'safe'],
+            [['customer_id', 'title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'is_official', 'des', 'created_by'], 'safe'],
         ];
     }
 
