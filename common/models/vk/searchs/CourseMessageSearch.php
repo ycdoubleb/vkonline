@@ -74,6 +74,8 @@ class CourseMessageSearch extends CourseMessage
         ]);
 
         $query->andFilterWhere(['like', 'content', $this->content]);
+        
+        $query->with('user');
 
         return $dataProvider;
     }

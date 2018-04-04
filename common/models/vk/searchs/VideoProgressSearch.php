@@ -60,18 +60,17 @@ class VideoProgressSearch extends VideoProgress
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
+            'course_id' => $this->course_id,
+            'video_id' => $this->video_id,
+            'user_id' => $this->user_id,
             'last_time' => $this->last_time,
             'finish_time' => $this->finish_time,
+            'is_finish' => $this->is_finish,
             'start_time' => $this->start_time,
             'end_time' => $this->end_time,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ]);
-
-        $query->andFilterWhere(['like', 'course_id', $this->course_id])
-            ->andFilterWhere(['like', 'video_id', $this->video_id])
-            ->andFilterWhere(['like', 'user_id', $this->user_id])
-            ->andFilterWhere(['like', 'is_finish', $this->is_finish]);
 
         return $dataProvider;
     }

@@ -50,8 +50,8 @@ class DefaultController extends Controller
     }
     
     /**
-     * Renders the index view for the module
-     * @return string
+     * 呈现模块的索引视图。
+     * @return mixed
      */
     public function actionIndex($id)
     {
@@ -75,8 +75,8 @@ class DefaultController extends Controller
     }
     
     /**
-     * Renders the index view for the module
-     * @return string
+     * 显示一个单一的 User 模型.
+     * @return mixed [model => 模型]
      */
     public function actionInfo($id)
     {
@@ -92,11 +92,11 @@ class DefaultController extends Controller
     }
     
     /**
-     * Updates an existing User model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * 更新现有的 User 模型。
+     * 如果更新成功，浏览器将被重定向到“info”页面。
      * @param string $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException
      */
     public function actionUpdate($id)
     {
@@ -117,11 +117,11 @@ class DefaultController extends Controller
     }
     
     /**
-     * Finds the User model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
+     * 根据其主键值查找 User 模型。
+     * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return User the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return model User 
+     * @throws NotFoundHttpException
      */
     protected function findModel($id)
     {

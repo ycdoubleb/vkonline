@@ -45,9 +45,9 @@ class CourseProgress extends ActiveRecord
     public function rules()
     {
         return [
-            [['start_time', 'end_time', 'created_at', 'updated_at'], 'integer'],
+            [['is_finish', 'start_time', 'end_time', 'created_at', 'updated_at'], 'integer'],
             [['course_id', 'user_id', 'last_video'], 'string', 'max' => 32],
-            [['is_finish'], 'string', 'max' => 1],
+            //[['is_finish'], 'string', 'max' => 1],
         ];
     }
 
@@ -67,5 +67,17 @@ class CourseProgress extends ActiveRecord
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
+    }
+    
+    public function beforeSave($insert) 
+    {
+        if (parent::beforeSave($insert)) {
+            if($this->isNewRecord){
+                $this->start_time = time();
+            }
+            return true;
+        }
+        
+        return false;
     }
 }

@@ -31,12 +31,13 @@ class ActionUtils
     /**
      * 添加留言操作
      * @param CourseMessage $model
-     * @param type $post
+     * @param array $post
      * @return boolean
      * @throws Exception
      */
-    public function CreateCourseMsg($model, $post)
+    public function addCourseMsg($model, $post)
     {
+        //留言内容
         $model->content = ArrayHelper::getValue($post, 'content');
         
         /** 开启事务 */
@@ -51,11 +52,11 @@ class ActionUtils
             
             $trans->commit();  //提交事务
             return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            //Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            //Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
     }
 }

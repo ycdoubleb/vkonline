@@ -51,8 +51,10 @@ class DefaultController extends Controller
     }
     
     /**
-     * Renders the index view for the module
-     * @return string
+     * 呈现模块的索引视图。
+     * @return mixed [allCategory => 所有分类, filters => 过滤参数,
+     *    pagers => 分页, dataProvider => 课程数据
+     * ]
      */
     public function actionIndex()
     {
@@ -73,8 +75,9 @@ class DefaultController extends Controller
     }
     
     /**
-     * Renders the index view for the module
-     * @return string
+     * 搜索结果 保存搜索的关键字
+     * 如果保存成功，浏览器将被重定向到“index”页面。
+     * @return mixed
      */
     public function actionResult()
     {
@@ -93,31 +96,33 @@ class DefaultController extends Controller
     }
     
     /**
-     * Displays a single Course model.
-     * @param integer $id
-     * @return mixed
+     * 显示一个单一的 Course 模型.
+     * @param string $id
+     * @return mixed  [
+     *  model => 模型, favorite => 关注的课程模型,
+     *  praise => 点赞的课程模型, videoNum => 视频数
+     *  courseNodes => 课程节点, msgDataProvider => 留言数据
+     * ]
      */
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $favorite = $this->findFavoriteModel($id);
-        $praise = $this->findPraiseModel($id);
         $searchModel = new CourseMessageSearch();
         
         return $this->render('view', [
             'model' => $model,
-            'favorite' => $favorite,
-            'praise' => $praise,
-            'video' => $this->getVideoNumByCourseNode($id),
-            'dataProvider' => $this->findCourseNode($id),
-            'msgProvider' => $searchModel->search(['course_id' => $id]),
+            'favorite' => $this->findFavoriteModel($id),
+            'praise' => $this->findPraiseModel($id),
+            'videoNum' => $this->getVideoNumByCourseNode($id),
+            'courseNodes' => $this->findCourseNode($id),
+            'msgDataProvider' => $searchModel->search(['course_id' => $id]),
         ]);
     }
     
     /**
      * 点击关注
-     * @param string $id
-     * @return array
+     * @param string $id    //course_id
+     * @return json
      */
     public function actionFavorite($id)
     {
@@ -159,8 +164,8 @@ class DefaultController extends Controller
     
     /**
      * 点击点赞
-     * @param string $id
-     * @return array
+     * @param string $id    //course_id
+     * @return json
      */
     public function actionPraise($id)
     {
@@ -201,8 +206,8 @@ class DefaultController extends Controller
     }
 
     /**
-     * Lists all CourseMessage models.
-     * @return mixed
+     * 留言列表视图
+     * @return mixed [dataProvider => 留言数据]
      */
     public function actionMsgIndex()
     {
@@ -214,10 +219,10 @@ class DefaultController extends Controller
     }
     
     /**
-     * Creates a new CourseMessage model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
-     * @return mixed
+     * 添加一条新的留言
+     * 如果创建成功，则返回json数据，否者则返回上一步
+     * @param string $id    //course_id
+     * @return json|goBack
      */
     public function actionAddMsg($id)
     {
@@ -226,7 +231,7 @@ class DefaultController extends Controller
         
         if(Yii::$app->request->isPost){
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->CreateCourseMsg($model, Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->addCourseMsg($model, Yii::$app->request->post());
             
             return [
                 'code'=> $result ? 200 : 404,
@@ -238,11 +243,11 @@ class DefaultController extends Controller
     }
     
     /**
-     * Finds the Course model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
+     * 基于其主键值找到 Course 模型。
+     * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return Course the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return model Course
+     * @throws NotFoundHttpException 
      */
     protected function findModel($id)
     {
@@ -254,10 +259,10 @@ class DefaultController extends Controller
     }
     
     /**
-     * Finds the CourseFavorite model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string course_id
-     * @return CourseFavorite the loaded model
+     * 基于其course_id 和 user_id找到 CourseFavorite 模型。
+     * 如果找不到模型，就会抛出404个HTTP异常。
+     * @param string $course_id
+     * @return model CourseFavorite
      */
     protected function findFavoriteModel($course_id)
     {
@@ -270,10 +275,10 @@ class DefaultController extends Controller
     }
     
     /**
-     * Finds the PraiseLog model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string course_id
-     * @return PraiseLog the loaded model
+     * 基于其type、course_id 和 user_id找到 PraiseLog 模型。
+     * 如果找不到模型，就会抛出404个HTTP异常。
+     * @param string $course_id
+     * @return model PraiseLog
      */
     protected function findPraiseModel($course_id)
     {
@@ -288,7 +293,7 @@ class DefaultController extends Controller
     /**
      * 查询所有课程节点
      * @param string $course_id
-     * @return CourseNode model
+     * @return model CourseNode 
      */
     protected function findCourseNode($course_id)
     {
@@ -304,7 +309,7 @@ class DefaultController extends Controller
     /**
      * 获取环节数
      * @param string $course_id
-     * @return Video model
+     * @return array 
      */
     protected function getVideoNumByCourseNode($course_id)
     {
