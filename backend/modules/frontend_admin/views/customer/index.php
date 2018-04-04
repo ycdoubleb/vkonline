@@ -243,6 +243,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]); ?>
     </div>
+    <div style="height: 130px"></div>
 </div>
 <?php
     $js = <<<JS

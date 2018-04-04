@@ -519,17 +519,17 @@ class CustomerController extends Controller
         $content = ArrayHelper::getValue($post, 'CustomerActLog.content');               //内容
         $longTime = ArrayHelper::getValue($post, 'CustomerActLog.start_time');           //时长
 
-        $addTime = ($longTime==1) ? 365*24*60*60 : 2*365*24*60*60;
         $customerActLog = (new Query())->select(['customer_id', 'end_time'])->from(CustomerActLog::tableName())
                 ->where(['customer_id' => $customer_id])->orderBy('id desc')->all();
         if($customerActLog){
             $title = '续费';
             $start_time = time();
-            $end_time = ($customerActLog[0]['end_time'] < time()) ? $customerActLog[0]['end_time']+$addTime : time()+$addTime;
+            $end_time = ($customerActLog[0]['end_time'] < time()) ?
+                    strtotime("+ $longTime year", $customerActLog[0]['end_time'])  : strtotime("+ $longTime year");
         } else {
             $title = '开通';
             $start_time = time();
-            $end_time = time()+$addTime;
+            $end_time = strtotime("+ $longTime year");
         }
         
         $values[] = [

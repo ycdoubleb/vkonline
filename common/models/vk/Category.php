@@ -8,33 +8,50 @@ use yii\caching\Cache;
 use yii\db\ActiveRecord;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
+use yii\web\UploadedFile;
 
 /**
  * This is the model class for table "{{%category}}".
  *
  * @property string $id
- * @property string $name 分类名称
+ * @property string $name       分类名称
  * @property string $mobile_name 手机端名称
- * @property int $level 等级：0顶级 1~3
- * @property string $path 继承路径
- * @property string $parent_id 父级id
- * @property int $sort_order 排序
- * @property string $image 图标路径
- * @property string $created_at 创建时间
- * @property string $updated_at 更新时间
- * @property int $is_show 是否显示
- * @property string $des 描述
+ * @property int $level         等级：0顶级 1~3
+ * @property string $path       继承路径
+ * @property string $parent_id  父级id
+ * @property int $sort_order    排序
+ * @property string $image      图标路径
+ * @property int $created_at    创建时间
+ * @property int $updated_at    更新时间
+ * @property int $is_show       是否显示
+ * @property string $des        描述
+ * 
+ * @property Category $parent   分类
+ * @property string $fullPath   全路径
  */
 class Category extends ActiveRecord
 {
+    /** 显示状态-不显示 */
+    const NO_SHOW = 0;
+    /** 显示状态-显示 */
+    const YES_SHOW = 1;
+    
+    /**
+     * 显示状态
+     * @var array 
+     */
+    public static $showStatus = [
+        self::NO_SHOW => '不显示',
+        self::YES_SHOW => '显示',
+    ];
+    
     /* @var $cache Cache */
-
     private static $cache;
 
     /**
      * @see cache
      */
-    private static $cacheKey = 'eekt_course_category';
+    private static $cacheKey = 'vk_category';
 
     /**
      * 分类[id,name,mobile_name,level,path,parent_id,sort_order,image,is_show]
@@ -56,7 +73,7 @@ class Category extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     
@@ -66,11 +83,9 @@ class Category extends ActiveRecord
     public function rules()
     {
         return [
-            [['parent_id', 'created_at', 'updated_at'], 'integer'],
+            [['parent_id','level', 'is_show', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
-            [['level', 'is_show'], 'string', 'max' => 1],
             [['path', 'image', 'des'], 'string', 'max' => 255],
-            [['sort_order'], 'string', 'max' => 2],
         ];
     }
 
@@ -78,6 +93,21 @@ class Category extends ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->mobile_name == "") {
                 $this->mobile_name = $this->name;
+            }
+            $file_name = md5(time());
+            //图片上传
+            $upload = UploadedFile::getInstance($this, 'image');
+            if ($upload !== null) {
+                $string = $upload->name;
+                $array = explode('.', $string);
+                //获取后缀名，默认名为.jpg
+                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/course/category/'));
+                $upload->saveAs($uploadpath . $file_name . '.' . $ext);
+                $this->image = '/upload/course/category/' . $file_name . '.' . $ext . '?r=' . rand(1, 10000);
+            }
+            if (trim($this->image) == '') {
+                $this->image = $this->getOldAttribute('image');
             }
             //设置等级
             if (empty($this->parent_id)) {
@@ -87,6 +117,19 @@ class Category extends ActiveRecord
             return true;
         }
         return false;
+    }
+    
+    /**
+     * 检查目标路径是否存在，不存即创建目标
+     * @param string $uploadpath    目录路径
+     * @return string
+     */
+    private function fileExists($uploadpath) {
+
+        if (!file_exists($uploadpath)) {
+            mkdir($uploadpath);
+        }
+        return $uploadpath;
     }
 
     /**
@@ -101,7 +144,7 @@ class Category extends ActiveRecord
 
     /**
      * 父级
-     * @return CourseCategory
+     * @return Category
      */
     public function getParent() {
         self::initCache();
@@ -152,7 +195,7 @@ class Category extends ActiveRecord
         if (self::$cache == null) {
             self::$cache = Instance::ensure([
                         'class' => 'yii\caching\FileCache',
-                        'cachePath' => FRONTEND_DIR . '/runtime/cache'
+                        'cachePath' => \Yii::getAlias('@frontend') . '/runtime/cache'
                             ], Cache::className());
         }
         self::loadFromCache();
@@ -199,22 +242,21 @@ class Category extends ActiveRecord
      * @param array $condition      默认返回所有分类
      * @param bool $key_to_value    返回键值对形式
      * @param bool $include_unshow  是否包括隐藏的分类
-     * @param bool include_unhot    是否包括不推荐的分类，默认是true包括
      * 
      * @return array(array|Array) 
      */
-    public static function getCatsByLevel($level = 1, $key_to_value = false, $include_unshow = false, $include_unhot = true) {
-        //self::initCache();
-        self::$categorys = self::findAll(['level' => $level]);
+    public static function getCatsByLevel($level = 1, $key_to_value = false, $include_unshow = false) {
+        self::initCache();
+//        self::$categorys = self::findAll(['level' => $level]);
         $categorys = [];
-        foreach (self::$categorys as $id => $category) {
-            $categorys[] = $category;
-        }
 //        foreach (self::$categorys as $id => $category) {
-//            if ($category['level'] == $level && ($include_unshow || $category['is_show'] == 1) && ($include_unhot || $category['is_hot'] == 1)) {
-//                $categorys[] = $category;
-//            }
+//            $categorys[] = $category;
 //        }
+        foreach (self::$categorys as $id => $category) {
+            if ($category['level'] == $level && ($include_unshow || $category['is_show'] == 1)) {
+                $categorys[] = $category;
+            }
+        }
         
         return $key_to_value ? ArrayHelper::map($categorys, 'id', 'name') : $categorys;
     }
@@ -225,18 +267,17 @@ class Category extends ActiveRecord
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
-     * @param bool include_unhot        是否包括不推荐的分类，默认是true包括
      * 
      * @return array [array|key=value]
      */
-    public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false, $include_unhot = true) {
+    public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false) {
         self::initCache();
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1) && ($include_unhot || $category['is_hot'] == 1)) {
+            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $category;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCatChildren($c_id, $key_to_value, $recursion, $include_unshow, $include_unhot));
+                    $childrens = array_merge($childrens, self::getCatChildren($c_id, $key_to_value, $recursion, $include_unshow));
                 }
             }
         }
@@ -248,18 +289,17 @@ class Category extends ActiveRecord
      * @param integer $id               分类ID
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
-     * @param bool include_unhot        是否包括不推荐的分类，默认是true包括
      * 
      * @return array [id,id...]
      */
-    public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false, $include_unhot = true) {
+    public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false) {
         self::initCache();
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1) && ($include_unhot || $category['is_hot'] == 1)) {
+            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $c_id;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCatChildrenIds($c_id, $recursion, $include_unshow, $include_unhot));
+                    $childrens = array_merge($childrens, self::getCatChildrenIds($c_id, $recursion, $include_unshow));
                 }
             }
         }
@@ -301,7 +341,7 @@ class Category extends ActiveRecord
     public static function getCatById($id) {
         self::initCache();
         if (isset(self::$categorys[$id])) {
-            return new CourseCategory(self::$categorys[$id]);
+            return new Category(self::$categorys[$id]);
         }
         return null;
     }

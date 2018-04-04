@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= ($model->status == Customer::STATUS_STOP) ?  Html::a(Yii::t('app', 'Enable'), ['renew', 'id' => $model->id], ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) :
-            Html::a(($model->good_id != null) ? Yii::t('app', 'Renew') : Yii::t('app', 'Opening'), 
+            Html::a(($model->good_id != 0) ? Yii::t('app', 'Renew') : Yii::t('app', 'Opening'), 
                 ['renew', 'id' => $model->id], ['class' => 'btn btn-success', 'onclick'=>'return showElemModal($(this));']) ?>
         <?= ($model->status == Customer::STATUS_STOP) ? '' : Html::a(Yii::t('app', 'Disable'), ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',

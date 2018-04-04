@@ -6,7 +6,6 @@ use common\models\AdminUser;
 use common\models\Region;
 use common\models\User;
 use common\models\vk\Course;
-use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\CustomerActLog;
 use common\models\vk\CustomerAdmin;
@@ -40,7 +39,8 @@ class CustomerSearch extends Customer
     {
         return [
             [['id', 'name', 'domain', 'logo', 'status', 'des', 'invite_code', 'location', 'created_by'], 'safe'],
-            [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon', 'address', 'created_at', 'updated_at'], 'integer'],
+            [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon', 'address', 'is_official',
+                'created_at', 'updated_at'], 'integer'],
         ];
     }
 

@@ -32,7 +32,8 @@ class CourseSearch extends Course
     public function rules()
     {
         return [
-            [['id', 'customer_id', 'teacher_id', 'name', 'level', 'des', 'cover_img', 'is_recommend', 'is_publish', 'created_by'], 'safe'],
+            [['id', 'customer_id', 'teacher_id', 'name', 'level', 'des', 'cover_img', 
+                        'is_recommend', 'is_publish', 'is_official', 'created_by'], 'safe'],
             [['category_id', 'zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
         ];
     }
