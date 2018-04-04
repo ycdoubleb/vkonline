@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'buttons' => [
                         'update' => function ($url, $data, $key) {
                              $options = [
-                                'class' => 'btn btn-sm '.($data['customer_id'] ? 'disabled' : ' '),
+                                'class' => 'btn btn-sm '.(($data['is_official']==0) ? 'disabled' : ' '),
                                 'style' => 'padding:0px; display:unset',
                                 'title' => Yii::t('app', 'Update'),
                                 'aria-label' => Yii::t('app', 'Update'),
@@ -251,7 +251,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'delete' => function ($url, $data, $key) {
                             $options = [
-                                'class' => 'btn btn-sm '.($data['customer_id'] ? 'disabled' : ' '),
+                                'class' => 'btn btn-sm '.(($data['is_official']==0) ? 'disabled' : ' '),
                                 'style' => 'padding:0px; display:unset',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),

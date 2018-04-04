@@ -93,11 +93,11 @@ class User extends ActiveRecord implements IdentityInterface {
     public function scenarios() {
         return [
             self::SCENARIO_CREATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'is_official', 'byte'],
             self::SCENARIO_UPDATE =>
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'is_official', 'byte'],
             self::SCENARIO_DEFAULT => 
-            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'byte'],
+            ['customer_id', 'username', 'nickname', 'sex', 'email', 'password_hash', 'password2', 'phone', 'avatar', 'max_store', 'des', 'is_official', 'byte'],
         ];
     }
 
@@ -204,9 +204,14 @@ class User extends ActiveRecord implements IdentityInterface {
     
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
+            //设置ID
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
+            //设置是否属于官网账号
+            $isOfficial = Customer::findOne(['id' => $this->customer_id]);
+            $this->is_official = $isOfficial->is_official;
+            //上传头像
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
                 $string = $upload->name;

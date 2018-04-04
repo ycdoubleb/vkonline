@@ -49,13 +49,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'customer_id',
                     'format' => 'raw',
-                    'value' => !empty($model->customer_id) ? $model->customer->name : '官网',
+                    'value' => $model->customer->name ,
                 ],
                 'title',
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
-                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path ,['max-width' => '680px']) : 
+                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '680px']]) : 
                         '<video src="'.WEB_ROOT . $model->path.'" controls="controls"></video>',
                 ],
                 'link',
@@ -79,7 +79,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'created_by',
                     'format' => 'raw',
-                    'value' => !empty($model->customer_id) ? $model->user->nickname : $model->adminUser->nickname,
+                    'value' => $model->is_official==0 ? $model->user->nickname : $model->adminUser->nickname,
                 ],
                 'des:ntext',
                 'created_at:datetime',

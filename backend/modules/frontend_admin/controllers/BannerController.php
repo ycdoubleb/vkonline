@@ -6,7 +6,6 @@ use backend\components\BaseController;
 use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
-use common\models\User;
 use common\models\vk\Customer;
 use Yii;
 use yii\db\Query;
@@ -48,7 +47,7 @@ class BannerController extends BaseController
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             
-            'customer' => $this->getTheCustomer(),      //所属客户
+            'customer' => $this->getTheCustomer()['theCustomer'],      //所属客户
             'createdBy' => $this->getCreatedBy(),       //所有创建者
         ]);
     }
@@ -73,14 +72,15 @@ class BannerController extends BaseController
      */
     public function actionCreate()
     {
-        $model = new Banner();
-
+        $model = new Banner(['is_official' => 1]);
+       
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
+            'customer' => $this->getTheCustomer()['officialQuery'],     //所属官网ID
         ]);
     }
 
@@ -95,7 +95,7 @@ class BannerController extends BaseController
     {
         $model = $this->findModel($id);
         
-        if($model->customer_id){
+        if($model->is_official==0){
             throw new NotAcceptableHttpException('无权限操作！');
         } else {
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -103,6 +103,7 @@ class BannerController extends BaseController
             } else {
                 return $this->render('update', [
                     'model' => $model,
+                    'customer' => $this->getTheCustomer()['officialQuery'],     //所属官网ID
                 ]);
             }
         }
@@ -152,10 +153,14 @@ class BannerController extends BaseController
         $theCustomer = (new Query())
                 ->select(['Customer.id', 'Customer.name'])
                 ->from(['Banner' => Banner::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id')
-                ->all();
-        
-        return ArrayHelper::map($theCustomer, 'id', 'name');
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id');
+        $officialQuery = clone $theCustomer;
+        $officialQuery->andFilterWhere(['Customer.is_official' => 1]);    //只查官网信息
+
+        return [
+            'theCustomer' => ArrayHelper::map($theCustomer->all(), 'id', 'name'),
+            'officialQuery' => ArrayHelper::map($officialQuery->all(), 'id', 'name'),
+        ];
     }
     
     /**
