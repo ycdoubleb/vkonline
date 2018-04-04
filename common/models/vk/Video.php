@@ -43,7 +43,7 @@ use yii\web\UploadedFile;
  * @property int $is_official           是否为官网资源：0否 1是
  * @property string $created_at         创建时间
  * @property string $updated_at         更新时间
- * 
+
  * @property CourseNode $courseNode 获取环节
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
