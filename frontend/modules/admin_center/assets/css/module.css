@@ -60,6 +60,20 @@
     font-weight: bold;
 }
 
+.table {
+    table-layout: fixed;
+}
+
+.table > thead > tr > th, 
+.table > tbody > tr > th,
+.table > tfoot > tr > th, 
+.table > thead > tr > td, 
+.table > tbody > tr > td, 
+.table > tfoot > tr > td {
+    padding: 4px;
+    vertical-align: middle;
+}
+
 /***  概况  **/
 .main .admin-num{
     color: #666666;

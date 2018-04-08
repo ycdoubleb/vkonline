@@ -26,14 +26,15 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'customer_id')->textInput([
-        'placeholder' => '官网', 
+    <?= $form->field($model, 'customer_id')->widget(Select2::class, [
+        'data' => $customer,
+        'hideSearch' => true,
         'disabled' => true,
     ])?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'path')->widget(FileInput::classname(), [
+    <?= $form->field($model, 'path')->widget(FileInput::class, [
         'options' => [
             'accept' => 'image/*',
             'multiple' => false,
@@ -62,7 +63,7 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'target')->radioList(Banner::$targetType) ?>
     
-    <?= $form->field($model, 'is_publish')->widget(SwitchInput::classname(), [
+    <?= $form->field($model, 'is_publish')->widget(SwitchInput::class, [
         'pluginOptions' => [
             'onText' => Yii::t('app', 'Y'),
             'offText' => Yii::t('app', 'N'),
@@ -71,7 +72,7 @@ use yii\widgets\ActiveForm;
             'class' => '',
         ],
     ]) ?>
-
+    
     <?= $form->field($model, 'sort_order')->textInput() ?>
 
     <?= $form->field($model, 'des')->textarea(['rows' => 5]) ?>

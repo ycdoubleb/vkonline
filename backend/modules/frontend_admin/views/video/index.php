@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 
 /* @var $this View */
@@ -263,13 +264,13 @@ $this->params['breadcrumbs'][] = $this->title;
                              $options = [
                                 'class' => 'btn btn-sm '.($data['is_publish'] == 0 ? 'disabled' : ' '),
                                 'style' => 'padding:0px; display:unset',
-                                'title' => Yii::t('app', 'Update'),
-                                'aria-label' => Yii::t('app', 'Update'),
+                                'title' => Yii::t('app', 'View'),
+                                'aria-label' => Yii::t('app', 'View'),
                                 'data-pjax' => '0',
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => ['view', 'id' => $data['id']],
+                                'url' => Url::to([WEB_ROOT . '/study_center/default/view', 'id' => $data['id']], 'http'),
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'conditions' => true,

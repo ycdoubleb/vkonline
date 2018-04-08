@@ -2,6 +2,7 @@
 
 use common\models\vk\Customer;
 use kartik\widgets\FileInput;
+use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -64,8 +65,18 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'domain')->textInput(['maxlength' => true]) ?>
+    
+    <?= $form->field($model, 'is_official')->widget(SwitchInput::class, [
+        'pluginOptions' => [
+            'onText' => Yii::t('app', 'Y'),
+            'offText' => Yii::t('app', 'N'),
+        ],
+        'containerOptions' => [
+            'class' => '',
+        ],
+    ])->label(Yii::t('app', 'Official'))?>
 
-    <?= $form->field($model, 'logo')->widget(FileInput::classname(), [
+    <?= $form->field($model, 'logo')->widget(FileInput::class, [
         'options' => [
                 'accept' => 'image/*',
                 'multiple' => false,

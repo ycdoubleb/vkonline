@@ -35,10 +35,7 @@ $user = Yii::$app->user->identity;
         <?php $this->beginBody() ?>
         <div class="wrapper">
 
-            <?= $this->render('navbar.php',[
-                'app_id' => $this->params,
-                'user' => $user
-            ]);?>
+            <?= $this->render('@frontend/views/layouts/navbar')?>
             
             <?= $this->render('left.php', $this->params);?>
             

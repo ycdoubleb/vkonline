@@ -238,6 +238,8 @@ return [
     'Is Show' => '是否显示',
     'Parent ID' => '所属父级',
     'Price' => '价格',
+    'Is Official' => '是否属于官网',
+    'Official' => '官网',
     
     //前台-协作人员
     'Help Man' => '协作人员',

@@ -44,10 +44,13 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '100px',
                         ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
                     ],
                 ],
                 [
@@ -56,10 +59,13 @@ $this->title = Yii::t('app', '{Course}{List}',[
                         'Course' => Yii::t('app', 'Course'),
                         'Name' => Yii::t('app', 'Name'),
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '200px',
                         ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
                     ],
                 ],
                 [
@@ -78,9 +84,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -97,9 +103,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -121,9 +127,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
                         return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                     Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -145,9 +151,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
                         return ($data['level'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                     Course::$levelMap[$data['level']] . '</span>' : null;
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -165,9 +171,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
                     'value' => function ($data){
                         return !empty($data['course_size']) ? Yii::$app->formatter->asShortSize($data['course_size'], 1) : '0';
                     },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px',
                         ],
                     ],
                 ],
@@ -178,17 +184,20 @@ $this->title = Yii::t('app', '{Course}{List}',[
 //                    'value' => function ($data){
 //                        return ($data['tags'] != null) ? $data['tags'] : null;
 //                    },
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'width' => '180px',
                         ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
                     ],
                 ],
                 [
                     'attribute' => 'created_at',
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px'
+                            'width' => '75px'
                         ],
                     ],
                     'filter' => false,
@@ -197,8 +206,8 @@ $this->title = Yii::t('app', '{Course}{List}',[
                     },
                     'contentOptions' => [
                         'style' => [
-                            'text-align' => 'center',
                             'white-space' => 'unset',
+                            'font-size' => '13px',
                         ],
                     ],
                 ],
@@ -210,13 +219,13 @@ $this->title = Yii::t('app', '{Course}{List}',[
                              $options = [
                                 'class' => 'btn btn-xs btn-default '.($data['is_publish'] == 0 ? 'disabled' : ' '),
                                 'style' => '',
-                                'title' => Yii::t('app', 'Update'),
-                                'aria-label' => Yii::t('app', 'Update'),
+                                'title' => Yii::t('app', 'Viewo'),
+                                'aria-label' => Yii::t('app', 'Viewo'),
                                 'data-pjax' => '0',
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => ['view', 'id' => $data['id']],
+                                'url' => ['/course/default/view', 'id' => $data['id']],
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'conditions' => true,

@@ -49,7 +49,7 @@ class BannerSearch extends Banner
         
         $query = Banner::find()
                 ->select(['Banner.id', 'Customer.name AS customer_id', 'Banner.title', 'Banner.path', 'Banner.link',
-                    'Banner.target', 'Banner.sort_order', 'Banner.type', 'Banner.is_publish',
+                    'Banner.target', 'Banner.sort_order', 'Banner.type', 'Banner.is_publish', 'Banner.is_official',
                     'IF(User.nickname IS NULL,  AdminUser.nickname, User.nickname) AS created_by', 'Banner.created_at'])
                 ->from(['Banner' => Banner::tableName()]);
 

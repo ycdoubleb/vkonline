@@ -37,23 +37,22 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                     'header' => Yii::t('app', 'Name'),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '73px'
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
+                            'width' => '125px'
                         ],
                     ],
                 ],
                 [
                     'attribute' => 'path',
                     'header' => Yii::t('app', 'Path'),
-                    'contentOptions' => [
+                    'headerOptions' => [
                         'style' => [
-                            'text-align' => 'center',
-                            'white-space' => 'unset',
-                            'word-break' => 'break-word',
+                            'width' => '315px'
+                        ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
+                        'style' => [
+                            'font-size' => '13px',
                         ],
                     ],
                 ],
@@ -62,17 +61,16 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                     'header' => Yii::t('app', 'Href'),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '90px'
+                            'width' => '200px'
                         ],
                     ],
                     'value' => function ($data){
                         return !empty($data['link']) ? $data['link'] : null;
                     },
                     'contentOptions' => [
+                        'class' => 'course-name',
                         'style' => [
-                            'text-align' => 'center',
-                            'white-space' => 'unset',
-                            'word-break' => 'break-word',
+                            'font-size' => '13px',
                         ],
                     ],
                 ],
@@ -82,14 +80,12 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                         'Open' => Yii::t('app', 'Open'),
                         'Mode' => Yii::t('app', 'Mode'),
                     ]),
+                    'value' => function ($data) {
+                        return Banner::$targetType[$data->target];
+                    },
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '75px'
-                        ],
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
+                            'width' => '75px'
                         ],
                     ],
                 ],
@@ -98,7 +94,7 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                     'header' => Yii::t('app', 'Sort Order'),
                     'headerOptions' => [
                         'style' => [
-                            'width' => '55px',
+                            'width' => '45px',
                         ],
                     ],
                     'class' => GridViewChangeSelfColumn::class,
@@ -111,17 +107,12 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                     'header' => Yii::t('app', 'Type'),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '50px'
+                            'width' => '45px'
                         ],
                     ],
                     'value' => function ($data){
                         return Banner::$contentType[$data->type];
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'attribute' => 'is_publish',
@@ -131,18 +122,13 @@ $this->title = Yii::t('app', '{Propaganda}{List}',[
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '73px'
+                            'width' => '70px'
                         ],
                     ],
                     'class' => GridViewChangeSelfColumn::class,
                     'value' => function ($data){
                         return Banner::$publishStatus[$data->is_publish];
                     },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
