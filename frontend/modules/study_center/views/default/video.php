@@ -45,7 +45,7 @@ ModuleAssets::register($this);
                 <?= Html::img(['/' . $model['video']['img']], ['width' => '100%']) ?>
                 <?php endif; ?>
                 <div class="float"> 
-                    <span>7635<i class="fa fa-eye"></i></span>
+                    <span><?= isset($model['play_num']) ? $model['play_num'] : 0 ?><i class="fa fa-eye"></i></span>
                     <span><?= $model['video']['favorite_count'] ?><i class="fa fa-heart"></i></span>
                     <span class="right"><?= $model['video']['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>
                 </div>
@@ -57,7 +57,7 @@ ModuleAssets::register($this);
                 <div class="name">课程：<span><?= $model['course']['name'] ?></span></div>
                 <div class="tuip">名称：<span><?= $model['video']['name'] ?></span></div>
                 <div class="tuip">主讲：<span><?= $model['video']['teacher']['name'] ?></span>
-                    <?= Html::a('<i class="fa fa-play-circle"></i>', ['play', 'id' => $model['video_id']], ['class' => 'play']) ?>
+                    <?= Html::a('<i class="fa fa-play-circle"></i>', ['view', 'id' => $model['video_id']], ['class' => 'play']) ?>
                 </div>
             </div>
         </div>

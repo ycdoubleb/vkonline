@@ -5,6 +5,7 @@ namespace common\models\vk\searchs;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
@@ -112,6 +113,7 @@ class VideoSearch extends Video
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
         //视频的所有附件
         $attsResult = $this->findAttachmentByVideo()->asArray()->all();
+        $playResult = $this->findPlayNumByVideoId();
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
@@ -136,7 +138,7 @@ class VideoSearch extends Video
         
         //以video_id为索引
         $videos = ArrayHelper::index($viedoResult, 'id');
-        $results = ArrayHelper::index($attsResult, 'video_id');
+        $results = ArrayHelper::merge(ArrayHelper::index($attsResult, 'video_id'), ArrayHelper::index($playResult, 'video_id'));
         //合并查询后的结果
         foreach ($videos as $id => $item) {
             if(isset($results[$id])){
@@ -189,6 +191,25 @@ class VideoSearch extends Video
             self::$query = self::findVideo();
         }
         return self::$query;
+    }
+    
+    /**
+     * 获取视频的播放量
+     * @param string $video_id
+     * @return array
+     */
+    protected function findPlayNumByVideoId()
+    {
+        $query = (new Query())->select(['Play.video_id', 'SUM(Play.play_count) AS play_num'])
+            ->from(['Play' => PlayStatistics::tableName()]);
+        
+        $query->leftJoin(['Video' => Video::tableName()], 'Video.id = Play.video_id');
+        
+        $query->where(['Video.is_del' => 0, 'Play.video_id' => self::$query]);
+        
+        $query->groupBy('Video.id');
+        
+        return $query->all();
     }
     
     /**

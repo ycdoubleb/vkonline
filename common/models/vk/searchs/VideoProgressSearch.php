@@ -72,6 +72,8 @@ class VideoProgressSearch extends VideoProgress
             'updated_at' => $this->updated_at,
         ]);
 
+        $query->orderBy(['updated_at' => SORT_DESC]);
+        
         return $dataProvider;
     }
 }

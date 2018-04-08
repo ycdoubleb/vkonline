@@ -1,8 +1,8 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Banner;
 use common\models\LoginForm;
-use FFMpeg\FFProbe;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use const YII_ENV_TEST;
 
 /**
  * Site controller
@@ -73,7 +74,15 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $bannerModel = Banner::findAll([
+            'customer_id' => Yii::$app->user->identity->customer_id, 
+            'is_publish' => 1,
+            'is_official' => Yii::$app->user->identity->is_official,
+        ]);
+        
+        return $this->render('index', [
+            'bannerModel' => $bannerModel,
+        ]);
     }
 
     /**
