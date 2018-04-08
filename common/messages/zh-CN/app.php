@@ -253,4 +253,7 @@ return [
     'Produce' => '生成',
     'Copy' => '复制',
     'Prompt' => '提示',
+    //前台-循环播放
+    'Lessons' => '本节',
+    'Target' => '目标'
 ];

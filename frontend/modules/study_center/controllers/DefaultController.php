@@ -18,6 +18,7 @@ use frontend\modules\study_center\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Exception;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -125,14 +126,14 @@ class DefaultController extends Controller
      *  playNum =>  播放量, courseNodes => 课程节点, msgDataProvider => 留言数据
      * ]
      */
-    public function actionPlay($id)
+    public function actionView($id)
     {
         $this->layout = '@app/views/layouts/main';
         $model = $this->findModel($id);
         $this->savePlayModel($model->courseNode->course_id, $id);
         $searchModel = new CourseMessageSearch();
         
-        return $this->render('play', [
+        return $this->render('view', [
             'model' => $model,
             'collect' => $this->findFavoriteModel($model->courseNode->course_id, $id),
             'praise' => $this->findPraiseModel($model->courseNode->course_id, $id),
@@ -144,23 +145,62 @@ class DefaultController extends Controller
     }
     
     /**
-     * 
+     * 媒体播放时保存video和course进度
      */
-    public function actionSaveProgress()
+    public function actionPlaying()
     {
         $course_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'course_id');
         $video_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'video_id');
         
         $model = $this->findVideoProgress($course_id, $video_id);
-        $model->last_time = ArrayHelper::getValue(\Yii::$app->request->post(), 'last_time');
+        $model->last_time = ArrayHelper::getValue(\Yii::$app->request->post(), 'current_time');
         
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {          
             if(\Yii::$app->request->isPost && $model->save()){
+                $is_finish = $this->getIsVideoPlayFinish($course_id);
                 $course = $this->findCourseProgress($course_id);
                 $course->last_video = $video_id;
+                if(!$is_finish){
+                    $course->is_finish = 0;
+                    $course->end_time = 0;
+                }
+                $course->save();
+            }
+            
+            $trans->commit();  //提交事务
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+        }
+    }
+    
+    /**
+     * 媒体播放结束时保存video和course进度
+     */
+    public function actionPlayend()
+    {
+        $course_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'course_id');
+        $video_id = ArrayHelper::getValue(\Yii::$app->request->post(), 'video_id');
+        
+        $model = $this->findVideoProgress($course_id, $video_id);
+        $model->finish_time = ArrayHelper::getValue(\Yii::$app->request->post(), 'current_time');
+        $model->is_finish = 1;
+        $model->end_time = time();
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {   
+            if(\Yii::$app->request->isPost && $model->save()){
+                $is_finish = $this->getIsVideoPlayFinish($course_id);
+                $course = $this->findCourseProgress($course_id);
+                $course->last_video = $video_id;
+                if($is_finish){
+                    $course->is_finish = 1;
+                    $course->end_time = time();
+                }
                 $course->save();
             }
             
@@ -315,7 +355,7 @@ class DefaultController extends Controller
      * 如果找不到模型，则返回 new VideoFavorite()
      * @param string $course_id
      * @param string $video_id
-     * @return CourseFavorite 
+     * @return VideoFavorite 
      */
     protected function findFavoriteModel($course_id, $video_id)
     {
@@ -464,7 +504,7 @@ class DefaultController extends Controller
      */
     protected function getPlayNumByVideoId($video_id)
     {
-        $query = Video::find()->select(['SUM(Play.play_count) AS play_num'])
+        $query = (new Query())->select(['SUM(Play.play_count) AS play_num'])
             ->from(['Play' => PlayStatistics::tableName()]);
         
         $query->leftJoin(['Video' => Video::tableName()], 'Video.id = Play.video_id');
@@ -473,6 +513,39 @@ class DefaultController extends Controller
         
         $query->groupBy('Video.id');
         
-        return $query->asArray()->one();
+        return $query->one();
+    }
+    
+    /**
+     * 获取课程下的所有视频是否播放完成
+     * @param string $course_id
+     * @return boolean
+     */
+    protected function getIsVideoPlayFinish($course_id)
+    {
+        //查询课程下的所有视频节点
+        $video = (new Query())->select(['Video.id'])
+            ->from(['Video' => Video::tableName()]);
+        $video->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        $video->where(['CourseNode.course_id' => $course_id]);
+        $video->andWhere(['Video.is_del' => 0]);
+        //查询课程下的视频节点进度是否已播放完成
+        $progress = (new Query())->select([
+            'IF (VideoProgress.is_finish IS NULL || VideoProgress.is_finish = 0,0,1) AS is_finish'
+        ])->from(['VideoNode' => $video]);
+        $progress->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.video_id = VideoNode.id');
+        
+        $isFinish = false;
+        //判断数组内容是否为一样的值
+        foreach ($progress->all() as $value) {
+            if($value['is_finish']){
+                $isFinish = true;
+            }else{
+                $isFinish = false;
+                break;
+            }
+        }
+     
+        return $isFinish;
     }
 }

@@ -89,8 +89,8 @@ ModuleAssets::register($this);
         <div class="tabs">
             <ul role="tablist">
                 <li role="presentation" class="active">
-                    <?= Html::a(Yii::t('app', '{Course}{Catalog}', [
-                        'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
+                    <?= Html::a(Yii::t('app', '{Lessons}{Target}', [
+                        'Lessons' => Yii::t('app', 'Lessons'), 'Target' => Yii::t('app', 'Target')
                     ]), '#target', ['role' => 'tab', 'data-toggle' => 'tab', 'aria-controls' => 'catalog', 'aria-expanded' => true]) ?>
                 </li>
                 <li role="presentation">
@@ -145,20 +145,30 @@ ModuleAssets::register($this);
 <?php
 
 $msgType = CourseMessage::VIDEO_TYPE;
+if(!empty($model->progress)){
+    if($model->progress->is_finish){
+        $currentTime = $model->progress->finish_time;
+    }else{
+        $currentTime = $model->progress->last_time;
+    }
+}else{
+    $currentTime = 0;
+}
 $js = 
 <<<JS
     var myVideo = document.getElementById('myVideo');
     var timeOut;
-    myVideo.currentTime = {$model->progress->last_time};
+    myVideo.currentTime = $currentTime;
+    //定时执行保存媒体播放进度
     window.saveProgress = function(){
         timeOut = setTimeout(function () {
-            $.post("../default/save-progress",{'course_id': "{$model->courseNode->course_id}",
-                'video_id': "{$model->id}",'last_time': myVideo.currentTime.toFixed(0),
+            $.post("../default/playing",{'course_id': "{$model->courseNode->course_id}",
+                'video_id': "{$model->id}",'current_time': myVideo.currentTime.toFixed(0),
             })
             saveProgress();
-        }, 1000);
+        }, 30000);
     }
-    
+    //单击媒体时执行
     myVideo.onclick = function(){
         if(myVideo.paused){
             myVideo.play();
@@ -172,8 +182,15 @@ $js =
             myVideo.previousElementSibling.style.cssText = "display: block";
         }
     };
-        
-        
+    //媒体播放结束时执行
+    myVideo.onended = function(){
+        clearTimeout(timeOut);
+        myVideo.previousElementSibling.innerHTML = '<i class="fa fa-play-circle-o"></i>';
+        myVideo.previousElementSibling.style.cssText = "display: block";
+        $.post("../default/playend",{'course_id': "{$model->courseNode->course_id}",
+            'video_id': "{$model->id}",'current_time': myVideo.currentTime.toFixed(0),
+        })
+    }
     //显示和隐藏目录 
     $("#bars").click(function(){
         if($(".catalog").css("right") == "0px"){

@@ -134,7 +134,7 @@ ModuleAssets::register($this);
                             'aria-label' => Yii::t('yii', 'View'),
                             'data-pjax' => '0',
                         ];
-                        return Html::a('<i class="fa fa-play-circle"></i>', ['play', 'id' => $model->video_id], $options);
+                        return Html::a('<i class="fa fa-play-circle"></i>', ['view', 'id' => $model->video_id], $options);
                     },
                 ],
                 'headerOptions' => [

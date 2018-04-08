@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Banner;
 use common\models\LoginForm;
 use common\models\User;
 use common\models\vk\Customer;
@@ -75,7 +76,15 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+        $bannerModel = Banner::findAll([
+            'customer_id' => Yii::$app->user->identity->customer_id, 
+            'is_publish' => 1,
+            'is_official' => Yii::$app->user->identity->is_official,
+        ]);
+        
+        return $this->render('index', [
+            'bannerModel' => $bannerModel,
+        ]);
     }
 
     /**
