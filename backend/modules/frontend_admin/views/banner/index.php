@@ -55,7 +55,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]),
                     'value' => function ($data){
-                        return !empty($data['customer_id']) ? $data['customer_id'] : '官网';
+                        return !empty($data['customer_id']) ? $data['customer_id'] : null;
                     },
                     'contentOptions' => [
                         'style' => [

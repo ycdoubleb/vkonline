@@ -3,14 +3,16 @@ namespace frontend\controllers;
 
 use common\models\Banner;
 use common\models\LoginForm;
+use common\models\User;
+use common\models\vk\Customer;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use const YII_ENV_TEST;
@@ -95,7 +97,10 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-
+        
+        $url = \Yii::$app->request->hostInfo;   //获取当前域名
+        $customerLogo = Customer::find()->select(['logo'])->where(['domain' => $url])->asArray()->one();
+        
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
@@ -104,6 +109,7 @@ class SiteController extends Controller
 
             return $this->render('login', [
                 'model' => $model,
+                'customerLogo' => ArrayHelper::getValue($customerLogo, 'logo'),
             ]);
         }
     }
@@ -160,7 +166,9 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $model = new SignupForm();
+        $model = new User();
+        $model->scenario = User::SCENARIO_CREATE;
+        
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $model->signup()) {
                 if (Yii::$app->getUser()->login($user)) {

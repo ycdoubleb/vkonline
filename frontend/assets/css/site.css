@@ -1,0 +1,143 @@
+.wrap > .container,
+.site-index {
+   width: 100%;
+   margin: 0;
+   padding: 0;
+}
+/************************************注册页样式*********************************/
+.site-signup .vkonline {
+    width: 100%;
+    min-height: 914px;
+    background-size: cover;
+    background-position: center 0;
+    background-repeat: no-repeat;
+    background-color: #ebebeb;
+}
+
+.site-signup .vkonline .signup-title {
+    position: relative;
+    top: 170px;
+    width: 660px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    color: #ffffff;
+    background-color: #448cca;
+    z-index: 1;
+    -webkit-box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.349019607843137);
+    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.349019607843137);
+}
+
+.site-signup .vkonline .platform {
+    width: 650px;
+    height: 480px;
+    padding: 10px;
+    background-color: #ffffff;
+    position: relative;
+    top: 170px;
+    /*font-size: 0px;*/
+}
+
+.site-signup .vkonline .control-label{
+    font-size: 0px;
+}
+
+.site-signup .vkonline #invite-code {
+    margin-top: 15px;
+}
+
+.site-signup .vkonline .form-group{
+    margin-bottom: 0px;
+}
+
+.site-signup .vkonline .platform .btn-signup{
+    margin-top: 35px;
+    text-align: center
+}
+
+.site-signup .vkonline .platform .signup-button{
+    width: 250px;
+    border-radius: 0px;
+}
+
+.site-signup .vkonline .row input{
+    border-radius: 0px;
+}
+
+/************************************登录页样式*********************************/
+.site-login .vkonline {
+    width: 100%;
+    min-height: 914px;
+    background-size: cover;
+    background-position: center 0;
+    background-repeat: no-repeat;
+    background-color: #ebebeb;
+}
+
+.site-login .vkonline .platform {
+    width: 350px;
+    height: 480px;
+    padding: 10px;
+    background-color: #ffffff;
+    position: relative;
+    top: 170px;
+    font-size: 0px;
+}
+
+.site-login .vkonline .platform .logo {
+    width: 330px;
+    height: 149px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.site-login .vkonline .platform .name {
+    height: auto;
+    text-align: left;
+    margin-left: 15px;
+    float: left;
+    display: inline-block;
+    position: relative;
+    top: 10px;
+}
+
+.site-login .vkonline .platform .frame {
+    width: 100%;
+    position: relative;
+    font-size: 14px;
+}
+
+.platform .frame .attribute{
+    margin-top: 21px;
+    padding-right: 20px !important;
+}
+
+.platform .frame .btn-primary, #loginform-username, #loginform-password{
+    border-radius: 0px;
+}
+
+.platform .frame .checkbox, .platform .frame .forget a{
+    color: #999999;
+    text-decoration: none;
+}
+
+.platform .frame .forget {
+    margin-top: 10px;
+    text-align: right;
+    right: 6px;
+}
+
+.platform .frame .button{
+    margin-top: 5px;
+    padding-right: 20px !important;
+}
+
+.platform .frame .btn-signup{
+    text-align: center;
+    margin-top: 20px;
+}
+
+.platform .frame .btn-signup a{
+    text-decoration: none;
+}

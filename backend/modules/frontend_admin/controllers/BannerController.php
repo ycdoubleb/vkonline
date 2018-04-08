@@ -6,6 +6,7 @@ use backend\components\BaseController;
 use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
+use common\models\User;
 use common\models\vk\Customer;
 use Yii;
 use yii\db\Query;
@@ -72,15 +73,16 @@ class BannerController extends BaseController
      */
     public function actionCreate()
     {
-        $model = new Banner(['is_official' => 1]);
-       
+        $customerId = $this->getTheCustomer()['officialQuery'];     //所属官网ID
+        $model = new Banner(['is_official' => 1, 'customer_id' => key($customerId)]);
+
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->render('create', [
             'model' => $model,
-            'customer' => $this->getTheCustomer()['officialQuery'],     //所属官网ID
+            'customer' => $customerId,     //所属官网ID
         ]);
     }
 
@@ -94,7 +96,7 @@ class BannerController extends BaseController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        
+
         if($model->is_official==0){
             throw new NotAcceptableHttpException('无权限操作！');
         } else {
@@ -120,7 +122,7 @@ class BannerController extends BaseController
     {
         $model = $this->findModel($id);
         
-        if($model->customer_id){
+        if($model->is_official==0){
             throw new NotAcceptableHttpException('无权限操作！');
         } else {
             $model->delete();
@@ -170,11 +172,12 @@ class BannerController extends BaseController
     public function getCreatedBy()
     {
         $createdBy = (new Query())
-                ->select(['Banner.created_by AS id', 'User.nickname AS name'])
-                ->from(['Banner' => Banner::tableName()])
-                ->leftJoin(['User' => AdminUser::tableName()], 'User.id = Banner.created_by')
-                ->all();
-        
+            ->select(['Banner.created_by AS id', 'IF(User.nickname IS NULL,  AdminUser.nickname, User.nickname) AS name'])
+            ->from(['Banner' => Banner::tableName()])
+            ->leftJoin(['User' => User::tableName()], 'User.id = Banner.created_by')                //关联查询创建人
+            ->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by') //关联查询创建人(非客户)
+            ->all();
+
         return ArrayHelper::map($createdBy, 'id', 'name');
     }
 }
