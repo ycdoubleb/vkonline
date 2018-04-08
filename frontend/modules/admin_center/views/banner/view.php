@@ -39,7 +39,7 @@ $this->title = Yii::t('app', '{Propaganda}{Page}{Detail}',[
                     'attribute' => 'path',
                     'format' => 'raw',
                     'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '820px']]) : 
-                        '<video src="'.WEB_ROOT . $model->path.'" controls="controls"></video>',
+                        '<video src="'.WEB_ROOT . $model->path.'" controls="controls" style="max-width:820px"></video>',
                 ],
                 'link',
                 [

@@ -266,6 +266,10 @@ $logindex = Url::to(['log-index', 'id' => $model->id]);
 
 $js = 
 <<<JS
+    $('.myModal').on('hide.bs.modal', function (e) {
+        window.location.reload();
+    })
+        
     //加载管理员列表
     $("#admin").load("$admin"); 
         
@@ -278,6 +282,8 @@ $js =
         $('.myModal').modal("show").load(elem.attr("href"));
         return false;
     }
+    
+    
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>

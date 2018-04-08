@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], 
-                ['class' => 'btn btn-primary '.($model->customer_id ? 'disabled' : ' ')]) ?>
+                ['class' => 'btn btn-primary '.($model->is_official==0 ? 'disabled' : ' ')]) ?>
         <?php
 //        Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
 //            'class' => 'btn btn-danger',
@@ -49,14 +49,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'customer_id',
                     'format' => 'raw',
-                    'value' => $model->customer->name ,
+                    'value' => $model->customer->name,
                 ],
                 'title',
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
                     'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '680px']]) : 
-                        '<video src="'.WEB_ROOT . $model->path.'" controls="controls"></video>',
+                        '<video src="'.WEB_ROOT . $model->path.'" controls="controls" style="max-width:680px"></video>',
                 ],
                 'link',
                 [

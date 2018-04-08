@@ -36,11 +36,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'path')->widget(FileInput::class, [
         'options' => [
-            'accept' => 'image/*',
+//            'accept' => 'image/*',
             'multiple' => false,
         ],
         'pluginOptions' => [
-            'resizeImages' => true,
+//            'resizeImages' => true,
             'showCaption' => false,
             'showRemove' => false,
             'showUpload' => false,
