@@ -79,7 +79,7 @@ class SiteController extends Controller
             'is_publish' => 1,
             'is_official' => Yii::$app->user->identity->is_official,
         ]);
-        
+        //var_dump($bannerModel);exit;
         return $this->render('index', [
             'bannerModel' => $bannerModel,
         ]);

@@ -37,3 +37,4 @@ phpunit.phar
 /backend/runtime/
 /frontend/runtime/
 /backend/web/assets/
+/frontend/web/upload/banner/
