@@ -18,7 +18,7 @@ $this->title = Yii::t('app', 'Login');
     <div class="vkonline" style='background-image: url("/imgs/site/site_loginbg.jpg");'>
         <div class="platform container">
             <div class="logo">
-                <?= Html::img("$customerLogo") ?>
+                <?= Html::img("$customerLogo", ['style' => ['max-width' => '290px', 'max-height' => '140px']]) ?>
             </div> 
             <div class="frame">
                 <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>

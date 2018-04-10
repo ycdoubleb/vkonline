@@ -14,10 +14,27 @@
     background-color: #ebebeb;
 }
 
+@media (max-width: 480px) {
+    .site-signup .vkonline .signup-title{
+        width: 360px;
+    }
+    
+    .site-signup .vkonline .platform {
+        width: 350px;
+    }
+}
+@media (min-width: 700px) {
+    .site-signup .vkonline .signup-title{
+        width: 660px;
+    }
+    
+    .site-signup .vkonline .platform {
+        width: 650px;
+    }
+}
 .site-signup .vkonline .signup-title {
     position: relative;
     top: 170px;
-    width: 660px;
     height: 42px;
     line-height: 42px;
     text-align: center;
@@ -29,30 +46,61 @@
 }
 
 .site-signup .vkonline .platform {
-    width: 650px;
-    height: 480px;
     padding: 10px;
     background-color: #ffffff;
     position: relative;
     top: 170px;
-    /*font-size: 0px;*/
+}
+
+.site-signup .vkonline .platform1 {
+    height: 420px;
+}
+
+.site-signup .vkonline .platform2 {
+    height: 500px;
 }
 
 .site-signup .vkonline .control-label{
     font-size: 0px;
 }
 
-.site-signup .vkonline #invite-code {
-    margin-top: 15px;
+#form-signup{
+    margin-top: -18px;
+}
+
+.site-signup .vkonline #user-customer_id {
+    border-color: #ccc;
+}
+
+.site-signup .vkonline #customer {
+    height: 15px;
+    margin-left: 5px;
+    color: #3d3d3d;
+}
+
+.icon-y{
+    position:  absolute;
+    top: 40px;
+    right: 20px;
+    color: #5cb85c;
+}
+
+.icon-n{
+    position:  absolute;
+    top: 40px;
+    right: 20px;
+    color: #d9534f;
 }
 
 .site-signup .vkonline .form-group{
     margin-bottom: 0px;
+    height: 62px;
 }
 
 .site-signup .vkonline .platform .btn-signup{
-    margin-top: 35px;
-    text-align: center
+    margin-top: 40px;
+    height: 34px;
+    text-align: center;
 }
 
 .site-signup .vkonline .platform .signup-button{

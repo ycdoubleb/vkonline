@@ -89,14 +89,14 @@ $this->title = Yii::t('app', '{User}{Info}',[
                     'format' => 'raw',
                     'value' => $userCouVid['course_num'] . ' 门' .
                         Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['course/', ['created_by' => $model->id]]),
+                                . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"]),
                 ],
                 [
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => $userCouVid['video_num'] . ' 个' .
                         Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['video/', ['created_by' => $model->id]]),
+                                . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"]),
                 ],
             ],
         ]) ?>

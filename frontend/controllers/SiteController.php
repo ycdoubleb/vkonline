@@ -15,6 +15,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\NotAcceptableHttpException;
 use const YII_ENV_TEST;
 
 /**
@@ -98,9 +99,10 @@ class SiteController extends Controller
             return $this->goHome();
         }
         
-        $url = \Yii::$app->request->hostInfo;   //获取当前域名
-        $customerLogo = Customer::find()->select(['logo'])->where(['domain' => $url])->asArray()->one();
-        
+        $url = \Yii::$app->request->hostInfo;       //获取当前域名
+        $hostUrl = trim(strrchr($url, '/'),'/');    //截取最后一个斜杠后面的内容
+        $customerLogo = Customer::find()->select(['logo'])->where(['domain' => $hostUrl])->asArray()->one();
+
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
@@ -168,9 +170,9 @@ class SiteController extends Controller
     {
         $model = new User();
         $model->scenario = User::SCENARIO_CREATE;
-        
+
         if ($model->load(Yii::$app->request->post())) {
-            if ($user = $model->signup()) {
+            if ($user = $this->signup(Yii::$app->request->post())) {
                 if (Yii::$app->getUser()->login($user)) {
                     return $this->goHome();
                 }
@@ -180,6 +182,69 @@ class SiteController extends Controller
         return $this->render('signup', [
             'model' => $model,
         ]);
+    }
+    
+    /**
+     * 获取客户名
+     * @return array
+     */
+    public function actionCustomer()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
+        $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
+        
+        if($customer != null){
+            return [
+                'code' => 200,
+                'data' => [
+                    'name' => ArrayHelper::getValue($customer, 'name'),
+                ],
+                'message' => ''
+            ];
+        } else {
+            return [
+                'code' => 404,
+                'data' => [],
+                'message' => '无效的邀请码'
+            ];
+        }
+    }
+
+    public function signup($post)
+    {   
+        $user = new User();
+        if (!$user->validate()) {   //数据验证
+            return null;
+        }
+        
+        $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
+        $username = ArrayHelper::getValue($post, 'User.username');  //用户名
+        $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
+        $nickname = ArrayHelper::getValue($post, 'User.nickname');  //姓名
+        $password_hash = ArrayHelper::getValue($post, 'User.password_hash');    //密码
+        
+        if($cusId != null){
+            $customer = Customer::find()->select(['id'])->where(['invite_code' => $cusId])->asArray()->one();//客户ID
+            if($customer != null){
+                $customerId = ArrayHelper::getValue($customer, 'id');
+            } else {
+                throw new NotAcceptableHttpException('无效的验证码！');
+            }
+        } else {
+            $officialCus = Customer::find()->select(['id'])->where(['is_official' => 1])->asArray()->one(); //官网ID
+            $customerId = ArrayHelper::getValue($officialCus, 'id');
+        }
+        //赋值
+        $user->customer_id = $customerId;
+        $user->username = $username;
+        $user->phone = $phone;
+        $user->nickname = $nickname;
+        $user->setPassword($password_hash);
+        $user->generateAuthKey();
+        
+        return $user->save() ? $user : null;
     }
 
     /**

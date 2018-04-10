@@ -248,7 +248,7 @@ $js =
         
     /** 生成邀请码 */
     window.inviteCode = function inviteCode() {
-        $.post("create-invite-code?id=$model->id",function(data){
+        $.post("default/create-invite-code?id=$model->id",function(data){
             if(data == '200'){
                 $("#signup-user").load("$signupIndex"); 
             }

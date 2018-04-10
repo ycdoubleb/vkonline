@@ -206,7 +206,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                     },
                     'contentOptions' => [
                         'style' => [
-                            'white-space' => 'unset',
+                            'white-space' => 'normal',
                             'font-size' => '13px',
                         ],
                     ],
@@ -219,8 +219,8 @@ $this->title = Yii::t('app', '{Course}{List}',[
                              $options = [
                                 'class' => 'btn btn-xs btn-default '.($data['is_publish'] == 0 ? 'disabled' : ' '),
                                 'style' => '',
-                                'title' => Yii::t('app', 'Viewo'),
-                                'aria-label' => Yii::t('app', 'Viewo'),
+                                'title' => Yii::t('app', 'View'),
+                                'aria-label' => Yii::t('app', 'View'),
                                 'data-pjax' => '0',
                             ];
                             $buttonHtml = [
