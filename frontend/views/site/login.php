@@ -5,15 +5,23 @@
 /* @var $model LoginForm */
 
 use common\models\LoginForm;
-use frontend\assets\AppAsset;
 use frontend\assets\SiteAssets;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
 
 $this->title = Yii::t('app', 'Login');
-//var_dump($customerLogo);exit;
+
+SiteAssets::register($this);
+
 ?>
+<style type="text/css">
+    body .wrap > .container {
+        width: 100%;
+        padding: 0;
+    }
+</style>
+
 <div class="site-login">
     <div class="vkonline" style='background-image: url("/imgs/site/site_loginbg.jpg");'>
         <div class="platform container">
@@ -74,9 +82,4 @@ $js = <<<JS
     $('html,body').animate({scrollTop: ($(".platform").offset().top) - 100}, 200);
 JS;
     $this->registerJs($js, View::POS_READY);
-?>
-
-<?php
-    AppAsset::register($this);
-    SiteAssets::register($this);
 ?>

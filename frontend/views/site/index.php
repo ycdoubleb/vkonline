@@ -1,9 +1,19 @@
 <?php
 
-/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\web\View;
+
+/* @var $this View */
 
 $this->title = '微课在线平台';
 ?>
+
+<style type="text/css">
+    
+    .carousel-inner > .item > video, .carousel-inner > .item > a > video {
+        object-fit: fill;
+    }
+</style>
 
 <div class="site-index">
 
@@ -11,25 +21,22 @@ $this->title = '微课在线平台';
         <!-- Indicators -->
         <ol class="carousel-indicators">
             <?php foreach ($bannerModel as $index => $model): ?>
-            <li data-target="#carousel-example-generic" data-slide-to="<?= $index ?>" class="active"></li>
+            <li data-target="#carousel-example-generic" data-slide-to="<?= $index ?>" class="<?= $index == 0 ? 'active' : '' ?>"></li>
             <?php endforeach; ?>
         </ol>
 
         <!-- Wrapper for slides -->
         <div class="carousel-inner" role="listbox">
-            <div class="item active">
-                <img src="..." alt="...">
-                <div class="carousel-caption">
-                  ...
-                </div>
+            <?php foreach ($bannerModel as $index => $model): ?>
+            <div class="item <?= $index == 0 ? 'active' : '' ?>">
+                <?php if($model->type == 1): ?>
+                <img src="<?= $model->path ?>" width="100%" style="height: 590px;">
+                <?php else: ?>
+                <video src="<?= $model->path ?>" autoplay loop width="100%" height="590"></video>
+                <?php endif; ?>
+                <div class="carousel-caption"></div>
             </div>
-            <div class="item">
-                <img src="..." alt="...">
-                <div class="carousel-caption">
-                  ...
-                </div>
-            </div>
-            ...
+            <?php endforeach; ?>
         </div>
 
         <!-- Controls -->
