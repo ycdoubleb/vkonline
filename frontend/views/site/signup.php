@@ -1,7 +1,6 @@
 <?php
 
 use common\models\User;
-use frontend\assets\AppAsset;
 use frontend\assets\SiteAssets;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
@@ -11,9 +10,18 @@ use yii\web\View;
 /* @var $form ActiveForm */
 /* @var $model User */
 
+SiteAssets::register($this);
+
 $this->title = Yii::t('app', 'Signup');
 
 ?>
+<style type="text/css">
+    body .wrap > .container {
+        width: 100%;
+        padding: 0;
+    }
+</style>
+
 <div class="site-signup">
     <div class="vkonline" style='background-image: url("/imgs/site/site_loginbg.jpg");'>
         <div class="signup-title container">新用户注册</div>
@@ -75,9 +83,4 @@ $js = <<<JS
     $('html,body').animate({scrollTop: ($(".platform").offset().top) - 120}, 200);
 JS;
     $this->registerJs($js, View::POS_READY);
-?>
-
-<?php
-    AppAsset::register($this);
-    SiteAssets::register($this);
 ?>
