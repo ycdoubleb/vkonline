@@ -125,6 +125,7 @@ $this->title = Yii::t('app', 'Survey');
                 ],
                 [
                     'label' => Yii::t('app', 'Course'),
+                    'format' => 'raw',
                     'value' => function ($data){
                         return isset($data['cour_num']) ? $data['cour_num'] : null;
                     },
@@ -141,6 +142,7 @@ $this->title = Yii::t('app', 'Survey');
                 ],
                 [
                     'label' => Yii::t('app', 'Video'),
+                    'format' => 'raw',
                     'value' => function ($data){
                         return isset($data['video_num']) ? $data['video_num'] : null;
                     },
@@ -160,6 +162,7 @@ $this->title = Yii::t('app', 'Survey');
                         'Video' => Yii::t('app', 'Video'),
                         'Play' => Yii::t('app', 'Play'),
                     ]),
+                    'format' => 'raw',
                     'value' => function ($data){
                         return isset($data['play_count']) ? $data['play_count'] : null;
                     },

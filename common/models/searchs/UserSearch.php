@@ -3,6 +3,7 @@
 namespace common\models\searchs;
 
 use common\models\User;
+use common\models\vk\CustomerAdmin;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
@@ -72,12 +73,12 @@ class UserSearch extends User
         
         //模块id为管理中心的情况下
         if($moduleId == 'admin_center'){
-            self::$query->andFilterWhere(['customer_id' => $customerId]);
+            self::$query->andFilterWhere(['User.customer_id' => $customerId]);
         }
         
         //条件查询
         self::$query->andFilterWhere([
-            'customer_id' => $this->customer_id,
+            'User.customer_id' => $this->customer_id,
             'User.status' => $this->status,
             'max_store' => $this->max_store,
             'created_at' => $this->created_at,
@@ -95,7 +96,8 @@ class UserSearch extends User
         $videos = $this->getUserVideoNodeNumber();
         $videoSize = $this->findUsedSizeByUser()->asArray()->all();
         //添加字段and 关联查询
-        self::$query->addSelect(['User.*'])->with('customer');
+        self::$query->addSelect(['User.*', 'CustomerAdmin.level'])->with('customer');
+        self::$query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.user_id = User.id');
         //以user_id为索引
         $users = ArrayHelper::index(self::$query->asArray()->all(), 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 

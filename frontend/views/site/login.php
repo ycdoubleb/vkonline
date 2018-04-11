@@ -33,7 +33,7 @@ SiteAssets::register($this);
 
                     <?= $form->field($model, 'username',[
                         'options' => [
-                            'class' => 'col-xs-12 attribute',
+                            'class' => 'col-xs-12 attr-name',
                         ],
                         'inputOptions' => ['placeholder' => '用户名或者手机号...'],
                         'template' => "<div class=\"col-xs-12\" style=\"padding:0px;\">{input}</div>\n<div class=\"col-xs-10\" style=\"padding: 0px 5px;\">{error}</div>"
@@ -41,7 +41,7 @@ SiteAssets::register($this);
 
                     <?= $form->field($model, 'password', [
                         'options' => [
-                            'class' => 'col-xs-12 attribute',
+                            'class' => 'col-xs-12 attr-pass',
                         ], 
                         'inputOptions' => ['placeholder' => '密码...'],
                         'template' => "<div class=\"col-xs-12\" style=\"padding:0px;\">{input}</div>\n<div class=\"col-xs-10\" style=\"padding: 0px 5px;\">{error}</div>"

@@ -209,13 +209,9 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->id = md5(time() . rand(1, 99999999));
             }
             //设置是否属于官网账号
-            if($this->customer_id){
-                $isOfficial = Customer::findOne(['id' => $this->customer_id]);
-                $this->is_official = $isOfficial->is_official;
-            } else {
-                $this->is_official = 1;
-            }
-            
+            $isOfficial = Customer::findOne(['id' => $this->customer_id]);
+            $this->is_official = $isOfficial->is_official;
+
             //上传头像
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
@@ -233,7 +229,7 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->setPassword($this->password_hash);
                 $this->generateAuthKey();
                 //设置默认头像
-                if (trim($this->avatar) == ''){
+                if (trim($this->avatar) == '' || !isset($this->avatar)){
                     $this->avatar = '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
@@ -243,7 +239,7 @@ class User extends ActiveRecord implements IdentityInterface {
                     $this->setPassword($this->password_hash);
                 }
                 if($this->max_store == $this->getOldAttribute('max_store')){
-                    $this->max_store == $this->getOldAttribute('max_store');
+                    $this->max_store = $this->getOldAttribute('max_store');
                 }else{
                     $this->max_store = $this->max_store * $this->byte;
                 }

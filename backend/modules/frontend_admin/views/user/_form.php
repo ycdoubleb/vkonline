@@ -34,7 +34,7 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => '手机号']) ?>
     
-    <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
+    <?= $form->field($model, 'password_hash')->passwordInput(['value' => '', 'minlength' => 6, 'maxlength' => 20]) ?>
     
     <?= $form->field($model, 'password2')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
     

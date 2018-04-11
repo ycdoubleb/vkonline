@@ -207,7 +207,7 @@ class SiteController extends Controller
             return [
                 'code' => 404,
                 'data' => [],
-                'message' => '无效的邀请码'
+                'message' => '<span style="color:#a94442">无效的邀请码</span>'
             ];
         }
     }
@@ -230,7 +230,7 @@ class SiteController extends Controller
             if($customer != null){
                 $customerId = ArrayHelper::getValue($customer, 'id');
             } else {
-                throw new NotAcceptableHttpException('无效的验证码！');
+                throw new NotAcceptableHttpException('无效的邀请码！');
             }
         } else {
             $officialCus = Customer::find()->select(['id'])->where(['is_official' => 1])->asArray()->one(); //官网ID

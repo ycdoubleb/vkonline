@@ -28,11 +28,11 @@ use yii\widgets\ActiveForm;
     
     <?= Html::hiddenInput('User[customer_id]', Yii::$app->user->identity->customer_id) ?>
     
-    <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称'])->label(Yii::t('app', 'Name')) ?>
+    <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称','disabled' => true])->label(Yii::t('app', 'Name')) ?>
     
-    <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => '手机号']) ?>
+    <?= $form->field($model, 'username')->textInput(['maxlength' => true, 'placeholder' => '手机号','disabled' => true]) ?>
     
-    <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
+    <?= $form->field($model, 'password_hash')->passwordInput(['value' => '', 'minlength' => 6, 'maxlength' => 20]) ?>
     
     <?= $form->field($model, 'password2')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
     

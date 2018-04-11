@@ -156,36 +156,42 @@
     font-size: 14px;
 }
 
-.platform .frame .attribute{
+.site-login .vkonline .platform .frame .attr-name{
+    height: 69px;
     margin-top: 21px;
     padding-right: 20px !important;
 }
 
-.platform .frame .btn-primary, #loginform-username, #loginform-password{
+.site-login .vkonline .platform .frame .attr-pass{
+    height: 69px;
+    padding-right: 20px !important;
+}
+
+.site-login .vkonline .platform .frame .btn-primary, #loginform-username, #loginform-password{
     border-radius: 0px;
 }
 
-.platform .frame .checkbox, .platform .frame .forget a{
+.site-login .vkonline .platform .frame .checkbox, .platform .frame .forget a{
     color: #999999;
     text-decoration: none;
 }
 
-.platform .frame .forget {
+.site-login .vkonline .platform .frame .forget {
     margin-top: 10px;
     text-align: right;
     right: 6px;
 }
 
-.platform .frame .button{
+.site-login .vkonline .platform .frame .button{
     margin-top: 5px;
     padding-right: 20px !important;
 }
 
-.platform .frame .btn-signup{
+.site-login .vkonline .platform .frame .btn-signup{
     text-align: center;
     margin-top: 20px;
 }
 
-.platform .frame .btn-signup a{
+.site-login .vkonline .platform .frame .btn-signup a{
     text-decoration: none;
 }
