@@ -2,6 +2,7 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
+use common\models\Config;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\Customer;
@@ -18,7 +19,6 @@ use yii\web\Controller;
  */
 class DefaultController extends Controller
 {
-    public static $totalSize = 10995116277760;
     
     /**
      * Renders the index view for the module
@@ -30,11 +30,11 @@ class DefaultController extends Controller
 
         return $this->render('index',[
             'model' => $model,
-            'customerInfo' => $this->getCustomerInfo(),
-            'totalUser' => count(User::find()->all()),
-            'totalSize' => self::$totalSize,
-            'usedSpace' => $this->getUsedSpace(),
-            'resourceData' => $this->searchResources(),
+            'customerInfo' => $this->getCustomerInfo(),             //客户数量
+            'totalUser' => count(User::find()->all()),              //用户数量
+            'totalSize' => $this->getTotalSize()['config_value'],   //服务器存储空间大小
+            'usedSpace' => $this->getUsedSpace(),                   //已用大小
+            'resourceData' => $this->searchResources(),             //资源统计
         ]);
     }
     
@@ -52,6 +52,20 @@ class DefaultController extends Controller
         return $customerInfo;
     }
     
+    /**
+     * 查询服务器的存储空间
+     * @return array
+     */
+    public function getTotalSize()
+    {
+        $totalSize = (new Query())->select(['config_value'])
+                ->from(['Config' => Config::tableName()])
+                ->where(['config_name' => 'max_size'])      //过滤条件
+                ->one();
+        
+        return $totalSize;
+    }
+
     /**
      * 查询已使用的空间
      * @return array
@@ -156,30 +170,42 @@ class DefaultController extends Controller
         //计算同比增长
         if($lastMonthData['cour_num'] != 0){
             if($thisMonthData['cour_num'] != 0){
-                $asRateCourse = ['cour_num' => (($thisMonthData['cour_num'] - $lastMonthData['cour_num']) / $lastMonthData['cour_num'] * 100).'%'];
+                $couNum = sprintf("%.2f", ($thisMonthData['cour_num'] - $lastMonthData['cour_num']) / $lastMonthData['cour_num'] * 100);
+                $asRateCourse = ['cour_num' => $couNum . '%<span style="color:'.($couNum>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($couNum>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRateCourse = ['cour_num' => '0%'];
             }
+        } elseif ($thisMonthData['cour_num'] != 0) {
+            $asRateCourse = ['cour_num' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRateCourse = ['cour_num' => '100%'];
+            $asRateCourse = ['cour_num' => '0%'];
         }
         if($lastMonthData['video_num'] != 0){
             if($thisMonthData['video_num'] != 0){
-                $asRateVideo = ['video_num' => (($thisMonthData['video_num'] - $lastMonthData['video_num']) / $lastMonthData['video_num'] * 100).'%'];
+                $videoNum = sprintf("%.2f", ($thisMonthData['video_num'] - $lastMonthData['video_num']) / $lastMonthData['video_num'] * 100);
+                $asRateVideo = ['video_num' => $videoNum . '%<span style="color:'.($videoNum>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($videoNum>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRateVideo = ['video_num' => '0%'];
             }
+        } elseif ($thisMonthData['video_num'] != 0) {
+            $asRateVideo = ['video_num' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRateVideo = ['video_num' => '100%'];
+            $asRateVideo = ['video_num' => '0%'];
         }
         if($lastMonthData['play_count'] != 0){
             if($thisMonthData['play_count'] != 0){
-                $asRatePlay = ['play_count' => (($thisMonthData['play_count'] - $lastMonthData['play_count']) / $lastMonthData['play_count'] * 100).'%'];
+                $playCount = sprintf("%.2f", ($thisMonthData['play_count'] - $lastMonthData['play_count']) / $lastMonthData['play_count'] * 100);
+                $asRatePlay = ['play_count' => $playCount . '%<span style="color:'.($playCount>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($playCount>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRatePlay = ['play_count' => '0%'];
             }
+        } elseif ($thisMonthData['play_count'] != 0) {
+            $asRatePlay = ['play_count' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRatePlay = ['play_count' => '100%'];
+            $asRatePlay = ['play_count' => '0%'];
         }
         $asRate[] = array_merge(['name' => '同比'], $asRateCourse, $asRateVideo, $asRatePlay);
         

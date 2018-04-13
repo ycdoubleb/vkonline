@@ -116,6 +116,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             'min-width' => '90px'
                         ],
                     ],
+                    'value' => function ($data) {
+                        return Banner::$targetType[$data->target];
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -136,7 +139,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                     'disabled' => function($model, $key, $index){
                         /* @var $model BannerSearch */
-                        return !empty($model->customer_id);
+                        return empty($model->is_official);
                     },
                 ],
                 [

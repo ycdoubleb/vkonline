@@ -123,7 +123,7 @@ class User extends ActiveRecord implements IdentityInterface {
     public function rules() {
         return [
             [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
-            [['username', 'nickname', 'email'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
+            [['username', 'nickname', 'email', 'phone'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
@@ -211,6 +211,7 @@ class User extends ActiveRecord implements IdentityInterface {
             //设置是否属于官网账号
             $isOfficial = Customer::findOne(['id' => $this->customer_id]);
             $this->is_official = $isOfficial->is_official;
+
             //上传头像
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
@@ -228,7 +229,7 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->setPassword($this->password_hash);
                 $this->generateAuthKey();
                 //设置默认头像
-                if (trim($this->avatar) == ''){
+                if (trim($this->avatar) == '' || !isset($this->avatar)){
                     $this->avatar = '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
@@ -238,7 +239,7 @@ class User extends ActiveRecord implements IdentityInterface {
                     $this->setPassword($this->password_hash);
                 }
                 if($this->max_store == $this->getOldAttribute('max_store')){
-                    $this->max_store == $this->getOldAttribute('max_store');
+                    $this->max_store = $this->getOldAttribute('max_store');
                 }else{
                     $this->max_store = $this->max_store * $this->byte;
                 }
@@ -290,7 +291,8 @@ class User extends ActiveRecord implements IdentityInterface {
      * @return static|null
      */
     public static function findByUsername($username) {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::find()->where(['and', ['or', ['username' => $username], ['phone' => $username]], ['status' => self::STATUS_ACTIVE]])
+                ->one();
     }
 
     /**

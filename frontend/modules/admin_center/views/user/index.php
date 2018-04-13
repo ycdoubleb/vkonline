@@ -3,6 +3,7 @@
 use backend\components\GridViewChangeSelfColumn;
 use common\models\searchs\UserSearch;
 use common\models\User;
+use common\models\vk\CustomerAdmin;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
@@ -18,6 +19,8 @@ $this->title = Yii::t('app', '{User}{List}',[
     'User' => Yii::t('app', 'User'),
     'List' => Yii::t('app', 'List'),
 ]);
+
+$userLevel = CustomerAdmin::find()->select(['level'])->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
 
 ?>
 <div class="user-index main">
@@ -77,6 +80,10 @@ $this->title = Yii::t('app', '{User}{List}',[
                     'plugOptions' => [
                         'values' => [0,10],
                     ],
+                    'disabled' => function($data) use ($userLevel){
+                        return ($data['id'] == Yii::$app->user->id) ? true : 
+                                (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? true : false) : false);
+                    },
                     'value' => function ($data){
                         return User::$statusIs[$data['status']];
                     },
@@ -174,9 +181,10 @@ $this->title = Yii::t('app', '{User}{List}',[
                             ];
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                         },
-                        'update' => function ($url, $data, $key) {
+                        'update' => function ($url, $data, $key) use ($userLevel) {
                              $options = [
-                                'class' => 'btn btn-xs btn-primary',
+                                'class' => 'btn btn-xs btn-primary ' . (($data['id'] == Yii::$app->user->id) ? ' ' : 
+                                    (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
                                 'style' => '',
                                 'title' => Yii::t('app', 'Update'),
                                 'aria-label' => Yii::t('app', 'Update'),
@@ -192,9 +200,10 @@ $this->title = Yii::t('app', '{User}{List}',[
                             ];
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                         },
-                        'delete' => function ($url, $data, $key) {
+                        'delete' => function ($url, $data, $key) use ($userLevel) {
                             $options = [
-                                'class' => 'btn btn-xs btn-danger',
+                                'class' => 'btn btn-xs btn-danger ' . (($data['id'] == Yii::$app->user->id) ? 'disabled' : 
+                                    (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
                                 'style' => '',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),

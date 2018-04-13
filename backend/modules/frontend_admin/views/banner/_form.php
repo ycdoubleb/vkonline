@@ -36,11 +36,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'path')->widget(FileInput::class, [
         'options' => [
-//            'accept' => 'image/*',
+            'accept' => 'image/*, video/*',
             'multiple' => false,
         ],
         'pluginOptions' => [
-//            'resizeImages' => true,
+            'resizeImages' => true,
             'showCaption' => false,
             'showRemove' => false,
             'showUpload' => false,
@@ -55,7 +55,7 @@ use yii\widgets\ActiveForm;
             ],
             'overwriteInitial' => true,
         ],
-    ]); ?>
+    ])->label('路径（建议尺寸：1200*590）'); ?>
 
     <?= $form->field($model, 'link')->textInput(['maxlength' => true]) ?>
 

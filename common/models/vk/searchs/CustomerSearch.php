@@ -198,30 +198,42 @@ class CustomerSearch extends Customer
         //计算同比增长
         if(isset($lastMonthData[$id]['cour_num'])){
             if(isset($thisMonthData[$id]['cour_num'])){
-                $asRateCourse = ['cour_num' => (($thisMonthData[$id]['cour_num'] - $lastMonthData[$id]['cour_num']) / $lastMonthData[$id]['cour_num'] * 100).'%'];
+                $couNum = sprintf("%.2f", ($thisMonthData[$id]['cour_num'] - $lastMonthData[$id]['cour_num']) / $lastMonthData[$id]['cour_num'] * 100);
+                $asRateCourse = ['cour_num' => $couNum . '%<span style="color:'.($couNum>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($couNum>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRateCourse = ['cour_num' => '0%'];
             }
+        } elseif (isset($thisMonthData[$id]['cour_num'])) {
+            $asRateCourse = ['cour_num' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRateCourse = ['cour_num' => '100%'];
+            $asRateCourse = ['cour_num' => '0%'];
         }
         if(isset($lastMonthData[$id]['node_num'])){
             if(isset($thisMonthData[$id]['node_num'])){
-                $asRateVideo = ['node_num' => (($thisMonthData[$id]['node_num'] - $lastMonthData[$id]['node_num']) / $lastMonthData[$id]['node_num'] * 100).'%'];
+                $videoNum = sprintf("%.2f", ($thisMonthData[$id]['node_num'] - $lastMonthData[$id]['node_num']) / $lastMonthData[$id]['node_num'] * 100);
+                $asRateVideo = ['node_num' => $videoNum . '%<span style="color:'.($videoNum>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($videoNum>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRateVideo = ['node_num' => '0%'];
             }
+        } elseif (isset($thisMonthData[$id]['node_num'])) {
+            $asRateVideo = ['node_num' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRateVideo = ['node_num' => '100%'];
+            $asRateVideo = ['node_num' => '0%'];
         }
         if(isset($lastMonthData[$id]['play_count'])){
             if(isset($thisMonthData[$id]['play_count'])){
-                $asRatePlay = ['play_count' => (($thisMonthData[$id]['play_count'] - $lastMonthData[$id]['play_count']) / $lastMonthData[$id]['play_count'] * 100).'%'];
+                $playCount = sprintf("%.2f", ($thisMonthData[$id]['play_count'] - $lastMonthData[$id]['play_count']) / $lastMonthData[$id]['play_count'] * 100);
+                $asRatePlay = ['play_count' => $playCount . '%<span style="color:'.($playCount>0? 'green' : 'red').'">&nbsp;&nbsp;'
+                    . '<i class="fa '.($playCount>0? 'fa-long-arrow-up' : 'fa-long-arrow-down').'"></i></span>'];
             } else {
                 $asRatePlay = ['play_count' => '0%'];
             }
+        } elseif (isset($thisMonthData[$id]['play_count'])) {
+            $asRatePlay = ['play_count' => '100%&nbsp;&nbsp;<span style="color:green"><i class="fa fa-long-arrow-up"></i></span>'];
         } else {
-            $asRatePlay = ['play_count' => '100%'];
+            $asRatePlay = ['play_count' => '0%'];
         }
         $asRate[] = array_merge(['name' => '同比'], $asRateCourse, $asRateVideo, $asRatePlay);
 

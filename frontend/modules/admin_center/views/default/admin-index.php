@@ -74,7 +74,7 @@ $this->title = Yii::t('app', 'Customer');
                 'buttons' => [
                     'view' => function ($url, $model, $key) {
                         /* @var $model CustomerAdmin */
-                         $options = [
+                        $options = [
                             'style' => 'color:#666666',
                             'title' => Yii::t('yii', 'View'),
                             'aria-label' => Yii::t('yii', 'View'),
@@ -92,8 +92,12 @@ $this->title = Yii::t('app', 'Customer');
                     },
                     'update' => function ($url, $model, $key) {
                         /* @var $model CustomerAdmin */
-                         $options = [
-                            'style' => 'color:#666666',
+                        $adminModel = CustomerAdmin::find()->where(['user_id' => $model->user_id])->one();
+                        $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->one();   //当前用户的管理员等级
+                        $options = [
+                            'class' => 'btn btn-sm ' . (($model->user_id == Yii::$app->user->id) ? 'disabled' : 
+                                    (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
+                            'style' => 'padding:0px; display:unset;color:#666666',
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
@@ -110,8 +114,12 @@ $this->title = Yii::t('app', 'Customer');
                         return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                     },
                     'delete' => function ($url, $model, $key) {
+                        $adminModel = CustomerAdmin::find()->where(['user_id' => $model->user_id])->one();
+                        $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->one();   //当前用户的管理员等级
                         $options = [
-                            'style' => 'color:#666666',
+                            'class' => 'btn btn-sm ' . (($model->user_id == Yii::$app->user->id) ? 'disabled' : 
+                                    (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
+                            'style' => 'padding:0px; display:unset;color:#666666',
                             'title' => Yii::t('yii', 'Delete'),
                             'aria-label' => Yii::t('yii', 'Delete'),
                             'data-pjax' => '0',

@@ -1,6 +1,7 @@
 <?php
 
 use common\models\User;
+use common\models\vk\CustomerAdmin;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\web\View;
@@ -14,18 +15,26 @@ $this->title = Yii::t('app', '{User}{Info}',[
     'Info' => Yii::t('app', 'Info'),
 ]);
 
+$adminModel = CustomerAdmin::find()->where(['user_id' => $model->id])->one();
+$userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->one();   //当前用户的管理员等级
+
 ?>
 <div class="user-view main">
     <p>
-        <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], [
+            'class' => 'btn btn-primary ' . (($model->id == Yii::$app->user->id) ? ' ' : 
+                        (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
+        ]) ?>
         <?= ($model->status == 0) ? Html::a('<i class="fa fa-check-circle">&nbsp;</i>' . Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
-            'class' => 'btn btn-success',
+            'class' => 'btn btn-success ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
+                        (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to enable this user?'),
                 'method' => 'post',
             ],
         ]) : Html::a('<i class="fa fa-ban">&nbsp;</i>' . Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
+            'class' => 'btn btn-danger ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
+                        (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to disable this user?'),
                 'method' => 'post',
@@ -89,14 +98,14 @@ $this->title = Yii::t('app', '{User}{Info}',[
                     'format' => 'raw',
                     'value' => $userCouVid['course_num'] . ' 门' .
                         Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['course/', ['created_by' => $model->id]]),
+                                . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"]),
                 ],
                 [
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => $userCouVid['video_num'] . ' 个' .
                         Html::a('<span class="btn btn-xs btn-default" style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ['video/', ['created_by' => $model->id]]),
+                                . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"]),
                 ],
             ],
         ]) ?>
