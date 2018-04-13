@@ -255,76 +255,20 @@ class SiteController extends Controller
         }
     }
 
-    public function signup($post)
-    {   
-        $user = new User();
-        if (!$user->validate()) {   //数据验证
-            return null;
-        }
-        
-        $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
-        $username = ArrayHelper::getValue($post, 'User.username');  //用户名
-        $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
-        $nickname = ArrayHelper::getValue($post, 'User.nickname');  //姓名
-        $password_hash = ArrayHelper::getValue($post, 'User.password_hash');    //密码
-        
-        if($cusId != null){
-            $customer = Customer::find()->select(['id'])->where(['invite_code' => $cusId])->asArray()->one();//客户ID
-            if($customer != null){
-                $customerId = ArrayHelper::getValue($customer, 'id');
-            } else {
-                throw new NotAcceptableHttpException('无效的邀请码！');
-            }
-        } else {
-            $officialCus = Customer::find()->select(['id'])->where(['is_official' => 1])->asArray()->one(); //官网ID
-            $customerId = ArrayHelper::getValue($officialCus, 'id');
-        }
-        //赋值
-        $user->customer_id = $customerId;
-        $user->username = $username;
-        $user->phone = $phone;
-        $user->nickname = $nickname;
-        $user->setPassword($password_hash);
-        $user->generateAuthKey();
-        
-        return $user->save() ? $user : null;
-    }
-    
     /**
-     * 获取客户名
-     * @return array
+     * 注册
+     * @param type $post
+     * @return type
+     * @throws NotAcceptableHttpException
      */
-    public function actionCustomer()
-    {
-        \Yii::$app->getResponse()->format = 'json';
-        $post = \Yii::$app->request->post();
-        $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
-        $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
-        
-        if($customer != null){
-            return [
-                'code' => 200,
-                'data' => [
-                    'name' => ArrayHelper::getValue($customer, 'name'),
-                ],
-                'message' => ''
-            ];
-        } else {
-            return [
-                'code' => 404,
-                'data' => [],
-                'message' => '<span style="color:#a94442">无效的邀请码</span>'
-            ];
-        }
-    }
-
     public function signup($post)
     {   
         $user = new User();
         if (!$user->validate()) {   //数据验证
             return null;
         }
-        
+//        $user->load($post);
+//        var_dump($post);exit;
         $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
         $username = ArrayHelper::getValue($post, 'User.username');  //用户名
         $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
@@ -352,7 +296,7 @@ class SiteController extends Controller
         
         return $user->save() ? $user : null;
     }
-
+ 
     /**
      * Requests password reset.
      *

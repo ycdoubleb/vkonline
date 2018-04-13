@@ -75,7 +75,7 @@ $this->title = Yii::t('app', 'Signup');
                         
                         <div class="form-group btn-signup">
                             <?= Html::submitButton(Yii::t('app', 'Signup'), [
-                                'class' => 'btn btn-primary signup-button', 'name' => 'signup-button'
+                                'class' => 'btn btn-primary signup-button',
                             ]) ?>
                         </div>
 
