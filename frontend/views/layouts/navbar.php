@@ -47,10 +47,12 @@ use yii\web\View;
                 'label' => Yii::t('app', '{Study}{Center}', ['Study' => Yii::t('app', 'Study'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/study_center/default']
             ],
-            [
-                'label' => Yii::t('app', 'Square'), 'url' => ['/site/index']
-            ],
         ];
+        if(!Yii::$app->user->identity->is_official){
+            $leftMenuItems[] = [
+                'label' => Yii::t('app', 'Square'), 'url' => ['/site/square']
+            ];
+        }
         //右边导航
         $rightMenuItems = [
             [
@@ -159,13 +161,12 @@ use yii\web\View;
              $route = Yii::$app->controller->getRoute();    
         }
     }
-    
     //左边
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-left'],
-        'encodeLabels' => false,
+        //'encodeLabels' => false,
         'items' => $leftMenuItems,
-        'activateParents' => true,
+        'activateParents' => true,  //启用选择【子级】【父级】显示高亮
         'route' => $route,
     ]);
     //右边
@@ -173,7 +174,7 @@ use yii\web\View;
         'options' => ['class' => 'navbar-nav navbar-right'],
         'encodeLabels' => false,
         'items' => $rightMenuItems,
-        'activateParents' => true,
+        'activateParents' => true,  //启用选择【子级】【父级】显示高亮
         'route' => $route,
     ]);
     

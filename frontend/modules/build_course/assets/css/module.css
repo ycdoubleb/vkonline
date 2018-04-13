@@ -44,6 +44,16 @@
     border-left: none !important;
 }
 
+/*.main .select2-search__field {
+    height: auto !important;
+    padding: 0 !important;
+}
+
+.main .select2-selection__choice {
+    margin: 0 !important;
+    margin-right: 6px !important;
+}*/
+
 /*********************面包屑****************************/
 .main .crumbs {
     padding: 7px; 
@@ -519,13 +529,13 @@
 }
 
 /***************************************我的视频****************************************/
-.default-myVideo .list .item .pic .float > span {
+.video-index .list .item .pic .float > span {
     float: right;
     margin-right: 0;
 }
 
 /***************************************我的老师****************************************/
-.default-myTeacher .list .item {
+.teacher-index .list .item {
     width: 140px;
     height: 165px;
     padding: 20px;
@@ -534,12 +544,12 @@
     background-color: rgba(242, 242, 242, 1);
 }
 
-.default-myTeacher .list .item .pic.avatars {
+.teacher-index .list .item .pic.avatars {
     width: 96px;
     height: 96px;
 }
 
-.default-myTeacher .list .item .cont {
+.teacher-index .list .item .cont {
     margin: 14px 0;
     text-align: center;
     color: #333;

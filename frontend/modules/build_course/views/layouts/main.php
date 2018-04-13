@@ -25,19 +25,19 @@ $reutils = ArrayHelper::getValue(Yii::$app->request->queryParams, 'utils', 'bs_u
 $menuItems = [
     [
         'label' => Yii::t('app', '{My}{Course}', ['My' => Yii::t('app', 'My'), 'Course' => Yii::t('app', 'Course')]),
-        'url' => ['my-course', 'utils' => $reutils],
+        'url' => ['course/index', 'utils' => $reutils],
         'icons' => '<i class="fa fa-book"></i>', 
         'options' => ['class' => 'links']
     ],
     [
         'label' => Yii::t('app', '{My}{Video}', ['My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')]),
-        'url' => ['my-video', 'utils' => $reutils],
+        'url' => ['video/index', 'utils' => $reutils],
         'icons' => '<i class="glyphicon glyphicon-facetime-video"></i>', 
         'options' => ['class' => 'links']
     ],
     [
         'label' => Yii::t('app', '{My}{Teacher}', ['My' => Yii::t('app', 'My'), 'Teacher' => Yii::t('app', 'Teacher')]),
-        'url' => ['my-teacher', 'utils' => $reutils],
+        'url' => ['teacher/index', 'utils' => $reutils],
         'icons' => '<i class="fa fa-user-secret"></i>', 
         'options' => ['class' => 'links']
     ],
@@ -61,9 +61,9 @@ $utilsItems = [
 end($menuItems);
 $lastIndex = key($menuItems);
 foreach ($menuItems as $index => $item) {
-    $actionId = strstr(Yii::$app->controller->action->id, '-');
-    $action = strstr($item['url'][0], '-');
-    $menu .= ($actionId == $action ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+    $controllerId = Yii::$app->controller->id;
+    $controller = strstr($item['url'][0], '/', true);
+    $menu .= ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
         Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 //工具

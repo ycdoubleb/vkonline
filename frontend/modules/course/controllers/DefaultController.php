@@ -246,7 +246,7 @@ class DefaultController extends Controller
      * 基于其主键值找到 Course 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return model Course
+     * @return Course 
      * @throws NotFoundHttpException 
      */
     protected function findModel($id)

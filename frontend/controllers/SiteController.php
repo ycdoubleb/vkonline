@@ -4,7 +4,12 @@ namespace frontend\controllers;
 use common\models\Banner;
 use common\models\LoginForm;
 use common\models\User;
+use common\models\vk\Category;
+use common\models\vk\Course;
+use common\models\vk\CourseNode;
 use common\models\vk\Customer;
+use common\models\vk\Video;
+use common\utils\ChoiceUtils;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
@@ -15,6 +20,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
+use yii\web\NotFoundHttpException;
 use const YII_ENV_TEST;
 
 /**
@@ -76,14 +82,52 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $bannerModel = Banner::findAll([
-            'customer_id' => Yii::$app->user->identity->customer_id, 
-            'is_publish' => 1,
-            'is_official' => Yii::$app->user->identity->is_official,
-        ]);
-        //var_dump($bannerModel);exit;
+        $categoryId = ArrayHelper::getValue(\Yii::$app->request->queryParams, 'id');
+        $customerModel = ChoiceUtils::findCustomer();
+        $bannerModel = Banner::findAll(['customer_id' => $customerModel->id, 'is_publish' => 1]);
+        $classifys = ChoiceUtils::getChoiceCatsByLevel();
+        $firstCateId = ArrayHelper::getValue(reset($classifys), 'id');
+        $cateId = empty($categoryId) ? $firstCateId : $categoryId;
+        $courses = ChoiceUtils::getChoiceCourseByCategoryId($cateId);
+        $courseRanks = $this->getCourseRank($customerModel->id, $customerModel->is_official);
+        
         return $this->render('index', [
             'bannerModel' => $bannerModel,
+            'categorys' => Category::getCatsByLevel(),
+            'classifys' => $classifys,
+            'courses' => $courses,
+            'courseRanks' => $courseRanks,
+            'categoryId' => $cateId,
+        ]);
+    }
+    
+    /**
+     * Displays squarepage.
+     *
+     * @return mixed
+     */
+    public function actionSquare()
+    {
+        if(\Yii::$app->user->identity->is_official){
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+        ChoiceUtils::$isBelongToIndex = false;
+        $categoryId = ArrayHelper::getValue(\Yii::$app->request->queryParams, 'id');
+        $bannerModel = Banner::findAll(['is_official' => 1, 'is_publish' => 1]);
+        $classifys = ChoiceUtils::getChoiceCatsByLevel();
+        $firstCateId = ArrayHelper::getValue(reset($classifys), 'id');
+        $cateId = empty($categoryId) ? $firstCateId : $categoryId;
+        $courses = ChoiceUtils::getChoiceCourseByCategoryId($cateId);
+        $courseRanks = $this->getCourseRank(null, 1);
+        
+        return $this->render('index', [
+            'bannerModel' => $bannerModel,
+            'categorys' => Category::getCatsByLevel(),
+            'classifys' => $classifys,
+            'courses' => $courses,
+            'courseRanks' => $courseRanks,
+            'categoryId' => $cateId,
+            'isBelongToIndex' => false,
         ]);
     }
 
@@ -229,5 +273,44 @@ class SiteController extends Controller
         return $this->render('resetPassword', [
             'model' => $model,
         ]);
+    }
+    
+    /**
+     * 获取点赞排行靠前的课程
+     * @param string $customerId
+     * @param boolen $is_official
+     * @return array
+     */
+    protected function getCourseRank($customerId, $is_official)
+    {
+        //查询课程
+        $query = Course::find()->where(['is_publish' => 1]);
+        $query->andFilterWhere(['customer_id' => !$is_official ? $customerId : null]);
+        $query->andFilterWhere(['level' => !$is_official ? 
+            [Course::INTRANET_LEVEL, Course::PUBLIC_LEVEL] : Course::PUBLIC_LEVEL]);
+        $query->orderBy(['zan_count' => SORT_DESC])
+            ->limit(6)->with('teacher');
+        //获取课程
+        $courses = $query->asArray()->all();
+        //课程节点
+        $nodes = $this->findVideoByCourseNode(ArrayHelper::getColumn($courses, 'id'));
+        //已课程id为键值合并节点来获取该课程下的节点数
+        $results = ArrayHelper::merge(ArrayHelper::index($courses, 'id'), ArrayHelper::index($nodes, 'course_id'));
+                
+        return array_values($results);
+    }
+    
+    /**
+     * 查询课程环节数据
+     * @return Array
+     */
+    protected function findVideoByCourseNode($courseId){
+        $query = Video::find()->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num'])
+            ->from(['Video' => Video::tableName()]);
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => $courseId]);
+        $query->groupBy('CourseNode.course_id');
+        
+        return $query->asArray()->all();
     }
 }

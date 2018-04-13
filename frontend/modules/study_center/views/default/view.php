@@ -54,9 +54,9 @@ ModuleAssets::register($this);
                                     <div class="head nodes <?= $model->id == $video->id ? 'active' :  null ?>">
                                         <?php 
                                             if($model->id == $video->id){
-                                                echo Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\" style=\"display: block;\"></i>", ['/study_center/default/play', 'id' => $video->id]);
+                                                echo Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\" style=\"display: block;\"></i>", ['view', 'id' => $video->id]);
                                             }else{
-                                                echo Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['/study_center/default/play', 'id' => $video->id]);
+                                                echo Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['view', 'id' => $video->id]);
                                             }
                                         ?>
                                     </div>

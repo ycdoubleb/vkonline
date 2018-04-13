@@ -147,6 +147,9 @@ class ActionUtils
         try
         {  
             $model->is_publish = 1;
+            if(Yii::$app->user->identity->is_official){
+                $model->level = Course::PUBLIC_LEVEL;
+            }
             if($model->save()){
                 $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
                 Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
@@ -171,7 +174,7 @@ class ActionUtils
      * @param type $post
      * @throws Exception
      */
-    public function CreateHelpMan($model, $post)
+    public function CreateCourseUser($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -202,7 +205,7 @@ class ActionUtils
      * @param CourseUser $model
      * @throws Exception
      */
-    public function UpdateHelpman($model)
+    public function UpdateCourseUser($model)
     {
         $newAttr = $model->getDirtyAttributes();    //获取新属性值
         $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
@@ -234,7 +237,7 @@ class ActionUtils
      * @param CourseUser $model
      * @throws Exception
      */
-    public function DeleteHelpman($model)
+    public function DeleteCourseUser($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -263,7 +266,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function CreateCouFrame($model)
+    public function CreateCourseNode($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -292,7 +295,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function UpdateCouFrame($model)
+    public function UpdateCourseNode($model)
     {
         //获取所有新属性值
         $newAttr = $model->getDirtyAttributes();
@@ -328,7 +331,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function DeleteCouFrame($model)
+    public function DeleteCourseNode($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -482,7 +485,7 @@ class ActionUtils
      * @param type $post
      * @throws Exception
      */
-    public function MoveCouframe($post, $number = 0)
+    public function MoveNode($post, $number = 0)
     {
         $table = ArrayHelper::getValue($post, 'tableName');
         $course_id = ArrayHelper::getValue($post, 'course_id');

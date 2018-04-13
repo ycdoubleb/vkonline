@@ -155,9 +155,9 @@ class Teacher extends ActiveRecord
      * 
      * @return array(array|Array) 
      */
-    public static function getTeacherByLevel($level = 0, $key_to_value = true) 
+    public static function getTeacherByLevel($customer_id, $level = 0, $key_to_value = true) 
     {
-        self::$teachers = self::findAll(['level' => $level]);
+        self::$teachers = self::findAll(['customer_id' => $customer_id, 'level' => $level]);
         $teachers = [];
         foreach (self::$teachers as $id => $teacher) {
             $teachers[] = $teacher;

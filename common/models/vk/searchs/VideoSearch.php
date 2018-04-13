@@ -59,8 +59,8 @@ class VideoSearch extends Video
     public function search($params)
     {
         $moduleId = Yii::$app->controller->module->id;   //当前模块ID
-        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
-        $level = ArrayHelper::getValue($params, 'level', self::INTRANET_LEVEL);   //搜索等级
+        $is_official = !empty(Yii::$app->user->identity->is_official) ? Yii::$app->user->identity->is_official : null;  //当前客户id
+        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
         $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
         $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
@@ -72,23 +72,19 @@ class VideoSearch extends Video
         //模块id为课程的情况下
         if($moduleId == 'video'){
             //选择内网搜索的情况下
-            if($customerId != null && $level == self::INTRANET_LEVEL){
+            if($level == self::INTRANET_LEVEL){
                 self::$query->andFilterWhere([
                     'Video.customer_id' => $customerId,
-                    'Video.level' => self::INTRANET_LEVEL,
+                    'Video.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
                     'Video.is_publish' => 1,
                 ]);
             }
             //选择全网搜索的情况下
-            if($customerId != null && $level == self::PUBLIC_LEVEL){
-                self::$query->andFilterWhere(['and', 
-                    ['or', ['Video.customer_id' => $customerId], ['Video.level' => self::PUBLIC_LEVEL]], 
-                    ['Video.is_publish' => 1]
+            if($level == self::PUBLIC_LEVEL){
+                self::$query->andFilterWhere([
+                    'Video.level' => self::PUBLIC_LEVEL, 
+                    'Video.is_publish' => 1
                 ]);
-            }
-            //当前客户id为空的情况下
-            if($customerId == null){
-                self::$query->andFilterWhere(['Video.level' => self::PUBLIC_LEVEL, 'Video.is_publish' => 1]);
             }
         }
         //模块id为建课中心的情况下
@@ -126,7 +122,7 @@ class VideoSearch extends Video
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         //排序
-        self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
+        self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $viedoResult = self::$query->asArray()->all();

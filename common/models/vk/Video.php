@@ -179,6 +179,9 @@ class Video extends ActiveRecord
             $nodes = self::getVideoNode(['node_id' => $this->node_id]);
             ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
             $counode = $nodes == null ? null : reset($nodes);
+            if(trim($this->source_id) == ''){
+                $this->source_id = $this->getOldAttribute('source_id');
+            }
             $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
             $upload = UploadedFile::getInstance($this, 'img');
             if ($upload != null) {
