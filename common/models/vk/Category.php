@@ -196,7 +196,7 @@ class Category extends ActiveRecord
             self::$cache = Instance::ensure([
                         'class' => 'yii\caching\FileCache',
                         'cachePath' => \Yii::getAlias('@frontend') . '/runtime/cache'
-                            ], Cache::className());
+                            ], Cache::class);
         }
         self::loadFromCache();
     }
@@ -221,7 +221,7 @@ class Category extends ActiveRecord
         }
         $data = self::$cache->get(self::$cacheKey);
         if (is_array($data) && isset($data[0])) {
-            //从缓存取出团队与团队成员数据
+            //从缓存取出分类数据
             self::$categorys = ArrayHelper::index($data[0], 'id');
             return;
         }

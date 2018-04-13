@@ -1,9 +1,3 @@
-.wrap > .container,
-.site-index {
-   width: 100%;
-   margin: 0;
-   padding: 0;
-}
 /************************************注册页样式*********************************/
 .site-signup .vkonline {
     width: 100%;
@@ -194,4 +188,329 @@
 
 .site-login .vkonline .platform .frame .btn-signup a{
     text-decoration: none;
+}
+
+/************************************平台首页************************************/
+.site-index {
+    margin-top: -20px;
+}
+
+.site-index .banner {
+    position: relative;
+}
+
+.site-index .banner .carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.site-index .banner .category {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 238px;
+    background-color: rgba(102, 102, 102, 0.8);
+}
+
+.site-index .carousel .item,
+.site-index .banner .category {
+    /*height: calc(75vh - 130px);*/
+    height: 590px;
+}
+
+/***********************轮播*****************************/
+.site-index .carousel .item >  img,
+.site-index .carousel .item > video {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+/***********************分类*******************************/
+.banner .category .title {
+    padding: 16px 10px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #fff;
+    background-color: #000;
+}
+
+.banner .category > ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.banner .category ul > li {
+    display: block;
+    float: left;
+    width: 79px;
+    padding: 15px 10px;
+    text-align: center;
+}
+
+.banner .category ul > li > a {
+    color: #fff;
+}
+
+/*********************过滤****************************/
+.main .filter {
+    display: inline-block;
+    width: 860px;
+    height: auto;
+    padding: 10px 15px;
+    margin: 30px 0;
+    font-size: 0px;
+    background-color: rgba(242, 242, 242, 1);
+}
+
+.main .filter .choice,
+.main .filter .rank {
+    display: inline-block;
+    float: left;
+    font-size: 14px;
+}
+
+.main .filter .classify {
+    display: inline-block;
+    float: right;
+    font-size: 14px;
+}
+
+.main .filter .classify > ul {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.main .filter .classify > ul > li {
+    float: left;
+    height: 40px;
+    padding: 10px 7px;
+    margin: -10px 5px;
+}
+
+.main .filter .classify > ul > li > a {
+    display: block;
+    padding: 0 7px;
+    margin: -10px -7px;
+    color: #999;
+    line-height: 40px;
+    text-decoration: none;
+}
+
+.main .filter .classify > ul > li.active,
+.main .filter .classify > ul > li:hover {
+    border-bottom: 2px #337ab7 solid;
+    /*cursor: pointer;*/
+}
+
+.main .filter .classify > ul > li.active > a,
+.main .filter .classify > ul > li:hover > a {
+    color: #337ab7;
+}
+
+/************************************列表*******************************************/
+.main .list {
+    display: inline-block;
+    width: 860px;
+    height: auto;
+    font-size: 0px;
+}
+
+.list .item {
+    position: relative;
+    display: inline-block;
+    width: 260px;
+    margin-right: 40px;
+    margin-bottom: 30px;
+    font-size: 0px;
+}
+
+.list.rank-course .item .icon {
+    position: absolute;
+    top: -15px;
+    left: 220px;
+    z-index: 1022;
+    display: inline-block;
+    font-size: 20px;
+    color: #fff;
+    border-width: 28px 16px 10px 16px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-color: transparent !important;
+    border-style: solid;
+}
+
+.list.rank-course .item .icon > span {
+    position: absolute;
+    top: -25px;
+    left: -5px;
+}
+
+.list.rank-course .item .icon.first {
+    border-color: #d5c942cc;
+}
+
+.list.rank-course .item .icon.second {
+    border-color: #abc9cccc;
+}
+
+.list.rank-course .item .icon.third {
+    border-color: #d6793dcc;
+}
+
+.list .item.item-right {
+    margin-right: 0 !important;
+}
+
+.list .item .pic {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 147px;
+    background-color: #26bfcd; 
+}
+
+.list .item .pic .title {
+    position: absolute;
+    width: 100%;
+    margin: 10px auto;
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    line-height: 103px;
+}
+
+.list .item .pic .avatars {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 95px;
+    height: 112px;
+}
+
+.list .item .pic .float {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    height: 33px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #fff;
+    line-height: 33px;
+    background-color: rgba(0, 0, 0, .6);
+}
+
+.list .item .pic .float > span {
+    margin-right: 20px;
+}
+
+.list .item .pic .float > span > i {
+    margin-left: 5px;
+}
+
+.list .item .cont {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #999;
+    background-color: #f2f2f2; 
+}
+
+.list .item .cont .name,
+.list .item .cont .tuip {
+    padding: 12px 0;
+    text-align: left;
+}
+
+.list .item .cont .tuip {
+    position: relative;
+    border-top: dashed 1px #dedede;
+}
+
+.list .item .cont .name > span,
+.list .item .cont .tuip > span {
+    color: #666;
+}
+
+.list .item .cont .tuip > a,
+.list .item .cont .tuip .nodenum,
+.list .item .cont .tuip .labels {
+    float: right;
+    text-decoration: none;
+}
+
+.list .item .cont .tuip > a.into {
+    color: #0099FF;
+}
+
+.list .item .cont .tuip > a.see {
+    color: #FE862E;
+}
+
+.list .item .cont .tuip > a.play {
+    font-size: 18px;
+    color: #4bd127;
+}
+
+.list .item .cont .tuip .labels {
+    position: absolute;
+    top: 10px;
+    right: 0;
+}
+
+.list .item .cont .tuip .labels > span {
+    display: block;
+    float: left;
+    padding: 2px;
+    margin-right: 3px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+/********************侧栏*****************************/
+.main .sidebars {
+    display: inline-block;
+    float: right;
+    width: 310px;
+}
+
+.main .sidebars > h4{
+    margin: 43px 0;
+}
+
+.main .sidebars .ad {
+    float: left;
+    margin-bottom: 30px;
+}
+
+.main .sidebars .hot-search {
+    float: left;
+    margin-top: 25px;
+}
+
+.main .sidebars .hot-search > h4 {
+    margin-top: 0;
+}
+
+.main .sidebars .hot-search .tag {
+   display: inline-block;
+   padding: 4px 5px;
+   margin-right: 5px;
+   margin-bottom: 10px;
+   font-size: 13px;
+   color: #666;
+   background-color: #f2f2f2;
+}
+
+.main .sidebars .hot-search .tag > span {
+   font-size: 10px;
+   color: #999;
 }

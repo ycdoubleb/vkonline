@@ -4,6 +4,7 @@ namespace common\models\vk\searchs;
 
 use common\models\vk\Course;
 use common\models\vk\Teacher;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
@@ -58,7 +59,7 @@ class TeacherSearch extends Teacher
         self::getInstance();
         if(!$this->load($params)){
             $this->customer_id = ArrayHelper::getValue($params, 'customer_id'); //客户id
-            $this->created_by = ArrayHelper::getValue($params, 'created_by'); //创建者
+            $this->created_by = ArrayHelper::getValue($params, 'created_by', Yii::$app->user->id); //创建者
         }
         
 //        if (!$this->validate()) {
@@ -109,7 +110,7 @@ class TeacherSearch extends Teacher
     }
     
     /**
-     * 
+     * 主讲老师的相关课程
      * @param string $id
      * @return ActiveDataProvider
      */
@@ -126,6 +127,9 @@ class TeacherSearch extends Teacher
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => self::$query->asArray()->all(),
+            'pagination' => [
+                'pageSize' =>10,
+            ],
         ]);
         
         return $dataProvider;
