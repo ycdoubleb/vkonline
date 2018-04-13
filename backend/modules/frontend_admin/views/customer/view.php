@@ -269,6 +269,7 @@ $logindex = Url::to(['log-index', 'id' => $model->id]);
 
 $js = 
 <<<JS
+    //关闭模态框后刷新整个页面
     $('.myModal').on('hide.bs.modal', function (e) {
         window.location.reload();
     })

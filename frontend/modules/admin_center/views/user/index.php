@@ -20,7 +20,8 @@ $this->title = Yii::t('app', '{User}{List}',[
     'List' => Yii::t('app', 'List'),
 ]);
 
-$userLevel = CustomerAdmin::find()->select(['level'])->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
+$userLevel = CustomerAdmin::find()->select(['level'])
+                ->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
 
 ?>
 <div class="user-index main">

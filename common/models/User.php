@@ -208,6 +208,10 @@ class User extends ActiveRecord implements IdentityInterface {
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
+            //手机号
+            if (!$this->phone) {
+                $this->phone = $this->username;
+            }
             //设置是否属于官网账号
             $isOfficial = Customer::findOne(['id' => $this->customer_id]);
             $this->is_official = $isOfficial->is_official;

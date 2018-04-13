@@ -1,13 +1,11 @@
 <?php
 
 use frontend\modules\admin_center\assets\MainAssets;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $content string */
-
 
 MainAssets::register($this);
 
@@ -65,8 +63,8 @@ $menuItems = [
 end($menuItems);
 $lastIndex = key($menuItems);
 foreach ($menuItems as $index => $item) {
-    $itemController = explode("/", $item['url'][0]);
-    $menu .= (in_array($controllerId, $itemController) ? '<li class="active">' : 
+    $itemController = strstr($item['url'][0], '/', true);
+    $menu .= ($controllerId ===  $itemController ? '<li class="active">' : 
             ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 

@@ -21,6 +21,8 @@ and open the template in the editor.
 }
 
 .skin-blue .sidebar-menu>li.header {
+    font-size: 14px;
+    color: #b8c7ce !important;
     background-color: #070707 !important;
 }
 

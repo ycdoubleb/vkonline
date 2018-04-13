@@ -13,6 +13,8 @@ use yii\web\View;
 /* @var $dataProvider ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Customer');
+$userLevel = CustomerAdmin::find()->select(['level'])
+                ->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
 
 ?>
 <div class="customer-admin-index">
@@ -90,13 +92,11 @@ $this->title = Yii::t('app', 'Customer');
                         
                         return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                     },
-                    'update' => function ($url, $model, $key) {
+                    'update' => function ($url, $model, $key) use ($userLevel) {
                         /* @var $model CustomerAdmin */
-                        $adminModel = CustomerAdmin::find()->where(['user_id' => $model->user_id])->one();
-                        $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->one();   //当前用户的管理员等级
                         $options = [
                             'class' => 'btn btn-sm ' . (($model->user_id == Yii::$app->user->id) ? 'disabled' : 
-                                    (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
+                                    (!empty($model) ? ($userLevel['level'] >= $model->level ? 'disabled' : ' ') : ' ')),
                             'style' => 'padding:0px; display:unset;color:#666666',
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
@@ -113,12 +113,11 @@ $this->title = Yii::t('app', 'Customer');
                         
                         return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                     },
-                    'delete' => function ($url, $model, $key) {
-                        $adminModel = CustomerAdmin::find()->where(['user_id' => $model->user_id])->one();
-                        $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->one();   //当前用户的管理员等级
+                    'delete' => function ($url, $model, $key) use ($userLevel) {
+                        /* @var $model CustomerAdmin */
                         $options = [
                             'class' => 'btn btn-sm ' . (($model->user_id == Yii::$app->user->id) ? 'disabled' : 
-                                    (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
+                                    (!empty($model) ? ($userLevel['level'] >= $model->level ? 'disabled' : ' ') : ' ')),
                             'style' => 'padding:0px; display:unset;color:#666666',
                             'title' => Yii::t('yii', 'Delete'),
                             'aria-label' => Yii::t('yii', 'Delete'),
@@ -158,7 +157,10 @@ $this->title = Yii::t('app', 'Customer');
 <?php
 $js = 
 <<<JS
-       
+    //关闭模态框后刷新整个页面
+    $('.myModal').on('hide.bs.modal', function (e) {
+        window.location.reload();
+    })
     //编辑管理员弹出框
     function editAdmin(elem){
         $(".myModal").html("");
