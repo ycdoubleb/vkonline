@@ -21,6 +21,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
+use yii\web\NotFoundHttpException;
 use const YII_ENV_TEST;
 
 /**

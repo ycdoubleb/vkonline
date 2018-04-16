@@ -9,6 +9,7 @@ use common\models\vk\Video;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -37,6 +38,15 @@ class VideoController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ]
         ];
     }
 
@@ -48,7 +58,7 @@ class VideoController extends Controller
     {
         $searchModel = new VideoSearch();
         $result = $searchModel->search(Yii::$app->request->queryParams);
-        $customerId = \Yii::$app->user->identity->customer_id;
+        $customerId = Yii::$app->user->identity->customer_id;
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
