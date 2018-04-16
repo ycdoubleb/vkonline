@@ -5,7 +5,9 @@ namespace common\models\vk;
 use common\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%customer_admin}}".
@@ -97,5 +99,23 @@ class CustomerAdmin extends ActiveRecord
     public function getCustomer()
     {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
+    
+    /**
+     * 获取是否为管理员用户
+     * @param string $customerId
+     * @param string $userId
+     * @return boolean
+     */
+    public static function getIsAdminUser($customerId, $userId)
+    {
+        $users = self::findAll(['customer_id' => $customerId]);
+        $userIds = ArrayHelper::getColumn($users, 'user_id');
+        
+        if(in_array($userId, $userIds)){
+            return true;
+        }else {
+            return false;
+        }
     }
 }

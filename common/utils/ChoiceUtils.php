@@ -2,18 +2,16 @@
 
 namespace common\utils;
 
-use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
-use common\models\vk\Teacher;
 use common\models\vk\Video;
 use Yii;
 use yii\caching\Cache;
-use yii\db\Query;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 
 
 class ChoiceUtils 
@@ -168,6 +166,9 @@ class ChoiceUtils
         
         if(($model = Customer::findOne($condition)) !== null) {
             return $model;
+        }else{
+//            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+            return Customer::findOne(['is_official' => 1]);
         }
     }
     

@@ -25,9 +25,7 @@ use yii\widgets\ActiveForm;
             'labelOptions' => ['class' => 'col-lg-2 col-md-2 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
         ],
     ]); ?>
-    
-    <?= Html::hiddenInput('User[customer_id]', Yii::$app->user->identity->customer_id) ?>
-    
+        
     <?= $form->field($model, 'nickname')->textInput([
             'maxlength' => true,
             'placeholder' => '真实名称',

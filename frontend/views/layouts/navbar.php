@@ -1,5 +1,6 @@
 <?php
 
+use common\models\vk\CustomerAdmin;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\ArrayHelper;
@@ -62,15 +63,14 @@ use yii\web\View;
             [
                 'label' => Yii::t('app', '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/help_center/default/index', 'app_id' => 'app-frontend'],
-//                'linkOptions' => ['target'=>'_blank'],
             ],
-            [
-                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
-                'url' => ['/admin_center/default', 'id' => Yii::$app->user->identity->customer_id]
-            ],
-//            ['label' => 'About', 'url' => ['/site/about']],
-//            ['label' => 'Contact', 'url' => ['/site/contact']],
         ];
+        if(CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id)){
+            $rightMenuItems[] = [
+                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
+                'url' => ['/admin_center/default']
+            ];
+        }
         //右边退出导航
         $rightMenuItems[] = [
             'label' => Html::img([Yii::$app->user->identity->avatar], 

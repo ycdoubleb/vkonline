@@ -5,6 +5,7 @@ namespace frontend\modules\admin_center\controllers;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
 use Yii;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -32,6 +33,15 @@ class BannerController extends Controller
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ]
         ];
     }
 

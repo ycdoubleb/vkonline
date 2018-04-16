@@ -19,6 +19,7 @@ use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotAcceptableHttpException;
@@ -41,6 +42,15 @@ class UserController extends BaseController
                     'delete' => ['POST'],
                 ],
             ],
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
+                ],
+            ]
         ];
     }
 
@@ -98,7 +108,7 @@ class UserController extends BaseController
      */
     public function actionCreate()
     {
-        $model = new User();
+        $model = new User(['customer_id' => Yii::$app->user->identity->customer_id]);
         $model->loadDefaultValues();
         $model->scenario = User::SCENARIO_CREATE;
         

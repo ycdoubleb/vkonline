@@ -29,7 +29,7 @@ $this->title = Yii::t('app', 'Signup');
             <div class="row">
                 <div class="col-lg-12">
                     
-                    <?= Html::radioList('radio', '1', ['1' => '个人', '0' => '企业'], [
+                    <?= Html::radioList('radio', 1, [1 => '个人', 0 => '企业'], [
                         'class' => 'radios'
                     ])?>
                     
