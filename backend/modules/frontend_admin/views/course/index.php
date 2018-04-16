@@ -202,12 +202,13 @@ $this->params['breadcrumbs'][] = $this->title;
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
-//                    'value' => function ($data){
-//                        return ($data['tags'] != null) ? $data['tags'] : null;
-//                    },
+                    'value' => function ($data){
+                        return ($data['tags'] != null) ? $data['tags'] : null;
+                    },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'white-space' => 'unset',
                         ],
                     ],
                 ],
