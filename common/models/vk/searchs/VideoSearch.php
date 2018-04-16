@@ -74,7 +74,7 @@ class VideoSearch extends Video
             //选择内网搜索的情况下
             if($level == self::INTRANET_LEVEL){
                 self::$query->andFilterWhere([
-                    'Video.customer_id' => $customerId,
+                    'Video.customer_id' => Yii::$app->user->id,
                     'Video.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
                     'Video.is_publish' => 1,
                 ]);
@@ -93,7 +93,7 @@ class VideoSearch extends Video
         }
         //模块id为管理中心的情况下
         if($moduleId == 'admin_center'){
-            self::$query->andFilterWhere(['Video.customer_id' => $customerId]);
+            self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->id]);
         }
         //条件查询
         if($this->load($params)){

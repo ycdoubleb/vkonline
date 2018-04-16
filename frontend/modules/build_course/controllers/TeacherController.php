@@ -3,11 +3,15 @@
 namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\searchs\TeacherSearch;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -87,14 +91,19 @@ class TeacherController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Teacher(['customer_id' => Yii::$app->user->identity->customer_id,'created_by' => Yii::$app->user->id]);
+        $model = new Teacher([
+            'customer_id' => Yii::$app->user->identity->customer_id, 
+            'created_by' => Yii::$app->user->id
+        ]);
         $model->loadDefaultValues();
         
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            ActionUtils::getInstance()->CreateTeacher($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
     }
@@ -109,11 +118,14 @@ class TeacherController extends Controller
     {
         $model = $this->findModel($id);
         
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            ActionUtils::getInstance()->UpdateTeacher($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 3)),
             ]);
         }
     }

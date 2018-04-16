@@ -9,6 +9,8 @@ use common\models\vk\CourseActLog;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
@@ -43,15 +45,17 @@ class ActionUtils
     /**
      * 创建课程操作
      * @param Course $model
+     * @param array $post
      * @throws Exception
      */
-    public function CreateCourse($model)
+    public function CreateCourse($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
             }else{
@@ -69,29 +73,32 @@ class ActionUtils
     /**
      * 编辑课程操作
      * @param Course $model
+     * @param array $post
      * @throws Exception
      */
-    public function UpdateCourse($model)
+    public function UpdateCourse($model, $post)
     {
         //获取所有新属性值
         $newAttr = $model->getDirtyAttributes();
         //获取所有旧属性值
         $oldAttr = $model->getOldAttributes();
-        
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save() && !empty($newAttr)){
-                $oldCategory = Category::findOne($oldAttr['category_id']);
-                $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
-                $this->saveCourseActLog(['action' => '修改', 'title' => "课程管理", 'course_id' => $model->id,
-                    'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                        ($oldAttr['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategory->name}>>【新】{$model->category->name},\n\r" : null).
-                        ($oldAttr['name'] !== $model->name ? "课程名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null).
-                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
-                ]);
+            if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
+                if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
+                    $oldCategory = Category::findOne($oldAttr['category_id']);
+                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
+                    $this->saveCourseActLog(['action' => '修改', 'title' => "课程管理", 'course_id' => $model->id,
+                        'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
+                            ($oldAttr['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategory->name}>>【新】{$model->category->name},\n\r" : null).
+                            ($oldAttr['name'] !== $model->name ? "课程名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null).
+                            ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
+                    ]);
+                }
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -375,6 +382,7 @@ class ActionUtils
         try
         {  
             if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
                 $this->saveVideoAttachment($model->id, $files);
                 $this->saveCourseActLog(['action' => '增加', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name}>> {$model->name}",  
@@ -420,6 +428,7 @@ class ActionUtils
         {  
             $isEqual = $oldAttr['source_id'] !== $model->source_id;
             if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
                 $this->saveVideoAttachment($model->id, $files);
                 if(!empty($newAttr) && $isEqual){
                     $oldRef = Video::findOne($oldAttr['ref_id']);
@@ -516,7 +525,57 @@ class ActionUtils
         }
     }
     
+    /**
+     * 创建老师操作
+     * @param Teacher $model
+     * @param array $post
+     * @throws Exception
+     */
+    public function CreateTeacher($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 3);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
     
+    /**
+     * 编辑老师操作
+     * @param Teacher $model
+     * @param array $post
+     * @throws Exception
+     */
+    public function UpdateTeacher($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 3);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
     
     /**
      * 修改表属性值
@@ -535,9 +594,31 @@ class ActionUtils
         return null;
     }
     
+    private function saveObjectTags($objectId, $tagIds, $type = 1)
+    {
+        $tagRefs = [];
+        //删除已存在的标签
+        TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
+        //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
+        foreach ($tagIds as $tag_id) {
+            if(($tags = Tags::findOne($tag_id)) !== null){
+                $tags->ref_count = $tags->ref_count + 1;
+                $tags->save(true, ['ref_count']);
+            }else{
+                $tags = new Tags(['name' => $tag_id, 'ref_count' => 1]);
+                $tags->save();
+                $tag_id = $tags->id;
+            }
+            $tagRefs[] = [$objectId, $tag_id, $type];
+        }
+        //添加
+        Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
+            ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
+    }
+    
     /**
      * 保存协作人员
-     * @param type $post
+     * @param array $post
      * @return array
      */
     private function saveCourseUser($post)
@@ -576,7 +657,7 @@ class ActionUtils
     
     /**
      * 保存最近联系人
-     * @param type $post
+     * @param array $post
      */
     private function saveRecentContacts($post)
     {

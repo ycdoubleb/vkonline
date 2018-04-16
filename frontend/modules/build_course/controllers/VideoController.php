@@ -3,11 +3,13 @@
 namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\searchs\VideoSearch;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
-use frontend\modules\video\utils\ActionUtils;
+use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -125,6 +127,7 @@ class VideoController extends Controller
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
                 'videoFiles' => Video::getUploadfileByVideo(),
                 'attFiles' => Video::getUploadfileByAttachment(),
+                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
     }
@@ -161,6 +164,8 @@ class VideoController extends Controller
                 'allTeacher' => Teacher::getTeacherByLevel($model->customer_id),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
                 'attFiles' => Video::getUploadfileByAttachment($model->id),
+                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
             ]);
         }
     }

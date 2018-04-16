@@ -36,6 +36,8 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
                     'attFiles' => $attFiles,
+                    'allTags' => $allTags,
+                    'tagsSelected' => $tagsSelected,
                 ]) ?>
                 
             </div>

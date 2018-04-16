@@ -57,7 +57,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?= Html::activeHiddenInput($model, 'course_id') ?>
                 
                 <?= $form->field($model, 'user_id')->widget(Select2::class, [
-                    'data' => $helpMans, 
+                    'data' => $courseUsers, 
                     'hideSearch' => true,
                     'options' => [
                         'placeholder' => '请选择...',
@@ -77,7 +77,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'col-lg-12 col-md-12',
                     ],
                 ])->widget(Select2::class, [
-                    'data' => CourseUser::$privilegeMap, 
+                    'data' => CourseUser::$privilegeMap,
+                    'hideSearch' => true,
                     'options' => [
                         'placeholder' => '请选择...'
                     ]

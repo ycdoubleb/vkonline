@@ -10,6 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Video */
 /* @var $form ActiveForm */
+
 ?>
 
 <div class="video-form">
@@ -29,9 +30,9 @@ use yii\widgets\ActiveForm;
         ], 
     ]); ?>
 
-    
     <?= $form->field($model, 'ref_id')->widget(Select2::class, [
-        'data' => $allRef, 'hideSearch' => false, 
+        'data' => $allRef, 
+        'hideSearch' => true,
         'disabled' => !$model->is_ref ? false : true,
         'options' => ['placeholder'=>'请选择...',], 'pluginOptions' => ['allowClear' => true],
         'pluginEvents' => ['change' => 'function(){ selectLog($(this));}']
@@ -50,6 +51,31 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea(['value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 6, 'placeholder' => '请输入...']) ?>
+   
+    <div class="form-group field-tagref-tag_id required">
+        <?= Html::label('标签', 'tagref-tag_id', [
+            'class' => 'col-lg-1 col-md-1 form-label', 
+            'style' => 'padding: 10px 15px !important; color:rgb(102, 102, 102);'
+        ]) ?>
+        <div class="col-lg-11 col-md-11">
+            <?= Select2::widget([
+                'id' => 'tag_id',
+                'name' => 'TagRef[tag_id]',
+                'data' => $allTags,
+                'value' => !$model->isNewRecord ? $tagsSelected : null, 
+                'showToggleAll' => false,
+                'options' => [
+                    'class' => 'form-control',
+                    'multiple' => true,
+                    'placeholder' => '请选择至少5个标签...'
+                ],
+                'pluginOptions' => [
+                    'tags' => true,
+                ],
+            ]) ?>
+        </div>
+        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+    </div>
     
     <div class="form-group field-video-source_id">
         <div id="video" class="col-lg-12 col-md-12">

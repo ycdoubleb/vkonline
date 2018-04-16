@@ -47,7 +47,8 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}：{$model->user->nickname}", [
                         'class' => 'col-lg-12 col-md-12',
                     ],
                 ])->widget(Select2::class, [
-                    'data' => CourseUser::$privilegeMap, 
+                    'data' => CourseUser::$privilegeMap,
+                    'hideSearch' => true,
                     'options' => [
                         'placeholder' => '请选择...'
                     ]

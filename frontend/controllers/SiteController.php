@@ -8,19 +8,23 @@ use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
+use common\models\vk\SearchLog;
 use common\models\vk\Video;
 use common\utils\ChoiceUtils;
+use common\utils\DateUtil;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use Yii;
 use yii\base\InvalidParamException;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
+use yii\web\NotFoundHttpException;
 use const YII_ENV_TEST;
 
 /**
@@ -94,6 +98,7 @@ class SiteController extends Controller
         return $this->render('index', [
             'bannerModel' => $bannerModel,
             'categorys' => Category::getCatsByLevel(),
+            'hotSearchs' => $this->getSearchLog(),
             'classifys' => $classifys,
             'courses' => $courses,
             'courseRanks' => $courseRanks,
@@ -123,6 +128,7 @@ class SiteController extends Controller
         return $this->render('index', [
             'bannerModel' => $bannerModel,
             'categorys' => Category::getCatsByLevel(),
+            'hotSearchs' => $this->getSearchLog(),
             'classifys' => $classifys,
             'courses' => $courses,
             'courseRanks' => $courseRanks,
@@ -383,5 +389,21 @@ class SiteController extends Controller
         $query->groupBy('CourseNode.course_id');
         
         return $query->asArray()->all();
+    }
+    
+    /**
+     * 获取搜索记录
+     * @return array
+     */
+    protected function getSearchLog()
+    {
+        $date = DateUtil::getMonthSE(date('Y-m-d'));    //获取本月的开始日期和结束日期
+        //查询出本月的搜索记录
+        $hotSearch = (new Query())->select(['keyword', 'COUNT(keyword) AS keynum'])
+            ->from(SearchLog::tableName())
+            ->where(['between', 'created_at', strtotime($date['start']), strtotime($date['end'])])
+            ->groupBy('keyword')->orderBy(['COUNT(keyword)' => SORT_DESC])->limit(10)->all();
+        
+        return ArrayHelper::map($hotSearch, 'keyword', 'keynum');
     }
 }

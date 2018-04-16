@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="course-form">
+<div class="course-form form">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -66,8 +66,8 @@ use yii\widgets\ActiveForm;
         ],
     ]);?>
     
-    <div class="form-group field-course-id required">
-        <?= Html::label('标签', 'course-id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+    <div class="form-group field-tagref-tag_id required">
+        <?= Html::label('标签', 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
             <?=  Select2::widget([
                 'name' => 'TagRef[tag_id]',

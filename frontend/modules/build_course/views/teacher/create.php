@@ -23,6 +23,7 @@ ModuleAssets::register($this);
     
     <?= $this->render('_form', [
         'model' => $model,
+        'allTags' => $allTags,
     ]) ?>
 
 </div>

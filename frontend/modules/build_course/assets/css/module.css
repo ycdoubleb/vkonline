@@ -30,7 +30,7 @@
 
 .main .form-control,
 .main .select2-selection {
-    height: 40px !important;
+    min-height: 40px !important;
     padding: 10px 24px 10px 12px !important;
     border-radius: 0 !important;
 }
@@ -44,15 +44,15 @@
     border-left: none !important;
 }
 
-/*.main .select2-search__field {
+.main .form .select2-search__field {
     height: auto !important;
     padding: 0 !important;
 }
 
-.main .select2-selection__choice {
-    margin: 0 !important;
-    margin-right: 6px !important;
-}*/
+.main .form .select2-selection__choice {
+    margin: 0 6px 1px 0 !important;
+}
+
 
 /*********************面包屑****************************/
 .main .crumbs {

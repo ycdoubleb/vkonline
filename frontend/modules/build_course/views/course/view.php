@@ -2,8 +2,8 @@
 
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\select2\Select2Asset;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
 

@@ -86,7 +86,7 @@ class CourseUserController extends Controller
         }else{
             return $this->renderAjax('create', [
                 'model' => $model,
-                'helpMans' => $this->getHelpManList($course_id),
+                'courseUsers' => $this->getHelpManList($course_id),
                 'userRecentContacts' => $this->getUserRecentContacts(),
             ]);
         }

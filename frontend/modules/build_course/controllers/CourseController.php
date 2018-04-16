@@ -109,14 +109,14 @@ class CourseController extends Controller
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->CreateCourse($model);
+            ActionUtils::getInstance()->CreateCourse($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
                 'allCategory' => Category::getCatsByLevel(1, true),
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
-                'allTags' => ArrayHelper::map(Tags::find()->all(), 'name', 'name'),
+                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
     }
@@ -139,8 +139,8 @@ class CourseController extends Controller
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->UpdateCourse($model);
-            return $this->redirect(['view-course', 'id' => $model->id]);
+            ActionUtils::getInstance()->UpdateCourse($model, Yii::$app->request->post());
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,

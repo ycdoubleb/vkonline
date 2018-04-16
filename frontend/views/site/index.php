@@ -69,14 +69,10 @@ $ranking = ['first', 'second', 'third'];
             </div>
             <div class="hot-search">
                 <h4>热搜（本月）</h4>
-                <div class="tag">高考冲刺<span>（2453）</span></div>
-                <div class="tag">考研<span>（1453）</span></div>
-                <div class="tag">实验<span>（1253）</span></div>
-                <div class="tag">奥英<span>（1253）</span></div>
-                <div class="tag">培训<span>（1253）</span></div>
-                <div class="tag">考研<span>（1253）</span></div>
-                <div class="tag">发动机原理<span>（953）</span></div>
-                <div class="tag">实验<span>（450）</span></div>
+                <?php foreach($hotSearchs as $keyword => $keynum): ?>
+                    <?php if($keyword === null || $keyword === '') continue;  ?>
+                    <div class="tag"><?= $keyword ?><span>（<?= $keynum ?>）</span></div>
+                <?php endforeach; ?>
             </div>
         </div>
         
