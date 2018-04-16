@@ -58,7 +58,7 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        $result = $searchModel->videoSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),

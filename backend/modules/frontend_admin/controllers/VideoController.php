@@ -42,7 +42,7 @@ class VideoController extends Controller
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->backendSearch(Yii::$app->request->queryParams);
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),

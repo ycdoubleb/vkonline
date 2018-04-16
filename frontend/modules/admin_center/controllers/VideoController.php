@@ -33,7 +33,7 @@ class VideoController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -57,7 +57,7 @@ class VideoController extends Controller
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
         $customerId = Yii::$app->user->identity->customer_id;
         
         $dataProvider = new ArrayDataProvider([

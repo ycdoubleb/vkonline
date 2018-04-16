@@ -55,13 +55,12 @@ ModuleAssets::register($this);
                                 'options' => ['class' => 'table table-bordered detail-view'],
                                 'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
                                 'attributes' => [
-                                    //['label' => '<span class="viewdetail-th-head">'.Yii::t('app', 'Course Info').'</span>', 'value' => ''],
                                     [
                                         'attribute' => 'ref_id',
                                         'label' => Yii::t('app', 'Reference'),
                                         'format' => 'raw',
                                         'value' => !empty($model->ref_id) ? 
-                                            Html::a($model->reference->courseNode->course->name . ' / ' . $model->reference->courseNode->name . ' / ' .$model->reference->name, ['view-video', 'id' => $model->ref_id], ['target' => '_blank']) : NUll,
+                                            Html::a($model->reference->courseNode->course->name . ' / ' . $model->reference->courseNode->name . ' / ' .$model->reference->name, ['video/view', 'id' => $model->ref_id], ['target' => '_blank']) : NUll,
                                     ],
                                     [
                                         'attribute' => 'node_id',

@@ -33,7 +33,7 @@ class CourseSearch extends Course
     {
         return [
             [['id', 'customer_id', 'teacher_id', 'name', 'level', 'des', 'cover_img', 
-                        'is_recommend', 'is_publish', 'is_official', 'created_by'], 'safe'],
+                'is_recommend', 'is_publish', 'is_official', 'created_by'], 'safe'],
             [['category_id', 'zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
         ];
     }
@@ -57,8 +57,8 @@ class CourseSearch extends Course
     public function search($params)
     {
         $moduleId = Yii::$app->controller->module->id;   //当前模块ID
-        $customerId = !empty(\Yii::$app->user->identity->customer_id) ? \Yii::$app->user->identity->customer_id : null;  //当前客户id
-        $level = ArrayHelper::getValue($params, 'level', self::INTRANET_LEVEL);   //搜索等级
+        $is_official = !empty(Yii::$app->user->identity->is_official) ? Yii::$app->user->identity->is_official : null;  //当前用户是否为官网用户
+        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
@@ -69,23 +69,19 @@ class CourseSearch extends Course
         //模块id为课程的情况下
         if($moduleId == 'course'){
             //选择内网搜索的情况下
-            if($customerId != null && $level == self::INTRANET_LEVEL){
+            if($level == self::INTRANET_LEVEL){
                 self::$query->andFilterWhere([
-                    'Course.customer_id' => $customerId,
+                    'Course.customer_id' => Yii::$app->user->identity->customer_id,
                     'Course.level' => self::INTRANET_LEVEL,
                     'Course.is_publish' => 1,
                 ]);
             }
             //选择全网搜索的情况下
-            if($customerId != null && $level == self::PUBLIC_LEVEL){
-                self::$query->andFilterWhere(['and', 
-                    ['or', ['Course.customer_id' => $customerId], ['Course.level' => self::PUBLIC_LEVEL]], 
-                    ['Course.is_publish' => 1]
+            if($level == self::PUBLIC_LEVEL){
+                self::$query->andFilterWhere([
+                    'Video.level' => self::PUBLIC_LEVEL, 
+                    'Video.is_publish' => 1
                 ]);
-            }
-            //当前客户id为空的情况下
-            if($customerId == null){
-                self::$query->andFilterWhere(['Course.level' => self::PUBLIC_LEVEL, 'Course.is_publish' => 1]);
             }
         }
         //模块id为建课中心的情况下
@@ -94,7 +90,7 @@ class CourseSearch extends Course
         }
         //模块id为管理中心的情况下
         if($moduleId == 'admin_center'){
-            self::$query->andFilterWhere(['Course.customer_id' => $customerId]);
+            self::$query->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id]);
         }
         //条件查询
         if($this->load($params)){

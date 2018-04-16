@@ -80,6 +80,13 @@ ModuleAssets::register($this);
 $js = 
 <<<JS
    
+    //按下键盘事件，如果是按下键盘的BackSpace键时提交表单
+    $('input[name="keyword"]').keydown(function(event){
+        if(event.keyCode === 8){
+            $('#study-center-form').submit();
+        }
+    });     
+        
     /** 提交表单 */
     $('#submit').click(function(){
         $('#study-center-form').submit();

@@ -60,7 +60,7 @@ $this->title = Yii::t('app', 'Video');
                 <?= Html::a('<i class="fa fa-search"></i>&nbsp;'.Yii::t('app', '{Search}{Course}', ['Search' => Yii::t('app', 'Search'), 'Course' => Yii::t('app', 'Course')]), 
                         'javascript:;', ['id' => 'submit', 'class' => 'btn btn-success']); ?>
             </div>
-            <?php if(!empty(Yii::$app->user->identity->customer_id)): ?>
+            <?php if(!Yii::$app->user->identity->is_official): ?>
             <div class="col-lg-3 col-md-3" style="padding: 6px 15px">
                 <?= Html::radioList('level', ArrayHelper::getValue($filters, 'level', Course::INTRANET_LEVEL), [1 => '内网', 2 => '全网'], [
                     'itemOptions' => [

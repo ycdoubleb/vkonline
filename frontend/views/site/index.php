@@ -71,7 +71,7 @@ $ranking = ['first', 'second', 'third'];
                 <h4>热搜（本月）</h4>
                 <?php foreach($hotSearchs as $keyword => $keynum): ?>
                     <?php if($keyword === null || $keyword === '') continue;  ?>
-                    <div class="tag"><?= $keyword ?><span>（<?= $keynum ?>）</span></div>
+                <div class="tag"><?= Html::a($keyword . "<span>（{$keynum}）</span>", ['/course/default/index', 'keyword' => $keyword]) ?></div>
                 <?php endforeach; ?>
             </div>
         </div>

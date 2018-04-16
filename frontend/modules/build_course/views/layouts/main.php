@@ -81,14 +81,14 @@ $html = <<<Html
         <nav class="subnav">
             <div class="menu">
                 <div class="title">
-                    <i class="fa fa-list"></i>
+                    <i class="fa fa-list-ul"></i>
                     <span>导航</span>
                 </div>
                 <ul>{$menu}</ul>
             </div>
             <div class="utils">
                 <div class="title">
-                    <i class="fa fa-list"></i>
+                    <i class="fa fa-list-ul"></i>
                     <span>制作工具</span>
                 </div>
                 <ul>{$utils}</ul>

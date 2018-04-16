@@ -2,6 +2,7 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\models\vk\Course;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -53,13 +54,13 @@ class VideoController extends Controller
     /**
      * 列出所有 VideoSearch 模型。
      * @return string [
-     *    filters => 查询过滤的属性, pagers => 分页, dataProvider => 课程数据
+     *    filters => 查询过滤的属性, pagers => 分页, dataProvider => 课程数据, courseMap => 属于自己的课程
      * ]
      */
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $result = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
@@ -68,8 +69,8 @@ class VideoController extends Controller
         return $this->render('index', [
             'filters' => $result['filter'],
             'pagers' => $result['pager'],
-            'courseMap' => $result['data']['course'],
             'dataProvider' => $dataProvider,
+            'courseMap' => $this->getCourseByCreatedBy(),
         ]);
     }
     
@@ -265,6 +266,19 @@ class VideoController extends Controller
         ];
     }
     
+    /**
+     * 获取属于自己的课程
+     * @return array
+     */
+    protected function getCourseByCreatedBy()
+    {
+        $courses = Course::find()
+            ->where(['created_by' => Yii::$app->user->id])
+            ->all();
+        
+        return ArrayHelper::map($courses, 'id', 'name');
+    }
+
     /**
      * 获取可以引用的视频
      * @return array

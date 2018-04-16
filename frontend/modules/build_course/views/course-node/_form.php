@@ -13,7 +13,11 @@ use yii\widgets\ActiveForm;
 <div class="course-node-form">
 
    <?php $form = ActiveForm::begin([
-        'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+        'options'=>[
+            'id' => 'build-course-form',
+            'class'=>'form-horizontal',
+            'onkeydown' => "if(event.keyCode==13) return false;",
+        ],
         'fieldConfig' => [  
             'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
             'labelOptions' => [

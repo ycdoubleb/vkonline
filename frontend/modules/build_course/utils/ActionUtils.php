@@ -371,10 +371,12 @@ class ActionUtils
     public function CreateVideo($model, $post)
     {
         $ref_id = ArrayHelper::getValue($post, 'Video.ref_id');
-        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
         $files = ArrayHelper::getValue($post, 'files');     //文件
         if(!empty($ref_id)){
             $model->is_ref = 1;
+            $model->source_id = $model->reference->source_id;
+        }else{
+            $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
         }
         
         /** 开启事务 */

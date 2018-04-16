@@ -49,84 +49,121 @@ class VideoSearch extends Video
         return Model::scenarios();
     }
 
+    //后台-视频
+    public function backendSearch($params)
+    {
+        $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
+        
+        //条件查询
+        $this->load($params);
+        
+        self::getInstance();
+        
+        self::$query->andFilterWhere([
+            'Video.customer_id' => $this->customer_id,
+            'Video.teacher_id' => $this->teacher_id,
+            'Video.created_by' => $this->created_by,
+            'Video.is_publish' => $this->is_publish,
+            'Video.level' => $this->level,
+        ]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
+        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
+        
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        
+        return $this->search($params); 
+    }
+    
+    //视频模块的情况下
+    public function videoSearch($params)
+    {
+        $is_official = Yii::$app->user->identity->is_official;  //当前用户是否为官网用户
+        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
+        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
+        
+        self::getInstance();
+        
+        //选择内网搜索的情况下
+        if($level == self::INTRANET_LEVEL){
+            self::$query->andFilterWhere([
+                'Video.customer_id' => Yii::$app->user->identity->customer_id,
+                'Video.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
+                'Video.is_publish' => 1,
+            ]);
+        }
+        //选择全网搜索的情况下
+        if($level == self::PUBLIC_LEVEL){
+            self::$query->andFilterWhere([
+                'Video.level' => self::PUBLIC_LEVEL, 
+                'Video.is_publish' => 1
+            ]);
+        }
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
+        
+        //排序
+        self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
+        
+        return $this->search($params);
+        
+    }
+    
+    //建课中心模块的情况下
+    public function buildCourseSearch($params)
+    {
+        $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+        
+        self::getInstance();
+        
+        self::$query->andFilterWhere(['Video.created_by' => \Yii::$app->user->id]);
+        self::$query->andFilterWhere(['CourseNode.course_id' => $course_id]);
+        
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        
+        return $this->search($params);
+        
+    }
+    
+    //管理中心模块的情况下
+    public function adminCenterSearch($params)
+    {
+        self::getInstance();
+        
+        self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id]);
+        
+        return $this->search($params);
+    }
+
     /**
-     * Creates data provider instance with search query applied
+     * 使用搜索查询创建数据提供程序实例
      *
      * @param array $params
      *
      * @return ArrayDataProvider
      */
-    public function search($params)
+    protected function search($params)
     {
-        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
-        $is_official = !empty(Yii::$app->user->identity->is_official) ? Yii::$app->user->identity->is_official : null;  //当前客户id
-        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
-        $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
-        $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
-        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
-        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
-        self::getInstance();
-        //模块id为课程的情况下
-        if($moduleId == 'video'){
-            //选择内网搜索的情况下
-            if($level == self::INTRANET_LEVEL){
-                self::$query->andFilterWhere([
-                    'Video.customer_id' => Yii::$app->user->identity->customer_id,
-                    'Video.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
-                    'Video.is_publish' => 1,
-                ]);
-            }
-            //选择全网搜索的情况下
-            if($level == self::PUBLIC_LEVEL){
-                self::$query->andFilterWhere([
-                    'Video.level' => self::PUBLIC_LEVEL, 
-                    'Video.is_publish' => 1
-                ]);
-            }
-        }
-        //模块id为建课中心的情况下
-        if($moduleId == 'build_course'){
-            self::$query->andFilterWhere(['Video.created_by' => \Yii::$app->user->id]);
-        }
-        //模块id为管理中心的情况下
-        if($moduleId == 'admin_center'){
-            self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id]);
-        }
-        //条件查询
-        if($this->load($params)){
-            self::$query->andFilterWhere([
-                'Video.customer_id' => $this->customer_id,
-                'Video.teacher_id' => $this->teacher_id,
-                'Video.created_by' => $this->created_by,
-                'Video.is_publish' => $this->is_publish,
-                'Video.level' => $this->level,
-            ]);
-        }
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
         //视频的所有附件
         $attsResult = $this->findAttachmentByVideo()->asArray()->all();
+        //视频的播放数
         $playResult = $this->findPlayNumByVideoId();
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
-        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
-        self::$query->andFilterWhere(['CourseNode.course_id' => $course_id]);
-        self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
+        
         //关联查询
         self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
         //添加字段
         self::$query->select(['Video.*']);
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
-        //排序
-        self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
+        
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $viedoResult = self::$query->asArray()->all();
-        $courseMap = ArrayHelper::map($viedoResult, 'courseNode.course.id', 'courseNode.course.name');
         //查询总数
         $totalCount = self::$query->count();
         //分页
@@ -147,12 +184,11 @@ class VideoSearch extends Video
             'pager' => $pages,
             'total' => $totalCount,
             'data' => [
-                'course' => $courseMap,
                 'video' => $videos
             ],
         ];
     }
-
+    
     /**
      * 查询相关课程
      * @param string $id
@@ -161,6 +197,7 @@ class VideoSearch extends Video
     public function  relationSearch($id)
     {
         self::getInstance();
+        
         self::$query->addSelect(['Course.name', 'User.nickname']);
         
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
@@ -215,6 +252,7 @@ class VideoSearch extends Video
     public static function findAttachmentByVideo()
     {
         self::getInstance();
+        
         $query = VideoAttachment::find()
             ->select(['Attachment.video_id', 'SUM(Uploadfile.size) AS att_size'])
             ->from(['Attachment' => VideoAttachment::tableName()]);
