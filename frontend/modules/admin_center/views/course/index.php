@@ -181,9 +181,9 @@ $this->title = Yii::t('app', '{Course}{List}',[
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
-//                    'value' => function ($data){
-//                        return ($data['tags'] != null) ? $data['tags'] : null;
-//                    },
+                    'value' => function ($data){
+                        return ($data['tags'] != null) ? $data['tags'] : null;
+                    },
                     'headerOptions' => [
                         'style' => [
                             'width' => '180px',

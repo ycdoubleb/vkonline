@@ -60,7 +60,7 @@ class DefaultController extends Controller
     {
         $totalSize = (new Query())->select(['config_value'])
                 ->from(['Config' => Config::tableName()])
-                ->where(['config_name' => 'max_size'])      //过滤条件
+                ->where(['config_name' => 'server_storage_max_size'])      //过滤条件-服务器存储空间的配置
                 ->one();
         
         return $totalSize;

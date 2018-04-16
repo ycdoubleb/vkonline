@@ -6,6 +6,8 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\PlayStatistics;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
@@ -110,7 +112,7 @@ class VideoSearch extends Video
         return $this->search($params);
         
     }
-    
+
     //建课中心模块的情况下
     public function buildCourseSearch($params)
     {
@@ -159,13 +161,18 @@ class VideoSearch extends Video
         //关联查询
         self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
         //添加字段
-        self::$query->select(['Video.*']);
+        self::$query->select(['Video.*', 'GROUP_CONCAT(Tags.name) AS tags']);
         
+        //关联查询标签
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id AND TagRef.is_del = 0');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
+        
+        //查询总数
+        $totalCount = self::$query->count();
+        self::$query->groupBy(['Video.id']);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $viedoResult = self::$query->asArray()->all();
-        //查询总数
-        $totalCount = self::$query->count();
         //分页
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
         

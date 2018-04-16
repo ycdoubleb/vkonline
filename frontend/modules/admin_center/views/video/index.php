@@ -194,13 +194,16 @@ $this->title = Yii::t('app', '{Video}{List}',[
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
-//                    'value' => function ($data){
-//                        return ($data['tags'] != null) ? $data['tags'] : null;
-//                    },
+                    'value' => function ($data){
+                        return ($data['tags'] != null) ? $data['tags'] : null;
+                    },
                     'headerOptions' => [
                         'style' => [
                             'width' => '125px',
                         ],
+                    ],
+                    'contentOptions' => [
+                        'class' => 'course-name',
                     ],
                 ],
                 [

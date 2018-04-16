@@ -4,6 +4,8 @@ namespace common\models\vk\searchs;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
@@ -116,15 +118,19 @@ class CourseSearch extends Course
         self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
         //添加字段
-        self::$query->select(['Course.*']);
+        self::$query->select(['Course.*', 'GROUP_CONCAT(Tags.name) AS tags']);
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
+        //关联查询标签
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id AND TagRef.is_del = 0');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //排序
         self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
+        //查询总数
+        $totalCount = self::$query->count();
+         self::$query->groupBy(['Course.id']);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);
         $courseResult = self::$query->asArray()->all();
-        //查询总数
-        $totalCount = self::$query->count();
         //分页
         $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
         //以course_id为索引

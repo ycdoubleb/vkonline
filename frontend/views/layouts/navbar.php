@@ -55,22 +55,25 @@ use yii\web\View;
             ];
         }
         //右边导航
-        $rightMenuItems = [
+        $rightMenuItem = [
             [
                 'label' => Yii::t('app', '{Build}{Center}',['Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/build_course/default']
             ],
+        ];
+        if(CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id)){
+            $rightMenuItem[] = [
+                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
+                'url' => ['/admin_center/default']
+            ];
+        }
+        $helpMenuItems = [
             [
                 'label' => Yii::t('app', '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
                 'url' => ['/help_center/default/index', 'app_id' => 'app-frontend'],
             ],
         ];
-        if(CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id)){
-            $rightMenuItems[] = [
-                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
-                'url' => ['/admin_center/default']
-            ];
-        }
+        $rightMenuItems = array_merge($rightMenuItem,$helpMenuItems);
         //右边退出导航
         $rightMenuItems[] = [
             'label' => Html::img([Yii::$app->user->identity->avatar], 
