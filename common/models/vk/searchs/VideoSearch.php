@@ -56,11 +56,10 @@ class VideoSearch extends Video
     {
         $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         
-        //条件查询
         $this->load($params);
         
         self::getInstance();
-        
+        //条件查询
         self::$query->andFilterWhere([
             'Video.customer_id' => $this->customer_id,
             'Video.teacher_id' => $this->teacher_id,
@@ -82,7 +81,6 @@ class VideoSearch extends Video
     public function videoSearch($params)
     {
         $is_official = Yii::$app->user->identity->is_official;  //当前用户是否为官网用户
-        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         
@@ -103,8 +101,6 @@ class VideoSearch extends Video
                 'Video.is_publish' => 1
             ]);
         }
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
         
         //排序
         self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
@@ -148,11 +144,15 @@ class VideoSearch extends Video
      */
     protected function search($params)
     {
+        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
+        self::$query->andFilterWhere(['like', 'Tags.name', $keyword]);
         //视频的所有附件
         $attsResult = $this->findAttachmentByVideo()->asArray()->all();
         //视频的播放数
@@ -164,7 +164,7 @@ class VideoSearch extends Video
         self::$query->select(['Video.*', 'GROUP_CONCAT(Tags.name) AS tags']);
         
         //关联查询标签
-        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id AND TagRef.is_del = 0');
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Video.id AND TagRef.is_del = 0)');
         self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
         //查询总数

@@ -58,7 +58,7 @@ class CourseController extends Controller
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
         $customerId = Yii::$app->user->identity->customer_id;
         
         $dataProvider = new ArrayDataProvider([

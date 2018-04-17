@@ -65,7 +65,7 @@ class VideoController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
         ]);
-        
+      
         return $this->render('index', [
             'filters' => $result['filter'],
             'pagers' => $result['pager'],

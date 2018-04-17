@@ -68,7 +68,14 @@ ModuleAssets::register($this);
                 <div class="tuip">主讲：<span><?= $model['teacher']['name'] ?></span>
                     <?= Html::a('<i class="fa fa-play-circle"></i>', ['view', 'id' => $model['id']], ['class' => 'play']) ?>
                 </div>
-                <div class="tuip">标签：<div class="labels"><span>毕业设计（机本）</span><span>实习</span><span>机电</span></div></div>
+                <div class="tuip">标签：
+                    <div class="labels">
+                        <?php $tagsMap = explode(',', $model['tags']); 
+                            foreach ($tagsMap as $tag) {
+                                echo "<span>{$tag}</span>";
+                            }
+                        ?>
+                    </div></div>
             </div>
         </div>
         <?php endforeach; ?>

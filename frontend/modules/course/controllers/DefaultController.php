@@ -59,7 +59,7 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        $result = $searchModel->courseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),
