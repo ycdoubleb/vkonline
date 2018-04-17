@@ -155,7 +155,7 @@ class User extends ActiveRecord implements IdentityInterface {
         $format = $this->getAttribute($attribute) * $this->byte;
         $totalSize = Customer::findOne($this->customer_id);             //客户所拥有的存储空间
 
-        if((float)$format > $totalSize->good->data){
+        if((string)$format > (string)$totalSize->good->data){
             $this->addError($attribute, "用户的存储空间大于客户所拥有的存储空间！");  
             return false;  
         } else {
@@ -208,10 +208,6 @@ class User extends ActiveRecord implements IdentityInterface {
             //设置ID
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
-            }
-            //手机号
-            if (!$this->phone) {
-                $this->phone = $this->username;
             }
             //设置是否属于官网账号
             $isOfficial = Customer::findOne(['id' => $this->customer_id]);

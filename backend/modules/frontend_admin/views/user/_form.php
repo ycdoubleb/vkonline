@@ -38,7 +38,7 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'password2')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
     
-    <?php // $form->field($model, 'phone')->textInput(['minlength' => 6, 'maxlength' => 20]); ?>
+    <?= $form->field($model, 'phone')->textInput(['minlength' => 6, 'maxlength' => 20]); ?>
 
     <?= $form->field($model, 'email')->textInput(['maxlength' => 200]) ?>
     
