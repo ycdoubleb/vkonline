@@ -67,6 +67,7 @@ class VideoSearch extends Video
             'Video.is_publish' => $this->is_publish,
             'Video.level' => $this->level,
         ]);
+        
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
@@ -128,11 +129,14 @@ class VideoSearch extends Video
     //管理中心模块的情况下
     public function adminCenterSearch($params)
     {
+        $this->load($params);
+        
         self::getInstance();
+       
+        //条件查询
+        self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id,]);
         
-        self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id]);
-        
-        return $this->search($params);
+        return $this->backendSearch($params);
     }
 
     /**

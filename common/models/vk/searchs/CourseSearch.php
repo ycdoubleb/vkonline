@@ -53,18 +53,19 @@ class CourseSearch extends Course
     //后台-课程
     public function backendSearch($params)
     {
-        
         $this->load($params);
         
         self::getInstance();
         //条件查询
         self::$query->andFilterWhere([
-            'Video.customer_id' => $this->customer_id,
-            'Video.teacher_id' => $this->teacher_id,
-            'Video.created_by' => $this->created_by,
-            'Video.is_publish' => $this->is_publish,
-            'Video.level' => $this->level,
+            'Course.customer_id' => $this->customer_id,
+            'Course.category_id' => $this->category_id,
+            'Course.teacher_id' => $this->teacher_id,
+            'Course.created_by' => $this->created_by,
+            'Course.is_publish' => $this->is_publish,
+            'Course.level' => $this->level,
         ]);
+        
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         
@@ -127,11 +128,14 @@ class CourseSearch extends Course
     //管理中心模块的情况下
     public function adminCenterSearch($params)
     {
-        self::getInstance();
+        $this->load($params);
         
+        self::getInstance();
+       
+        //查询条件
         self::$query->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id]);
         
-        return $this->search($params);
+        return $this->backendSearch($params);
     }
 
     /**
