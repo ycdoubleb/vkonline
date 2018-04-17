@@ -150,18 +150,17 @@ class VideoSearch extends Video
         
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
-        self::$query->andFilterWhere(['like', 'Tags.name', $keyword]);
         //视频的所有附件
         $attsResult = $this->findAttachmentByVideo()->asArray()->all();
         //视频的播放数
         $playResult = $this->findPlayNumByVideoId();
-        
+        //模糊查询
+        //self::$query->andFilterWhere(['or', ['like', 'Video.name', $keyword], ['like', 'Tags.name', $keyword]]);
+        self::$query->andFilterWhere(['like', 'Video.name', $keyword]);
         //关联查询
         self::$query->with('customer', 'createdBy', 'teacher', 'courseNode.course', 'source');
         //添加字段
-        self::$query->select(['Video.*', 'GROUP_CONCAT(Tags.name) AS tags']);
+        self::$query->select(['Video.*', 'GROUP_CONCAT(Tags.`name`) AS tags']);
         
         //关联查询标签
         self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Video.id AND TagRef.is_del = 0)');

@@ -147,20 +147,18 @@ class CourseSearch extends Course
         $page = ArrayHelper::getValue($params, 'page'); //分页
         $limit = ArrayHelper::getValue($params, 'limit'); //显示数
         
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
-        self::$query->andFilterWhere(['like', 'Tags.name', $keyword]);
-        
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
         //查询所有课程下的环节数
         $nodeResult = self::findVideoByCourseNode()->asArray()->all(); 
-        
+        //模糊查询
+        //self::$query->andFilterWhere(['or', ['like', 'Course.name', $keyword], ['like', 'Tags.name', $keyword]]);
+        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
         //关联查询
         self::$query->with('category', 'customer', 'teacher', 'createdBy');
        
         //添加字段
-        self::$query->select(['Course.*', 'GROUP_CONCAT(Tags.name) AS tags']);
+        self::$query->select(['Course.*', 'GROUP_CONCAT(Tags.`name`) AS tags']);
         
         //关联查询标签
         self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)');
