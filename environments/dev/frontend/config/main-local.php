@@ -37,6 +37,12 @@ $config = [
             'class' => 'frontend\modules\help_center\Module',
         ],
     ],
+    'as access' => [
+        'allowActions' => [
+            /* 本地开发模式下可用gii */
+            'gii/*',
+        ]
+    ],
 ];
 
 if (!YII_ENV_TEST) {

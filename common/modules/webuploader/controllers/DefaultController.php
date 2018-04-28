@@ -290,10 +290,14 @@ class DefaultController extends Controller {
                 $makeThumb = isset($_REQUEST["makeThumb"]) ? (integer) $_REQUEST["makeThumb"] : 0;
                 $thumbPath = '';
                 if ($makeThumb) {
-                    $thumbPath = $this->createThumb($uploadPath, 
+                    try{
+                        $thumbPath = $this->createThumb($uploadPath, 
                             ArrayHelper::getValue($_REQUEST, 'thumbWidth', 128), 
                             ArrayHelper::getValue($_REQUEST, 'thumbHeight', null), 
                             ArrayHelper::getValue($_REQUEST, 'thumbMode', \Imagine\Image\ManipulatorInterface::THUMBNAIL_OUTBOUND));
+                    } catch (\Exception $ex) {
+                        Yii::error('fail make thumb!'.$ex->getMessage());
+                    }
                 }
                 /*
                  * 写入数据库

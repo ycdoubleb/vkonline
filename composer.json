@@ -33,7 +33,8 @@
         "dmstr/yii2-adminlte-asset": ">=2.5",
         "spanjeta/yii2-backup": "*",
         "php-ffmpeg/php-ffmpeg": "^0.11.1",
-        "yiisoft/yii2-imagine": "^2.1"
+        "yiisoft/yii2-imagine": "^2.1",
+        "phpoffice/phpspreadsheet": "^1.2"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

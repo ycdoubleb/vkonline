@@ -12,7 +12,8 @@ $config = [
         'rbac' => [
             'class' => 'common\modules\rbac\Module',
         ],
-        //后台用户
+        
+        //权限控制
         'user_admin' => [
             'class' => 'backend\modules\user_admin\Module',
         ],
@@ -29,6 +30,14 @@ $config = [
             'class' => 'backend\modules\frontend_admin\Module',
         ],
     ],
+    'as access' => [
+        'allowActions' => [
+            /* 本地开发模式下可用gii */
+            'gii/*',
+            'rbac/*',
+        ]
+    ],
+    
 ];
 
 if (!YII_ENV_TEST) {
