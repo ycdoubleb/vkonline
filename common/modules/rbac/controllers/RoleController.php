@@ -144,7 +144,7 @@ class RoleController extends AuthItemBaseController {
         $hasUser = $this->getItemUsers($id);
         $allUsers = $User::find()
                     ->select(['id','nickname'])
-                    ->where(['status' => User::STATUS_ACTIVE])
+                    ->where(['status' => $User::STATUS_ACTIVE])
                     ->asArray()
                     ->all();
         $allUsers = ArrayHelper::map($allUsers, 'id', 'nickname');
