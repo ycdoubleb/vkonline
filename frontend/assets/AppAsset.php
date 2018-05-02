@@ -14,7 +14,7 @@ class AppAsset extends AssetBundle
     public $sourcePath = '@frontend/assets';
     
     public $css = [
-        'css/site.css',
+        'css/common.css',
     ];
     public $js = [
         'js/hm.js',     //百度站点统计
