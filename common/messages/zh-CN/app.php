@@ -241,7 +241,11 @@ return [
     'Price' => '价格',
     'Is Official' => '是否属于官网',
     'Official' => '官网',
-    
+    //前台-公共
+    'Avg Star' => '评分',
+    'Learning Count' => '在学人数',
+    //前台-导航条
+    'CourseFactory' => '课工厂',
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-查看视频

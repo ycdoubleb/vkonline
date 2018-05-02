@@ -9,32 +9,34 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
 
-
 /**
- * This is the model class for table "{{%course}}".
+ * This is the model class for table "vk_course".
  *
- * @property string $id             课程ID
- * @property string $customer_id    客户ID
- * @property string $category_id    所属分类
- * @property string $teacher_id     主讲老师
- * @property string $name           课程名称
- * @property int $level             级别：0私有 1内网 2公开
- * @property string $des            课程简介
- * @property string $cover_img      封面
- * @property int $is_recommend      是否推荐：0否 1是
- * @property int $is_publish        是否发布：0否 1是
- * @property string $zan_count      赞
+ * @property string $id 课程ID
+ * @property string $customer_id 客户ID
+ * @property string $category_id 所属分类
+ * @property string $teacher_id 主讲老师
+ * @property string $name 课程名称
+ * @property int $level 级别：0私有 1内网 2公开
+ * @property string $des 课程简介
+ * @property string $cover_img 封面
+ * @property int $is_recommend 是否推荐：0否 1是
+ * @property int $is_publish 是否发布：0否 1是
+ * @property int $is_official 是否为官网资源：0否 1是
+ * @property string $avg_star 星级1~5
+ * @property string $zan_count 赞
  * @property string $favorite_count 收藏数
- * @property string $created_by     创建人
- * @property int $is_official       是否为官网资源：0否 1是
- * @property string $created_at     创建时间
- * @property string $updated_at     更新时间
+ * @property string $learning_count 在学数量
+ * @property string $created_by 创建人
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
  * 
  * @property Customer $customer     获取客户
  * @property Category $category     获取分类
  * @property User $createdBy        获取创建者
  * @property Teacher $teacher       获取老师
  */
+
 class Course extends ActiveRecord
 {
     /** 可见范围-公开 */
@@ -121,10 +123,12 @@ class Course extends ActiveRecord
             'cover_img' => Yii::t('app', 'Cover Img'),
             'is_recommend' => Yii::t('app', 'Is Recommend'),
             'is_publish' => Yii::t('app', 'Is Publish'),
+            'is_official' => Yii::t('app', 'Is Official'), 
+            'avg_star' => Yii::t('app', 'Avg Star'),
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
+            'learning_count' => Yii::t('app', 'Learning Count'),
             'created_by' => Yii::t('app', 'Created By'),
-            'is_official' => Yii::t('app', 'Is Official'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
