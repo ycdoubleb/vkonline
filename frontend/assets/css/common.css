@@ -1,3 +1,13 @@
+/**********************************************************************************************************
+*
+* 公共样式
+*
+**********************************************************************************************************/
+/*****************************************************
+*
+* 主框架样式 
+*
+*****************************************************/
 html,
 body {
     height: 100%;
@@ -7,12 +17,13 @@ body {
     min-height: 100%;
     height: auto;
     margin: 0 auto -60px;
-    padding: 0 0 60px;
+    padding: 81px 0 60px;
+    background-color: #F2F2F2;
 }
 
 .wrap > .container {
     width: 1200px;
-    padding: 70px 0 20px;
+    /*padding: 70px 0 20px;*/
 }
 
 .footer {
@@ -95,66 +106,63 @@ a.desc:after {
     padding: 10px 20px;
     margin: 0 0 15px 0;
 }
-
-/* align the logout "link" (button in form) of the navbar */
-/*.nav li > form > button.logout {
-    padding: 15px;
-    border: none;
-}*/
-
-.nav li.logout {
-    height: 50px;
-    padding: 0 15px;
-    border: none;
+/*****************************************************
+*
+* 导航头部样式
+*
+*****************************************************/
+.nav{
+    height: 80px;
 }
-
-.nav li > a.logout {
-    padding: 0 15px;
-    text-align: right;
-    border: none;
+/* 导航按钮样式 */
+.nav li{
+    padding-top: 25px;      
 }
-
-@media(max-width:767px) {
-/*    .nav li > form > button.logout {
-        display:block;
-        text-align: left;
-        width: 100%;
-        padding: 10px 15px;
-    }*/
-    .nav li.logout {
-        height: 50px;
-        display:block;
-        text-align: left;
-        width: 100%;
-        padding: 0 15px;
-    }
-    .nav li > a.logout {
-        display:block;
-        text-align: right;
-        width: 100%;
-        padding: 0 15px;
-    }
+.nav li a{
+    color: #666666;
+    font-size: 16px;
 }
-
-/*.nav > li > form > button.logout:focus,
-.nav > li > form > button.logout:hover {
-    text-decoration: none;
-}*/
-
-.nav  li > a.logout:focus,
-.nav  li > a.logout:hover {
-    text-decoration: none;
-    background-color: transparent;
+.nav li a:hover{
+    color: #FC583D;
+    background-color: #f8f8f8; /* 调整hover底色与navbar-vk 底色一样，达到去除底色功能 */
 }
-
-/*.nav > li > form > button.logout:focus {
-    outline: none;
-}*/
-
-.nav  li > a.logout:focus {
-    outline: none;
+.nav li.active a{
+    color: #FC583D;
 }
+/* 额外设置 logout 高度 */
+.nav li.logout{
+    padding-top: 0px;
+}
+/* 自定义导航样式 */
+.navbar-vk {
+    background-color: #f8f8f8;
+    border-color: #e7e7e7;
+}
+/* LOGO样式 */
+.navbar-brand {
+    height: 80px;
+    padding: 0px;
+}
+/*****************************************************
+*
+* 公共标题
+*
+*****************************************************/
+.vk-title{font-size: 16px}
 
+/*****************************************************
+*
+* 公共窗体阴影
+*
+*****************************************************/
+.vk-shadow{box-shadow:0 0 1px #000} 
+
+
+/*****************************************************
+*
+* 公共课程名称样式
+*
+*****************************************************/
 /** 设置单行显示省略号 */
 .course-name {
     overflow: hidden;
@@ -170,3 +178,4 @@ a.desc:after {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+

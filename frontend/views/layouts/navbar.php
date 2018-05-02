@@ -10,78 +10,65 @@ use yii\web\View;
 
 <?php
 
-    $leftMenuItems = [];
-    $rightMenuItems = [];
-    
-    NavBar::begin([
-        'brandLabel' => Yii::$app->name,
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
+$leftMenuItems = [];
+$rightMenuItems = [];
+
+NavBar::begin([
+    'brandImage' => '/imgs/site/logo.png',
+    'brandUrl' => Yii::$app->homeUrl,
+    'options' => [
+        'class' => 'navbar-vk navbar-fixed-top',
+    ],
+]);
+
+if (Yii::$app->user->isGuest) {
+    //右边导航
+    $rightMenuItems = [
+        [
+            'label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'],
         ],
-    ]);
-    
-    if (Yii::$app->user->isGuest) {
-        //右边导航
-        $rightMenuItems = [
-            [
-                'label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'],
-            ],
-            [
-               'label' => Yii::t('app', 'Login'), 'url' => ['/site/login']
-            ]
+        [
+            'label' => Yii::t('app', 'Login'), 'url' => ['/site/login']
+        ]
+    ];
+} else {
+    //左边导航
+    $leftMenuItems = [
+        [
+            'label' => Yii::t('app', 'Home'), 'url' => ['/site/index'],
+        //'options' => ['class' => 'pull-left'],
+        ],
+        [
+            'label' => Yii::t('app', 'Course'), 'url' => ['/course/default']
+        ],
+        [
+            'label' => Yii::t('app', '{Study}{Center}', ['Study' => Yii::t('app', 'Study'), 'Center' => Yii::t('app', 'Center'),]),
+            'url' => ['/study_center/default']
+        ],
+        [
+            'label' => Yii::t('app', 'CourseFactory'), 'url' => ['/build_course/default']
+        ],
+    ];
+    if (CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id)) {
+        $rightMenuItem[] = [
+            'label' => Yii::t('app', '{Admin}{Center}', ['Admin' => Yii::t('app', 'Admin'), 'Center' => Yii::t('app', 'Center')]),
+            'url' => ['/admin_center/default']
         ];
-    } else {
-        //左边导航
-        $leftMenuItems = [    
-            [
-                'label' => Yii::t('app', 'Home'), 'url' => ['/site/index'],
-                //'options' => ['class' => 'pull-left'],
-            ],
-            [
-                'label' => Yii::t('app', 'Course'), 'url' => ['/course/default']
-            ],
-            [
-                'label' => Yii::t('app', 'Video'), 'url' => ['/video/default']
-            ],
-            [
-                'label' => Yii::t('app', '{Study}{Center}', ['Study' => Yii::t('app', 'Study'),'Center' => Yii::t('app', 'Center'),]), 
-                'url' => ['/study_center/default']
-            ],
-        ];
-        if(!Yii::$app->user->identity->is_official){
-            $leftMenuItems[] = [
-                'label' => Yii::t('app', 'Square'), 'url' => ['/site/square']
-            ];
-        }
-        //右边导航
-        $rightMenuItem = [
-            [
-                'label' => Yii::t('app', '{Build}{Center}',['Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),]), 
-                'url' => ['/build_course/default']
-            ],
-        ];
-        if(CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id)){
-            $rightMenuItem[] = [
-                'label' => Yii::t('app', '{Admin}{Center}',['Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center')]), 
-                'url' => ['/admin_center/default']
-            ];
-        }
-        $helpMenuItems = [
-            [
-                'label' => Yii::t('app', '{Help}{Center}',['Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),]), 
-                'url' => ['/help_center/default/index', 'app_id' => 'app-frontend'],
-            ],
-        ];
-        $rightMenuItems = array_merge($rightMenuItem,$helpMenuItems);
-        //右边退出导航
-        $rightMenuItems[] = [
-            'label' => Html::img([Yii::$app->user->identity->avatar], 
-                        ['width' => 40, 'height' => 40, 'class' => 'img-circle','style' => 'margin-right: 5px;']),
-            'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
-            'options' => ['class' => 'logout'],
-            'linkOptions' => ['class' => 'logout', 'style' => 'line-height: 50px;'],
-            'items' => [
+    }
+    $helpMenuItems = [
+        [
+            'label' => Yii::t('app', '{Help}{Center}', ['Help' => Yii::t('app', 'Help'), 'Center' => Yii::t('app', 'Center'),]),
+            'url' => ['/help_center/default/index', 'app_id' => 'app-frontend'],
+        ],
+    ];
+    $rightMenuItems = array_merge($rightMenuItem, $helpMenuItems);
+    //右边退出导航
+    $rightMenuItems[] = [
+        'label' => Html::img([Yii::$app->user->identity->avatar], ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']),
+        'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
+        'options' => ['class' => 'logout'],
+        'linkOptions' => ['class' => 'logout', 'style' => 'line-height: 50px;'],
+        'items' => [
 //                ['label' => Html::a(Html::img(['/resources/avatars/default.jpg']/*[Yii::$app->user->identity->avatar]*/, [
 //                    'class' => 'img-circle avatars-circle', 
 //                ]), Url::to(['/user/default/index'], true))],
@@ -122,14 +109,14 @@ use yii\web\View;
 //                        'class' => 'last-study',
 //                    ]
 //                ],
-                [
-                    'label' => '<i class="fa fa-sign-out"></i>'.Yii::t('app', 'Logout'), 
-                    'url' => ['/site/logout'],
-                    'linkOptions' => ['data-method' => 'post','class' => 'logout']
-                ],
+            [
+                'label' => '<i class="fa fa-sign-out"></i>' . Yii::t('app', 'Logout'),
+                'url' => ['/site/logout'],
+                'linkOptions' => ['data-method' => 'post', 'class' => 'logout']
             ],
-        ];
-                
+        ],
+    ];
+
 //        '<li>'
 //        . Html::beginForm(['/site/logout'], 'post')
 //        . Html::submitButton(
@@ -140,54 +127,53 @@ use yii\web\View;
 //        )
 //        . Html::endForm()
 //        . '</li>';
+}
+
+$moduleId = Yii::$app->controller->module->id;   //模块ID
+if ($moduleId == 'app-frontend') {
+    //站点经过首页或登录，直接获取当前路由
+    $route = Yii::$app->controller->getRoute();
+} else {
+    $urls = [];
+    $vals = [];
+    $leftMenuUrls = ArrayHelper::getColumn($leftMenuItems, 'url');
+    $rightMenuUrls = ArrayHelper::getColumn($rightMenuItems, 'url');
+    $menuUrls = array_merge($leftMenuUrls, $rightMenuUrls);
+    foreach ($menuUrls as $url) {
+        $urls[] = array_filter(explode('/', $url[0]));
     }
-    
-    $moduleId = Yii::$app->controller->module->id;   //模块ID
-    if($moduleId == 'app-frontend'){
-        //站点经过首页或登录，直接获取当前路由
+    foreach ($urls as $val) {
+        $vals[$val[1]] = implode('/', $val);
+    }
+    try {
+        $route = substr($vals[$moduleId], 0);
+    } catch (Exception $ex) {
         $route = Yii::$app->controller->getRoute();
-    }else{
-        $urls = [];
-        $vals = [];
-        $leftMenuUrls = ArrayHelper::getColumn($leftMenuItems, 'url');
-        $rightMenuUrls = ArrayHelper::getColumn($rightMenuItems, 'url');
-        $menuUrls = array_merge($leftMenuUrls, $rightMenuUrls);
-        foreach ($menuUrls as $url){
-            $urls[] = array_filter(explode('/', $url[0]));
-        }
-        foreach($urls as $val){
-            $vals[$val[1]] = implode('/', $val);
-        }
-        try{
-            $route = substr($vals[$moduleId], 0);
-        } catch (Exception $ex) {
-             $route = Yii::$app->controller->getRoute();    
-        }
     }
-    //左边
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-left'],
-        //'encodeLabels' => false,
-        'items' => $leftMenuItems,
-        'activateParents' => true,  //启用选择【子级】【父级】显示高亮
-        'route' => $route,
-    ]);
-    //右边
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'encodeLabels' => false,
-        'items' => $rightMenuItems,
-        'activateParents' => true,  //启用选择【子级】【父级】显示高亮
-        'route' => $route,
-    ]);
-    
-    NavBar::end();
+}
+//左边
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav navbar-left'],
+    //'encodeLabels' => false,
+    'items' => $leftMenuItems,
+    'activateParents' => true, //启用选择【子级】【父级】显示高亮
+    'route' => $route,
+]);
+//右边
+echo Nav::widget([
+    'options' => ['class' => 'navbar-nav navbar-right'],
+    'encodeLabels' => false,
+    'items' => $rightMenuItems,
+    'activateParents' => true, //启用选择【子级】【父级】显示高亮
+    'route' => $route,
+]);
+
+NavBar::end();
 ?>
 
 <?php
 
-$js = 
-<<<JS
+$js = <<<JS
    
     $(".navbar-nav .dropdown > a, .navbar-nav .dropdown > .dropdown-menu").hover(function(){
         $(this).parent("li").addClass("open");
@@ -200,5 +186,5 @@ $js =
     });
 
 JS;
-    $this->registerJs($js,  View::POS_READY);
+$this->registerJs($js, View::POS_READY);
 ?>

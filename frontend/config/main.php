@@ -47,8 +47,10 @@ return [
     ],
     'as access' => [
         'allowActions' => [
-            /* 开放课程无权限限制 */
+            /* 开放课程、学习中心、课工厂栏目权限限制 */
             'course/*',
+            'study_center/*',
+            'build_course/*',
         ]
     ],
     'params' => $params,

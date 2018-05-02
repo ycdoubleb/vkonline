@@ -192,11 +192,12 @@
 
 /************************************平台首页************************************/
 .site-index {
-    margin-top: -20px;
+    
 }
 
 .site-index .banner {
     position: relative;
+    height:400px;
 }
 
 .site-index .banner .carousel {
@@ -205,18 +206,9 @@
     overflow: hidden;
 }
 
-.site-index .banner .category {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 238px;
-    background-color: rgba(102, 102, 102, 0.8);
-}
-
-.site-index .carousel .item,
-.site-index .banner .category {
+.site-index .carousel .item {
     /*height: calc(75vh - 130px);*/
-    height: 590px;
+    height: 400px;
 }
 
 /***********************轮播*****************************/

@@ -44,41 +44,14 @@ $ranking = ['first', 'second', 'third'];
 
         </div>
         
-        <div class="category">
-            <div class="title">
-                <i class="fa fa-list"></i>
-                <?= Yii::t('app', '{Course}{Category}', [
-                    'Course' => Yii::t('app', 'Course'), 'Category' => Yii::t('app', 'Category')
-                ]) ?>
-            </div>
-            <ul>
-                <?php foreach($categorys as $category): ?>
-                <li><?= Html::a($category['name'], ['/course/default/index', 'category_id' => $category['id']]) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-        
     </div>
     
-    <div class="main">
+    <div class="container main">
         
-        <div class="sidebars">
-            <h4>会员套餐 / 广告</h4>
-            <div class="ad">
-                <?= Html::img(['/imgs/site/ad.png'], ['width' => '100%', 'height' => 212]) ?>
-            </div>
-            <div class="hot-search">
-                <h4>热搜（本月）</h4>
-                <?php foreach($hotSearchs as $keyword => $keynum): ?>
-                    <?php if($keyword === null || $keyword === '') continue;  ?>
-                <div class="tag"><?= Html::a($keyword . "<span>（{$keynum}）</span>", ['/course/default/index', 'keyword' => $keyword]) ?></div>
-                <?php endforeach; ?>
-            </div>
-        </div>
         
         <!--精品推荐-->
         <div class="filter">
-            <div class="choice">
+            <div class="choice vk-title">
                 <i class="fa fa-star"></i>
                 <span>精品推荐</span>
             </div>
@@ -159,6 +132,19 @@ $ranking = ['first', 'second', 'third'];
             <?php endforeach; ?>
         </div>
         
+        <div class="sidebars">
+            <h4>会员套餐 / 广告</h4>
+            <div class="ad">
+                <?= Html::img(['/imgs/site/ad.png'], ['width' => '100%', 'height' => 212]) ?>
+            </div>
+            <div class="hot-search">
+                <h4>热搜（本月）</h4>
+                <?php foreach($hotSearchs as $keyword => $keynum): ?>
+                    <?php if($keyword === null || $keyword === '') continue;  ?>
+                <div class="tag"><?= Html::a($keyword . "<span>（{$keynum}）</span>", ['/course/default/index', 'keyword' => $keyword]) ?></div>
+                <?php endforeach; ?>
+            </div>
+        </div>
     </div>
     
 </div>
