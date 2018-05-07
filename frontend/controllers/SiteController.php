@@ -352,6 +352,10 @@ class SiteController extends Controller
         ]);
     }
     
+    public function ActionGetRecommend(){
+        
+    }
+    
     /**
      * 获取点赞排行靠前的课程
      * @param string $customerId

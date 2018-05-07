@@ -2,7 +2,7 @@
 return [
     'timeZone' => 'PRC',
     'language' => 'zh-CN',
-    'name' => '微课在线平台',
+    'name' => '游学吧',
     
     'aliases' => [
         '@bower' => '@vendor/bower-asset',

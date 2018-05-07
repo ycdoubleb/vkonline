@@ -9,6 +9,10 @@
 *
 *****************************************************/
 html,
+ui,li {
+    list-style: none;
+}
+a { text-decoration: none; color: inherit; }
 body {
     height: 100%;
 }
@@ -25,13 +29,66 @@ body {
     width: 1200px;
     /*padding: 70px 0 20px;*/
 }
-
+/************************* 页底 *************************/
 .footer {
-    height: 60px;
-    background-color: #f5f5f5;
-    border-top: 1px solid #ddd;
-    padding-top: 20px;
+    
 }
+.footer .contacts-box{
+    background-color: #303131;
+    padding-bottom: 36px;
+}
+.footer .contacts-box .icon{
+    background: url(../imgs/logo-icon.png) no-repeat;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+.footer .contacts-box .icon-phone{background-position: 0 -70px}
+.footer .contacts-box .icon-qq{background-position: 0 -105px}
+.footer .contacts-box .contacts-content{
+    padding: 0px;
+    height: 158px;
+    padding-top: 36px;
+    font-size: 14px;
+    color: #ffffff;
+}
+.footer .contacts-box .contacts-content ul{
+    float: left;
+    padding: 0;
+    margin-right: 80px;
+}
+.footer .contacts-box .contacts-content li a:hover{
+    color: inherit;
+}
+.footer .contacts-box .contacts-content .contacts-left{
+    margin-bottom: 14px;
+}
+/* 右边客服 */
+.footer .contacts-box .contacts-content .contacts-right-box{
+    float: right;
+    padding: 0;
+    margin-right: 0px;
+}
+.footer .contacts-box .contacts-content .contacts-right-box .title{
+    font-weight: bold;
+    margin-left: 40px;
+}
+.footer .contacts-box .contacts-content .contacts-right-box .time{
+    color: #999999;
+    font-size: 12px;
+    margin-left: 40px;
+}
+/* 版权 */
+.footer .copy-right-box{
+    background-color: #2b2c2c;
+}
+.footer .copy-right-content{
+    padding: 26px 0 16px 0;
+    color: #646464;
+    font-size: 12px;
+}
+/************************* 页底 *************************/
 
 .jumbotron {
     text-align: center;
@@ -143,34 +200,65 @@ a.desc:after {
     height: 80px;
     padding: 0px;
 }
-/*****************************************************
+
+/***************************************************************
 *
-* 公共标题
+* tab样式
 *
-*****************************************************/
-.vk-title{font-size: 16px}
+***************************************************************/
+.classify {
+    display: inline-block;
+    float: right;
+    font-size: 14px;
+}
+
+.classify > ul {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.classify > ul > li {
+    float: left;
+    height: 40px;
+    padding: 10px 7px;
+    margin: -10px 5px;
+}
+
+.classify > ul > li > a {
+    display: block;
+    padding: 0 7px;
+    margin: -10px -7px;
+    color: #999;
+    line-height: 40px;
+    text-decoration: none;
+}
+
+.classify > ul > li.active,
+.classify > ul > li:hover {
+    border-bottom: 2px #337ab7 solid;
+    /*cursor: pointer;*/
+}
+
+.classify > ul > li.active > a,
+.classify > ul > li:hover > a {
+    color: #337ab7;
+}
+
 
 /*****************************************************
 *
-* 公共窗体阴影
-*
-*****************************************************/
-.vk-shadow{box-shadow:0 0 1px #000} 
-
-
-/*****************************************************
-*
-* 公共课程名称样式
+* 公共省略号样式
 *
 *****************************************************/
 /** 设置单行显示省略号 */
-.course-name {
+.single-clamp {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 /** 设置多行显示省略号 */
-.course-line-clamp {
+.multi-line-clamp {
     line-height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;

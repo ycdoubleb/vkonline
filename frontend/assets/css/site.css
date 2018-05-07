@@ -219,290 +219,168 @@
     object-fit: fill;
 }
 
-/***********************分类*******************************/
-.banner .category .title {
-    padding: 16px 10px;
-    margin-bottom: 15px;
-    font-size: 18px;
-    color: #fff;
-    background-color: #000;
+/***************************************************************
+* 页面公共
+***************************************************************/
+.site-index .title{
+    margin: 20px 0;
+    font-size: 16px;
 }
 
-.banner .category > ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
+.site-index .container{
+    padding: 0 0;
 }
 
-.banner .category ul > li {
-    display: block;
-    float: left;
-    width: 79px;
-    padding: 15px 10px;
-    text-align: center;
+.site-index hr {
+    border-top: 1px solid #dedede;
 }
 
-.banner .category ul > li > a {
-    color: #fff;
+
+/***************************************************************
+* 为你推荐
+***************************************************************/
+.site-index .recommend {
+    margin: 60px 0 40px 0;
 }
 
-/*********************过滤****************************/
-.main .filter {
-    display: inline-block;
-    width: 860px;
-    height: auto;
-    padding: 10px 15px;
-    margin: 30px 0;
-    font-size: 0px;
-    background-color: rgba(242, 242, 242, 1);
-}
-
-.main .filter .choice,
-.main .filter .rank {
-    display: inline-block;
-    float: left;
-    font-size: 14px;
-}
-
-.main .filter .classify {
-    display: inline-block;
-    float: right;
-    font-size: 14px;
-}
-
-.main .filter .classify > ul {
-    padding-left: 0;
-    margin-bottom: 0;
-    list-style: none;
-}
-
-.main .filter .classify > ul > li {
-    float: left;
-    height: 40px;
-    padding: 10px 7px;
-    margin: -10px 5px;
-}
-
-.main .filter .classify > ul > li > a {
-    display: block;
-    padding: 0 7px;
-    margin: -10px -7px;
-    color: #999;
-    line-height: 40px;
-    text-decoration: none;
-}
-
-.main .filter .classify > ul > li.active,
-.main .filter .classify > ul > li:hover {
-    border-bottom: 2px #337ab7 solid;
-    /*cursor: pointer;*/
-}
-
-.main .filter .classify > ul > li.active > a,
-.main .filter .classify > ul > li:hover > a {
-    color: #337ab7;
-}
-
-/************************************列表*******************************************/
-.main .list {
-    display: inline-block;
-    width: 860px;
-    height: auto;
-    font-size: 0px;
-}
-
-.list .item {
-    position: relative;
-    display: inline-block;
-    width: 260px;
-    margin-right: 40px;
-    margin-bottom: 30px;
-    font-size: 0px;
-}
-
-.list.rank-course .item .icon {
-    position: absolute;
-    top: -15px;
-    left: 220px;
-    z-index: 1022;
-    display: inline-block;
-    font-size: 20px;
-    color: #fff;
-    border-width: 28px 16px 10px 16px;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    border-bottom-color: transparent !important;
-    border-style: solid;
-}
-
-.list.rank-course .item .icon > span {
-    position: absolute;
-    top: -25px;
-    left: -5px;
-}
-
-.list.rank-course .item .icon.first {
-    border-color: #d5c942cc;
-}
-
-.list.rank-course .item .icon.second {
-    border-color: #abc9cccc;
-}
-
-.list.rank-course .item .icon.third {
-    border-color: #d6793dcc;
-}
-
-.list .item.item-right {
-    margin-right: 0 !important;
-}
-
-.list .item .pic {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 147px;
-    background-color: #26bfcd; 
-}
-
-.list .item .pic .title {
-    position: absolute;
-    width: 100%;
-    margin: 10px auto;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    line-height: 103px;
-}
-
-.list .item .pic .avatars {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 95px;
-    height: 112px;
-}
-
-.list .item .pic .float {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 260px;
-    height: 33px;
-    padding: 0 10px;
-    font-size: 14px;
-    color: #fff;
-    line-height: 33px;
-    background-color: rgba(0, 0, 0, .6);
-}
-
-.list .item .pic .float > span {
-    margin-right: 20px;
-}
-
-.list .item .pic .float > span > i {
-    margin-left: 5px;
-}
-
-.list .item .cont {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: auto;
-    padding: 0 15px;
+.site-index .recommend .next{
     font-size: 14px;
     color: #999;
-    background-color: #f2f2f2; 
-}
-
-.list .item .cont .name,
-.list .item .cont .tuip {
-    padding: 12px 0;
-    text-align: left;
-}
-
-.list .item .cont .tuip {
-    position: relative;
-    border-top: dashed 1px #dedede;
-}
-
-.list .item .cont .name > span,
-.list .item .cont .tuip > span {
-    color: #666;
-}
-
-.list .item .cont .tuip > a,
-.list .item .cont .tuip .nodenum,
-.list .item .cont .tuip .labels {
     float: right;
-    text-decoration: none;
 }
 
-.list .item .cont .tuip > a.into {
-    color: #0099FF;
+/***************************************************************
+* 排行榜
+***************************************************************/
+.site-index .rank {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+.site-index .rank .list{
+    width: 880px;
 }
 
-.list .item .cont .tuip > a.see {
-    color: #FE862E;
+/***************************************************************
+* 热搜
+***************************************************************/
+.site-index .hot-search{
+    display: inline-block;
+    width: 280px;
+    float: right;
 }
-
-.list .item .cont .tuip > a.play {
-    font-size: 18px;
-    color: #4bd127;
+.site-index .hot-search .list{
 }
-
-.list .item .cont .tuip .labels {
-    position: absolute;
-    top: 10px;
-    right: 0;
+.site-index .hot-search a{
+    font-size: 12px;
+    color: #666666;
 }
-
-.list .item .cont .tuip .labels > span {
-    display: block;
-    float: left;
-    padding: 2px;
-    margin-right: 3px;
-    font-size: 14px;
+.site-index .hot-search .list span{
+    color: #999999;
+}
+.site-index .hot-search .list .tag{
+    display: inline-block;
+    margin: 0 3px 6px 0;
+    padding: 6px;
     background-color: #fff;
 }
 
-/********************侧栏*****************************/
-.main .sidebars {
+/***************************************************************
+* 入驻伙伴
+***************************************************************/
+.site-index .partner {
     display: inline-block;
+    margin-bottom: 20px;
+}
+.site-index .partner .list{
+}
+.customer-item {
+    display: inline-block;
+    width: 218px;
+    margin: 0 16px 30px 0;
+    padding: 20px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.right-customer-item{
+    margin: 0 0px 30px 0;
+}
+.customer-item img{
+    width: 180px;
+    height: 68px;
+    margin-bottom: 20px;
+}
+.customer-item .name{
+    font-size: 12px;
+    color: #AAAAAA;
+}
+
+/***************************************************************
+* 课程列表项
+***************************************************************/
+.course-tile {
+    display: inline-block;
+    width: 280px;
+    margin: 0 12px 30px 0;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.right-course-tile{
+    margin: 0 0px 30px 0;
+}
+
+/* 图片 */
+.course-tile .pic-box {
+    width: 280px;
+    height: 210px;
+}
+.course-tile .pic-box img{
+    width: 100%;
+    height: 100%;
+}
+/* 名称 */
+.course-tile .name-box {
+    margin: 20px 10px;
+    color: #666666;
+    font-weight: bold;
+}
+.course-tile .name-box .nodes{
     float: right;
-    width: 310px;
+    color: #AAAAAA;
+    font-weight: normal;
+    font-size: 12px;
 }
 
-.main .sidebars > h4{
-    margin: 43px 0;
+/* 标签 */
+.course-tile .tag-box {
+    margin: 10px 10px;
+    color: #AAAAAA;
+    font-size: 12px;
+}
+.course-tile .tag-box .tag{
+    width: 100%;
+    display: block;
 }
 
-.main .sidebars .ad {
-    float: left;
-    margin-bottom: 30px;
+/* 标签 */
+.course-tile .customer-box {
+    margin: 10px 10px;
+    color: #339966;
+    font-size: 12px;
 }
-
-.main .sidebars .hot-search {
-    float: left;
-    margin-top: 25px;
+.course-tile .customer-box .leaning{
+    float: right;
+    font-size: 12px;
 }
-
-.main .sidebars .hot-search > h4 {
-    margin-top: 0;
+/* 底部 */
+.course-tile .foot-box {
+    padding: 12px 10px;
+    color: #999999;
+    font-size: 12px;
+    border-top: 1px dotted #DEDEDE;
 }
-
-.main .sidebars .hot-search .tag {
-   display: inline-block;
-   padding: 4px 5px;
-   margin-right: 5px;
-   margin-bottom: 10px;
-   font-size: 13px;
-   color: #666;
-   background-color: #f2f2f2;
-}
-
-.main .sidebars .hot-search .tag > span {
-   font-size: 10px;
-   color: #999;
+.course-tile .foot-box .teacher-avatar{
+    width: 24px;
+    height: 24px;
+    border-radius:12px
 }

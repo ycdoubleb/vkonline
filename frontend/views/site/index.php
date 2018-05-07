@@ -12,6 +12,38 @@ $this->title = '微课在线平台';
 SiteAssets::register($this);
 
 $ranking = ['first', 'second', 'third'];
+
+/* 静态数据 */
+$hotSearchs = [
+    '高考冲刺' => 3453,
+    '考研' => 2453,
+    '实验' => 1153,
+    '奥英' => 988,
+    '培训' => 800,
+    '发动机原理' => 754,
+    '考研' => 322,
+    '奥英' => 11,
+];
+
+$customers = [
+    ['name' => '中国联合网络通信集团有限公司','logo' => '/upload/customer/u540_a.png'],
+    ['name' => '北京朗新天霁软件技术有限公司','logo' => '/upload/customer/u541_a.png'],
+    ['name' => '税友软件集团股份有限公司','logo' => '/upload/customer/u542_a.png'],
+    ['name' => '西普阳光教育科技股份有限公司','logo' => '/upload/customer/u543_a.png'],
+    ['name' => '盛景网联科技股份有限公司','logo' => '/upload/customer/u544_a.png'],
+    
+    ['name' => '中国联合网络通信集团有限公司','logo' => '/upload/customer/u540_a.png'],
+    ['name' => '北京朗新天霁软件技术有限公司','logo' => '/upload/customer/u541_a.png'],
+    ['name' => '税友软件集团股份有限公司','logo' => '/upload/customer/u542_a.png'],
+    ['name' => '西普阳光教育科技股份有限公司','logo' => '/upload/customer/u543_a.png'],
+    ['name' => '盛景网联科技股份有限公司','logo' => '/upload/customer/u544_a.png'],
+    
+    ['name' => '中国联合网络通信集团有限公司','logo' => '/upload/customer/u540_a.png'],
+    ['name' => '北京朗新天霁软件技术有限公司','logo' => '/upload/customer/u541_a.png'],
+    ['name' => '税友软件集团股份有限公司','logo' => '/upload/customer/u542_a.png'],
+    ['name' => '西普阳光教育科技股份有限公司','logo' => '/upload/customer/u543_a.png'],
+    ['name' => '盛景网联科技股份有限公司','logo' => '/upload/customer/u544_a.png'],
+]
 ?>
 
 <div class="site-index">
@@ -48,100 +80,102 @@ $ranking = ['first', 'second', 'third'];
     
     <div class="container main">
         
-        
         <!--精品推荐-->
-        <div class="filter">
-            <div class="choice vk-title">
-                <i class="fa fa-star"></i>
-                <span>精品推荐</span>
+        <div class="recommend">
+            <div class="title">
+                <span>为你推荐</span>
+                <span class="next">换一批 <i class="glyphicon glyphicon-refresh"></i></span>
             </div>
-            <div class="classify">
-                <ul>
-                    <?php foreach ($classifys as $cate): ?>
-                    <li id="<?= $cate['id'] ?>">
-                        <?php if(!isset($isBelongToIndex)){
-                            echo Html::a($cate['name'], ['index', 'id' => $cate['id']]);
-                        }else {
-                            echo Html::a($cate['name'], ['square', 'id' => $cate['id']]);
-                        }
-                        ?>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        </div>
-        <div class="list choice-course">
-            <?php if(count($courses) <= 0): ?>
-            <h5>没有找到数据。</h5>
-            <?php endif; ?>
-            <?php foreach ($courses as $index => $cour): ?>
-            <div class="item <?= $index % 3 == 2 ? 'item-right' : '' ?>">
-                <div class="pic">
-                    <div class="title">
-                        <span><?= $cour['name'] ?></span>
+            <div class="list">
+                <?php if(count($courses) <= 0): ?>
+                <h5>没有找到数据。</h5>
+                <?php endif; ?>
+                <?php for ($index = 0; $index < 4; $index++): ?>
+                <div class="course-tile <?= $index==3 ? 'right-course-tile' : '' ?>">
+                    <div class="pic-box">
+                        <img src="/upload/course/cover_imgs/00b6d0f132715e1ab6f554af93ed65f6.png"/>
                     </div>
-                    <?php if($cour['cover_img'] != ''){
-                        echo Html::img([$model['cover_img']], ['width' => '100%', 'height' => '147px']);
-                    } ?>
-                </div>
-                <div class="cont">
-                    <div class="tuip">主讲：<span><?= $cour['teacher']['name'] ?></span>
-                        <span class="labels"><?= $cour['zan_count'] ?>&nbsp;<i class="fa fa-thumbs-up"></i></span>
+                    <div class="name-box">
+                        <span class="name single-clamp">商业插画之时尚风景篇</span>
+                        <span class="nodes">23 环节</span>
                     </div>
-                    <div class="tuip">环节数：<span><?= isset($cour['nedo_num']) ? $cour['nedo_num'] : 0 ?> 节</span>
-                        <?= Html::a('查看课程', ['/course/default/view', 'id' => $cour['id']], ['class' => 'see']) ?>
+                    <div class="tag-box">
+                        <span class="tag single-clamp">摄影艺术、基础入门、PS、后期技术、隐形人</span>
+                    </div>
+                    <div class="customer-box">
+                        <span class="customer">西普阳光教育科技股份有限公司</span>
+                        <span class="leaning">25463人在学</span>
+                    </div>
+                    <div class="foot-box">
+                        <img class="teacher-avatar" src="/upload/teacher/avatars/default/man19.jpg"/>
+                        <span class="teacher-name">何千于</span>
+                        <span class="star">4.5 分</span>
                     </div>
                 </div>
+                <?php endfor; ?>
             </div>
-            <?php endforeach; ?>
         </div>
-        
+        <hr>
         <!--排行榜-->
-        <div class="filter">
-            <div class="rank">
-                <i class="fa fa-bar-chart"></i>
+        <div class="rank">
+            <div class="title">
                 <span>排行榜</span>
             </div>
-        </div>
-        <div class="list rank-course">
-            <?php if(count($courseRanks) <= 0): ?>
-            <h5>没有找到数据。</h5>
-            <?php endif; ?>
-            <?php foreach ($courseRanks as $index => $rank): ?>
-            <div class="item <?= $index % 3 == 2 ? 'item-right' : '' ?>">
-                <?php if($index <= 2): ?>
-                <div class="icon <?= $ranking[$index] ?>"><span><?= $index + 1 ?></span></div>
+            <div class="list">
+                <?php if(count($courses) <= 0): ?>
+                <h5>没有找到数据。</h5>
                 <?php endif; ?>
-                <div class="pic">
-                    <div class="title">
-                        <span><?= $rank['name'] ?></span>
+                <?php for ($index = 1; $index < 7; $index++): ?>
+                <div class="course-tile <?= ($index%3==0 && $index!=0) ? 'right-course-tile' : '' ?>">
+                    <div class="pic-box">
+                        <img src="/upload/course/cover_imgs/00b6d0f132715e1ab6f554af93ed65f6.png"/>
                     </div>
-                    <?php if($rank['cover_img'] != ''){
-                        echo Html::img([$model['cover_img']], ['width' => '100%', 'height' => '147px']);
-                    } ?>
+                    <div class="name-box">
+                        <span class="name single-clamp">商业插画之时尚风景篇</span>
+                        <span class="nodes">23 环节</span>
+                    </div>
+                    <div class="tag-box">
+                        <span class="tag single-clamp">摄影艺术、基础入门、PS、后期技术、隐形人</span>
+                    </div>
+                    <div class="customer-box">
+                        <span class="customer">西普阳光教育科技股份有限公司</span>
+                        <span class="leaning">25463人在学</span>
+                    </div>
+                    <div class="foot-box">
+                        <img class="teacher-avatar" src="/upload/teacher/avatars/default/man19.jpg"/>
+                        <span class="teacher-name">何千于</span>
+                        <span class="star">4.5 分</span>
+                    </div>
                 </div>
-                <div class="cont">
-                    <div class="tuip">主讲：<span><?= $rank['teacher']['name'] ?></span>
-                        <span class="labels"><?= $rank['zan_count'] ?>&nbsp;<i class="fa fa-thumbs-up"></i></span>
-                    </div>
-                    <div class="tuip">环节数：<span><?= isset($rank['nedo_num']) ? $rank['nedo_num'] : 0 ?> 节</span>
-                        <?= Html::a('查看课程', ['/course/default/view', 'id' => $rank['id']], ['class' => 'see']) ?>
-                    </div>
-                </div>
+                <?php endfor; ?>
             </div>
-            <?php endforeach; ?>
         </div>
         
-        <div class="sidebars">
-            <h4>会员套餐 / 广告</h4>
-            <div class="ad">
-                <?= Html::img(['/imgs/site/ad.png'], ['width' => '100%', 'height' => 212]) ?>
+        <!--热搜-->
+        <div class="hot-search">
+            <div class="title">
+                <span>热搜（本月）</span>
             </div>
-            <div class="hot-search">
-                <h4>热搜（本月）</h4>
-                <?php foreach($hotSearchs as $keyword => $keynum): ?>
-                    <?php if($keyword === null || $keyword === '') continue;  ?>
-                <div class="tag"><?= Html::a($keyword . "<span>（{$keynum}）</span>", ['/course/default/index', 'keyword' => $keyword]) ?></div>
+            <div class="list">
+                <?php foreach ($hotSearchs as $keyword => $keynum): ?>
+                    <?php if ($keyword === null || $keyword === '') continue; ?>
+                    <div class="tag"><?= Html::a($keyword . "<span> ( {$keynum} )</span>", ['/course/default/index', 'keyword' => $keyword]) ?></div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        
+        <hr>
+        <!--入驻伙伴-->
+        <div class="partner">
+            <div class="title">
+                <span>入驻伙伴</span>
+            </div>
+            <div class="list">
+                <?php foreach($customers as $index => $customer): ?>
+                    <div class="customer-item <?= (($index+1) % 5 == 0 && $index != 0) ? 'right-customer-item' : '' ?>">
+                        <img src="<?= $customer['logo'] ?>"/>
+                        <span class="name single-clamp"><?= $customer['name'] ?></span>
+                    </div>
                 <?php endforeach; ?>
             </div>
         </div>

@@ -25,6 +25,8 @@ use yii\web\UploadedFile;
  * @property int $is_official 是否为官网资源：0否 1是
  * @property string $avg_star 星级1~5
  * @property string $zan_count 赞
+ * @property string $content 课程内容
+ * @property int $content_time  课程时长
  * @property string $favorite_count 收藏数
  * @property string $learning_count 在学数量
  * @property string $created_by 创建人
@@ -96,11 +98,12 @@ class Course extends ActiveRecord
         return [
             //[['id'], 'required'],
             [['category_id', 'name', 'teacher_id'], 'required'],
-            [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
+            [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'content_time',
                 'is_official', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             //[['level', 'is_recommend', 'is_publish'], 'string', 'max' => 1],
+            [['content'], 'string'],
             [['des'], 'string', 'max' => 500],
             [['cover_img'], 'string', 'max' => 255],
             [['id'], 'unique'],
