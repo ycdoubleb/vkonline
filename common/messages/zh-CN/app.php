@@ -241,6 +241,7 @@ return [
     'Price' => '价格',
     'Is Official' => '是否属于官网',
     'Official' => '官网',
+    
     //前台-公共
     'Avg Star' => '评分',
     'Learning Count' => '在学人数',
