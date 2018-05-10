@@ -11,12 +11,10 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t(null, "{Edit}{Node}：{$model->name}", [
+$this->title = Yii::t(null, "{Edit}{Node}", [
     'Edit' => Yii::t('app', 'Edit'), 'Node' => Yii::t('app', 'Node')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="course-node-update main modal">
 

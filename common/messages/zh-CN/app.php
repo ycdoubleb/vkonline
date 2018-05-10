@@ -76,6 +76,7 @@ return [
     'Edit' => '编辑',
     'Set' => '设置',
     'Make' => '制作',
+    'Preview' => '预览',
     'Submit' => '提交',
     'Create' => '创建',
     'Update' => '更新',
@@ -129,8 +130,10 @@ return [
     'Action' => '动作',
     'Reference' => '引用',
     'Keyword' => '关键字',
+    'Attribute' => '属性',
   
     //提示消息
+    "Can't be empty." => '不能为空。',
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
     'Are you sure you want to disable this user?' => '你确定要禁用此用户？',
     'Are you sure you want to enable this user?' => '你确定要启用此用户？',
@@ -247,10 +250,13 @@ return [
     'Learning Count' => '在学人数',
     //前台-导航条
     'CourseFactory' => '课工厂',
+    //前台-课工厂
+    'Teacher Resource' => '师资',
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-查看视频
     'Relation' => '关联',
+    'Source' => '来源',
     //前台-操作记录
     'Relative' => '相关',
     //前台-管理中心

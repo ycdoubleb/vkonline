@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 ?>
 
-<div class="course-node-form">
+<div class="course-node-form form clear">
 
    <?php $form = ActiveForm::begin([
         'options'=>[
@@ -30,7 +30,7 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'name')->textInput(['placeholder'=>'请输入...']) ?>
 
-    <?= $form->field($model, 'des')->textarea(['rows'=>6, 'value'=>$model->isNewRecord ? '无' : $model->des]) ?>
+    <?= $form->field($model, 'des')->textarea(['rows' => 6, 'value' => $model->isNewRecord ? '无' : $model->des]) ?>
 
     <?php ActiveForm::end(); ?>
 

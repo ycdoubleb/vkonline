@@ -17,8 +17,7 @@ ModuleAssets::register($this);
 $this->title = Yii::t('app', '{Add}{helpMan}',[
     'Add' => Yii::t('app', 'Add'), 'helpMan' => Yii::t('app', 'Help Man')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
 <div class="course-user-create main modal">
@@ -31,9 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body mcbs-activity">
+            <div class="modal-body form clear">
+                
                 <?php $form = ActiveForm::begin([
-                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                    'options'=>[
+                        'id' => 'build-course-form',
+                        'class'=>'form-horizontal',
+                    ],
                     'fieldConfig' => [  
                         'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
                         'labelOptions' => [
@@ -48,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?php foreach ($userRecentContacts as $item): ?>
                         <div class="recent">
                             <?= Html::img($item['avatar'],['width' => 40, 'height' => 37]) ?>
-                            <p data-key="<?= $item['id'] ?>"><?= $item['nickname']; ?></p>
+                            <p id="<?= $item['id'] ?>"><?= $item['nickname']; ?></p>
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -69,7 +72,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         'selectOptions' => ['class' => 'text-success'],
                         'unselectOptions' => ['class' => 'text-danger'],
                     ],
-                ])->label(Yii::t(null, '{add}{people}',['add'=>Yii::t('app', 'Add'),'people'=> Yii::t('app', 'People')])) ?>
+                ])->label(Yii::t(null, '{Add}{People}',[
+                    'Add'=>Yii::t('app', 'Add'), 'People'=> Yii::t('app', 'People')
+                ])) ?>
 
                 <?= $form->field($model, 'privilege', [
                     'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",
@@ -82,13 +87,17 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options' => [
                         'placeholder' => '请选择...'
                     ]
-                ])->label(Yii::t('app', '{set}{privilege}',['set'=> Yii::t('app', 'Set'),'privilege'=> Yii::t('app', 'Privilege')])) ?>
+                ])->label(Yii::t('app', '{Set}{Privilege}',[
+                    'Set'=> Yii::t('app', 'Set'), 'Privilege'=> Yii::t('app', 'Privilege')
+                ])) ?>
 
                 <?php ActiveForm::end(); ?>
+                
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id' => 'submitsave', 'class'=>'btn btn-primary', 
+                    'data-dismiss' => '', 'aria-label' => 'Close'
                 ]) ?>
             </div>
        </div>
@@ -99,32 +108,39 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $js = 
 <<<JS
-        
-    //选择最近联系人
     var temp = [];
+    //选择最近联系人
     $(".recent").click(function(){
-        var dataKey = $(this).children("p").attr("data-key");
-        if($.inArray(dataKey, temp)) {
-            temp.push(dataKey);
-        } else {
-            temp = $.grep(temp, function(n,i){
-                return n != dataKey;
+        if($("#courseuser-user_id").val() == ''){
+            temp = [];
+        }
+        var id = $(this).children("p").attr("id");
+        if($.inArray(id, temp) < 0){
+            temp.push(id);
+        }else {
+            temp = $.grep(temp, function(i, e){
+                return e != id;
             });
         }
-        $("#courseuser-user_id").val(temp);
-        $("#courseuser-user_id").trigger("change"); 
-    });    
-        
-    /** 提交表单 */
+        $("#courseuser-user_id").val(temp).trigger("change");
+    });
+    
+    // 提交表单
     $("#submitsave").click(function(){
         //$('#build-course-form').submit();return;
+        if($("#courseuser-user_id").val() == ''){
+            $('.field-courseuser-user_id').addClass('has-error');
+            $('.field-courseuser-user_id .help-block').html('协作人员不能为空。');
+            return;
+        }
         $.post("../course-user/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(data){
             if(data['code'] == '200'){
                 $("#help_man").load("../course-user/index?course_id=$model->course_id");
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
         });
-    });   
+        $('.myModal').modal('hide');
+    });
     
 JS;
     $this->registerJs($js,  View::POS_READY);

@@ -10,6 +10,7 @@ use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use common\models\vk\Video;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -66,6 +67,7 @@ class CourseController extends Controller
         ]);
         
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'filters' => $result['filter'],
             'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
@@ -116,6 +118,7 @@ class CourseController extends Controller
                 'model' => $model,
                 'allCategory' => Category::getCatsByLevel(1, true),
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
+                'attFiles' => Video::getUploadfileByAttachment(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
@@ -146,6 +149,7 @@ class CourseController extends Controller
                 'model' => $model,
                 'allCategory' => Category::getCatsByLevel(1, true),
                 'allTeacher' => Teacher::getTeacherByLevel($model->customer_id),
+                'attFiles' => Video::getUploadfileByAttachment(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 1)),
             ]);
