@@ -173,6 +173,7 @@ and open the template in the editor.
     margin: 20px 40px;
     width: 96px;
     height: 96px;
+    border: 1px solid #dedede;
 }
 
 .teacher-index .teacher-list .teacher-content .certificate{

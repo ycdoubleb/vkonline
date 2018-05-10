@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="teacher-list">
         <?php foreach($dataProvider as $key => $data):?>
-            <a href="view?id=<?= $data['id']?>">
+            <a href="teacher/view?id=<?= $data['id']?>">
                 <div class="teacher-content">
                     <?= Html::img(WEB_ROOT . $data['avatar'], ['class' => 'img-circle teacher-img'])?>
                     <?= $data['is_certificate'] == 1 ? 

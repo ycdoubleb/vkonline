@@ -89,7 +89,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="frame">
         <div class="col-md-12 col-xs-12 frame-title">
             <i class="icon fa fa-list-ul"></i>
-            <span><?= Yii::t('app', 'List') ?></span>
+            <span><?= Yii::t('app', 'Attribute') ?></span>
         </div>
         <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider(['models' => $model->courseAttribute]),
@@ -101,10 +101,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'name',
+                    'label' => Yii::t('app', 'Name'),
                     'contentOptions'=>['style' => 'text-align:center'],
                 ],
                 [
                     'attribute' => 'type',
+                    'label' => Yii::t('app', 'Type'),
                     'value' => function ($model){
                         return CourseAttribute::$type_keys[$model->type];
                     },
@@ -112,6 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'input_type',
+                    'label' => Yii::t('app', '{Input}{Type}',['Input' => Yii::t('app', 'Input'),'Type' => Yii::t('app', 'Type'),]),
                     'value' => function ($model){
                         return CourseAttribute::$input_type_keys[$model->input_type];
                     },
@@ -119,6 +122,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'index_type',
+                    'label' => Yii::t('app', '{Is}{Screen}',['Is' => Yii::t('app', 'Is'),'Screen' => Yii::t('app', 'Screen'),]),
                     'value' => function ($model) {
                         return $model->index_type == 0 ? '否' : '是';
                     },
@@ -126,10 +130,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'values',
+                    'label' => Yii::t('app', 'Values'),
                     'contentOptions'=>['style' => 'text-align:center'],
                 ],
                 [
                     'attribute' => 'sort_order',
+                    'label' => Yii::t('app', 'Sort Order'),
                     'contentOptions'=>['style' => 'text-align:center'],
                 ],
                 [
