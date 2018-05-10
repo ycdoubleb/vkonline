@@ -1,6 +1,6 @@
 <?php
 
-use backend\assets\AppAsset;
+use frontend\assets\AppAsset;
 use common\models\User;
 use dmstr\web\AdminLteAsset;
 use frontend\modules\help_center\assets\HelpCenterAssets;
@@ -11,7 +11,7 @@ use yii\web\View;
 /* @var $content string */
 /* @var $user User */
 
-if (class_exists('backend\assets\AppAsset')) {
+if (class_exists('frontend\assets\AppAsset')) {
     AppAsset::register($this);
 } else {
     app\assets\AppAsset::register($this);

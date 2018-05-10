@@ -29,8 +29,8 @@ class TeacherSearch extends Teacher
     public function rules()
     {
         return [
-            [['id', 'name', 'sex', 'avatar', 'level', 'customer_id', 'des', 'created_by'], 'safe'],
-            [['created_at', 'updated_at'], 'integer'],
+            [['id', 'name', 'sex', 'avatar', 'level', 'job_title', 'customer_id', 'des', 'is_certificate', 'created_by'], 'safe'],
+            [['certicicate_at', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 
@@ -41,6 +41,40 @@ class TeacherSearch extends Teacher
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
+    }
+    
+    /**
+     * 后台教师列表
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchTeacher($params)
+    {
+        $query = Teacher::find();
+
+        // add conditions that should always apply here
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere(['is_certificate' => $this->is_certificate]);
+
+        $query->andFilterWhere(['like', 'name', $this->name]);
+
+        return $dataProvider;
     }
 
     /**
@@ -126,7 +160,7 @@ class TeacherSearch extends Teacher
         self::$query->groupBy('Course.id');
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => self::$query->asArray()->all(),
+            'allModels' => self::$query->all(),
             'pagination' => [
                 'pageSize' =>10,
             ],

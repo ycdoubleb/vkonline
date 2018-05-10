@@ -8,12 +8,13 @@ use common\models\vk\searchs\CategorySearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $searchModel CategorySearch */
-/* @var $dataProvider ActiveDataProvider */
+/* @var $modelProvider ActiveDataProvider */
 
 $this->title = Yii::t('app', '{Course}{Category}',[
             'Course' => Yii::t('app', 'Course'),
@@ -44,49 +45,32 @@ $this->params['breadcrumbs'][] = $this->title;
                 return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
             },
             'columns' => [
-                'id',
-                'name',
                 [
-                    'attribute' => 'des',
-                    'value' => function ($data){
-                        return !empty($data->des) ? $data->des : null;
+                    'attribute' => 'name',
+                    'headerOptions' => [
+                        'style' => [
+                            'min-width' => '220px'
+                        ]
+                    ]
+                ],
+                [
+                    'attribute' => 'mobile_name',
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '120px'
+                        ]
+                    ]
+                ],
+                [
+                    'attribute' => 'courseAttribute.values',
+                    'value' => function ($model){
+                        return count($model->courseAttribute) > 0 ? 
+                            implode(',', ArrayHelper::getColumn($model->courseAttribute, 'values')) : null;
                     },
                     'contentOptions' => [
                         'style' => [
-                            'text-align' => 'center',
+                            'min-width' => '200px'
                         ],
-                    ],
-                ],
-                [
-                    'attribute' => 'image',
-                    'format' => 'raw',
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '100px',
-                            'text-align' => 'center',
-                            'padding' => '8px'
-                        ],
-                    ],
-                    'value' => function ($data){
-                        return !empty($data->image) ? Html::img($data->image, ['width' => '40', 'height' => '40']) :null;
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'attribute' => 'sort_order',
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '55px'
-                        ],
-                    ],
-                    'filter' => false,
-                    'class' => GridViewChangeSelfColumn::class,
-                    'plugOptions' => [
-                        'type' => 'input',
                     ],
                 ],
                 [
@@ -106,16 +90,29 @@ $this->params['breadcrumbs'][] = $this->title;
                             'allowClear' => true,
                         ],
                     ]),
-                    'value' => function ($data){
-                        return Category::$showStatus[$data->is_publish];
+                    'value' => function ($model){
+                        return Category::$showStatus[$model->is_publish];
                     },
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
+                            'width' => '60px'
                         ],
                     ],
                 ],
-
+                [
+                    'attribute' => 'sort_order',
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '55px'
+                        ],
+                    ],
+                    'filter' => false,
+                    'class' => GridViewChangeSelfColumn::class,
+                    'plugOptions' => [
+                        'type' => 'input',
+                    ],
+                ],
                 [
                     'class' => 'yii\grid\ActionColumn',
                     'contentOptions' => [

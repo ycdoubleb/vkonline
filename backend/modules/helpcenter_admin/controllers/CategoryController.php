@@ -6,6 +6,7 @@ use backend\components\BaseController;
 use common\models\helpcenter\PostCategory;
 use common\models\helpcenter\searchs\PostCategorySearch;
 use Yii;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
@@ -22,9 +23,19 @@ class CategoryController extends BaseController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            //access验证是否有登录
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
                 ],
             ],
         ];

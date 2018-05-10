@@ -51,6 +51,8 @@ return [
             'course/*',
             'study_center/*',
             'build_course/*',
+            'admin_center/*',
+            'help_center/*',
         ]
     ],
     'params' => $params,
