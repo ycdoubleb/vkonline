@@ -171,7 +171,7 @@ return [
     'True' => '真实',
     'Build' => '建设',
     'Data' => '数据',
-    'DataVisible Range' => '可见范围',
+    'Range' => '范围',
     'Tag' => '标签',
     
     //后台-文件管理
@@ -179,7 +179,6 @@ return [
     'List' => '列表',
     'Activity' => '活动',
     'Expire' => '到期',
-    'Time' => '时间',
     'Upload By' => '上传者',
     'Is' => '是否',
     'Mark' => '标记',
@@ -233,7 +232,7 @@ return [
     'Mode' => '方式',
     'Distribution' => '分布',
     'Survey' => '概况',
-    'Quote' => '引用',
+    'Source' => '来源',
     'Opening' => '开通',
     'Mobile Name' => '移动端名称',
     'Is Show' => '是否显示',
@@ -241,9 +240,24 @@ return [
     'Price' => '价格',
     'Is Official' => '是否属于官网',
     'Official' => '官网',
+    'Attribute' => '属性',
+    'Input' => '输入',
+    'Values' => '候选值',
+    'Screen' => '筛选',
+    'Teachers' => '师资',
+    'Authentication' => '认证',
+    'Proposer' => '申请',
+    'Applicant' => '申请人',
+    'Auditor' => '审核人',
+    'Job Title' => '职称',
+    'Verifier' => '审核',
+    'Remarks' => '备注',
+    'Reset' => '重置',
+    
     //前台-公共
     'Avg Star' => '评分',
     'Learning Count' => '在学人数',
+    'Famous teacher Hall' => '名师堂',
     //前台-导航条
     'CourseFactory' => '课工厂',
     //前台-协作人员

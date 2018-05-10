@@ -10,6 +10,7 @@ use common\models\User;
 use common\models\vk\Customer;
 use Yii;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotAcceptableHttpException;
@@ -30,6 +31,16 @@ class BannerController extends BaseController
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            //access验证是否有登录
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
                 ],
             ],
         ];

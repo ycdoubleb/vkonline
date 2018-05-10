@@ -22,13 +22,13 @@ and open the template in the editor.
     padding-top: 10px;
     padding-bottom: 10px;
     color: #ffffff;
-    line-height: 20px;
+    line-height: 33px;
     background-color: rgba(153, 153, 153, 1);
 }
 .customer
 .frame-title .icon {
     float: left; 
-    margin-top: 3px;
+    margin-top: 9px;
     margin-right: 5px;
 }
 
@@ -136,3 +136,84 @@ and open the template in the editor.
     width: 100%;
     height: 650px;
 }
+
+/************** 教师******************/
+.teacher-index .teacher-search {
+    height: 150px;
+}
+
+.teacher-index .teacher-search .search {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #999999;
+}
+
+.teacher-index .teacher-search .search .form-group label{
+    padding-top: 0px;
+}
+
+.teacher-index .teacher-search .search .form-group .label-name label{
+    font-weight: normal;
+    color: #999999;
+    margin-right: 40px;
+}
+
+.teacher-index .teacher-list .teacher-content {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background-color: #ffffff;
+    text-align: center;
+    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.349019607843137);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.349019607843137);
+}
+
+.teacher-index .teacher-list .teacher-content .teacher-img{
+    margin: 20px 40px;
+    width: 96px;
+    height: 96px;
+}
+
+.teacher-index .teacher-list .teacher-content .certificate{
+    position: relative;
+    left: 35px;
+    bottom: 45px;
+}
+
+.teacher-index .teacher-list .teacher-content .teacher-name {
+    position: relative;
+    font-size: 16px;
+    color: #000000;
+    bottom: 35px;
+}
+
+.teacher-index .teacher-list .teacher-content .teacher-level {
+    position: relative;
+    font-size: 13px;
+    bottom: 25px;
+    color: #cccccc;
+}
+
+.teacher-index .total-num {
+    margin-top: 30px;
+    color: #999999;
+}
+
+.customer .frame .certificate{
+    position: relative;
+    right: 35px;
+    vertical-align: bottom;
+}
+
+/************** 申请认证******************/
+.teacher-certificate-index .table > thead:first-child > tr:first-child > th {
+    background-color: #f2f2f2;
+}
+
+.teacher-certificate-index .table-bordered>tbody>tr>td {
+    text-align: center;
+    background-color: #ffffff;
+    vertical-align: middle;
+}
+
