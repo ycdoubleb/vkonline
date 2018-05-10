@@ -11,11 +11,8 @@
     padding-top: 160px
 }
 
-.skin-blue .logo {
-    margin-top: -8px;
-}
-
 .skin-blue .main-sidebar{
+    margin-top: 81px;
     position: fixed;
 }
 

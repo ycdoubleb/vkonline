@@ -122,7 +122,7 @@ ModuleAssets::register($this);
     <!--课程协作人员-->
     <div class="col-md-6 col-xs-12 frame right">
         <div class="col-xs-12 title">
-            <i class="icon fa fa-users"></i>
+            <i class="fa fa-users"></i>
             <span><?= Yii::t('app', 'Help Man') ?></span>
             <div class="btngroup">
                 <?php if($model->created_by === Yii::$app->user->id){
@@ -140,7 +140,7 @@ ModuleAssets::register($this);
     <!--课程框架-->
     <div class="col-xs-12 frame">
         <div class="col-xs-12 title">
-            <i class="icon fa fa-cubes"></i>
+            <i class="fa fa-cubes"></i>
             <span>
                 <?= Yii::t('app', '{Course}{Frame}',[
                     'Course' => Yii::t('app', 'Course'), 'Frame' => Yii::t('app', 'Frame')
@@ -162,7 +162,7 @@ ModuleAssets::register($this);
     <!--课程操作记录-->
     <div class="col-xs-12 frame">
         <div class="col-xs-12 title">
-            <i class="icon fa fa-history"></i>
+            <i class="fa fa-history"></i>
             <span><?= Yii::t('app', '{Operating}{Log}', [
                 'Operating' => Yii::t('app', 'Operating'), 'Log' => Yii::t('app', 'Log')
             ]) ?></span>
