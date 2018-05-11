@@ -29,66 +29,6 @@ body {
     width: 1200px;
     /*padding: 70px 0 20px;*/
 }
-/************************* 页底 *************************/
-.footer {
-    
-}
-.footer .contacts-box{
-    background-color: #303131;
-    padding-bottom: 36px;
-}
-.footer .contacts-box .icon{
-    background: url(../imgs/logo-icon.png) no-repeat;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    float: left;
-}
-.footer .contacts-box .icon-phone{background-position: 0 -70px}
-.footer .contacts-box .icon-qq{background-position: 0 -105px}
-.footer .contacts-box .contacts-content{
-    padding: 0px;
-    height: 158px;
-    padding-top: 36px;
-    font-size: 14px;
-    color: #ffffff;
-}
-.footer .contacts-box .contacts-content ul{
-    float: left;
-    padding: 0;
-    margin-right: 80px;
-}
-.footer .contacts-box .contacts-content li a:hover{
-    color: inherit;
-}
-.footer .contacts-box .contacts-content .contacts-left{
-    margin-bottom: 14px;
-}
-/* 右边客服 */
-.footer .contacts-box .contacts-content .contacts-right-box{
-    float: right;
-    padding: 0;
-    margin-right: 0px;
-}
-.footer .contacts-box .contacts-content .contacts-right-box .title{
-    font-weight: bold;
-    margin-left: 40px;
-}
-.footer .contacts-box .contacts-content .contacts-right-box .time{
-    color: #999999;
-    font-size: 12px;
-    margin-left: 40px;
-}
-/* 版权 */
-.footer .copy-right-box{
-    background-color: #2b2c2c;
-}
-.footer .copy-right-content{
-    padding: 26px 0 16px 0;
-    color: #646464;
-    font-size: 12px;
-}
-/************************* 页底 *************************/
 
 .jumbotron {
     text-align: center;
@@ -186,6 +126,23 @@ a.desc:after {
 .nav li.active a{
     color: #FC583D;
 }
+/* 搜索框 */
+.nav .search-box{
+    float: left;
+    position: relative;
+    margin: 0px 20px;
+}
+.nav .search-box .search-input{
+    height: 37px;
+    border: 1px solid #ccc;
+    padding: 0px 28px 0 5px;
+}
+.nav .search-box i{
+    position: absolute;
+    top:10px;
+    right:10px;
+    color: #ccc;
+}
 /* 额外设置 logout 高度 */
 .nav li.logout{
     padding-top: 0px;
@@ -201,54 +158,80 @@ a.desc:after {
     padding: 0px;
 }
 
+/*****************************************************
+*
+* 页底样式 
+*
+*****************************************************/
+.footer {
+    
+}
+.footer .contacts-box{
+    background-color: #303131;
+    padding-bottom: 36px;
+}
+.footer .contacts-box .icon{
+    background: url(../imgs/logo-icon.png) no-repeat;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+.footer .contacts-box .icon-phone{background-position: 0 -70px}
+.footer .contacts-box .icon-qq{background-position: 0 -105px}
+.footer .contacts-box .contacts-content{
+    padding: 0px;
+    height: 158px;
+    padding-top: 36px;
+    font-size: 14px;
+    color: #ffffff;
+}
+.footer .contacts-box .contacts-content ul{
+    float: left;
+    padding: 0;
+    margin-right: 80px;
+}
+.footer .contacts-box .contacts-content li a:hover{
+    color: inherit;
+}
+.footer .contacts-box .contacts-content .contacts-left{
+    margin-bottom: 14px;
+}
+/* 右边客服 */
+.footer .contacts-box .contacts-content .contacts-right-box{
+    float: right;
+    padding: 0;
+    margin-right: 0px;
+}
+.footer .contacts-box .contacts-content .contacts-right-box .title{
+    font-weight: bold;
+    margin-left: 40px;
+}
+.footer .contacts-box .contacts-content .contacts-right-box .time{
+    color: #999999;
+    font-size: 12px;
+    margin-left: 40px;
+}
+/* 版权 */
+.footer .copy-right-box{
+    background-color: #2b2c2c;
+}
+.footer .copy-right-content{
+    padding: 26px 0 16px 0;
+    color: #646464;
+    font-size: 12px;
+}
+
 /***************************************************************
 *
 * tab样式
 *
 ***************************************************************/
-.classify {
-    display: inline-block;
-    float: right;
-    font-size: 14px;
-}
-
-.classify > ul {
-    padding-left: 0;
-    margin-bottom: 0;
-    list-style: none;
-}
-
-.classify > ul > li {
-    float: left;
-    height: 40px;
-    padding: 10px 7px;
-    margin: -10px 5px;
-}
-
-.classify > ul > li > a {
-    display: block;
-    padding: 0 7px;
-    margin: -10px -7px;
-    color: #999;
-    line-height: 40px;
-    text-decoration: none;
-}
-
-.classify > ul > li.active,
-.classify > ul > li:hover {
-    border-bottom: 2px #337ab7 solid;
-    /*cursor: pointer;*/
-}
-
-.classify > ul > li.active > a,
-.classify > ul > li:hover > a {
-    color: #337ab7;
-}
 
 
 /*****************************************************
 *
-* 公共省略号样式
+* 公共样式
 *
 *****************************************************/
 /** 设置单行显示省略号 */
@@ -265,5 +248,12 @@ a.desc:after {
     display:-webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+}
+/* loading 样式 */
+.loading{
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background-image: url('../imgs/loading.gif');
 }
 

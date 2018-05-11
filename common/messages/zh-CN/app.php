@@ -246,6 +246,7 @@ return [
     'Avg Star' => '评分',
     'Learning Count' => '在学人数',
     //前台-导航条
+    'StudyCenter' => '学习中心',
     'CourseFactory' => '课工厂',
     //前台-协作人员
     'Help Man' => '协作人员',
