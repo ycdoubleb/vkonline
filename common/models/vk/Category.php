@@ -15,11 +15,13 @@ use yii\web\UploadedFile;
  * This is the model class for table "{{%category}}".
  *
  * @property string $id
+ * @property string $customer_id 客户ID
  * @property string $name       分类名称
  * @property string $mobile_name 手机端名称
  * @property int $level         等级：0顶级 1~3
  * @property string $path       继承路径
  * @property string $parent_id  父级id
+ * @property string $created_by 创建者
  * @property int $sort_order    排序
  * @property string $image      图标路径
  * @property int $created_at    创建时间
@@ -88,6 +90,7 @@ class Category extends ActiveRecord
         return [
             [['parent_id','level', 'is_show', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
+            [['created_by', 'customer_id'], 'string', 'max' => 32],
             [['path', 'image', 'des'], 'string', 'max' => 255],
         ];
     }
@@ -184,11 +187,13 @@ class Category extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
+            'customer_id' => Yii::t('app', 'Customer ID'), 
             'name' => Yii::t('app', 'Name'),
             'mobile_name' => Yii::t('app', 'Mobile Name'),
             'level' => Yii::t('app', 'Level'),
             'path' => Yii::t('app', 'Path'),
             'parent_id' => Yii::t('app', 'Parent ID'),
+            'created_by' => Yii::t('app', 'Created By'), 
             'sort_order' => Yii::t('app', 'Sort Order'),
             'image' => Yii::t('app', 'Image'),
             'created_at' => Yii::t('app', 'Created At'),
