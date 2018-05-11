@@ -57,7 +57,7 @@ class Category extends ActiveRecord
     private static $cacheKey = 'vk_category';
 
     /**
-     * 分类[id,name,mobile_name,level,path,parent_id,sort_order,image,is_show]
+     * 分类[id,name,mobile_name,level,path,parent_id,sort_order,image,is_show,customer_id,created_by]
      * @var array
      */
     private static $categorys;
@@ -252,7 +252,7 @@ class Category extends ActiveRecord
     //==========================================================================
     /**
      * 获取分类
-     * @param array $condition      默认返回所有分类
+     * @param intger $level      默认返回所有分类
      * @param bool $key_to_value    返回键值对形式
      * @param bool $include_unshow  是否包括隐藏的分类
      * 
@@ -260,11 +260,7 @@ class Category extends ActiveRecord
      */
     public static function getCatsByLevel($level = 1, $key_to_value = false, $include_unshow = false) {
         self::initCache();
-//        self::$categorys = self::findAll(['level' => $level]);
         $categorys = [];
-//        foreach (self::$categorys as $id => $category) {
-//            $categorys[] = $category;
-//        }
         foreach (self::$categorys as $id => $category) {
             if ($category['level'] == $level && ($include_unshow || $category['is_show'] == 1)) {
                 $categorys[] = $category;
@@ -273,7 +269,35 @@ class Category extends ActiveRecord
         
         return $key_to_value ? ArrayHelper::map($categorys, 'id', 'name') : $categorys;
     }
-
+    
+    /**
+     * 获取客户分类的子级
+     * @param integer $id               分类ID
+     * @param string $customer_id       客户ID
+     * @param bool $key_to_value        返回键值对形式
+     * @param bool $recursion           是否递归
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [array|key=value]
+     */
+    public static function getCustomerCatChildren($id,$customer_id, $key_to_value = false, $recursion = false, $include_unshow = false) {
+        self::initCache();
+        //不传customerID,默认使用当前用户的客户ID
+        if(!isset($customer_id) || empty($customer_id)){
+            $customer_id = Yii::$app->user->identity->customer_id;
+        }     
+        $childrens = [];
+        foreach (self::$categorys as $c_id => $category) {
+            if ($category['parent_id'] == $id && $category['customer_id'] == $customer_id && ($include_unshow || $category['is_show'] == 1)) {
+                $childrens[] = $category;
+                if ($recursion) {
+                    $childrens = array_merge($childrens, self::getCustomerCatChildren($c_id, $customer_id , $key_to_value, $recursion, $include_unshow));
+                }
+            }
+        }
+        return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
+    }
+    
     /**
      * 获取分类的子级
      * @param integer $id               分类ID
@@ -284,19 +308,35 @@ class Category extends ActiveRecord
      * @return array [array|key=value]
      */
     public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false) {
+        return self::getCustomerCatChildren($id, null, $key_to_value, $recursion, $include_unshow);
+    }
+
+    /**
+     * 获取客户分类的子级ID
+     * @param integer $id               分类ID
+     * @param string $customer_id       客户ID
+     * @param bool $recursion           是否递归
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [id,id...]
+     */
+    public static function getCustomerCatChildrenIds($id, $customer_id ,$recursion = false, $include_unshow = false) {
         self::initCache();
+        //不传customerID,默认使用当前用户的客户ID
+        if(!isset($customer_id) || empty($customer_id)){
+            $customer_id = Yii::$app->user->identity->customer_id;
+        }   
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)) {
-                $childrens[] = $category;
+            if ($category['parent_id'] == $id && $category['customer_id'] == $customer_id &&  ($include_unshow || $category['is_show'] == 1)) {
+                $childrens[] = $c_id;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCatChildren($c_id, $key_to_value, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getCustomerCatChildrenIds($c_id, $customer_id, $recursion, $include_unshow));
                 }
             }
         }
-        return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
+        return $childrens;
     }
-
     /**
      * 获取分类的子级ID
      * @param integer $id               分类ID
@@ -305,39 +345,34 @@ class Category extends ActiveRecord
      * 
      * @return array [id,id...]
      */
-    public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false) {
-        self::initCache();
-        $childrens = [];
-        foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)) {
-                $childrens[] = $c_id;
-                if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCatChildrenIds($c_id, $recursion, $include_unshow));
-                }
-            }
-        }
-        return $childrens;
+    public static function getCatChildrenIds($id ,$recursion = false, $include_unshow = false) {
+        return self::getCustomerCatChildrenIds($id, null, $recursion, $include_unshow);
     }
 
     /**
-     * 反回当前（包括父级）分类同级的所有分类
+     * 反回客户当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
+     * @param string $customer_id       客户ID
      * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $recursion           是否递归（向上级递归）
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [[level_1],[level_2],..]
      */
-    public static function getSameLevelCats($id, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
+    public static function getCustomerSameLevelCats($id, $customer_id, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
+        //不传customerID,默认使用当前用户的客户ID
+        if(!isset($customer_id) || empty($customer_id)){
+            $customer_id = Yii::$app->user->identity->customer_id;
+        } 
         $catgegory = self::getCatById($id);
-        $categorys = ($containerSelfLevel && !empty($id)) ? [self::getCatChildren($id, true, false, $include_unshow)] : [];
+        $categorys = ($containerSelfLevel && !empty($id)) ? [self::getCustomerCatChildren($id, $customer_id, true, false, $include_unshow)] : [];
         do {
             if ($catgegory == null) {
                 //当前分类为空时返回顶级分类
                 $categorys [] = self::getCatsByLevel(1, true);
                 break;
             } else {
-                array_unshift($categorys, self::getCatChildren($catgegory->parent_id, true, false, $include_unshow));
+                array_unshift($categorys, self::getCustomerCatChildren($catgegory->parent_id, $customer_id, true, false, $include_unshow));
                 if (!$recursion)
                     break;
             }
@@ -345,6 +380,20 @@ class Category extends ActiveRecord
                 break;
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
         return $categorys;
+    }
+    
+    /**
+     * 反回当前（包括父级）分类同级的所有分类
+     * @param integer $id               分类ID
+     * @param string $customer_id       客户ID
+     * @param bool $containerSelfLevel  是否包括该分类同级分类
+     * @param bool $recursion           是否递归（向上级递归）
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [[level_1],[level_2],..]
+     */
+    public static function getSameLevelCats($id , $containerSelfLevel = false, $recursion = true, $include_unshow = false){
+        return self::getCustomerCatChildren($id, null, $include_unshow, $recursion, $containerSelfLevel);
     }
 
     /**
