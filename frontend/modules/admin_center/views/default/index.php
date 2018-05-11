@@ -233,6 +233,7 @@ use yii\widgets\DetailView;
 $admin = Url::to(['admin-index', 'id' => $model->id]);
 $logIndex = Url::to(['log-index', 'id' => $model->id]);
 $signupIndex = Url::to(['invite-code-index', 'id' => $model->id]);
+$WEB_ROOT = WEB_ROOT;
 
 $js = 
 <<<JS
@@ -259,13 +260,14 @@ $js =
     }
         
     /** 复制邀请码 */
-    window.jsCopy = function jsCopy() {   
+    window.jsCopy = function jsCopy() {
         var e=document.getElementById("inviteCode");//对象是inviteCode
-        e.select(); //选择对象   
-        tag=document.execCommand("Copy"); //执行浏览器复制命令  
-        if(tag){  
-          alert('复制邀请码成功');  
-        }  
+//        e.values = "$WEB_ROOT/site/signup?code="+e.value;
+        e.select(); //选择对象
+        tag=document.execCommand("Copy"); //执行浏览器复制命令
+        if(tag){
+          alert('复制邀请码成功');
+        }
     }; 
         
 JS;

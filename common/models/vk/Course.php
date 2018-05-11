@@ -97,7 +97,18 @@ class Course extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
-            [['category_id', 'name', 'teacher_id'], 'required'],
+            [['category_id'], 'required', 'message' => Yii::t('app', "{Course}{Category}{Can't be empty}", [
+                'Course' => Yii::t('app', 'Course'), 'Category' => Yii::t('app', 'Category'), 
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
+            [['name'], 'required', 'message' => Yii::t('app', "{Course}{Name}{Can't be empty}", [
+                'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name'),
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
+            [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
+                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
             [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'content_time',
                 'is_official', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
@@ -118,9 +129,9 @@ class Course extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
-            'category_id' => Yii::t('app', '{Course}{Category}', ['Course' => Yii::t('app', 'Course'), 'Category' => Yii::t('app', 'Category')]),
-            'teacher_id' => Yii::t('app', '{MainSpeak}{Teacher}', ['MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')]),
-            'name' => Yii::t('app', '{Course}{Name}', ['Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')]),
+            'category_id' => Yii::t('app', 'Category ID'),
+            'teacher_id' => Yii::t('app', 'Teacher ID'),
+            'name' => Yii::t('app', 'Name'),
             'level' => Yii::t('app', 'Level'),
             'des' => Yii::t('app', 'Des'),
             'cover_img' => Yii::t('app', 'Cover Img'),

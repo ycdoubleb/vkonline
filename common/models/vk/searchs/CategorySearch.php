@@ -2,10 +2,9 @@
 
 namespace common\models\vk\searchs;
 
-use Yii;
+use common\models\vk\Category;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\vk\Category;
 
 /**
  * CategorySearch represents the model behind the search form of `common\models\vk\Category`.
@@ -31,7 +30,7 @@ class CategorySearch extends Category
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
-
+    
     /**
      * Creates data provider instance with search query applied
      *
@@ -42,8 +41,12 @@ class CategorySearch extends Category
     public function search($params)
     {
         $query = Category::find();
+        
+        $query->from(['Category' => Category::tableName()]);
 
         // add conditions that should always apply here
+
+        $this->load($params);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -51,29 +54,16 @@ class CategorySearch extends Category
                 'pageSize' => 100,
             ],
         ]);
-
-        $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-
+        
         // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'parent_id' => $this->parent_id,
-            'is_show' => $this->is_show,
-            'level' => $this->level,
-            'sort_order' => $this->sort_order,
-        ]);
+        $query->andFilterWhere(['is_show' => $this->is_show]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'mobile_name', $this->mobile_name])
-            ->andFilterWhere(['like', 'path', $this->path])
-            ->andFilterWhere(['like', 'image', $this->image])
-            ->andFilterWhere(['like', 'des', $this->des]);
+            ->andFilterWhere(['like', 'mobile_name', $this->mobile_name]);
+        
+        $query->orderBy(['path' => SORT_ASC]);
+        
+        $query->with('courseAttribute');
 
         return $dataProvider;
     }

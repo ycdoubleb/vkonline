@@ -117,7 +117,14 @@ class Video extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
-            [['teacher_id', 'name'], 'required'],
+            [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
+                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
+            [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
+                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
             [['source_duration'], 'number'], 
             [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
                 'is_del', 'is_official',  'sort_order', 'created_at', 'updated_at'], 'integer'],
@@ -142,18 +149,18 @@ class Video extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'node_id' => Yii::t('app', 'Node ID'),
-            'teacher_id' => Yii::t('app', '{MainSpeak}{Teacher}', ['MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')]),
+            'teacher_id' => Yii::t('app', 'Teacher ID'),
             'source_id' => Yii::t('app', 'Source ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
             'ref_id' => Yii::t('app', 'Ref ID'),
-            'name' => Yii::t('app', '{Video}{Name}', ['Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')]),
+            'name' => Yii::t('app', 'Name'),
             'source_level' => Yii::t('app', 'Source Level'),
             'source_wh' => Yii::t('app', 'Source Wh'),
             'source_bitrate' => Yii::t('app', 'Source Bitrate'),
             'source_duration' => Yii::t('app', 'Source Duration'), 
             'source_is_link' => Yii::t('app', 'Source Is Link'),
             'content_level' => Yii::t('app', 'Content Level'),
-            'des' => Yii::t('app', '{Video}{Des}', ['Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')]),
+            'des' => Yii::t('app', 'Des'),
             'level' => Yii::t('app', 'Level'),
             'img' => Yii::t('app', 'Img'),
             'is_ref' => Yii::t('app', 'Is Ref'),

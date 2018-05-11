@@ -150,7 +150,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [   //可见范围
                     'attribute' => 'level',
-                    'label' => Yii::t('app', 'DataVisible Range'),
+                    'label' => Yii::t('app', 'Range'),
                     'format' => 'raw',
                     'filter' => Select2::widget([
                         'model' => $searchModel,
@@ -174,7 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'is_ref',
-                    'label' => Yii::t('app', 'Quote'),
+                    'label' => Yii::t('app', 'Source'),
                     'format' => 'raw',
                     'filter' => false,
                     'value' => function ($data) {
@@ -188,9 +188,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'attribute' => 'source.size',
-                    'label' => Yii::t('app', '{Video}{Size}',[
-                        'Video' => Yii::t('app', 'Video'),
-                        'Size' => Yii::t('app', 'Size'),
+                    'label' => Yii::t('app', '{Occupy}{Space}',[
+                        'Occupy' => Yii::t('app', 'Occupy'),
+                        'Space' => Yii::t('app', 'Space'),
                     ]),
                     'headerOptions' => [
                         'style' => [
@@ -198,7 +198,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return Yii::$app->formatter->asShortSize($data['source']['size'], 1);
+                        return Yii::$app->formatter->asShortSize($data['source']['size']+(isset($data['att_size']) ? $data['att_size'] : 0), 1);
                     },
                     'contentOptions' => [
                         'style' => [
@@ -206,25 +206,25 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
-                [
-                    'label' => Yii::t('app', '{Attachment}{Size}',[
-                        'Attachment' => Yii::t('app', 'Attachment'),
-                        'Size' => Yii::t('app', 'Size'),
-                    ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'min-width' => '90px',
-                        ],
-                    ],
-                    'value' => function ($data){
-                        return Yii::$app->formatter->asShortSize((isset($data['att_size']) ? $data['att_size'] : 0), 1);
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
+//                [//附件大小
+//                    'label' => Yii::t('app', '{Attachment}{Size}',[
+//                        'Attachment' => Yii::t('app', 'Attachment'),
+//                        'Size' => Yii::t('app', 'Size'),
+//                    ]),
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'min-width' => '90px',
+//                        ],
+//                    ],
+//                    'value' => function ($data){
+//                        return Yii::$app->formatter->asShortSize((isset($data['att_size']) ? $data['att_size'] : 0), 1);
+//                    },
+//                    'contentOptions' => [
+//                        'style' => [
+//                            'text-align' => 'center',
+//                        ],
+//                    ],
+//                ],
                 [
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
@@ -262,12 +262,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     'template' => '{view}',
                     'buttons' => [
                         'view' => function ($url, $data, $key) {
-                             $options = [
+                            $options = [
                                 'class' => 'btn btn-sm '.($data['is_publish'] == 0 ? 'disabled' : ' '),
                                 'style' => 'padding:0px; display:unset',
                                 'title' => Yii::t('app', 'View'),
                                 'aria-label' => Yii::t('app', 'View'),
                                 'data-pjax' => '0',
+                                'target' => '_blank',
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',

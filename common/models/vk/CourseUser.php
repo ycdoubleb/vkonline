@@ -18,7 +18,7 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
- * @property Course $courset 获取课程
+ * @property Course $course 获取课程
  * @property User $user 获取用户
  */
 class CourseUser extends ActiveRecord
@@ -65,7 +65,9 @@ class CourseUser extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
-            [['user_id'], 'required'],
+            [['user_id'], 'required', 'message' => Yii::t('app', "{helpMan}{Can't be empty}", [
+                'helpMan' => Yii::t('app', 'Help Man'), "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
             [['privilege', 'created_at', 'updated_at'], 'integer'],
             [['course_id'], 'string', 'max' => 32],
             //[['user_id'], 'array'],

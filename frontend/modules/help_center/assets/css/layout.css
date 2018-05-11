@@ -7,81 +7,9 @@ and open the template in the editor.
     Created on : 2017-12-14, 18:42:19
     Author     : Administrator
 */
-/****************** layouts--->navbar----样式 ******************/
-.skin-blue .main-header{
-    position: fixed;
-    width: 100%;
-}
-
-.skin-blue .main-header .logo{
-    height: 58px;
-    line-height: 65px;
-    color: #b8c7ce !important;
-    background-color: #222222 !important;
-}
-
-.skin-blue .sidebar-menu>li.header {
-    font-size: 14px;
-    color: #b8c7ce !important;
-    background-color: #070707 !important;
-}
-
-.skin-blue .main-header .logo-img{
-    float: left;
-}
-
-.skin-blue .main-header .logo-img img{
-    width: 40px;
-    margin: 5px 15px;
-}
-
-.skin-blue .main-header .navbar{
-    background-color: #222 !important;
-}
-
-.skin-blue .main-header .navbar .nav>li>a{
-    color: #9d9d9d !important;
-}
-
-.skin-blue .main-header .navbar .nav>li>a:hover,
-.skin-blue .main-header .navbar .nav .active a
-{
-    color: #fff !important;
-}
-
-.nav .active{
-    background-color: #080808;
-}
-
-.skin-blue .main-header .post-menu{
-    float: left;
-}
-
-.skin-blue .main-header .navbar-nav>.user-menu>.dropdown-menu{
-    width: 160px;
-    color: #000;
-}
-
-.skin-blue .main-header .navbar-nav>.user-menu .user-image{
-    border-radius: 0;
-    margin-right: 5px;
-}
-
-.user-footer a{
-    color: #555555 !important;
-}
-
-.user-footer a:hover{
-    color: #000000 !important;
-}
-
 /****************** layouts---->main----样式 ******************/
 .content-wrapper {
-    margin-top: -20px;
-    background-color: #ffffff !important;
-}
-
-.content-wrapper .content{
-    padding: 0px 15px 20px 15px;
+    /*margin-top: -20px;*/
+    background-color: #f2f2f2 !important;
 }
 

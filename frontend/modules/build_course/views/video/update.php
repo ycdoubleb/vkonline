@@ -11,7 +11,7 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
+$this->title = Yii::t(null, "{Edit}{Video}", [
     'Edit' => Yii::t('app', 'Edit'), 'Video' => Yii::t('app', 'Video')
 ]);
 //$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
@@ -20,7 +20,7 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
 ?>
 <div class="video-update main modal">
 
-    <div class="modal-dialog modal-lg" style="width: 1100px" role="document">
+    <div class="modal-dialog modal-lg" style="width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -28,14 +28,13 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body height">
+            <div class="modal-body modal-height">
                 
                 <?= $this->render('_form', [
                     'model' => $model,
                     'allRef' => $allRef,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
-                    'attFiles' => $attFiles,
                     'allTags' => $allTags,
                     'tagsSelected' => $tagsSelected,
                 ]) ?>
@@ -43,7 +42,8 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
+                    'id' => 'submitsave', 'class' => 'btn btn-primary', 
+                    'data-dismiss' => '', 'aria-label' => 'Close'
                 ]) ?>
             </div>
        </div>
@@ -55,13 +55,17 @@ $this->title = Yii::t(null, "{Edit}{Video}：{$model->name}", [
 $js = 
 <<<JS
     window.onloadUploader();    //加载文件上传  
-    /** 提交表单 */
+    // 提交表单
     $("#submitsave").click(function(){
         //$("#build-course-form").submit();return;
         if($('#video-name').val() == ''){
+            $('.field-video-name').addClass('has-error');
+            $('.field-video-name .help-block').html('视频名称不能为空。');
             return;
         }
         if($('#video-teacher_id').val() == ''){
+            $('.field-video-teacher_id').addClass('has-error');
+            $('.field-video-teacher_id .help-block').html('主讲老师不能为空。');
             return;
         }
         if((tijiao() && isExist()) == false){
@@ -76,11 +80,7 @@ $js =
         $.post("../video/update?id=$model->id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){
                 $.each(rel['data'],function(key, value){
-                    $("#$model->id").find('> div.head.gray span.'+ key).html(value);
-                    $("#$model->id").find('> div.head.gray i.'+ key).css({'display': value});
-                    if(key == 'id'){
-                        $('#toggle_' + value).load('../video/view?' + key + '=' + value + ' #' + value + ' > table');
-                    }
+                    $("#$model->id").find(' > div.head span.'+ key).html(value)
                 });
                 $("#act_log").load("../course-actlog/index?course_id={$model->courseNode->course_id}");
             }

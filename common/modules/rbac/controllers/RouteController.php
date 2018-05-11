@@ -93,10 +93,8 @@ class RouteController extends Controller
          * 默认情况下，只获取本应用的模块，但为了配置前端路由，必须手动添加
          */
         $frontend = \Yii::getAlias('@frontend');
-        $mconline = \Yii::getAlias('@mconline');
         $frontend_config = require($frontend . '/config/main-local.php');
-        $mconline_config = require($mconline . '/config/main-local.php');
-        $modules = array_merge([], $frontend_config['modules'],$mconline_config['modules']);
+        $modules = array_merge([], $frontend_config['modules']);
         
         foreach ($modules as $moduleName => $module){
             if($moduleName != 'gii' && $moduleName !='debug')//去除重复

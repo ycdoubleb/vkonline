@@ -1,435 +1,416 @@
-/***************************************公共****************************************/
+/*
+    用于模块页面样式
+*/
+/* 
+    创建时间 : 2018-5-10, 14:10:17
+*/
+
+/*******************************************************************************
+ * 公共部分
+ *******************************************************************************/
 .main {
     display: inline-block;
     float: right;  
     width: 1000px;
     height: auto;
-    padding-left: 35px;
-    font-size: 14px;
+}
+.crumbs,
+.form,
+.list .item,
+.frame {
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.main > p,
-.main .search-frame {
-    padding: 0;
-    margin: 0 0 30px;
-}
-
-.main .form-label {
-    padding: 10px 0 !important;
-    margin-bottom: 0;
-    font-size: 14px;
-    color: #999;
-    font-weight: normal;
-    padding-right: 0px;
-}
-
-.main .file {
-    padding-left: 0;
-    color:rgb(102, 102, 102);
-}
-
-.main .form-control,
-.main .select2-selection {
-    min-height: 40px !important;
-    padding: 10px 24px 10px 12px !important;
-    border-radius: 0 !important;
-}
-
-.main textarea.form-control {
-    height: auto !important;
-}
-
-.main .select2-selection__arrow {
-    height: 38px !important;
-    border-left: none !important;
-}
-
-.main .form .select2-search__field {
-    height: auto !important;
-    padding: 0 !important;
-}
-
-.main .form .select2-selection__choice {
-    margin: 0 6px 1px 0 !important;
-}
-
-
-/*********************面包屑****************************/
-.main .crumbs {
-    padding: 7px; 
-    margin-bottom: 15px; 
-    background-color: rgba(242, 242, 242, 1);
-}
-
-.main .crumbs > i {
-    margin-right: 5px; 
+/*******************************************************************************
+ * 面包屑
+ *******************************************************************************/
+.crumbs {
+    width: 100%;
+    height: 60px;
+    padding: 0 15px;
+    margin-bottom: 15px;
     font-size: 16px;
+    color: #666;
+    line-height: 60px;
+    border-bottom: 1px solid #f2f2f2;
 }
 
-.main .crumbs > span {
+.crumbs .btngroup {
+    float: right;
+}
+
+.crumbs .btngroup > a {
+   border-radius: 0;
+}
+/*******************************************************************************
+ * 表单样式
+ *******************************************************************************/
+.form {
+    width: 100%;
+}
+
+.form.set-margin {
+    margin: -15px 0 0;
+    padding: 15px 0 25px;
+}
+/**
+ *  特殊情况下的边距样式
+ */
+.form.set-bottom {
+    padding-bottom: 110px;
+}
+.form.clear {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.form .form-horizontal .form-group{
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.form .form-group .form-label {
+    padding: 10px 0;
     color: #999;
+    font-weight: bold;
 }
 
-/*********************搜索框架****************************/
-.search-frame .search-drop-downList,
-.search-frame .search-text-input {
+.form .form-group .form-control,
+.form .form-group .select2-selection {
+    height: 40px;
+    padding: 10px 24px 10px 12px;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.form .form-group textarea.form-control {
+    height: auto
+}
+
+.form .form-group .select2-selection 
+.select2-selection__arrow {
+    height: 38px;
+    border-left: none;
+}
+
+.form .form-group .select2-selection 
+.select2-search .select2-search__field {
+    height: auto;
+    padding: 0;
+}
+
+.form .form-group .select2-selection 
+.select2-selection__rendered
+.select2-selection__choice {
+    margin: 0 6px 1px 0;
+}
+/*******************************************************************************
+ * 排序
+ *******************************************************************************/
+.sort {
+    width: 100%;
+    height: 54px;
+    margin: 30px 0 35px;
+    line-height: 54px;
+    border-bottom: 1px solid #999;
+}
+
+.sort > ul {
+    padding: 0;
+    margin: 0;
+}
+
+.sort > ul > li {
+    float: left;
+    padding: 0 20px;
+    margin-top: -2px;
+}
+
+.sort > ul > li > a {
+    color: #666;
+    text-decoration: none;
+}
+
+.sort > ul > li.active,
+.sort > ul > li:hover {
+    border-bottom: 2px solid #FC583D;
+}
+
+.sort > ul > li.active > a,
+.sort > ul > li:hover > a {
+    color: #FC583D;
+}
+
+/*******************************************************************************
+ * 列表公共部分
+ *******************************************************************************/
+.list .tuip-right {
+    float: right;
+}
+
+.list .tuip-left {
+    float: left;
+}
+
+.list .clear-margin {
+    margin: 0 !important;
+}
+
+.list .tuip-green {
+    color: #339966;
+}
+
+.list .tuip-red {
+    color: #ff3300;
+}
+/*******************************************************************************
+ * 列表
+ *******************************************************************************/
+.list {
+    width: 100%;
+}
+.list .item {
+    float: left;
+    width: 280px;
+    margin-right: 80px;
+    margin-bottom: 30px;
+}
+
+.list .item > a {
+    text-decoration: none;
+}
+
+.list .item .pic {
+    position: relative;
+    width: 100%;
+    height: 210px;
+    background-color: #26bfcd; 
+}
+
+.list .item .pic .icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1022;
+    font-size: 18px;
+    border-color: #fff;
+    border-width: 24px 23px;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-style: solid;
+}
+
+.list .item .pic .icon > i {
+    position: absolute;
+    top: -17px;
+    left: -17px;
+}
+
+.list .item .pic .title {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    line-height: 210px;
+}
+
+.list .item .pic .duration {
+    position: absolute;
+    bottom: -1px;
+    right: 1px;
+    height: 20px;
+    padding: 0 5px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    background-color: rgba(0, 0, 0, .7);
+}
+
+.list .item .cont {
+    width: 100%;
+    padding: 0 10px 15px;
+    border-bottom: dashed 1px #dedede;
+}
+
+.list .item .tuip {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: normal;
+}
+
+.list .item .tuip-name {
+    font-size: 14px;
+    color: #666;
+    font-weight: bold;
+}
+
+.list .item .tuip-nodenum {
+    font-size: 12px;
+    color: #aaa;
+    font-weight: normal;
+}
+
+.list .item .speaker {
+    height: 50px;
+    margin: 0 10px;
+}
+
+.list .item .speaker .tuip {
     float: left;
     width: 100%;
     height: auto;
-    padding-right: 45px;
-    border: 1px #ccc solid;
+    margin-top: 0;
+    line-height: 50px;
 }
 
-.search-frame .search-drop-downList {
-    padding-right: 0px;
-    margin-bottom: -20px;
-    border: none;
+.list .item .avatar {
+    float: left;
+    width: 25px;
+    height: 25px;
+    margin: 12.5px 5px;
+    line-height: 0;
+    background-color: #26bfcd;
 }
 
-.search-frame .search-drop-downList > select,
-.search-frame .search-text-input > input {
-    height: 38px !important;
-    font-size: 14px;
-    border: none;
+.list .item .speaker .score {
+    display: block;
+    color: #ff6600;
 }
 
-.search-frame .search-drop-downList > select:focus,
-.search-frame .search-text-input > input:focus {
-    outline: 0;
-    border-color: transparent;
-    box-shadow: none;
-    -webkit-box-shadow: none;
+.list .item .speaker .tuip > a {
+    display: none;
+    margin: 8px 0;
+    border-radius: 0;
 }
-
-.search-frame .search-text-input > input:focus {
-    outline: 0;
-    border-color: transparent;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-}
-
-.search-frame .search-btn-frame {
-    position: absolute;
-    top: 0;
-    right: 0;
-    float: right;
-    padding: 10px 15px;
-    background-color: #00cc99;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-.search-frame .search-btn-frame > a,
-.search-frame .search-btn-frame > a:focus,
-.search-frame .search-btn-frame > a:hover {
-    font-size: 16px;
-    color: #fff;
-}
-
-/*********************分页****************************/
-.main .page {
-    display: inline-block;
+/*******************************************************************************
+ * 分页
+ *******************************************************************************/
+.page {
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
-.main .page.center {
+.page.center {
     text-align: center;
 }
+/*******************************************************************************
+ * 详情公共
+ *******************************************************************************/
+.frame {
+    display: inline-block;
+    width: 100%;
+    margin: 30px 0 15px;
+}
 
-/**
- * table表格th样式 
- */
-.main .viewdetail-th {
-    color: #666666;
-    width: 23%;
+.frame.right-frame {
+    float: right;
+    width: 366px;
+    margin-left: 15px;
+}
+
+.frame.left-frame {
+    float: left;
+    width: 604px;
+    margin-right: 15px;
+}
+
+.frame .title {
+    height: 60px;
+    padding: 0 15px;
+    font-size: 16px;
+    color: #878787;
+    text-align: left;
+    line-height: 60px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.frame .title .btngroup {
+    float: right;
+}
+
+.frame .title .btngroup > a {
+    border-radius: 0;
+}
+
+.frame .frame-height {
+    min-height: 418px;
+    max-height: 418px;
+    overflow-y: auto;
+}
+
+.frame .summary {
+    padding: 20px 10px;
+    color: #666;
+}
+
+/*******************************************************************************
+ * table样式
+ *******************************************************************************/
+.frame .table {
+    margin: -1px 0 0;
+    color: #666;
+    border-right: none;
+    border-left: none;
+}
+
+.table .detail-th {
+    width: 150px;
+    height: 48px;
+    color: #878787;
     font-weight: normal;
     text-align: right;
-    min-width: 73px;
-    vertical-align: middle;
+    border-left: none;
 }
 
-/**
- * table表格th-head样式 
- */
-.main .viewdetail-th-head {
-    color: #000000;
-    float: left;
-    font-weight: bold;
+.table .detail-td {
+    width: 454px;
+    height: 48px;
+    border-left: none;
 }
 
-/**
- * table表格td-head样式 
- */
-.main .viewdetail-td-head {
-    color: #000000;
-    float: right;
-    font-weight: bold;
-}
-
-/**
- * table表格td样式 
- */
-.main .viewdetail-td {
-    min-width: 100px;
-    vertical-align: middle;
-}
-
-/**
- * table表格td-des样式 
- */
-.main .viewdetail-td-des {
+.table .detail-des {
     height: 65px;
     display:table-cell;
     vertical-align:middle; 
 }
 
-/**
- * 设置表格内容中部对齐
- */
-.main .table > tbody > tr > td{
-    vertical-align: middle;
+.table > thead  > tr > th,
+.table > tbody > tr > th,
+.table > tbody > tr > td {
+    vertical-align: middle !important;
+    border-color: #e4e4e4 !important;
 }
-
-/************************************列表*******************************************/
-.main .list {
-    /*position: relative;*/
-    width: 100%;
-    height: auto;
-    font-size: 0px;
-}
-
-.list .item {
-    display: inline-block;
-    width: 260px;
-    margin-right: 90px;
-    margin-bottom: 30px;
-    font-size: 0px;
-}
-
-.list .item.item-right {
-    margin-right: 0 !important;
-}
-
-.list .item .pic {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 147px;
-    background-color: #26bfcd; 
-}
-
-.list .item .pic .title {
-/*    position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 169px;
-    height: 103px;*/
-    margin: 10px auto;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    line-height: 103px;
-}
-
-.list .item .pic .avatars {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 95px;
-    height: 112px;
-}
-
-.list .item .pic .float {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 260px;
-    height: 33px;
-    padding: 0 10px;
-    font-size: 14px;
-    color: #fff;
-    line-height: 33px;
-    background-color: rgba(0, 0, 0, .6);
-}
-
-.list .item .pic .float > span {
-    margin-right: 20px;
-}
-
-.list .item .pic .float > span > i {
-    margin-left: 5px;
-}
-
-.list .item .cont {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: auto;
-    padding: 0 15px;
-    font-size: 14px;
-    color: #999;
-    background-color: #f2f2f2; 
-}
-
-.list .item .cont .name,
-.list .item .cont .tuip {
-    padding: 12px 0;
-    text-align: left;
-}
-
-.list .item .cont .tuip {
-    position: relative;
-    border-top: dashed 1px #dedede;
-}
-
-.list .item .cont .name > span,
-.list .item .cont .tuip > span {
-    color: #666;
-}
-
-.list .item .cont .tuip > a,
-.list .item .cont .tuip .labels {
-    float: right;
-    text-decoration: none;
-}
-
-.list .item .cont .tuip > a.into {
-    color: #0099FF;
-}
-
-.list .item .cont .tuip > a.see {
-    color: #FE862E;
-}
-
-.list .item .cont .tuip > a.play {
-    font-size: 18px;
-    color: #4bd127;
-}
-
-.list .item .cont .tuip .labels {
-    position: absolute;
-    top: 10px;
-    right: 0;
-}
-
-.list .item .cont .tuip .labels > span {
-    display: block;
-    float: left;
-    padding: 2px;
-    margin-right: 3px;
-    font-size: 14px;
-    background-color: #fff;
-}
-
-/****************************************详情-公共***************************************/
-.main .frame {
-    padding-left: 0;
-    padding-right: 0;
-    display: inline-block
-}
-
-.frame.left {
-    float: left;
-    padding-right: 15px;
-}
-
-.frame.right {
-    float: right;
-    padding-left: 15px;
-}
-
-.frame .title {
-    padding: 10px 15px;
-    color: #fff;
-    text-align: left;
-    line-height: 20px;
-    background-color: rgba(153, 153, 153, 1);
-}
-
-.frame .title > i {
-    float: left; 
-    margin: 3px 5px 0 0;
-}
-
-.frame .title > span {
-    display: block;
-    float: left;
-}
-
-.frame .title > .btngroup {
-    position: absolute;
-    top: 5px;
-    right: 15px;
-}
-
-.frame .table {
-    padding: 0;
-    margin-bottom: 20px;
-    font-size: 14px;
-    border: 1px #ddd solid;
-}
-
-.frame .table.right {
-    min-height: 268px;
-    border: 1px #ddd solid;
-    overflow-y: auto;
-}
-
-.frame .table.right > .actlog {
+/*.frame .table.height > .actlog {
     max-height: 555px;
-    overflow-y: auto;
-    padding-bottom: 15px;
-}
-
-/**
- *  模态框样式
- */
+}*/
+/*******************************************************************************
+ * 模态框样式
+ *******************************************************************************/
 .main.modal {
     display: block;
     width: 100%;
 }
-
-.main.modal .modal-body.height {
-    max-height: 490px;
-    overflow-y: auto;
+.main.modal .modal-height {
+    min-height: 480px;
 }
-
-/**************************************最近联系*****************************************/
-.main.modal .recent {
-    display: inline-block; 
-    width:60px;
-    height:60px;
-    margin: 0 0 5px;
-    font-size: 12px;
-    text-align: center;
-    border: 1px #ccc solid;
-    background-color:#fff;
-}
-
-.main.modal .recent:hover {
-    cursor:pointer;
-}
-
-.main.modal .recent.active {
-    border-color: #666;
-    background-color:#ddd;
-}
-
-.main.modal ul.select2-selection__rendered {
-    margin: -6px -12px;
-}
-
-/***************************************课程框架****************************************/
+/*******************************************************************************
+ * 课程框架
+ *******************************************************************************/
 .sortable {
     padding:0;
     margin: 0;
 }
 
 .sortable li {
-    list-style: none outside none;
-    cursor: normal;
+    margin-left: -18px;
+    border-top: 1px solid #f2f2f2;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.sortable li:nth-of-type(1) {
+    margin-top: -1px;
 }
 
 .sortable li.disabled:hover {
@@ -437,104 +418,109 @@
 }
 
 .sortable .head {
-    position: relative;
-    padding: 10px 5px;
+    height: 60px;
+    padding-right: 15px;
+    padding-left: 30px;
     margin: 0;
-    font-size: 14px;
-    color: #ff0000;
+    line-height: 60px;
 }
 
-.sortable .nodes {
-    padding: 10px;
-}
-
-.sortable .head.blue {
-    margin-bottom: 1px;
-    background-color: #006699;
-}
-
-.sortable .head.gray {
-    padding-top: 8px;
-    padding-bottom: 8px;
-    margin-bottom: 3px;
-    border: 1px solid rgba(204, 204, 204, 1);
-    background-color: #eeeeee;
-}
-
-.sortable .head.gray + div {
-    margin-top: -4px;
-}
-
-.sortable .head.gray + div > .table {
-    margin-bottom: 3px;
-}
-
-.sortable .head.add {
-    display: inline-block;
-    padding: 15px;
-    margin: 10px auto;
-    border-radius: 6px;
-}
-
-.sortable .head > a {
-    font-size: 14px;
-    color: #ffffff;
-    line-height: 20px;
+.sortable .head a {
+    color: #666;;
     text-align: left;
-    font-weight: bold;
     text-decoration: none;
 }
 
-.sortable .head > a > i{
-    float: left;
-    margin-right: 5px;
-    font-size: 20px;
+.sortable .head a > div {
+    display: inline-block;
+    width: 15px;
 }
 
 .sortable .head .icongroup {
-    position: absolute;
-    top: 10px;
-    right: 5px;
-}
-
-.sortable .head .icongroup > a > i {
-    float: left;
-    margin: 3px 2px;
-    font-size: 14px;
-    color: #ffffff;
-    font-weight: normal;
-}
-
-.sortable .head .icongroup .handle:hover{
-    cursor: move;
-}
-
-.sortable .head.gray > a {
-    font-size: 14px;
-    color: #666;
-    font-weight: normal;
-}
-
-.sortable .head.gray > a > i,
-.sortable .head.gray .icongroup > a > i{
-    color: #000;
-}
-
-.sortable .head.add > a,
-.sortable .head.add > a > i {
-    float: left;
-    margin: 0 5px;
-    font-size: 18px;
-    color: #999;
-}
-
-/***************************************我的视频****************************************/
-.video-index .list .item .pic .float > span {
+    display: none;
     float: right;
-    margin-right: 0;
 }
 
-/***************************************我的老师****************************************/
+.sortable .head:hover .icongroup{
+    display: block;
+}
+
+.sortable .nodes {
+    padding-left: 35px;
+}
+
+.sortable .nodes li {
+    margin-top: 0;
+    margin-bottom: -1px;
+}
+
+.sortable .nodes .head {
+    height: 50px;
+    line-height: 50px;
+}
+
+.sortable .nodes .head > a {
+    color: #878787;
+}
+
+.sortable .nodes .duration{
+    position: absolute;
+    right: 20%;
+}
+
+/*******************************************************************************
+ * 最近联系
+ *******************************************************************************/
+.recent {
+    float: left;
+    width:60px;
+    height:60px;
+    margin: 0 5px 5px 0;
+    font-size: 12px;
+    text-align: center;
+    border: 1px #ccc solid;
+    background-color:#fff;
+}
+
+.recent:hover {
+    cursor:pointer;
+}
+
+/*.recent.active {
+    border-color: #666;
+    background-color:#ddd;
+}*/
+
+/*******************************************************************************
+ * 我的视频
+ *******************************************************************************/
+.video-index .list .item .pic {
+    height: 157px;
+}
+
+.video-index .list .item .pic > .title {
+    line-height: 157px;
+}
+
+.video-index .list .item .cont .tuip-right {
+    display: block;
+    padding: 4px 8px;
+    margin-top: -10px;
+    font-size: 14px;
+    color: #fff;
+} 
+
+.video-index .list .tuip-bg-green {
+    background-color: #339966;
+}
+
+.video-index .list .tuip-bg-red {
+    background-color: #ff3300;
+}
+
+/*******************************************************************************
+ * 我的老师
+ *******************************************************************************/
 .teacher-index .list .item {
     width: 140px;
     height: 165px;

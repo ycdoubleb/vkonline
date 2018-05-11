@@ -21,7 +21,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
 
 <div class="video-create main modal">
 
-    <div class="modal-dialog modal-lg" style="width: 1100px" role="document">
+    <div class="modal-dialog modal-lg" style="width: 1000px" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -29,21 +29,21 @@ $this->title = Yii::t('app', "{Add}{Video}",[
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body height">
+            <div class="modal-body modal-height">
                 
                 <?= $this->render('_form', [
                     'model' => $model,
                     'allRef' => $allRef,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
-                    'attFiles' => $attFiles,
                     'allTags' => $allTags,
                 ]) ?>
 
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'','aria-label'=>'Close'
+                    'id' => 'submitsave', 'class' => 'btn btn-primary',
+                    'data-dismiss' => '', 'aria-label' => 'Close'
                 ]) ?>
             </div>
        </div>
@@ -51,17 +51,17 @@ $this->title = Yii::t('app', "{Add}{Video}",[
 </div>
 
 <?php
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"", 
+$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/video/_node.php')));
 $js = 
 <<<JS
     window.onloadUploader();    //加载文件上传  
-    /** 提交表单 */
+    // 提交表单
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;
         if($('#video-name').val() == ''){
             $('.field-video-name').addClass('has-error');
-            $('.field-video-name .help-block').html('名称不能为空。');
+            $('.field-video-name .help-block').html('视频名称不能为空。');
             return;
         }
         if($('#video-teacher_id').val() == ''){
@@ -78,12 +78,11 @@ $js =
             }, 3000);
             return;
         }
-        var items = '$domes';    
+        var items = $domes;    
         $.post("../video/create?node_id=$model->node_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
                 var dome = renderHtml(items, rel['data']);
                 $('#' + rel['data']['node_id'] + ' > div > .sortable').append(dome);
-                $('#toggle_' + rel['data']['id']).load('../video/view?id=' + rel['data']['id'] + ' #' + rel['data']['id'] + ' > table');
                 sortable('.sortable', {
                     forcePlaceholderSize: true,
                     items: 'li',

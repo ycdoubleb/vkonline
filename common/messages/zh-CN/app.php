@@ -76,6 +76,7 @@ return [
     'Edit' => '编辑',
     'Set' => '设置',
     'Make' => '制作',
+    'Preview' => '预览',
     'Submit' => '提交',
     'Create' => '创建',
     'Update' => '更新',
@@ -129,8 +130,10 @@ return [
     'Action' => '动作',
     'Reference' => '引用',
     'Keyword' => '关键字',
+    'Attribute' => '属性',
   
     //提示消息
+    "Can't be empty." => '不能为空。',
     'Are you sure you want to delete this item?' => '你确定要删除此项目？',
     'Are you sure you want to disable this user?' => '你确定要禁用此用户？',
     'Are you sure you want to enable this user?' => '你确定要启用此用户？',
@@ -171,7 +174,7 @@ return [
     'True' => '真实',
     'Build' => '建设',
     'Data' => '数据',
-    'DataVisible Range' => '可见范围',
+    'Range' => '范围',
     'Tag' => '标签',
     
     //后台-文件管理
@@ -179,7 +182,6 @@ return [
     'List' => '列表',
     'Activity' => '活动',
     'Expire' => '到期',
-    'Time' => '时间',
     'Upload By' => '上传者',
     'Is' => '是否',
     'Mark' => '标记',
@@ -233,7 +235,7 @@ return [
     'Mode' => '方式',
     'Distribution' => '分布',
     'Survey' => '概况',
-    'Quote' => '引用',
+    'Source' => '来源',
     'Opening' => '开通',
     'Mobile Name' => '移动端名称',
     'Is Show' => '是否显示',
@@ -241,17 +243,34 @@ return [
     'Price' => '价格',
     'Is Official' => '是否属于官网',
     'Official' => '官网',
+    'Attribute' => '属性',
+    'Input' => '输入',
+    'Values' => '候选值',
+    'Screen' => '筛选',
+    'Teachers' => '师资',
+    'Authentication' => '认证',
+    'Proposer' => '申请',
+    'Applicant' => '申请人',
+    'Auditor' => '审核人',
+    'Job Title' => '职称',
+    'Verifier' => '审核',
+    'Remarks' => '备注',
+    'Reset' => '重置',
     
     //前台-公共
     'Avg Star' => '评分',
     'Learning Count' => '在学人数',
+    'Famous teacher Hall' => '名师堂',
     //前台-导航条
     'StudyCenter' => '学习中心',
     'CourseFactory' => '课工厂',
+    //前台-课工厂
+    'Teacher Resource' => '师资',
     //前台-协作人员
     'Help Man' => '协作人员',
     //前台-查看视频
     'Relation' => '关联',
+    'Source' => '来源',
     //前台-操作记录
     'Relative' => '相关',
     //前台-管理中心

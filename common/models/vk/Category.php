@@ -5,6 +5,7 @@ namespace common\models\vk;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\caching\Cache;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\di\Instance;
 use yii\helpers\ArrayHelper;
@@ -28,6 +29,8 @@ use yii\web\UploadedFile;
  * 
  * @property Category $parent   分类
  * @property string $fullPath   全路径
+ * 
+ * @property CourseAttribute $courseAttribute   获取所有课程属性 
  */
 class Category extends ActiveRecord
 {
@@ -89,6 +92,16 @@ class Category extends ActiveRecord
         ];
     }
 
+    /**
+     * 关联查询课程属性
+     * @return ActiveQuery
+     */
+    public function getCourseAttribute()
+    { 
+        return $this->hasMany(CourseAttribute::class, ['category_id' => 'id'])->where(['is_del' => '0']);
+    }
+
+    
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if ($this->mobile_name == "") {
@@ -309,7 +322,7 @@ class Category extends ActiveRecord
     /**
      * 反回当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
-     * @param bool $$containerSelfLevel 是否包括该分类同级分类
+     * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $recursion           是否递归（向上级递归）
      * @param bool $include_unshow      是否包括隐藏的分类
      * 

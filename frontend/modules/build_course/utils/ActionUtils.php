@@ -370,10 +370,7 @@ class ActionUtils
      */
     public function CreateVideo($model, $post)
     {
-        $ref_id = ArrayHelper::getValue($post, 'Video.ref_id');
-        $files = ArrayHelper::getValue($post, 'files');     //文件
-        if(!empty($ref_id)){
-            $model->is_ref = 1;
+        if($model->is_ref){
             $model->source_id = $model->reference->source_id;
         }else{
             $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
@@ -385,7 +382,6 @@ class ActionUtils
         {  
             if($model->save()){
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
-                $this->saveVideoAttachment($model->id, $files);
                 $this->saveCourseActLog(['action' => '增加', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name}>> {$model->name}",  
                     'course_id' => $model->courseNode->course_id,]);
@@ -414,24 +410,16 @@ class ActionUtils
         $newAttr = $model->getDirtyAttributes();
         //获取所有旧属性值
         $oldAttr = $model->getOldAttributes();
-        $ref_id = ArrayHelper::getValue($post, 'Video.ref_id');
         $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
         $files = ArrayHelper::getValue($post, 'files'); //文件
-        
-        if(!empty($ref_id)){
-            $model->is_ref = 1;
-        }else{
-            $model->is_ref = 0;
-        }
-        
+       
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            $isEqual = $oldAttr['source_id'] !== $model->source_id;
+            $isEqual = $oldAttr['source_id'] != $model->source_id;
             if($model->save()){
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
-                $this->saveVideoAttachment($model->id, $files);
                 if(!empty($newAttr) && $isEqual){
                     $oldRef = Video::findOne($oldAttr['ref_id']);
                     $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);

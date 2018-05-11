@@ -5,6 +5,7 @@ namespace common\models\vk\searchs;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -28,6 +29,12 @@ class VideoSearch extends Video
      * @var Query 
      */
     private static $query;
+    
+    /**
+     * 课程id
+     * @var string 
+     */
+    public $course_id;
     
     /**
      * @inheritdoc
@@ -208,10 +215,14 @@ class VideoSearch extends Video
     {
         self::getInstance();
         
-        self::$query->addSelect(['Course.name', 'User.nickname']);
+        self::$query->addSelect([
+            'Course.id', 'Customer.name AS customer_name', 
+            'Course.name AS course_name', 'User.nickname'
+        ]);
         
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
         
         self::$query->andFilterWhere([ 'Video.ref_id' => $id]);

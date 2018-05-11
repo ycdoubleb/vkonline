@@ -49,7 +49,7 @@ class CourseUserController extends Controller
     /**
      * 列出所有 CourseUserSearch 模型。
      * @param string $course_id
-     * @return mixed [dataProvider => 协作人员数据]
+     * @return mixed [model => 课程模型, dataProvider => 协作人员数据]
      */
     public function actionIndex($course_id)
     {
@@ -57,6 +57,7 @@ class CourseUserController extends Controller
         $dataProvider = $searchModel->search(['course_id' => $course_id]);
         
         return $this->renderAjax('index', [
+            'model' => $searchModel->course,
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -72,7 +73,7 @@ class CourseUserController extends Controller
         $model = new CourseUser(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if($model->course->created_by !== Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
         
@@ -102,10 +103,10 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by !== Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
-        
+       
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->UpdateCourseUser($model);
@@ -130,7 +131,7 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by !== Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
         

@@ -8,8 +8,8 @@ use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\DateUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -67,6 +67,7 @@ class VideoController extends Controller
         ]);
       
         return $this->render('index', [
+            'searchModel' => $searchModel,
             'filters' => $result['filter'],
             'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
@@ -113,8 +114,8 @@ class VideoController extends Controller
             Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->CreateVideo($model, Yii::$app->request->post());
             $data = [
-                'id' => $model->id, 'node_id' => $model->node_id, 
-                'name' => $model->name, 'is_ref' => $model->is_ref ? 'inline-block' : 'none', 
+                'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
+                'duration' => DateUtil::intToTime($model->source_duration),
             ];
             return [
                 'code'=> $result ? 200 : 404,
@@ -127,7 +128,6 @@ class VideoController extends Controller
                 'allRef' => $this->getVideoByReference(),
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
                 'videoFiles' => Video::getUploadfileByVideo(),
-                'attFiles' => Video::getUploadfileByAttachment(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
@@ -151,7 +151,7 @@ class VideoController extends Controller
             $result = ActionUtils::getInstance()->UpdateVideo($model, Yii::$app->request->post());
             $data = [
                 'id' => $model->id, 'name' => $model->name,
-                'is_ref' => $model->is_ref ? 'inline-block' : 'none', 
+                'duration' => DateUtil::intToTime($model->source_duration),
             ];
             return [
                 'code'=> $result ? 200 : 404,
@@ -164,7 +164,6 @@ class VideoController extends Controller
                 'allRef' => $this->getVideoByReference(),
                 'allTeacher' => Teacher::getTeacherByLevel($model->customer_id),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
-                'attFiles' => Video::getUploadfileByAttachment($model->id),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
             ]);
@@ -251,18 +250,11 @@ class VideoController extends Controller
         $source_id = ArrayHelper::getValue($video, 'source_id');
         $source = (new Query())->select(['id', 'name', 'size'])
             ->from(Uploadfile::tableName())->where(['id' => $source_id])->one();
-        //查询附件文件
-        $video_id = ArrayHelper::getValue($video, 'id');
-        $atts = (new Query())->select(['Uploadfile.id', 'Uploadfile.name', 'Uploadfile.size'])
-            ->from(['Attachment' => VideoAttachment::tableName()])
-            ->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Attachment.file_id')
-            ->where(['Attachment.video_id' => $video_id])->all();
-
+        
         //返回数据
         return [
             'video' => $video,
             'source' => [$source],
-            'atts' => $atts,
         ];
     }
     

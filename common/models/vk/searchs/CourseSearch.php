@@ -149,7 +149,7 @@ class CourseSearch extends Course
     {
         $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
         $page = ArrayHelper::getValue($params, 'page'); //分页
-        $limit = ArrayHelper::getValue($params, 'limit'); //显示数
+        $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
@@ -164,12 +164,13 @@ class CourseSearch extends Course
         //添加字段
         self::$query->select(['Course.*', 'GROUP_CONCAT(Tags.`name`) AS tags']);
         
+        //查询总数
+        $totalCount = self::$query->count();
+        
         //关联查询标签
         self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)');
         self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-       
-        //查询总数
-        $totalCount = self::$query->count();
+        
         self::$query->groupBy(['Course.id']);
         //显示数量
         self::$query->offset(($page-1) * $limit)->limit($limit);

@@ -13,12 +13,10 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t(null, "{Edit}{HelpMan}：{$model->user->nickname}", [
+$this->title = Yii::t(null, "{Edit}{HelpMan}", [
     'Edit' => Yii::t('app', 'Edit'), 'HelpMan' => Yii::t('app', 'Help Man')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="course-user-update main modal">
 
@@ -30,36 +28,46 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}：{$model->user->nickname}", [
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body form clear">
+                
                 <?php $form = ActiveForm::begin([
                     'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
                     'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
+                        'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",  
                         'labelOptions' => [
                             'class' => 'col-lg-12 col-md-12',
                         ],  
                     ], 
                 ]); ?>
+                
+                <div class="form-group field-user-nickname">
+                    <?= Html::label(Yii::t('app', 'Fullname'), 'user-nickname', ['class' => 'col-lg-12 col-md-12']) ?>
+                    <div class="col-lg-7 col-md-7">
+                        <?= Html::textInput('User[nickname]', $model->user->nickname, [
+                            'id' => 'user-nickname', 'class' => 'form-control',
+                            'disabled' => true,
+                        ]) ?>
+                    </div>
+                    <div class="col-lg-7 col-md-7"><div class="help-block"></div></div>
+                </div>
 
-                <?= $form->field($model, 'privilege', [
-                    'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",
-                    'labelOptions' => [
-                        'class' => 'col-lg-12 col-md-12',
-                    ],
-                ])->widget(Select2::class, [
+                <?= $form->field($model, 'privilege')->widget(Select2::class, [
                     'data' => CourseUser::$privilegeMap,
                     'hideSearch' => true,
                     'options' => [
                         'placeholder' => '请选择...'
                     ]
-                ])->label(Yii::t(null, '{set}{privilege}',['set'=> Yii::t('app', 'Set'),'privilege'=> Yii::t('app', 'Privilege')])) ?>
+                ])->label(Yii::t(null, '{set}{privilege}',[
+                    'set'=> Yii::t('app', 'Set'),'privilege'=> Yii::t('app', 'Privilege')
+                ])) ?>
 
                 <?php ActiveForm::end(); ?>
+                
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary',
-                    'data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id' => 'submitsave', 'class' => 'btn btn-primary',
+                    'data-dismiss' => 'modal', 'aria-label' => 'Close'
                 ]) ?>
             </div>
        </div>

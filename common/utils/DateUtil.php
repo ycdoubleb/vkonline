@@ -77,9 +77,9 @@ class DateUtil {
      */
     public static function intToTime($value, $default = false)
     {
-        $h = floor($value/3600);
-        $m = floor($value%3600/60);
-        $s = floor($value%60);
+        $h = floor($value / 3600);
+        $m = floor($value % 3600 / 60);
+        $s = floor($value % 60);
         
         return ($default ? self::zeor($h) . ':' : null) . self::zeor($m) . ':' . self::zeor($s);
     }
@@ -104,7 +104,7 @@ class DateUtil {
             $h = (int)$times[0] ;  
             $m = (int)$times[1];  
             $s = count($times) == 3 ? (int)$times[2] : 0;  
-            return $h*3600+$m*60+$s;  
+            return $h * 3600 + $m * 60 + $s;  
         }else
             return 0;
 ;    }

@@ -2,7 +2,6 @@
 
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
-use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
@@ -25,8 +24,33 @@ ModuleAssets::register($this);
         'model' => $model,
         'allCategory' => $allCategory,
         'allTeacher' => $allTeacher,
+        'attFiles' => $attFiles,
         'allTags' => $allTags,
         'tagsSelected' => $tagsSelected,
     ]) ?>
 
 </div>
+
+<?php
+$js = 
+<<<JS
+        
+    window.onloadUploader();    //加载文件上传  
+        
+    //提交表单    
+    $("#submitsave").click(function(){
+        if(tijiao() == false){
+            $(".field-courseattachment-file_id").addClass("has-error");
+            $(".field-courseattachment-file_id .help-block").html("文件必须是已上传。");
+            setTimeout(function(){
+                $(".field-courseattachment-file_id").removeClass("has-error");
+                $(".field-courseattachment-file_id .help-block").html("");
+            }, 3000);
+        }else{
+            $("#build-course-form").submit();
+        }
+    });
+        
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

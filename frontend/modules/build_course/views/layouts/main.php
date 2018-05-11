@@ -11,92 +11,59 @@ use yii\web\View;
 
 MainAssets::register($this);
 
-$this->title = Yii::t('app', '{Build}{Center}',[
-    'Build' => Yii::t('app', 'Build Course'),'Center' => Yii::t('app', 'Center'),
-]);
+$this->title = Yii::t('app', 'CourseFactory');
 
 ?>
 
 <?php
-$menu = '';
-$utils = '';
-$reutils = ArrayHelper::getValue(Yii::$app->request->queryParams, 'utils', 'bs_utils'); 
+$menuHtml = '';
 //导航
 $menuItems = [
     [
-        'label' => Yii::t('app', '{My}{Course}', ['My' => Yii::t('app', 'My'), 'Course' => Yii::t('app', 'Course')]),
-        'url' => ['course/index', 'utils' => $reutils],
-        'icons' => '<i class="fa fa-book"></i>', 
+        'label' => Yii::t('app', 'Course'),
+        'url' => ['course/index'],
+        'icons' => null, 
         'options' => ['class' => 'links']
     ],
     [
-        'label' => Yii::t('app', '{My}{Video}', ['My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')]),
-        'url' => ['video/index', 'utils' => $reutils],
-        'icons' => '<i class="glyphicon glyphicon-facetime-video"></i>', 
+        'label' => Yii::t('app', 'Video'),
+        'url' => ['video/index'],
+        'icons' => null, 
         'options' => ['class' => 'links']
     ],
     [
-        'label' => Yii::t('app', '{My}{Teacher}', ['My' => Yii::t('app', 'My'), 'Teacher' => Yii::t('app', 'Teacher')]),
-        'url' => ['teacher/index', 'utils' => $reutils],
-        'icons' => '<i class="fa fa-user-secret"></i>', 
+        'label' => Yii::t('app', 'Teacher Resource'),
+        'url' => ['teacher/index'],
+        'icons' => null, 
         'options' => ['class' => 'links']
     ],
 ];
-//工具
-$utilsItems = [
-    [
-        'label' => '板书工具',
-        'url' => [Yii::$app->controller->action->id, 'utils' => 'bs_utils'],
-        'icons' => Html::img(['/imgs/build_course/icons/icon_1-1.png']),
-        'options' => ['class' => 'links']
-    ],
-    [
-        'label' => '情景工具',
-        'url' => 'javascript:;',//[Yii::$app->controller->action->id, 'utils' => 'qj_utils'],
-        'icons' => Html::img(['/imgs/build_course/icons/icon_1-2.png']),
-        'options' => ['class' => 'links disabled']
-    ]
-];
+
 //导航
 end($menuItems);
 $lastIndex = key($menuItems);
 foreach ($menuItems as $index => $item) {
     $controllerId = Yii::$app->controller->id;
     $controller = strstr($item['url'][0], '/', true);
-    $menu .= ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+    $menuHtml .= ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
         Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
-}
-//工具
-foreach ($utilsItems as $item) {
-    $utils .= (isset($item['url']['utils']) && $reutils == $item['url']['utils'] ? '<li class="active">' : '<li class="">').
-       Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
 $html = <<<Html
-    <header class="header">
-        <img src="/imgs/build_course/images/u5303.png" />
-    </header>
-    
-    <div class="content">
+    <!-- 头部 -->
+    <header class="header"></header>
+    <!-- 内容 -->
+    <div class="container content">
+        <!-- 子菜单 -->
         <nav class="subnav">
-            <div class="menu">
-                <div class="title">
-                    <i class="fa fa-list-ul"></i>
-                    <span>导航</span>
-                </div>
-                <ul>{$menu}</ul>
+            <div class="title">
+                <i class="fa fa-list-ul"></i>
+                <span>我的资源</span>
             </div>
-            <div class="utils">
-                <div class="title">
-                    <i class="fa fa-list-ul"></i>
-                    <span>制作工具</span>
-                </div>
-                <ul>{$utils}</ul>
-            </div>
+            <ul>{$menuHtml}</ul>
         </nav>
 Html;
 
-    $content = $html.$content.'</div>';
+    $content = $html.$content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
-    
 ?>

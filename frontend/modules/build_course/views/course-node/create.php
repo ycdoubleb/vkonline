@@ -45,7 +45,7 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 </div>
 
 <?php
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"),"", 
+$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course-node/view.php')));
 $js = 
 <<<JS
@@ -58,7 +58,7 @@ $js =
             $('.field-coursenode-name .help-block').html('名称不能为空。');
             return;
         }
-        var items = '$domes';    
+        var items = $domes;    
         $.post("../course-node/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
                 var dome = renderHtml(items, rel['data']);
