@@ -26,7 +26,7 @@ $menuItems = [
     ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login'], 'visible' => Yii::$app->user->isGuest],
     //登录
     ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index'], 'visible' => !Yii::$app->user->isGuest],
-    ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default'], 'visible' => !Yii::$app->user->isGuest],
+    ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list'], 'visible' => !Yii::$app->user->isGuest],
     ['label' => Yii::t('app', 'StudyCenter'), 'url' => ['/study_center/default'], 'visible' => !Yii::$app->user->isGuest],
     ['label' => Yii::t('app', 'CourseFactory'), 'url' => ['/build_course/default'], 'visible' => !Yii::$app->user->isGuest],
 ];
@@ -102,6 +102,15 @@ $js = <<<JS
     $(".navbar-nav .dropdown > a").click(function(){
         location.href = $(this).attr("href");
     });
+    /**
+     * 添加搜索框回车按键事件
+     **/
+    $("input[id=search-input]").keypress(function(e){
+        var eCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
+        if (eCode == 13){
+            window.location.href = "/course/default/list?keyword="+$(this).val();
+        }
+    })
 
 JS;
 $this->registerJs($js, View::POS_READY);

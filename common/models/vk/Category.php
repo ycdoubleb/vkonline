@@ -293,10 +293,10 @@ class Category extends ActiveRecord
         }     
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && $category['customer_id'] == $customer_id && ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['parent_id'] == $id && (empty($category['customer_id']) || $category['customer_id'] == $customer_id) && ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $category;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCustomerCatChildren($c_id, $customer_id , $key_to_value, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getCustomerCatChildren($c_id, $customer_id , false, $recursion, $include_unshow));
                 }
             }
         }
@@ -333,7 +333,7 @@ class Category extends ActiveRecord
         }   
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && $category['customer_id'] == $customer_id &&  ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['parent_id'] == $id && (empty($category['customer_id']) || $category['customer_id'] == $customer_id) &&  ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $c_id;
                 if ($recursion) {
                     $childrens = array_merge($childrens, self::getCustomerCatChildrenIds($c_id, $customer_id, $recursion, $include_unshow));
@@ -370,7 +370,15 @@ class Category extends ActiveRecord
             $customer_id = Yii::$app->user->identity->customer_id;
         } 
         $catgegory = self::getCatById($id);
-        $categorys = ($containerSelfLevel && !empty($id)) ? [self::getCustomerCatChildren($id, $customer_id, true, false, $include_unshow)] : [];
+        $categorys = [];
+        if(($containerSelfLevel && $catgegory!=null)){
+            //加上当前目录的子层级
+            $childrens = self::getCustomerCatChildren($id, $customer_id, true, false, $include_unshow);
+            if(count($childrens)>0){
+                $categorys []= $childrens;
+            }
+        }
+        /* 递归获取所有层级 */
         do {
             if ($catgegory == null) {
                 //当前分类为空时返回顶级分类
@@ -398,7 +406,7 @@ class Category extends ActiveRecord
      * @return array [[level_1],[level_2],..]
      */
     public static function getSameLevelCats($id , $containerSelfLevel = false, $recursion = true, $include_unshow = false){
-        return self::getCustomerCatChildren($id, null, $include_unshow, $recursion, $containerSelfLevel);
+        return self::getCustomerSameLevelCats($id, null, $include_unshow, $recursion, $containerSelfLevel);
     }
 
     /**
