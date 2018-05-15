@@ -98,10 +98,10 @@ class Teacher extends ActiveRecord
             //[['id'], 'required'],
             [['name', 'sex'], 'required'],
             [['des'], 'string'],
-            [['level', 'certicicate_at', 'created_at', 'updated_at'], 'integer'],
+            [['level', 'certicicate_at', 'sex', 'is_certificate', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name', 'job_title'], 'string', 'max' => 50],
-            [['sex', 'is_certificate'], 'string', 'max' => 1],
+            //[['sex', 'is_certificate'], 'string', 'max' => 1],
             [['avatar'], 'string', 'max' => 255],
             //[['level'], 'string', 'max' => 3],
             [['id'], 'unique'],
@@ -204,15 +204,17 @@ class Teacher extends ActiveRecord
     }
     
     /**
-     * 获取所有老师
+     * 查询和自己相关的老师
      * @param array $condition      默认返回键值对形式
      * @param bool $key_to_value    返回键值对形式
      * 
      * @return array(array|Array) 
      */
-    public static function getTeacherByLevel($customer_id, $level = 0, $key_to_value = true) 
+    public static function getTeacherByLevel($created_by, $level = 0, $key_to_value = true) 
     {
-        self::$teachers = self::findAll(['customer_id' => $customer_id, 'level' => $level]);
+        self::$teachers = self::find()
+            ->where(['created_by' => $created_by, 'level' => $level])
+            ->orderBy(['is_certificate' => SORT_DESC])->all();
         $teachers = [];
         foreach (self::$teachers as $id => $teacher) {
             $teachers[] = $teacher;

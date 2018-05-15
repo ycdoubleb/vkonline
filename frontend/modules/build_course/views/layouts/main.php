@@ -19,35 +19,94 @@ $this->title = Yii::t('app', 'CourseFactory');
 $menuHtml = '';
 //导航
 $menuItems = [
-    [
-        'label' => Yii::t('app', 'Course'),
-        'url' => ['course/index'],
-        'icons' => null, 
-        'options' => ['class' => 'links']
+    'resource' => [
+        [
+            'label' => Yii::t('app', 'Course'),
+            'url' => ['course/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', 'Video'),
+            'url' => ['video/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', 'Teacher Resource'),
+            'url' => ['teacher/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ]
     ],
-    [
-        'label' => Yii::t('app', 'Video'),
-        'url' => ['video/index'],
-        'icons' => null, 
-        'options' => ['class' => 'links']
+    'content' => [
+        [
+            'label' => Yii::t('app', '{All}{Course}', [
+                'All' => Yii::t('app', 'All'), 'Course' => Yii::t('app', 'Course')
+            ]),
+            'url' => ['course/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', '{All}{Video}', [
+                'All' => Yii::t('app', 'All'), 'Video' => Yii::t('app', 'Video')
+            ]),
+            'url' => ['video/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', '{All}{teacherResource}', [
+                'All' => Yii::t('app', 'All'), 'teacherResource' => Yii::t('app', 'Teacher Resource')
+            ]),
+            'url' => ['teacher/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ]
     ],
-    [
-        'label' => Yii::t('app', 'Teacher Resource'),
-        'url' => ['teacher/index'],
-        'icons' => null, 
-        'options' => ['class' => 'links']
-    ],
+    'admin' => [
+        [
+            'label' => Yii::t('app', 'Survey'),
+            'url' => ['course/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', 'User'),
+            'url' => ['video/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', 'Category'),
+            'url' => ['teacher/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ],
+        [
+            'label' => Yii::t('app', 'Task'),
+            'url' => ['teacher/index'],
+            'icons' => null, 
+            'options' => ['class' => 'links']
+        ]
+    ]
 ];
 
-//导航
-end($menuItems);
-$lastIndex = key($menuItems);
-foreach ($menuItems as $index => $item) {
-    $controllerId = Yii::$app->controller->id;
-    $controller = strstr($item['url'][0], '/', true);
-    $menuHtml .= ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
-        Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+end($menuItems['admin']);   //数组中的最后一个元素的值
+$lastIndex = key($menuItems['admin']);  //获取数组最后一个的index
+//循环组装子菜单导航
+foreach ($menuItems as $index => $items) {
+    foreach ($items as $key => $value) {
+        $controllerId = Yii::$app->controller->id;
+        $controller = strstr($value['url'][0], '/', true);
+        $menuHtml[$index][] = ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
+            Html::a($value['icons'] . $value['label'], $value['url'], $value['options']).'</li>';
+    }
 }
+$resource = implode("", $menuHtml['resource']);
+$contents = implode("", $menuHtml['content']);
+$admin = implode("", $menuHtml['admin']);
 
 $html = <<<Html
     <!-- 头部 -->
@@ -60,10 +119,20 @@ $html = <<<Html
                 <i class="fa fa-list-ul"></i>
                 <span>我的资源</span>
             </div>
-            <ul>{$menuHtml}</ul>
+            <ul>{$resource}</ul>
+            <div class="title">
+                <i class="fa fa-list-ul"></i>
+                <span>内容中心</span>
+            </div>
+            <ul>{$contents}</ul>
+            <div class="title">
+                <i class="fa fa-list-ul"></i>
+                <span>管理中心</span>
+            </div>
+            <ul>{$admin}</ul>
         </nav>
 Html;
 
-    $content = $html.$content . '</div>';
+    $content = $html . $content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
 ?>

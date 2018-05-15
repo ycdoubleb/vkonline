@@ -67,7 +67,7 @@ class TeacherCertificate extends ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required'],
+            //[['id'], 'required'],
             [['id', 'is_pass', 'is_dispose', 'verifier_at', 'created_at', 'updated_at'], 'integer'],
             [['teacher_id', 'proposer_id', 'verifier_id'], 'string', 'max' => 32],
             [['feedback'], 'string', 'max' => 255],
