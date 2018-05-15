@@ -2,8 +2,11 @@
 
 namespace common\models\vk\searchs;
 
+use common\models\User;
+use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\Customer;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
@@ -13,7 +16,6 @@ use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
-use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -114,14 +116,26 @@ class CourseSearch extends Course
     
     //建课中心模块的情况下
     public function buildCourseSearch($params)
-    {
-        $course_id = ArrayHelper::getValue($params, 'course_id'); //课程id
+    {        
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         
         self::getInstance();
+        $this->load($params);
         
-        self::$query->andFilterWhere(['Course.created_by' => \Yii::$app->user->id]);
+        self::$query->andFilterWhere([
+            'Course.created_by' => \Yii::$app->user->id,
+            'Course.is_publish' => $this->is_publish,
+            'Course.level' => $this->level,
+        ]);
+        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
+        //添加字段
+        $addArrays = ['Course.name', 'Course.level', 'Course.cover_img', 
+            'Course.is_publish', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ];
+        //排序
+        self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
         
-        return $this->search($params);
+        return $this->search($params, $addArrays);
         
     }
     
@@ -142,45 +156,53 @@ class CourseSearch extends Course
      * 使用搜索查询创建数据提供程序实例
      *
      * @param array $params
+     * @param array $addArrays  //查询数组
      *
      * @return ArrayDataProvider
      */
-    protected function search($params)
+    protected function search($params, $addArrays = [])
     {
-        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
-        $page = ArrayHelper::getValue($params, 'page'); //分页
+        $page = ArrayHelper::getValue($params, 'page', 0); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        
+        //复制课程
+        $copyCourse= clone self::$query;    
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
-        //查询所有课程下的环节数
-        $nodeResult = self::findVideoByCourseNode()->asArray()->all(); 
-        //模糊查询
-        //self::$query->andFilterWhere(['or', ['like', 'Course.name', $keyword], ['like', 'Tags.name', $keyword]]);
-        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
-        //关联查询
-        self::$query->with('category', 'customer', 'teacher', 'createdBy');
-       
-        //添加字段
-        self::$query->select(['Course.*', 'GROUP_CONCAT(Tags.`name`) AS tags']);
-        
-        //查询总数
-        $totalCount = self::$query->count();
-        
-        //关联查询标签
-        self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)');
-        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        
+        //查询所有课程下的视频数
+        $videoQuery = Video::find()->select(['CourseNode.course_id', 'COUNT(Video.id) AS video_num'])
+            ->from(['Video' => Video::tableName()]);
+        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $videoQuery->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
+        $videoQuery->groupBy('CourseNode.course_id');
+        //查询所有课程下的标签
+        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
+            ->from(['TagRef' => TagRef::tableName()]);
+        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
+        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
+        $tagRefQuery->groupBy('TagRef.object_id');
+        //已课程id为分组
         self::$query->groupBy(['Course.id']);
+        //查询总数
+        $totalCount = self::$query->count('id');
+        //添加字段
+        self::$query->addSelect($addArrays);
         //显示数量
-        self::$query->offset(($page-1) * $limit)->limit($limit);
+        self::$query->offset($page * $limit)->limit($limit);
+        //关联查询
+        self::$query->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id');
+        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
+        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
+        self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
+        //查询视频结果
+        $videoResult = $videoQuery->asArray()->all(); 
+        //查询标签结果
+        $tagRefResult = $tagRefQuery->asArray()->all(); 
+        //查询课程结果
         $courseResult = self::$query->asArray()->all();
-        //分页
-        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
-        $results = ArrayHelper::merge(ArrayHelper::index($nodeResult, 'course_id'), 
-                   ArrayHelper::index($courseSize, 'course_id'));
+        $results = ArrayHelper::merge(ArrayHelper::index($videoResult, 'course_id'), 
+            ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), ArrayHelper::index($courseSize, 'course_id')));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {
@@ -191,7 +213,6 @@ class CourseSearch extends Course
 
         return [
             'filter' => $params,
-            'pager' => $pages,
             'total' => $totalCount,
             'data' => [
                 'course' => $courses
@@ -218,13 +239,14 @@ class CourseSearch extends Course
     public static function findVideoByCourseNode()
     {
         self::getInstance();
+        $copyCourse= clone self::$query;
         $query = Video::find()
             ->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num'])
             ->from(['Video' => Video::tableName()]);
         
         $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
         
-        $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => self::$query]);
+        $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
         
         $query->groupBy('CourseNode.course_id');
         

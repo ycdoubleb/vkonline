@@ -63,7 +63,7 @@ return [
     'Admin' => '管理',
     'Detail' => '详情',
     'Info' => '信息',
-    'Operating' => '操作',
+    'Operation' => '操作',
     'Build Course' => '建课',
     'Database' => '数据库',
     'Frame' => '框架',
@@ -146,6 +146,7 @@ return [
     'The above error occurred while the Web server was processing your request.' => 'web服务器正在处理您的请求时发生上述错误。',
     'Please contact us if you think this is a server error. Thank you.' => '如果您认为这是服务器错误，请与我们联系。谢谢您.',
     'Incorrect username or password' => '账号或密码错误.',
+    'You have no permissions to perform this operation.' => '您没有执行此操作的权限。',
     
     //后台-公共配置
     'Config' => '配置',
@@ -174,6 +175,7 @@ return [
     'True' => '真实',
     'Build' => '建设',
     'Data' => '数据',
+    'Visible' => '可见',
     'Range' => '范围',
     'Tag' => '标签',
     
