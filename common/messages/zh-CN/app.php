@@ -264,6 +264,7 @@ return [
     'Learning Count' => '在学人数',
     'Famous teacher Hall' => '名师堂',
     //前台-导航条
+    'StudyCenter' => '学习中心',
     'CourseFactory' => '课工厂',
     //前台-课工厂
     'Teacher Resource' => '师资',

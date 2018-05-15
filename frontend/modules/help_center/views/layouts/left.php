@@ -1,13 +1,15 @@
 <?php
 
-use frontend\modules\help_center\controllers\DefaultController;
 use common\widgets\Menu;
+use frontend\modules\help_center\assets\HelpCenterAssets;
+use frontend\modules\help_center\controllers\DefaultController;
 
 $menus = DefaultController::getMenu($app_id);
 
 ?>
-<aside class="main-sidebar">
-    <section class="sidebar">
+
+<div class="main-sidebar">
+    <div class="sidebar">
         <?php
             $menuItems = [
                 ['label' => '目录', 'options' => ['class' => 'header']],
@@ -22,5 +24,9 @@ $menus = DefaultController::getMenu($app_id);
                     ]
             );
         ?>
-    </section>
-</aside>
+    </div>
+</div>
+
+<?php
+    HelpCenterAssets::register($this);
+?>
