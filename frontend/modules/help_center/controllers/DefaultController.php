@@ -21,19 +21,25 @@ use yii\widgets\Menu;
 /**
  * Default controller for the `helpcenter` module
  */
-class DefaultController extends Controller {
-
+class DefaultController extends Controller 
+{
     public $layout = "main";
 
     /**
      * Renders the index view for the module
      * @return string
      */
-    public function actionIndex($app_id)
-    {        
+    public function actionIndex($app_id) 
+    {
+        //传递参数
         $view = Yii::$app->view;
         $view->params['app_id'] = $app_id;
-        return $this->render('index');
+        $categoryId = Yii::$app->request->get('id');
+        
+        return $this->render('index', [
+            'posts' => $this->getPostContents($categoryId),     //文章内容
+            'categoryName' => $this->getCategory($categoryId),  //文章分类名
+        ]);
     }
     
     /**
@@ -146,10 +152,10 @@ class DefaultController extends Controller {
                     'label' => $_menu->name,
                 ];
                 if (count($children) > 0) {
-                    $item['url'] = $_menu->href;
+                    $item['url'] = $_menu->id;
                     $item['items'] = $children;
                 } else {
-                    $item['url'] = [$_menu->href];
+                    $item['url'] = [$_menu->id];
                 }
                 $item['icon'] = $_menu->icon;
                 $menuItems[] = $item;
@@ -186,22 +192,12 @@ class DefaultController extends Controller {
     private static function getChildrenMenu($allMenus, $parent_id) {
         $items = [];
         foreach ($allMenus as $menu) {
-            $children = self::getPosts($menu->id, $menu->app_id);   //文章（菜单）
-            /* @var $menu Menu */
-            if ($menu->parent_id == $parent_id) {
-                $item = [
+            if($menu->parent_id == $parent_id){
+                $items[] = [
                     'label' => $menu->name,
+                    'url' => [$menu->id],
+                    'icon' => $menu->icon,
                 ];
-                if (count($children) > 0) {
-                    $item['url'] = $menu->href;
-                    $item['items'] = $children;         //组装三级菜单
-                } else {
-                    $item['url'] = [$menu->href];
-                }
-                $item['icon'] = $menu->icon;
-                $items[] = $item;
-            }else if($menu->id == $parent_id){
-                $items = $children;
             }
         }
        
@@ -209,50 +205,35 @@ class DefaultController extends Controller {
     }
 
     /**
-     * 获取所有文章（菜单）
-     * @param integer $category_id  分类ID
-     * @param string $app_id        应用ID
-     * @return array
-     */
-    public static function getPosts($category_id, $app_id) {
-        $posts = Post::find()
-                        ->from(['Post' => Post::tableName()])
-                        ->where([
-                            'is_show' => true,
-                        ])
-                        ->orderBy('sort_order')
-                        ->all();
-        $items = [];
-        foreach ($posts as $menu) {
-            /* @var $menu Menu */
-            if ($menu->category_id == $category_id) {
-                $items[] = [
-                    'label' => $menu->name,
-                    'url' => ['/help_center/default/view', 'app_id'=>$app_id, 'id'=>$menu->id],
-                    'icon' => 'file-text-o',
-                ];
-            }
-        }
-        return $items;
-    }
-
-    /**
      * 获取文章内容
-     * @param integer $id       文章ID
+     * @param integer $categoryId       文章分类ID
      * @return array
      */
-    public function getPostContents($id) {
+    public function getPostContents($categoryId) 
+    {
         $postContents = (new Query())
                     ->from(['Post' => Post::tableName()])
                     ->where([
                         'is_show' => true,
-                        'id' => $id,
-                    ])->one();
+                        'category_id' => $categoryId,
+                    ])->all();
         
         return $postContents;
     }
     
     /**
+     * 获取文章分类
+     * @param integer $categoryId   文章分类ID
+     * @return array
+     */
+    public function getCategory($categoryId)
+    {
+        $categoryName = PostCategory::findOne($categoryId);
+        
+        return $categoryName;
+    }
+
+        /**
      * 查询上/下篇文章
      * @param string $app_id    应用ID
      * @param integer $id       文章ID

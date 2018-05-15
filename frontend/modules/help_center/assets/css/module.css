@@ -5,16 +5,87 @@
         }
 */
 /****************** default--->index----样式 ******************/
-.help-index{
-    text-align: center;
-    color: #999999;
-    padding-top: 160px
+.subnav,.default-index {
+    display: inline-block;
 }
 
-.skin-blue .main-sidebar{
-    margin-top: 81px;
-    position: fixed;
+.default-index{
+    width: 1000px;
+    height: 100%;
+    color: #999999;
+    background-color: #ffffff;
+    -webkit-box-shadow: 1px 1px 3px rgba(102, 102, 102, 0.349019607843137);
+    box-shadow: 1px 1px 3px rgba(102, 102, 102, 0.349019607843137);
 }
+
+.default-index .category-title {
+    height: 60px;
+    font-size: 16px;
+    color: #000000;
+    line-height: 60px;
+    padding-left: 20px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.default-index .posts-content {
+    padding: 15px 20px;
+    min-height: 200px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.default-index .posts-content .post-title {
+/*    color: #FF6600;*/
+    margin-bottom: 10px;
+}
+
+.default-index .posts-content .post-content {
+    color: #000000;
+    padding: 15px 20px;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+}
+
+.default-index .footer-kefu {
+    height: 190px;
+    padding-top: 40px;
+    padding-left: 20px;
+}
+
+.default-index .footer-kefu .kehu-title,
+.default-index .footer-kefu .telphone-content {
+    margin-bottom: 15px;
+}
+
+.default-index .footer-kefu .telphone-content p{
+    margin-top: 8px;
+    color: #fc583d;
+}
+
+.default-index .footer-kefu .telphone-content .phone,
+.default-index .footer-kefu .telphone-content .QQ {
+    width: 180px;
+    display: inline-block
+}
+
+.default-index .footer-kefu .telphone-content .phone .icon-phone {
+    background: url(../imgs/logo-phone.png) no-repeat;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+
+.default-index .footer-kefu .telphone-content .QQ .icon-qq {
+    background: url(../imgs/logo-qq.png) no-repeat;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    float: left;
+}
+
+
+
+
 
 /****************** default--->view----样式 ******************/
 .post-view{

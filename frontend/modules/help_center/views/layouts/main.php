@@ -1,66 +1,61 @@
 <?php
 
-use frontend\assets\AppAsset;
-use common\models\User;
-use dmstr\web\AdminLteAsset;
 use frontend\modules\help_center\assets\HelpCenterAssets;
+use frontend\modules\help_center\controllers\DefaultController;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $content string */
-/* @var $user User */
 
-if (class_exists('frontend\assets\AppAsset')) {
-    AppAsset::register($this);
-} else {
-    app\assets\AppAsset::register($this);
-}
-AdminLteAsset::register($this);
+$this->title = Yii::t('app', '{Help}{Center}', [
+    'Help' => Yii::t('app', 'Help'),'Center' => Yii::t('app', 'Center'),
+]);
 
-$user = Yii::$app->user->identity;
+HelpCenterAssets::register($this);
+//菜单分类
+$menus = DefaultController::getMenu($this->params);
+
 ?>
 
-<?php $this->beginPage() ?>
-<!DOCTYPE html>
-<html lang="<?= Yii::$app->language ?>">
-    <head>
-        <meta charset="<?= Yii::$app->charset ?>"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <?= Html::csrfMetaTags() ?>
-        <title><?= Html::encode($this->title) ?></title>
-        <?php $this->head() ?>
-        <!--百度统计密钥-->
-        <script type="text/javascript">
-            var _hmt = _hmt || [];
-            (function() {
-                var hm = document.createElement("script");
-                hm.src = "https://hm.baidu.com/hm.js?d0f0eac1cb855e1d9ce70e8b2e39b95a";
-                var s = document.getElementsByTagName("script")[0]; 
-                s.parentNode.insertBefore(hm, s);
-            })();
-        </script>
-    </head>
-    <body class="hold-transition skin-blue sidebar-mini">
-        <?php $this->beginBody() ?>
-        <div class="wrapper">
-
-            <?= $this->render('@frontend/views/layouts/navbar')?>
-            
-            <?= $this->render('left.php', $this->params);?>
-            
-            <div class="content-wrapper">
-                <section class="content">
-                    <?= $content ?>
-                </section>
-            </div>
-
-        </div>
-
-        <?php $this->endBody() ?>
-    </body>
-</html>
-<?php $this->endPage() ?>
 <?php
-    HelpCenterAssets::register($this);
+$menuHtml = '';
+//导航
+foreach ($menus as $key => $menu){
+    $menuItems[] = 
+        [
+            'label' => $menu['label'],
+            'url' => '?app_id=app-frontend&id='.$menu['url']['0'],
+            'icons' => '<i class="fa fa-'.$menu['icon'] . '">&nbsp;</i>', 
+            'chevron' => '<i class="fa fa-chevron-right"></i>',
+            'options' => ['class' => 'links']
+        ];
+    
+}
+
+//导航
+end($menuItems);
+$lastIndex = key($menuItems);
+foreach ($menuItems as $index => $item) {
+    //截取当前参数中的ID
+    $url = Yii::$app->request->get('id');
+    //截取item中url中ID的值
+    $itemUrl = trim(strrchr($item['url'], '='), '=');;
+    $menuHtml .= ($url == $itemUrl ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+        Html::a($item['icons'] . $item['label'] . $item['chevron'], $item['url'], $item['options']).'</li>';
+}
+
+$html = <<<Html
+    <!-- 头部 -->
+    <header class="header"></header>
+    <!-- 内容 -->
+    <div class="container content">
+        <!-- 子菜单 -->
+        <nav class="subnav">
+            <ul>{$menuHtml}</ul>
+        </nav>
+Html;
+
+    $content = $html.$content . '</div>';
+    echo $this->render('@app/views/layouts/main',['content' => $content]); 
 ?>
