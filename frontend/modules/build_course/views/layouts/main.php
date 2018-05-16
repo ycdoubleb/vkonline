@@ -17,30 +17,58 @@ $this->title = Yii::t('app', 'CourseFactory');
 
 <?php
 $menuHtml = '';
-//导航
+$moduleId = Yii::$app->controller->module->id;
+$controllerId = Yii::$app->controller->id;
+$actionId = Yii::$app->controller->action->id;
+/**
+ * 子菜单导航
+ * $menuItems = [
+ *      菜单分类 => [
+ *          module => 模块,
+ *          controller => 控制器,
+ *          action => 操作方法,
+ *          label => 菜单名,
+ *          url => 菜单链接,
+ *          icons => 图标,
+ *          options => 菜单配置 
+ *      ]
+ * ]
+ */
 $menuItems = [
     'resource' => [
         [
+            'module' => 'build_course',
+            'controller' => 'course',
+            'action' => 'index',
             'label' => Yii::t('app', 'Course'),
-            'url' => ['course/index'],
+            'url' => ['/build_course/course/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'build_course',
+            'controller' => 'video',
+            'action' => 'index',
             'label' => Yii::t('app', 'Video'),
-            'url' => ['video/index'],
+            'url' => ['/build_course/video/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'build_course',
+            'controller' => 'teacher',
+            'action' => 'index',
             'label' => Yii::t('app', 'Teacher Resource'),
-            'url' => ['teacher/index'],
+            'url' => ['/build_course/teacher/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ]
     ],
     'content' => [
         [
+            'module' => 'build_course',
+            'controller' => 'teacher',
+            'action' => 'index',
             'label' => Yii::t('app', '{All}{Course}', [
                 'All' => Yii::t('app', 'All'), 'Course' => Yii::t('app', 'Course')
             ]),
@@ -49,6 +77,9 @@ $menuItems = [
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'build_course',
+            'controller' => 'teacher',
+            'action' => 'index',
             'label' => Yii::t('app', '{All}{Video}', [
                 'All' => Yii::t('app', 'All'), 'Video' => Yii::t('app', 'Video')
             ]),
@@ -57,6 +88,9 @@ $menuItems = [
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'build_course',
+            'controller' => 'teacher',
+            'action' => 'index',
             'label' => Yii::t('app', '{All}{teacherResource}', [
                 'All' => Yii::t('app', 'All'), 'teacherResource' => Yii::t('app', 'Teacher Resource')
             ]),
@@ -67,26 +101,38 @@ $menuItems = [
     ],
     'admin' => [
         [
+            'module' => 'admin_center',
+            'controller' => 'default',
+            'action' => 'index',
             'label' => Yii::t('app', 'Survey'),
-            'url' => ['course/index'],
+            'url' => ['/admin_center/default/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'admin_center',
+            'controller' => 'user',
+            'action' => 'index',
             'label' => Yii::t('app', 'User'),
-            'url' => ['video/index'],
+            'url' => ['/admin_center/user/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'admin_center',
+            'controller' => 'category',
+            'action' => 'index',
             'label' => Yii::t('app', 'Category'),
-            'url' => ['teacher/index'],
+            'url' => ['/admin_center/category/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
+            'module' => 'admin_center',
+            'controller' => 'task',
+            'action' => 'index',
             'label' => Yii::t('app', 'Task'),
-            'url' => ['teacher/index'],
+            'url' => ['/admin_center/task/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ]
@@ -98,12 +144,12 @@ $lastIndex = key($menuItems['admin']);  //获取数组最后一个的index
 //循环组装子菜单导航
 foreach ($menuItems as $index => $items) {
     foreach ($items as $key => $value) {
-        $controllerId = Yii::$app->controller->id;
-        $controller = strstr($value['url'][0], '/', true);
-        $menuHtml[$index][] = ($controllerId == $controller ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
+        $is_select = $value['module'] == $moduleId && $value['controller'] == $controllerId;
+        $menuHtml[$index][] = ($is_select ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
             Html::a($value['icons'] . $value['label'], $value['url'], $value['options']).'</li>';
     }
 }
+
 $resource = implode("", $menuHtml['resource']);
 $contents = implode("", $menuHtml['content']);
 $admin = implode("", $menuHtml['admin']);

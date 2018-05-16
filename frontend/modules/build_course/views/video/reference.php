@@ -29,6 +29,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
 </style>
 
 <div class="video-reference">
+    <!--引用视频开关-->
     <div class="form-horizontal">
         <div class="form-group field-video-is_ref">
             <?= Html::label(Yii::t('app', '{Reference}{Video}', [
@@ -52,6 +53,15 @@ $this->title = Yii::t('app', "{Add}{Video}",[
             <div class="col-lg-6 col-md-6"><div class="help-block"></div></div>
         </div>
     </div>
+    <!-- 排序 -->
+    <div class="sort">
+        <ul class="keep-right">
+            <li id="created_at">
+                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'zan_count', 'data-sort' => 'zan_count']) ?>
+            </li>
+        </ul>
+    </div>
+    
 </div>
 
 <?php

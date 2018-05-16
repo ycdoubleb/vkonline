@@ -15,8 +15,6 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
-//$this->title = Yii::t('app', 'Phase');
-//$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="course-node-index">
