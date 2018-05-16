@@ -4,11 +4,14 @@ namespace frontend\modules\course\controllers;
 
 use common\models\vk\Category;
 use common\models\vk\Course;
+use common\models\vk\CourseAttribute;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
+use common\models\vk\Customer;
 use common\models\vk\PraiseLog;
 use common\models\vk\SearchLog;
+use common\models\vk\searchs\CourseListSearch;
 use common\models\vk\searchs\CourseMessageSearch;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
@@ -72,6 +75,64 @@ class DefaultController extends Controller
             'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
         ]);
+    }
+    
+    /**
+     * 搜索课程面
+     */
+    public function actionList(){
+        //当前已选择的分类
+        $category_id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'cat_id');
+        $customer_id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'customer_id' , "0");
+        //获取当前分类的父级分类[顶级分类,子级分类,……]
+        if ($category_id === "0") {
+            //没有选择任何单位情况下，只需要显示顶级分类
+            $categoryLevels = [Category::getCatsByLevel(1, true)];
+        } else {
+            $categoryLevels = Category::getCustomerSameLevelCats($category_id, $customer_id, true);
+        }
+        //当前分类所有属性
+        $attrs = CourseAttribute::find()->where([
+                    'category_id' => $category_id,
+                    'type' => 1,
+                    'input_type' => 2,
+                    'index_type' => 1,
+                    'is_del' => 0,
+                ])->orderBy('sort_order')->all();
+        
+        $result = CourseListSearch::search(Yii::$app->request->queryParams,1);
+        
+        return $this->render('list',[
+            'categoryLevels' => $categoryLevels,     //所有分类，包括顶级分类，子级分类
+            'customers' => ArrayHelper::map(Customer::find()->select(['id','name'])->asArray()->all(), 'id', 'name'),   //所有客户
+            'attrs' => $attrs,  //属性
+            
+            'max_count' => $result['max_count'],    //最大数量
+            'courses' => [],        //课程
+        ]);
+    }
+    
+    /**
+     * 滚动换页
+     */
+    public function actionSearchList(){
+        Yii::$app->response->format = 'json';
+        $code = 0;
+        $mes = '';
+        $data = [];
+        try{
+            $result = CourseListSearch::search(Yii::$app->request->queryParams,2);
+        } catch (\Exception $ex) {
+            $mes = $ex->getMessage();
+        }
+        return [
+            'code' => $code,
+            'mes' => '',
+            'data' => [
+                'page' => ArrayHelper::getValue(Yii::$app->request->queryParams, 'page' ,1),
+                'courses' => $result['courses'],
+            ],
+        ];
     }
     
     /**
