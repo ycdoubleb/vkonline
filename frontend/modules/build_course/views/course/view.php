@@ -37,7 +37,7 @@ SwitchInputAsset::register($this);
                 'name' => Yii::t('app', 'Preview'),
                 'url' => ['/course/default/view', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-success'],
+                'options' => ['class' => 'btn btn-success', 'target' => '_black'],
                 'symbol' => '&nbsp;',
                 'conditions' => true,
                 'adminOptions' => true,
@@ -117,14 +117,17 @@ SwitchInputAsset::register($this);
                 ],
                 [
                     'attribute' => 'teacher_id',
-                    'label' => Yii::t('app', '{MainSpeak}{Teacher}', [
-                        'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                    'label' => Yii::t('app', '{mainSpeak}{Teacher}', [
+                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                     ]),
                     'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
                 ],
                 [
                     'attribute' => 'level',
-                    'label' => Yii::t('app', 'DataVisible Range'),
+                    'label' => Yii::t('app', '{Visible}{Range}', [
+                        'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')
+                    ]),
+                    'format' => 'raw',
                     'value' => Course::$levelMap[$model->level],
                 ],
                 [
@@ -153,11 +156,21 @@ SwitchInputAsset::register($this);
             'dataProvider' => $courseUsers
         ]) ?>
     </div>
-   <div id="course_frame">
+    <!--课程框架-->
+    <div id="course_frame">
         <?= $this->render('/course-node/index', [
             'model' => $model,
-            'dataProvider' => $courseNodes, 
+            'dataProvider' => $courseNodes,
+            'is_hasEditNode' => $is_hasEditNode,
         ]) ?>
+    </div>
+    <!--操作记录-->
+    <div id="act_log">
+        <?= $this->render('/course-actlog/index', array_merge($logs, [
+            'searchModel' => $courseLogModel,
+            'filter' => $courseLogs['filter'],
+            'dataProvider' => $courseLogs['dataProvider'], 
+        ])) ?>
     </div>
     
 </div>

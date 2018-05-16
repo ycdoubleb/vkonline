@@ -121,16 +121,17 @@ class CourseSearch extends Course
         
         self::getInstance();
         $this->load($params);
-        
+        //条件查询
         self::$query->andFilterWhere([
             'Course.created_by' => \Yii::$app->user->id,
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
+        //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //添加字段
-        $addArrays = ['Course.name', 'Course.level', 'Course.cover_img', 
-            'Course.is_publish', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        $addArrays = ['Course.name', 'Course.level', 'Course.cover_img',  'Course.content_time',
+            'Course.is_publish', 'Course.avg_star', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
@@ -156,7 +157,7 @@ class CourseSearch extends Course
      * 使用搜索查询创建数据提供程序实例
      *
      * @param array $params
-     * @param array $addArrays  //查询数组
+     * @param array $addArrays  查询属性数组
      *
      * @return ArrayDataProvider
      */
@@ -164,23 +165,17 @@ class CourseSearch extends Course
     {
         $page = ArrayHelper::getValue($params, 'page', 0); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        //复制课程
+        //复制课程对象
         $copyCourse= clone self::$query;    
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
-        //查询所有课程下的视频数
-        $videoQuery = Video::find()->select(['CourseNode.course_id', 'COUNT(Video.id) AS video_num'])
-            ->from(['Video' => Video::tableName()]);
-        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        $videoQuery->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
-        $videoQuery->groupBy('CourseNode.course_id');
-        //查询所有课程下的标签
+        //查询课程下的标签
         $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
             ->from(['TagRef' => TagRef::tableName()]);
         $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
         $tagRefQuery->groupBy('TagRef.object_id');
-        //已课程id为分组
+        //以课程id为分组
         self::$query->groupBy(['Course.id']);
         //查询总数
         $totalCount = self::$query->count('id');
@@ -193,16 +188,14 @@ class CourseSearch extends Course
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
-        //查询视频结果
-        $videoResult = $videoQuery->asArray()->all(); 
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
         //查询课程结果
         $courseResult = self::$query->asArray()->all();
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
-        $results = ArrayHelper::merge(ArrayHelper::index($videoResult, 'course_id'), 
-            ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), ArrayHelper::index($courseSize, 'course_id')));
+        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
+               ArrayHelper::index($courseSize, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {

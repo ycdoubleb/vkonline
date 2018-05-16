@@ -12,6 +12,7 @@ use common\models\vk\RecentContacts;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use common\models\vk\TeacherCertificate;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
@@ -48,7 +49,7 @@ class ActionUtils
      * @param array $post
      * @throws Exception
      */
-    public function CreateCourse($model, $post)
+    public function createCourse($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -76,7 +77,7 @@ class ActionUtils
      * @param array $post
      * @throws Exception
      */
-    public function UpdateCourse($model, $post)
+    public function updateCourse($model, $post)
     {
         //获取所有新属性值
         $newAttr = $model->getDirtyAttributes();
@@ -116,7 +117,7 @@ class ActionUtils
      * @param Course $model
      * @throws Exception
      */
-    public function CloseCourse($model)
+    public function closeCourse($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -147,7 +148,7 @@ class ActionUtils
      * @param Course $model
      * @throws Exception
      */
-    public function PublishCourse($model)
+    public function publishCourse($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -481,13 +482,15 @@ class ActionUtils
     
     /**
      * 移动课程框架操作
-     * @param type $post
+     * @param array $post
+     * @param string $course_id
+     * @param integer $number
+     * @return boolean
      * @throws Exception
      */
-    public function MoveNode($post, $number = 0)
+    public function MoveNode($post, $course_id, $number = 0)
     {
         $table = ArrayHelper::getValue($post, 'tableName');
-        $course_id = ArrayHelper::getValue($post, 'course_id');
         $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
         $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
         $oldItems = json_decode(json_encode($oldIndexs), true);
@@ -497,7 +500,7 @@ class ActionUtils
         try
         {  
             foreach ($newItems as $id => $sortOrder){
-                $number += $this->UpdateTableAttribute($id, $table, $sortOrder);
+                $number += $this->updateTableAttribute($id, $table, $sortOrder);
             }
             if($number > 0){
                 $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
@@ -506,7 +509,7 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return $number;
+            return true;
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
@@ -521,15 +524,16 @@ class ActionUtils
      * @param array $post
      * @throws Exception
      */
-    public function CreateTeacher($model, $post)
+    public function createTeacher($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 3);
+                
             }else{
+                var_dump($model->getErrors());exit;
                 throw new Exception($model->getErrors());
             }
             
@@ -547,14 +551,14 @@ class ActionUtils
      * @param array $post
      * @throws Exception
      */
-    public function UpdateTeacher($model, $post)
+    public function updateTeacher($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 3);
+                
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -568,13 +572,42 @@ class ActionUtils
     }
     
     /**
+     * 申请认证老师操作
+     * @param Teacher $model
+     * @param array $post
+     * @throws Exception
+     */
+    public function applyCertificate($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            //新建老师认证申请模型
+            $apply = new TeacherCertificate([
+                'teacher_id' => $model->id, 'proposer_id' => Yii::$app->user->id
+            ]);
+            
+            if(!$apply->save()){
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
      * 修改表属性值
-     * @param string $id                              id
-     * @param string $table                           表名
-     * @param integer $sortOrder                      顺序
+     * @param string $id
+     * @param string $table     表名
+     * @param integer $sortOrder    顺序
      * @return integer|null
      */
-    private function UpdateTableAttribute($id, $table, $sortOrder)
+    private function updateTableAttribute($id, $table, $sortOrder)
     {
         $number = Yii::$app->db->createCommand()
            ->update("{{%$table}}",['sort_order' => $sortOrder], ['id' => $id])->execute();
@@ -584,22 +617,30 @@ class ActionUtils
         return null;
     }
     
+    /**
+     * 保存对象标签
+     * @param string $objectId  对象id
+     * @param array $tagIds     标签id
+     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
+     */
     private function saveObjectTags($objectId, $tagIds, $type = 1)
     {
         $tagRefs = [];
         //删除已存在的标签
         TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
-        //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
-        foreach ($tagIds as $tag_id) {
-            if(($tags = Tags::findOne($tag_id)) !== null){
-                $tags->ref_count = $tags->ref_count + 1;
-                $tags->save(true, ['ref_count']);
-            }else{
-                $tags = new Tags(['name' => $tag_id, 'ref_count' => 1]);
-                $tags->save();
-                $tag_id = $tags->id;
+        if(!empty($tagIds)){
+            //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
+            foreach ($tagIds as $tag_id) {
+                if(($tags = Tags::findOne($tag_id)) !== null){
+                    $tags->ref_count = $tags->ref_count + 1;
+                    $tags->save(true, ['ref_count']);
+                }else{
+                    $tags = new Tags(['name' => $tag_id, 'ref_count' => 1]);
+                    $tags->save();
+                    $tag_id = $tags->id;
+                }
+                $tagRefs[] = [$objectId, $tag_id, $type];
             }
-            $tagRefs[] = [$objectId, $tag_id, $type];
         }
         //添加
         Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
@@ -700,6 +741,25 @@ class ActionUtils
     }
     
     /**
+     * 获取该课程下的所有记录
+     * @param string $course_id                             
+     * @return array
+     */
+    public function getCourseActLogs($course_id)
+    {
+        $query = (new Query())->select(['action','title','created_by', 'User.nickname']);
+        $query->from(CourseActLog::tableName());
+        $query->leftJoin(['User' => User::tableName()], 'User.id = created_by');
+        $query->where(['course_id' => $course_id]);
+        
+        return [
+            'actions' => ArrayHelper::map($query->all(), 'action', 'action'),
+            'titles' => ArrayHelper::map($query->all(), 'title', 'title'),
+            'createdBys' => ArrayHelper::map($query->all(), 'created_by', 'nickname'),
+        ];
+    }
+    
+    /**
      * 保存顺序调整记录
      * @param string $table 数据表
      * @param string $course_id 课程id
@@ -760,5 +820,26 @@ class ActionUtils
         //添加
         Yii::$app->db->createCommand()->batchInsert(VideoAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
+    }
+    
+    /**
+     * 获取是否拥有编辑权限
+     * @param string $course_id
+     * @return boolean
+     */
+    public function getIsHasEditNodePermission($course_id)
+    {
+        //查询该课程下的所有协作用户
+        $courseUsers = CourseUser::findAll([
+            'course_id' => $course_id, 'privilege' => [CourseUser::EDIT, CourseUser::ALL]
+        ]);
+        //拿到拥有编辑权限的用户
+        $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
+        //如果当前用户存在数组里，则返回true
+        if(in_array(Yii::$app->user->id, $userIds)){
+            return true;
+        }
+        
+        return false;
     }
 }

@@ -49,7 +49,6 @@ ModuleAssets::register($this);
         <?= $form->field($searchModel, 'course_id')->widget(Select2::class, [
             'data' => $courseMap, 'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => ['allowClear' => true],
-            'pluginEvents' => ['change' => 'function(){ selectLog($(this));}']
         ])->label(Yii::t('app', '{The}{Course}：', [
             'The' => Yii::t('app', 'The'), 'Course' => Yii::t('app', 'Course')
         ])) ?>
@@ -60,8 +59,8 @@ ModuleAssets::register($this);
             'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
         
-        <?= $form->field($searchModel, 'is_ref')->radioList(['全部', '原创', '引用'], [
-            'value' => 0,
+        <?= $form->field($searchModel, 'is_ref')->radioList(['' => '全部', 0 => '原创',  1 => '引用'], [
+            'value' => ArrayHelper::getValue($filters, 'VideoSearch.is_ref', ''),
             'itemOptions'=>[
                 'labelOptions'=>[
                     'style'=>[
@@ -82,10 +81,10 @@ ModuleAssets::register($this);
     <div class="sort">
         <ul>
             <li id="created_at">
-                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at', '#' => 'tips'])), ['id' => 'zan_count', 'data-sort' => 'zan_count']) ?>
+                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at', 'data-sort' => 'created_at']) ?>
             </li>
             <li id="course_id">
-                <?= Html::a('按课程排序', array_merge(['index'], array_merge($filters, ['sort' => 'course_id', '#' => 'tips'])), ['id' => 'favorite_count', 'data-sort' => 'course_id']) ?>
+                <?= Html::a('按课程排序', array_merge(['index'], array_merge($filters, ['sort' => 'course_id'])), ['id' => 'course_id', 'data-sort' => 'course_id']) ?>
             </li>
         </ul>
     </div>
@@ -111,10 +110,10 @@ ModuleAssets::register($this);
                 </div>
                 <div class="cont">
                     <div class="tuip">
-                        <span class="tuip-name"><?= $model['name'] ?></span>
+                        <span class="tuip-name"><?=$model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
                     </div>
                     <div class="tuip">
-                        <span>摄影艺术、基础入门、PS、后期技术、隐形人</span>
+                        <span><?= isset($model['tags']) ? $model['tags'] : '无' ?></span>
                     </div>
                     <div class="tuip">
                         <span><?= date('Y-m-d H:i', $model['created_at']) ?></span>
@@ -125,50 +124,90 @@ ModuleAssets::register($this);
             <div class="speaker">
                 <div class="tuip">
                     <div class="avatar img-circle">
-                        <?= !empty($model['teacher']['avatar']) ? Html::img($model['teacher']['avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                        <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
                     </div>
-                    <span class="tuip-left"><?= $model['teacher']['name'] ?></span>
-                    <span class="tuip-right"><i class="fa fa-eye"></i>　7635</span>
+                    <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                    <span class="tuip-right"><i class="fa fa-eye"></i>　<?= isset($model['play_num']) ? $model['play_num'] : 0 ?></span>
                 </div>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
-    <!--分页-->
-    <div class="page center">
-        <?=  LinkPager::widget([
-            'pagination' => $pagers,
-            'options' => ['class' => 'pagination', 'style' => 'margin: 0px;border-radius: 0px;'],
-            'prevPageCssClass' => 'page-prev',
-            'nextPageCssClass' => 'page-next',
-            'prevPageLabel' => '<i>&lt;</i>'.Yii::t('app', 'Prev'),
-            'nextPageLabel' => Yii::t('app', 'Next').'<i>&gt;</i>',
-            'maxButtonCount' => 5,
-        ]); ?>
+    
+    <div class="summary">
+        <span>共 <?= $totalCount ?> 条记录</span>
     </div>
     
 </div>
 
 <?php
-$sort = ArrayHelper::getValue($filters, 'sort', 'created_at');
+$url = Url::to(array_merge(['index'], $filters));   //链接
+$sort = ArrayHelper::getValue($filters, 'sort', 'created_at');   //排序
+$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+    $this->renderFile('@frontend/modules/build_course/views/video/_dome.php')));
 $js = 
 <<<JS
         
-    //select触发事件
-    window.selectLog = function(elem){
+    //触发change事件
+    $("#videosearch-course_id").change(function(){
         $('#build-course-form').submit();
-    }
+    });
         
-    //按下键盘事件，如果是按下键盘的BackSpace键时提交表单
-    $('input[name="keyword"]').keydown(function(event){
-        if(event.keyCode == 8){
-            $('#build-course-form').submit();
-        }
+    //失去焦点提交表单
+    $("#videosearch-name").blur(function(){
+        $('#build-course-form').submit();
+    }); 
+     
+    //单击选中radio提交表单
+    $('input[name="VideoSearch[is_ref]"]').click(function(){
+        $('#build-course-form').submit();
     });
         
     //排序选中效果
     $(".sort ul li[id=$sort]").addClass('active');    
    
+    //下拉加载更多
+    var page = 0;
+    $(window).scroll(function(){
+        if($(document).scrollTop() >= $(document).height() - $(window).height()){
+            dataLoad(page);
+        }
+    });       
+    //分页请求加载数据
+    function dataLoad(pageNum) {
+        var maxPageNum =  ($totalCount - 6) / 6;
+        // 当前页数是否大于最大页数
+        if((pageNum + 1) > Math.ceil(maxPageNum)){
+            return;
+        }
+        $.get("$url", {page: (pageNum + 1)}, function(rel){
+            page = Number(rel['page']);
+            var items = $domes;
+            var dome = "";
+            var data = rel['data'];
+            if(rel['code'] == '200'){
+                for(var i in data){
+                    dome += Wskeee.StringUtil.renderDOM(items, {
+                        className: i % 3 == 2 ? 'clear-margin' : '',
+                        id: data[i].id,
+                        isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
+                        courseName: data[i].course_name,
+                        name: data[i].name,
+                        duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
+                        tags: data[i].tags != undefined ? data[i].tags : '无',
+                        createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data[i].created_at),
+                        colorName: data[i].is_ref == 0 ? 'green' : 'red',
+                        isRef: data[i].is_ref == 0 ? '原创' : '引用',
+                        teacherAvatar: data[i].teacher_avatar,
+                        teacherName: data[i].teacher_name,
+                        playNum: data[i].play_num != undefined ? data[i].play_num : 0,
+                    });
+                }
+                $(".list").append(dome);
+            }
+        });
+    }    
+        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

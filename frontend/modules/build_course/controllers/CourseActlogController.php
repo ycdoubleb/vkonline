@@ -2,14 +2,12 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\models\User;
 use common\models\vk\CourseActLog;
 use common\models\vk\searchs\CourseActLogSearch;
+use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
 
@@ -55,26 +53,23 @@ class CourseActlogController extends Controller
     public function actionIndex($course_id)
     {
         $searchModel = new CourseActLogSearch();
-        $results = $searchModel->search(Yii::$app->request->queryParams);
-        $logs = $this->getCourseActLogs($course_id);
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['course_id' => $course_id]));
+        $logs = ActionUtils::getInstance()->getCourseActLogs($course_id);
         if(Yii::$app->request->isPost){
-            $filter = Yii::$app->request->post();
+            $filter = array_merge(Yii::$app->request->post(), ['course_id' => $course_id]);
             Yii::$app->getResponse()->format = 'json';
             return [
                 'code'=> $results ? 200 : 404,
                 'data' =>$filter,
-                'url' => Url::to(array_merge(['index'], $filter)),
+                'url' => Url::to(array_merge(['course-actlog/index'], $filter)),
                 'message' => ''
             ];
         }else{
-            return $this->renderAjax('index', [
+            return $this->renderAjax('index', array_merge($logs, [
                 'searchModel' => $searchModel,
                 'dataProvider' => $results['dataProvider'],
                 'filter' => $results['filter'],
-                'action' => $logs['action'],
-                'title' => $logs['title'],
-                'createdBy' => $logs['created_by'],
-            ]);
+            ]));
         }
     }
     
@@ -88,24 +83,5 @@ class CourseActlogController extends Controller
         return $this->renderAjax('view', [
             'model' => CourseActLog::findOne($id),
         ]);
-    }
-    
-    /**
-     * 获取该课程下的所有记录
-     * @param string $course_id                             
-     * @return array
-     */
-    protected function getCourseActLogs($course_id)
-    {
-        $query = (new Query())->select(['action','title','created_by', 'User.nickname']);
-        $query->from(CourseActLog::tableName());
-        $query->leftJoin(['User' => User::tableName()], 'User.id = created_by');
-        $query->where(['course_id' => $course_id]);
-        
-        return [
-            'action' => ArrayHelper::map($query->all(), 'action', 'action'),
-            'title' => ArrayHelper::map($query->all(), 'title', 'title'),
-            'created_by' => ArrayHelper::map($query->all(), 'created_by', 'nickname'),
-        ];
     }
 }

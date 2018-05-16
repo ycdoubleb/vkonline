@@ -2,13 +2,13 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\searchs\CourseNodeSearch;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -68,6 +68,10 @@ class CourseNodeController extends Controller
         $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->CreateCourseNode($model);
@@ -92,7 +96,11 @@ class CourseNodeController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-                
+        
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->UpdateCourseNode($model);
@@ -118,6 +126,10 @@ class CourseNodeController extends Controller
     {
         $model = $this->findModel($id);
         
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             $result = ActionUtils::getInstance()->DeleteCourseNode($model);
@@ -139,10 +151,16 @@ class CourseNodeController extends Controller
      */
     public function actionMoveNode()
     {
+        $post = Yii::$app->request->post();
+        $course_id = ArrayHelper::getValue($post, 'course_id');
+       
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+                
         Yii::$app->getResponse()->format = 'json';
-        
         if(Yii::$app->request->isPost){
-            $result = ActionUtils::getInstance()->MoveNode(Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->MoveNode($post, $course_id);
             
             return [
                 'code' => $result ? 200 : 404,

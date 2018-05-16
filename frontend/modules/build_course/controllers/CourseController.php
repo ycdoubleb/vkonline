@@ -4,6 +4,7 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Category;
 use common\models\vk\Course;
+use common\models\vk\searchs\CourseActLogSearch;
 use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\searchs\CourseUserSearch;
@@ -65,11 +66,21 @@ class CourseController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['course']),
         ]);
+                
+        if(\Yii::$app->request->isAjax){
+            Yii::$app->getResponse()->format = 'json';
+            return [
+                'code'=> 200,
+                'page' => $result['filter']['page'],
+                'data' => array_values($result['data']['course']),
+                'message' => '请求成功！',
+            ];
+        }
         
         return $this->render('index', [
             'searchModel' => $searchModel,
             'filters' => $result['filter'],
-            'pagers' => $result['pager'],
+            'totalCount' => $result['total'],
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -86,11 +97,16 @@ class CourseController extends Controller
         $model = $this->findModel($id);
         $searchUserModel = new CourseUserSearch();
         $searchNodeModel = new CourseNodeSearch();
+        $searchCourseLog = new CourseActLogSearch();
         
         return $this->render('view', [
             'model' => $model,
+            'courseLogModel' => $searchCourseLog,
             'courseUsers' => $searchUserModel->search(['course_id' => $model->id]),
             'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]),
+            'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),
+            'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id),
+            'is_hasEditNode' => ActionUtils::getInstance()->getIsHasEditNodePermission($model->id),
         ]);
     }
    
@@ -111,13 +127,13 @@ class CourseController extends Controller
         $model->loadDefaultValues();
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->CreateCourse($model, Yii::$app->request->post());
+            ActionUtils::getInstance()->createCourse($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
                 'allCategory' => Category::getCatsByLevel(1, true),
-                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
+                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
                 'attFiles' => Video::getUploadfileByAttachment(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
@@ -142,13 +158,13 @@ class CourseController extends Controller
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->UpdateCourse($model, Yii::$app->request->post());
+            ActionUtils::getInstance()->updateCourse($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
                 'allCategory' => Category::getCatsByLevel(1, true),
-                'allTeacher' => Teacher::getTeacherByLevel($model->customer_id),
+                'allTeacher' => Teacher::getTeacherByLevel($model->created_by),
                 'attFiles' => Video::getUploadfileByAttachment(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 1)),
@@ -171,7 +187,7 @@ class CourseController extends Controller
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->CloseCourse($model);
+            ActionUtils::getInstance()->closeCourse($model);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->renderAjax('close', [
@@ -195,7 +211,7 @@ class CourseController extends Controller
         }
         
         if (Yii::$app->user->identity->is_official || $model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->PublishCourse($model);
+            ActionUtils::getInstance()->publishCourse($model);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->renderAjax('publish', [

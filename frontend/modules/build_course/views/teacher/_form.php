@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="teacher-form form">
+<div class="teacher-form form set-margin set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -57,26 +57,7 @@ use yii\widgets\ActiveForm;
         ],
     ]);?>
     
-    <div class="form-group field-tagref-tag_id required">
-        <?= Html::label('标签', 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div class="col-lg-11 col-md-11">
-            <?= Select2::widget([
-                'name' => 'TagRef[tag_id]',
-                'data' => $allTags,
-                'value' => !$model->isNewRecord ? $tagsSelected : null, 
-                'showToggleAll' => false,
-                'options' => [
-                    'class' => 'form-control',
-                    'multiple' => true,
-                    'placeholder' => '请选择至少5个标签...'
-                ],
-                'pluginOptions' => [
-                    'tags' => true,
-                ],
-            ]) ?>
-        </div>
-        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
-    </div>
+    <?= $form->field($model, 'job_title')->textInput(['placeholder' => '请输入...', 'maxlength' => true]) ?>
     
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"

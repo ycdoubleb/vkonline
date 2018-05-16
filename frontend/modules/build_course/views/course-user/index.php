@@ -28,7 +28,7 @@ ModuleAssets::register($this);
                 }?>
             </div>
         </div>
-        <div class="frame-height">
+        <div class="frame-right-height">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'tableOptions' => ['class' => 'table table-list'],
@@ -36,6 +36,7 @@ ModuleAssets::register($this);
                 'summaryOptions' => [
                     'class' => 'hidden',
                 ],
+                'showHeader' => false,
                 'columns' => [
                     [
                         'label' => Yii::t('app', 'Fullname'),
@@ -44,16 +45,9 @@ ModuleAssets::register($this);
                             /* @var $model CourseUser */
                             return !empty($model->user_id) ? $model->user->nickname : null;
                         },
-                        'headerOptions' => [
-                            'class' => [
-                                'th' => 'hidden'
-                            ],
-                        ],
                         'contentOptions' =>[
                             'style' => [
                                 'width' => '110px',
-                                'height' => '48px',
-                                'text-align' => 'center',
                             ]
                         ],
                     ],
@@ -64,16 +58,9 @@ ModuleAssets::register($this);
                             /* @var $model CourseUser */
                             return CourseUser::$privilegeMap[$model->privilege];
                         },
-                        'headerOptions' => [
-                            'class' => [
-                                'th' => 'hidden'
-                            ],
-                        ],
                         'contentOptions' =>[
                             'style' => [
                                 'width' => '100px',
-                                'height' => '48px',
-                                'text-align' => 'center',
                             ]
                         ],
                     ],
@@ -84,16 +71,9 @@ ModuleAssets::register($this);
                         'value'=> function($model){
                             return '';
                         },
-                        'headerOptions' => [
-                            'class' => [
-                                'th' => 'hidden'
-                            ],
-                        ],
                         'contentOptions' =>[
                             'style' => [
                                 'width' => '150px',
-                                'height' => '48px',
-                                'text-align' => 'center',
                             ]
                         ],
                     ],
@@ -136,21 +116,14 @@ ModuleAssets::register($this);
                                     'adminOptions' => true,
                                 ];
                                 if($model->user_id != $model->course->created_by && $model->course->created_by == Yii::$app->user->id){
-                                    return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                                    return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']) . $buttonHtml['symbol'];
                                 }
                             },       
-                        ],
-                        'headerOptions' => [
-                            'class' => [
-                                'th' => 'hidden'
-                            ],
                         ],
                         'contentOptions' =>[
                             'style' => [
                                 'width' => '75px',
-                                'height' => '48px',
                                 'padding' => '4px 0px',
-                                'text-align' => 'center',
                             ],
                         ],
                         'template' => '{update}{delete}',

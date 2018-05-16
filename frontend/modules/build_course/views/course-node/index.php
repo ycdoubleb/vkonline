@@ -29,25 +29,32 @@ ModuleAssets::register($this);
                 ]) ?>
             </span>
             <div class="btngroup">
-                <?php
+                <?php if($is_hasEditNode){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
                         'class' => 'btn btn-success', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
-                        'class' => 'btn btn-info disabled']) . '&nbsp;';
+                        'class' => 'btn btn-info']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导出'), 'javascript:;', [
-                        'class' => 'btn btn-info disabled'])
-                ?>
+                        'class' => 'btn btn-info']);
+                } ?>
             </div>
         </div>
         <!--框架-->
         <ul id="course_node" class="sortable list">
+            <?php if(count($dataProvider) <= 0): ?>
+            <li>
+                <div class="head">
+                    <center>没有找到数据。</center>
+                </div>
+            </li>
+            <?php endif; ?>
             <?php foreach ($dataProvider as $index => $nodes): ?>
             <li id="<?= $nodes->id ?>">
                 <div class="head">
                     <?= Html::a("<div><i class=\"fa fa-caret-right\"></i></div><span class=\"name\">{$nodes->name}</span>", "#toggle_{$nodes->id}", [
                         'data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
                     <div class="icongroup">
-                        <?php 
+                        <?php if($is_hasEditNode){
                             echo Html::a('<i class="fa fa-plus"></i>', ['video/create', 'node_id' => $nodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $nodes->id], [
@@ -55,7 +62,7 @@ ModuleAssets::register($this);
                             echo Html::a('<i class="fa fa-times"></i>',['course-node/delete', 'id' => $nodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
-                        ?>
+                        }?>
                     </div>
                 </div>
                 <div id="toggle_<?= $nodes->id ?>" class="collapse nodes" aria-expanded="false">  
@@ -69,11 +76,13 @@ ModuleAssets::register($this);
                                     <?php 
                                         echo Html::a('<i class="fa fa-eye"></i>', ['video/view','id'=> $video->id], [
                                             'target' => '_blank']) . '&nbsp;';
-                                        echo Html::a('<i class="fa fa-pencil"></i>', ['video/update','id' => $video->id], [
-                                            'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
-                                        echo Html::a('<i class="fa fa-times"></i>',['video/delete', 'id' => $video->id], [
-                                            'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
-                                        echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
+                                        if($is_hasEditNode){
+                                            echo Html::a('<i class="fa fa-pencil"></i>', ['video/update','id' => $video->id], [
+                                                'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
+                                            echo Html::a('<i class="fa fa-times"></i>',['video/delete', 'id' => $video->id], [
+                                                'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
+                                            echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
+                                        }
                                     ?>
                                 </div>
                             </div>

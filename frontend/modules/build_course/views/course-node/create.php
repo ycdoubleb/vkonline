@@ -14,8 +14,7 @@ ModuleAssets::register($this);
 $this->title = Yii::t('app', "{Add}{Node}",[
     'Add' => Yii::t('app', 'Add'), 'Node' => Yii::t('app', 'Node')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
 <div class="course-node-create main modal">
@@ -61,7 +60,7 @@ $js =
         var items = $domes;    
         $.post("../course-node/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
-                var dome = renderHtml(items, rel['data']);
+                var dome = Wskeee.StringUtil.renderDOM(items, rel['data']);
                 $(".sortable").eq(0).append(dome);
                 sortable('.sortable', {
                     forcePlaceholderSize: true,

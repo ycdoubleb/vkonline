@@ -4,7 +4,9 @@ use common\models\vk\Video;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -12,6 +14,44 @@ use yii\widgets\ActiveForm;
 /* @var $model Video */
 /* @var $form ActiveForm */
 
+//组装获取老师的下拉的格式对应数据
+$teacherFormat = [];
+foreach ($allTeacher as $teacher) {
+    $teacherFormat[$teacher->id] = [
+        'avatar' => $teacher->avatar, 
+        'is_certificate' => $teacher->is_certificate,
+        'sex' => $teacher->sex,
+        'job_title' => $teacher->job_title,
+    ];
+}
+$formats = json_encode($teacherFormat);
+$format = <<< SCRIPT
+    window.formats = $formats;
+    function format(state) {
+        //如果非数组id，返回选项组
+        if (!state.id){
+            return state.text
+        };
+        //图片位置
+        var src = formats[state.id]['avatar'].toLowerCase();
+        //为否显示认证图标
+        var isShow = formats[state.id]['is_certificate'] ? '<i class="fa fa-vimeo icon-vimeo"></i>' : '<i class="fa icon-vimeo"></i>';
+        var sex = formats[state.id]['sex'] == 1 ? '男' : '女';
+        var links = '../teacher/view?id=' + $.trim(state.id);
+        //返回结果（html）
+        return isShow + 
+            '<div class="avatars">' + 
+                '<img class="img-circle" src="' + src + '" width="100%"/>' + 
+            '</div>' 
+            + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
+            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank">' + 
+                '<i class="fa fa-eye"></i>' + 
+            '</a>';
+    } 
+        
+SCRIPT;
+$escape = new JsExpression("function(m) { return m; }");
+$this->registerJs($format, View::POS_HEAD);
 ?>
 
 <div class="video-form form clear">
@@ -37,11 +77,14 @@ use yii\widgets\ActiveForm;
             'handleWidth' => 20,
             'onText' => 'Yes',
             'offText' => 'No',
-        ]
+        ],
+        'pluginEvents' => [
+            "switchChange.bootstrapSwitch" => "function(event, state) { switchLog(event, state) }",
+        ],
     ])->label(Yii::t('app', '{Reference}{Video}', [
         'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
     ])) ?>
-
+    
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Name}', [
@@ -49,15 +92,28 @@ use yii\widgets\ActiveForm;
     ])) ?>
     
     <?php
-        $refresh = !$model->is_ref ? Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], ['class' => 'btn btn-primary']) : '';
+        $refresh = !$model->is_ref ? 
+            Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
+                'class' => 'btn btn-primary', 'onclick' => 'refresh($(this)); return false;'
+            ]) : '';
         $newAdd = !$model->is_ref ? Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']) : '';
-        //$hidden =  Html::activeHiddenInput($model, 'teacher_id', ['id' => 'video-teacher_id-hidden']);
+        $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
         echo  $form->field($model, 'teacher_id', [
-            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div><div class=\"col-lg-1 col-md-1\" style=\"padding: 3px\">{$newAdd}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",
-        ])->dropDownList($allTeacher, [
-            'prompt'=>'请选择...', 'disabled' => !$model->is_ref ? false : true
-        ])->label(Yii::t('app', '{MainSpeak}{Teacher}', [
-            'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
+                "<div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                "<div class=\"col-lg-1 col-md-1\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                "<div class=\"col-lg-1 col-md-1\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>\n" .
+            "<div class=\"col-lg-6 col-md-6\">{error}</div>",
+        ])->widget(Select2::class,[
+            'data' => ArrayHelper::map($allTeacher, 'id', 'name'), 
+            'options' => ['placeholder'=>'请选择...',],
+            'pluginOptions' => [
+                'templateResult' => new JsExpression('format'),     //设置选项格式
+                'escapeMarkup' => $escape,
+                'allowClear' => true
+            ],
+        ])->label(Yii::t('app', '{mainSpeak}{Teacher}', [
+            'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
 
@@ -113,6 +169,20 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
+    //单击刷新按钮重新加载老师下拉列表
+    window.refresh = function(elem){
+        $('#video-teacher_id').html("");
+        $.get(elem.attr("href"),function(rel){
+            if(rel['code'] == '200'){
+                window.formats = rel['data']['format'];
+                $('<option/>').val('').text('请选择...').appendTo($('#video-teacher_id'));
+                $.each(rel['data']['dataMap'], function(id, name){
+                    $('<option>').val(id).text(name).appendTo($('#video-teacher_id'));
+                });
+            }
+        });
+    }
+        
     window.uploader;
     //加载文件上传  
     window.onloadUploader = function () {

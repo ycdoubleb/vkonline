@@ -13,17 +13,17 @@ ModuleAssets::register($this);
 
 ?>
 <div class="teacher-create main">
-
+    <!--面包屑-->
     <div class="crumbs">
-        <i class="fa fa-pencil"></i>
-        <span><?= Yii::t('app', '{Create}{Teacher}', [
-            'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-        ]) ?></span>
+        <span>
+            <?= Yii::t('app', '{Create}{Teacher}', [
+                'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
+            ]) ?>
+        </span>
     </div>
-    
+    <!--表单-->
     <?= $this->render('_form', [
         'model' => $model,
-        'allTags' => $allTags,
     ]) ?>
 
 </div>

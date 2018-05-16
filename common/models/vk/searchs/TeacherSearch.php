@@ -88,7 +88,7 @@ class TeacherSearch extends Teacher
     {
         $this->customer_id = ArrayHelper::getValue($params, 'TeacherSearch.customer_id', Yii::$app->user->identity->customer_id); //客户id
         $this->created_by = ArrayHelper::getValue($params, 'TeacherSearch.created_by', Yii::$app->user->id); //创建者
-        $page = ArrayHelper::getValue($params, 'page', 1); //分页
+        $page = ArrayHelper::getValue($params, 'page', 0); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
 
         self::getInstance();
@@ -108,18 +108,16 @@ class TeacherSearch extends Teacher
         self::$query->andFilterWhere(['like', 'name', $this->name]);
 
         //显示数量
-        self::$query->offset(($page - 1) * $limit)->limit($limit);
+        self::$query->offset($page * $limit)->limit($limit);
         //查询总数
         $totalCount = self::$query->count('id');
         //添加字段
-        self::$query->select(['Teacher.*']);
+        self::$query->addSelect(['Teacher.avatar', 'Teacher.is_certificate', 'Teacher.name', 'Teacher.job_title']);
+        //查询老师结果
         $teacherResult = self::$query->asArray()->all();
-        //分页
-        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
 
         return [
             'filter' => $params,
-            'pager' => $pages,
             'total' => $totalCount,
             'data' => [
                 'teacher' => $teacherResult
