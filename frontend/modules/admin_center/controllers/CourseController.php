@@ -34,7 +34,7 @@ class CourseController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -76,6 +76,18 @@ class CourseController extends Controller
         ]);
     }
 
+    /**
+     * 获取子级分类
+     * @param type $id
+     */
+    public function actionSearchChildren($id){
+        Yii::$app->getResponse()->format = 'json';
+        return [
+            'result' => 1,
+            'data' => Category::getCatChildren($id),
+        ];
+    }
+    
     /**
      * Finds the Course model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

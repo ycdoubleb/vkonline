@@ -134,6 +134,8 @@ return [
     'Attribute' => '属性',
     'Top Level' => '顶级',
     'Sublevel' => '子级',
+    'We' => '我们',
+    'Opinion' => '意见',
   
     //提示消息
     "Can't be empty." => '不能为空。',

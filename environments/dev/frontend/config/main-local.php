@@ -36,6 +36,10 @@ $config = [
         'help_center' => [
             'class' => 'frontend\modules\help_center\Module',
         ],
+        //其他
+        'other' => [
+            'class' => 'frontend\modules\other\Module',
+        ],
     ],
     'as access' => [
         'allowActions' => [

@@ -5,10 +5,8 @@
             {%isShow%}
         </div>
         <div class="cont">
-            <div class="tuip">
-                <p>{%name%}</p>
-                <p>{%jobTitle%}</p>
-            </div>
+            <p>{%name%}</p>
+            <p class="tuip">{%jobTitle%}</p>
         </div>
     </a>
 </div>

@@ -40,7 +40,7 @@ foreach ($menuItems as $index => $item) {
     //截取当前参数中的ID
     $url = Yii::$app->request->get('id');
     //截取item中url中ID的值
-    $itemUrl = trim(strrchr($item['url'], '='), '=');;
+    $itemUrl = trim(strrchr($item['url'], '='), '=');
     $menuHtml .= ($url == $itemUrl ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
         Html::a($item['icons'] . $item['label'] . $item['chevron'], $item['url'], $item['options']).'</li>';
 }

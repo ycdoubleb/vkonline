@@ -154,7 +154,7 @@ class VideoSearch extends Video
      */
     protected function search($params, $addArrays = [])
     {
-        $page = ArrayHelper::getValue($params, 'page', 0); //分页
+        $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
@@ -184,7 +184,7 @@ class VideoSearch extends Video
         //添加字段
         self::$query->addSelect($addArrays);
         //显示数量
-        self::$query->offset($page * $limit)->limit($limit);
+        self::$query->offset(($page - 1) * $limit)->limit($limit);
         //关联查询
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
@@ -257,28 +257,7 @@ class VideoSearch extends Video
         }
         return self::$query;
     }
-    
-    /**
-     * 查询附件
-     * @return Query
-     */
-    public static function findAttachmentByVideo()
-    {
-        self::getInstance();
-        
-        $query = VideoAttachment::find()
-            ->select(['Attachment.video_id', 'SUM(Uploadfile.size) AS att_size'])
-            ->from(['Attachment' => VideoAttachment::tableName()]);
-        
-        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0)');
-        
-        $query->where(['Attachment.is_del' => 0, 'Attachment.video_id' => self::$query]);
-        
-        $query->groupBy('Attachment.video_id');
-        
-        return $query;
-    }
-    
+   
     /**
      * 查询视频
      * @return Query

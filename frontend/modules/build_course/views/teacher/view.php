@@ -114,14 +114,6 @@ ModuleAssets::register($this);
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'layout' => "{items}\n{summary}\n{pager}",
-            'summaryOptions' => [
-                'class' => 'hidden',
-            ],
-            'pager' => [
-                'options' => [
-                    'class' => 'hidden',
-                ]
-            ],
             'tableOptions' => ['class' => 'table table-bordered'],
             'columns' => [
                 [
@@ -245,11 +237,6 @@ ModuleAssets::register($this);
                 ],
             ],    
         ]); ?>
-        
-        <div class="summary">
-            <span>共 <?= $dataProvider->totalCount ?> 条记录</span>
-        </div>
-        
     </div>
     
 </div>
