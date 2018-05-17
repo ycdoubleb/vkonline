@@ -71,7 +71,14 @@ class CourseSearch extends Course
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         
-        return $this->search($params); 
+        //添加字段
+        $addArrays = ['Customer.name AS customer_name','Category.name AS category_name' , 'Course.name', 
+             'Course.is_publish', 'Course.level',  'Course.created_at',
+            'User.nickname', 'Teacher.name AS teacher_name',
+            
+        ];
+        
+        return $this->search($params, $addArrays); 
     }
     
     //课程模块的情况下

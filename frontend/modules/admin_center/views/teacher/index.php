@@ -22,11 +22,6 @@ ModuleAssets::register($this);
                 'My' => Yii::t('app', 'My'), 'Teachers' => Yii::t('app', 'Teachers')
             ]) ?>
         </span>
-        <div class="btngroup">
-            <?= Html::a(Yii::t('app', '{Create}{Teacher}', [
-                'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]), ['create'], ['class' => 'btn btn-success']) ?>
-        </div>
     </div>
     <!-- 搜索 -->
     <div class="course-form form set-margin"> 
@@ -81,7 +76,7 @@ ModuleAssets::register($this);
                 <div class="pic avatars img-circle">
                     <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%','height' => '96px']) ?>
                     <?php if($model['is_certificate']): ?>
-                    <i class="fa fa-vimeo"></i>
+                        <i class="fa fa-vimeo"></i>
                     <?php endif; ?>
                 </div>
                 <div class="cont">

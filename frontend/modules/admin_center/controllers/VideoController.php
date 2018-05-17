@@ -69,6 +69,7 @@ class VideoController extends Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'filters' => $result['filter'],         //过滤条件
+            'totalCount' => $result['total'],       //视频总数量
             'teacher' => $this->getTeacher($customerId),       //所有主讲老师
             'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
         ]);

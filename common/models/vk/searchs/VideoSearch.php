@@ -35,6 +35,11 @@ class VideoSearch extends Video
      * @var string 
      */
     public $course_id;
+    /**
+     * 课程名称
+     * @var string 
+     */
+    public $course_name;
     
     /**
      * @inheritdoc
@@ -61,11 +66,10 @@ class VideoSearch extends Video
     //后台-视频
     public function backendSearch($params)
     {
-        $course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
-        
-        $this->load($params);
+        $this->course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         
         self::getInstance();
+        $this->load($params);
         //条件查询
         self::$query->andFilterWhere([
             'Video.customer_id' => $this->customer_id,
@@ -76,13 +80,21 @@ class VideoSearch extends Video
         ]);
         
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Course.name', $course_name]);
+        self::$query->andFilterWhere(['like', 'Course.name', $this->course_name]);
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
-        
+        //关联查询
+        self::$query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
-        return $this->search($params); 
+        //添加字段
+        $addArrays = ['Customer.name AS customer_name', 'Course.name AS course_name', 
+            'Video.name', 'Video.is_publish', 'Video.level',  'Video.created_at',
+            'Video.is_ref', 'User.nickname', 'Teacher.name AS teacher_name',
+            'Uploadfile.size'
+        ];
+        
+        return $this->search($params, $addArrays); 
     }
     
     //视频模块的情况下

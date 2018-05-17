@@ -9,7 +9,10 @@ use yii\web\View;
 ?>
 
 <div class="default-index main">
-    <?= Html::img('/imgs/admin_center/images/404.jpg', ['width' => '100%']) ?>
+    <div class="page-title">任务</div>
+    <div class="frame-content">
+        <?= Html::img('/imgs/admin_center/images/404.jpg', ['width' => '100%']) ?>
+    </div>
 </div>
 
 <?php

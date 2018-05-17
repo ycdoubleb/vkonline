@@ -1,38 +1,37 @@
 <?php
 
-use common\models\User;
+use common\models\vk\Category;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\web\View;
 
-
 /* @var $this View */
-/* @var $model User */
+/* @var $model Category */
 
-$this->title = Yii::t('app', '{Create}{User}',[
-    'Create' => Yii::t('app', 'Create'),
-    'User' => Yii::t('app', 'User'),
+$this->title = Yii::t('app', '{Update}{Category}: {nameAttribute}', [
+    'Update' => Yii::t('app', 'Update'),
+    'Category' => Yii::t('app', 'Category'),
+    'nameAttribute' => $model->name,
 ]);
 
 ?>
-<div class="user-create main">
+<div class="category-update main">
     <div class="frame">
         <div class="frame-content">
             <div class="frame-title">
-                <span><?= Yii::t('app', '{Create}{User}',[
-                    'Create' => Yii::t('app', 'Create'),
-                    'User' => Yii::t('app', 'User'),
+                <span><?= Yii::t('app', '{Update}{Category}',[
+                    'Update' => Yii::t('app', 'Update'),
+                    'Category' => Yii::t('app', 'Category'),
                 ]) ?></span>
             </div>
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'customer' => $customer,
+                    'parents' => $parents,
                 ]) ?>
             </div>
         </div>
     </div>
 </div>
-
 <?php
     $js = <<<JS
         

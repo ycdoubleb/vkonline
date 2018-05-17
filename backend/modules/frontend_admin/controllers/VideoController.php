@@ -54,7 +54,7 @@ class VideoController extends Controller
     {
         $searchModel = new VideoSearch();
         $result = $searchModel->backendSearch(Yii::$app->request->queryParams);
-        
+       
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
             'key' => 'id',
@@ -66,6 +66,7 @@ class VideoController extends Controller
             
             'customer' => $this->getCustomer(),     //所属客户
             'filters' => $result['filter'],         //过滤条件
+            'totalCount' => $result['total'],       //视频总数量
             'teacher' => $this->getTeacher(),       //所有主讲老师
             'createdBy' => $this->getCreatedBy(),   //所有创建者
         ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\modules\build_course\controllers;
+namespace frontend\modules\admin_center\controllers;
 
 use common\models\vk\searchs\TeacherSearch;
 use common\models\vk\Teacher;
@@ -48,13 +48,13 @@ class TeacherController extends Controller
     /**
      * 列出所有 TeacherSearch 模型。
      * @return string [
-     *    filters => 查询过滤的属性, totalCount => 总数量, dataProvider => 老师数据
+     *    filters => 查询过滤的属性, pagers => 分页, dataProvider => 老师数据
      * ]
      */
     public function actionIndex()
     {
         $searchModel = new TeacherSearch();
-        $result = $searchModel->resourceSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 8]));
+        $result = $searchModel->contentSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 8]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['teacher']),

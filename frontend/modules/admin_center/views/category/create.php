@@ -1,20 +1,15 @@
 <?php
 
-use common\models\User;
+use common\models\vk\Category;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\web\View;
 
 
 /* @var $this View */
-/* @var $model User */
-
-$this->title = Yii::t('app', '{Create}{User}',[
-    'Create' => Yii::t('app', 'Create'),
-    'User' => Yii::t('app', 'User'),
-]);
+/* @var $model Category */
 
 ?>
-<div class="user-create main">
+<div class="category-create main">
     <div class="frame">
         <div class="frame-content">
             <div class="frame-title">
@@ -26,13 +21,12 @@ $this->title = Yii::t('app', '{Create}{User}',[
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'customer' => $customer,
+                    'parents' => $parents,
                 ]) ?>
             </div>
         </div>
     </div>
 </div>
-
 <?php
     $js = <<<JS
         

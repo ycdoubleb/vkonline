@@ -68,6 +68,8 @@ class CourseController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'filters' => $result['filter'],         //过滤条件
+            'totalCount' => $result['total'],       //视频总数量
             'category' => $this->getCategory($customerId),     //所有分类
             'teacher' => $this->getTeacher($customerId),       //所有主讲老师
             'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
@@ -91,7 +93,6 @@ class CourseController extends Controller
     }
     
     /**
-     * 
      * 查找所有分类
      * @param string $customerId    客户ID
      * @return array
@@ -102,7 +103,7 @@ class CourseController extends Controller
                 ->select(['Category.id', 'Category.name'])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
-                ->where(['customer_id' => $customerId])
+                ->where(['Course.customer_id' => $customerId])
                 ->all();
         
         return ArrayHelper::map($category, 'id', 'name');

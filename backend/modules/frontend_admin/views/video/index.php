@@ -5,11 +5,13 @@ use common\models\vk\Course;
 use common\models\vk\searchs\VideoSearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
+use yii\widgets\LinkPager;
 
 /* @var $this View */
 /* @var $searchModel VideoSearch */
@@ -32,10 +34,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
+            'summaryOptions' => ['class' => 'hidden'],
+            'pager' => [
+                'options' => ['class' => 'hidden']
+            ],
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer.name',
+                    'attribute' => 'customer_name',
                     'label' => Yii::t('app', '{The}{Customer}',[
                         'The' => Yii::t('app', 'The'),
                         'Customer' => Yii::t('app', 'Customer'),
@@ -58,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'courseNode.course.name',
+                    'attribute' => 'course_name',
                     'label' => Yii::t('app', '{The}{Course}',[
                         'The' => Yii::t('app', 'The'),
                         'Course' => Yii::t('app', 'Course'),
@@ -86,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'teacher.name',
+                    'attribute' => 'teacher_name',
                     'label' => Yii::t('app', 'Teacher'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
@@ -105,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'createdBy.nickname',
+                    'attribute' => 'nickname',
                     'label' => Yii::t('app', 'Created By'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
@@ -198,7 +204,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                     'value' => function ($data){
-                        return Yii::$app->formatter->asShortSize($data['source']['size']+(isset($data['att_size']) ? $data['att_size'] : 0), 1);
+                        return Yii::$app->formatter->asShortSize($data['size'], 1);
                     },
                     'contentOptions' => [
                         'style' => [
@@ -206,31 +212,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
-//                [//附件大小
-//                    'label' => Yii::t('app', '{Attachment}{Size}',[
-//                        'Attachment' => Yii::t('app', 'Attachment'),
-//                        'Size' => Yii::t('app', 'Size'),
-//                    ]),
-//                    'headerOptions' => [
-//                        'style' => [
-//                            'min-width' => '90px',
-//                        ],
-//                    ],
-//                    'value' => function ($data){
-//                        return Yii::$app->formatter->asShortSize((isset($data['att_size']) ? $data['att_size'] : 0), 1);
-//                    },
-//                    'contentOptions' => [
-//                        'style' => [
-//                            'text-align' => 'center',
-//                        ],
-//                    ],
-//                ],
                 [
 //                    'attribute' => 'tags',
                     'label' => Yii::t('app', 'Tag'),
                     'filter' => true,
                     'value' => function ($data){
-                        return ($data['tags'] != null) ? $data['tags'] : null;
+                        return (isset($data['tags'])) ? $data['tags'] : null;
                     },
                     'contentOptions' => [
                         'style' => [
@@ -284,6 +271,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]); ?>
+        
+        <?php
+            
+            $page = !isset($filters['page']) ? 1 : $filters['page'];
+            $pageCount = ceil($totalCount / 20);
+            if($pageCount > 0){
+                echo '<div class="summary">' . 
+                        '第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。' .
+                    '</div>';
+            }
+
+            echo LinkPager::widget([  
+                'pagination' => new Pagination([
+                    'totalCount' => $totalCount,  
+                ]),  
+            ])
+        
+        ?>
+        
     </div>
 </div>
 <?php

@@ -54,7 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'label' => Yii::t('app', 'Avatar'),
                     'format' => 'raw',
                     'value' => function ($data) {
-                        return !empty($data['avatar']) ? Html::img(WEB_ROOT . $data['avatar'], ['class' => 'img-circle', 'width' => '64px']) : null;
+                        return !empty($data['avatar']) ? Html::img(WEB_ROOT . $data['avatar'], ['class' => 'img-circle', 'width' => '64px', 'height' => '64px']) : null;
                     },
                 ],
                 [

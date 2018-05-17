@@ -1,38 +1,38 @@
 <?php
 
-use common\models\User;
+use common\models\vk\CourseAttribute;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\web\View;
 
 
 /* @var $this View */
-/* @var $model User */
+/* @var $model CourseAttribute */
 
-$this->title = Yii::t('app', '{Create}{User}',[
-    'Create' => Yii::t('app', 'Create'),
-    'User' => Yii::t('app', 'User'),
-]);
+$this->title = Yii::t('app', '{Create}{Course}{Attribute}', [
+            'Create' => Yii::t('app', 'Create'),
+            'Course' => Yii::t('app', 'Course'),
+            'Attribute' => Yii::t('app', 'Attribute'),
+        ]);
 
 ?>
-<div class="user-create main">
+<div class="course-attribute-create main">
     <div class="frame">
         <div class="frame-content">
             <div class="frame-title">
-                <span><?= Yii::t('app', '{Create}{User}',[
-                    'Create' => Yii::t('app', 'Create'),
-                    'User' => Yii::t('app', 'User'),
+                <span><?= Yii::t('app', '{Add}{Attribute}',[
+                    'Add' => Yii::t('app', 'Add'),
+                    'Attribute' => Yii::t('app', 'Attribute'),
                 ]) ?></span>
             </div>
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'customer' => $customer,
+                    'category' => $category,
                 ]) ?>
             </div>
         </div>
     </div>
 </div>
-
 <?php
     $js = <<<JS
         

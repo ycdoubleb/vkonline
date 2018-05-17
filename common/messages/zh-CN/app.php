@@ -131,6 +131,8 @@ return [
     'Reference' => '引用',
     'Keyword' => '关键字',
     'Attribute' => '属性',
+    'Top Level' => '顶级',
+    'Sublevel' => '子级',
   
     //提示消息
     "Can't be empty." => '不能为空。',

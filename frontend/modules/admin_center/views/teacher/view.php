@@ -32,7 +32,6 @@ ModuleAssets::register($this);
                             'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication')
                         ]), ['applyr', 'id' => $model->id], ['class' => 'btn btn-success']) . ' ';
                     }
-                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                 }
             ?>
         </div>

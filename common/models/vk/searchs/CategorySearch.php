@@ -3,6 +3,7 @@
 namespace common\models\vk\searchs;
 
 use common\models\vk\Category;
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 
@@ -32,6 +33,7 @@ class CategorySearch extends Category
     }
     
     /**
+     * 后台分类
      * Creates data provider instance with search query applied
      *
      * @param array $params
@@ -44,6 +46,49 @@ class CategorySearch extends Category
         
         $query->from(['Category' => Category::tableName()]);
 
+        // add conditions that should always apply here
+
+        $this->load($params);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 100,
+            ],
+        ]);
+        
+        // grid filtering conditions
+        $query->andFilterWhere(['is_show' => $this->is_show]);
+
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'mobile_name', $this->mobile_name]);
+        
+        $query->orderBy(['path' => SORT_ASC]);
+        
+        $query->with('courseAttribute');
+
+        return $dataProvider;
+    }
+    
+    /**
+     * 前台分类
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function searchCustomerCategory($params)
+    {
+        //公共的分类和属于客户的分类
+        $filter = [' ', Yii::$app->user->identity->customer_id];
+        
+        $query = Category::find();
+        
+        $query->from(['Category' => Category::tableName()]);
+
+        $query->andFilterWhere(['IN', 'customer_id', $filter]);
+        
         // add conditions that should always apply here
 
         $this->load($params);

@@ -63,9 +63,9 @@ class CourseController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'pagers' => $result['pager'],
             'totalCount' => $result['total'],
             
+            'filters' => $result['filter'],         //过滤条件
             'customer' => $this->getCustomer(),     //所属客户
             'category' => $this->getCategory(),     //所有分类
             'teacher' => $this->getTeacher(),       //所有主讲老师

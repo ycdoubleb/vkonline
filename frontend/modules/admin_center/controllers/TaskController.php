@@ -15,7 +15,7 @@ use yii\web\Controller;
 /**
  * Special controller for the `admin_center` module
  */
-class SpecialController extends Controller
+class TaskController extends Controller
 {
     /**
      * @inheritdoc

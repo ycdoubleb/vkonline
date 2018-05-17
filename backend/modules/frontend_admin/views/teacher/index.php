@@ -4,6 +4,7 @@ use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\searchs\TeacherSearch;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 
 /* @var $this View */
@@ -23,16 +24,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="teacher-list">
         <?php foreach($dataProvider as $key => $data):?>
-            <a href="teacher/view?id=<?= $data['id']?>">
+            <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $data['id']])]) ?>
                 <div class="teacher-content">
                     <?= Html::img(WEB_ROOT . $data['avatar'], ['class' => 'img-circle teacher-img'])?>
-                    <?= $data['is_certificate'] == 1 ? 
-                        Html::img(WEB_ROOT . '/imgs/teacher/certificate.png', ['class' => 'certificate']) :
-                            Html::img(WEB_ROOT . '/imgs/teacher/2.png', ['class' => 'certificate'])?>
+                    <?php if($data['is_certificate']): ?>
+                        <i class="fa fa-vimeo"></i>
+                    <?php else: ?>
+                        <i class="fa fa-vimeo certificate"></i>
+                    <?php endif;?>
                     <div class="teacher-name"><?= $data['name']; ?></div>
                     <div class="teacher-level"><?= $data['job_title']; ?></div>
                 </div>
-            </a>
+            <?= Html::endTag('a') ?>
         <?php endforeach; ?>
     </div>
     

@@ -66,35 +66,35 @@ $menuItems = [
     ],
     'content' => [
         [
-            'module' => 'build_course',
-            'controller' => 'teacher',
+            'module' => 'admin_center',
+            'controller' => 'course',
             'action' => 'index',
             'label' => Yii::t('app', '{All}{Course}', [
                 'All' => Yii::t('app', 'All'), 'Course' => Yii::t('app', 'Course')
             ]),
-            'url' => ['course/index'],
+            'url' => ['/admin_center/course/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
-            'module' => 'build_course',
-            'controller' => 'teacher',
+            'module' => 'admin_center',
+            'controller' => 'video',
             'action' => 'index',
             'label' => Yii::t('app', '{All}{Video}', [
                 'All' => Yii::t('app', 'All'), 'Video' => Yii::t('app', 'Video')
             ]),
-            'url' => ['video/index'],
+            'url' => ['/admin_center/video/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ],
         [
-            'module' => 'build_course',
+            'module' => 'admin_center',
             'controller' => 'teacher',
             'action' => 'index',
             'label' => Yii::t('app', '{All}{teacherResource}', [
                 'All' => Yii::t('app', 'All'), 'teacherResource' => Yii::t('app', 'Teacher Resource')
             ]),
-            'url' => ['teacher/index'],
+            'url' => ['/admin_center/teacher/index'],
             'icons' => null, 
             'options' => ['class' => 'links']
         ]

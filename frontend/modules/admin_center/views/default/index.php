@@ -16,10 +16,10 @@ use yii\widgets\DetailView;
 
 <div class="admin_center-default-index main">
     <div class="frame">
+        <div class="page-title">概况</div>
         <!--基本信息-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-file-text"></i>
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
@@ -66,10 +66,9 @@ use yii\widgets\DetailView;
         <!--管理员信息-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-users"></i>
                 <span><?= Yii::t('app', 'Administrators') ?><front class="admin-num">（3/<?= count($customerAdmin)?>）</front></span>
                 <div class="framebtn">
-                    <?= Html::a('<i class="fa fa-user-plus"></i> '.Yii::t('app', 'Add'),
+                    <?= Html::a(Yii::t('app', 'Add'),
                             ['create-admin', 'id' => $model->id], 
                             ['id' => 'add-admin','class' => 'btn btn-sm btn-success',
                             'onclick'=>'return showElemModal($(this));'])
@@ -83,7 +82,6 @@ use yii\widgets\DetailView;
         <!--储存信息-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-database"></i>
                 <span><?= Yii::t('app', 'Storage') ?></span>
             </div>
             <?= DetailView::widget([
@@ -109,7 +107,7 @@ use yii\widgets\DetailView;
                         'format' => 'raw',
                         'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace['size']) .
                             '<span style="color:#929292">（' . sprintf("%.2f", ($model->good->data - $usedSpace['size']) / $model->good->data * 100) . ' % '.
-                                (((100 - floor($usedSpace['size'] / $model->good->data *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
+                                (((100 - floor($usedSpace['size'] / $model->good->data *100)) > 10) ? '<span style="color:#33CC00"> 充足</span>' : 
                                     '<span style="color:red"> 不足</span>') .'）</span>' : null,
                     ],
                 ],
@@ -118,7 +116,6 @@ use yii\widgets\DetailView;
          <!--邀请码-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-registered"></i>
                 <span><?= Yii::t('app', '{Signup}{User}',['Signup' => Yii::t('app', 'Signup'), 'User' => Yii::t('app', 'User')]) ?></span>
                 <div class="framebtn">
                     <?= Html::button(Yii::t('app', '{Produce}{Invite Code}',['Produce' => Yii::t('app', 'Produce'), 'Invite Code' => Yii::t('app', 'Invite Code')]),
@@ -138,7 +135,6 @@ use yii\widgets\DetailView;
         <!--资源统计-->
         <div class="frame-content">
             <div class="frame-title">
-                <i class="icon fa fa-line-chart"></i>
                 <span><?= Yii::t('app', '{Resources}{Statistics}',[
                     'Resources' => Yii::t('app', 'Resources'),
                     'Statistics' => Yii::t('app', 'Statistics'),
