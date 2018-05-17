@@ -3,10 +3,12 @@
 namespace common\models\vk;
 
 use common\models\User;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\UploadedFile;
 
 /**
@@ -217,6 +219,28 @@ class Course extends ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * 获取已上传的附件
+     * @return ActiveQuery
+     */
+    public static function getUploadfileByAttachment($id = null)
+    {
+        $uploadFile = (new Query());
+        $uploadFile->select(['Attachment.file_id AS id', 'Course.name AS course_name', 'Uploadfile.name', 'Uploadfile.size']);
+        $uploadFile->from(['Course' => self::tableName()]);
+        $uploadFile->leftJoin(['Attachment' => CourseAttachment::tableName()], 'Attachment.course_id = Course.id');
+        $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Attachment.file_id');
+        $uploadFile->where(['Attachment.course_id' => $id]);
+        $uploadFile->andWhere(['Attachment.is_del' => 0, 'Uploadfile.is_del' => 0]);
+        
+        $hasFile = $uploadFile->all();
+        if($hasFile !== null){
+            return $hasFile;
+        }else{
+            return [];
+        }
     }
     
     /**

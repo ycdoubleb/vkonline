@@ -142,7 +142,7 @@ ModuleAssets::register($this);
                         <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
                     </div>
                     <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                    <span class="score tuip-right"><?= $model['avg_star'] ?> 分</span>
+                    <span class="avg-star tuip-red tuip-right"><?= $model['avg_star'] ?> 分</span>
                     <?= Html::a(Yii::t('app', 'Preview'), ['/course/default/view', 'id' => $model['id']], [
                         'class' => 'btn btn-info preview tuip-right',
                         'target' => '_blank'
@@ -186,7 +186,7 @@ $js =
     hoverEvent();
     
     //下拉加载更多
-    var page = 0;
+    var page = 1;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
             dataLoad(page);
@@ -196,7 +196,7 @@ $js =
     function dataLoad(pageNum) {
         var maxPageNum =  ($totalCount - 6) / 6;
         // 当前页数是否大于最大页数
-        if((pageNum + 1) > Math.ceil(maxPageNum)){
+        if((pageNum) > Math.ceil(maxPageNum)){
             return;
         }
         $.get("$url", {page: (pageNum + 1)}, function(rel){
@@ -232,20 +232,20 @@ $js =
         $(".list .item > a").each(function(){
             var elem = $(this);
             elem.hover(function(){
-                elem.next(".speaker").find("span.score").css({display: "none"});
+                elem.next(".speaker").find("span.avg-star").css({display: "none"});
                 elem.next(".speaker").find("a.preview").css({display: "block"});
             },function(){
-                elem.next(".speaker").find("span.score").css({display: "block"});
+                elem.next(".speaker").find("span.avg-star").css({display: "block"});
                 elem.next(".speaker").find("a.preview").css({display: "none"});
             });    
         });
         $(".speaker").each(function(){
             var elem = $(this);
             elem.hover(function(){
-                elem.find("span.score").css({display: "none"});
+                elem.find("span.avg-star").css({display: "none"});
                 elem.find("a.preview").css({display: "block"});
             },function(){
-                elem.find("span.score").css({display: "block"});
+                elem.find("span.avg-star").css({display: "block"});
                 elem.find("a.preview").css({display: "none"});
             });    
         });

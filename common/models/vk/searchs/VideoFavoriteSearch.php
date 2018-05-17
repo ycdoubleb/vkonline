@@ -52,12 +52,33 @@ class VideoFavoriteSearch extends VideoFavorite
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
-
     
+    //我的收藏情况下
+    public function collectSearch($params)
+    {
+        self::getInstance();
+        $this->load($params);
+        
+        //条件查询
+        self::$query->andFilterWhere([
+            'Favorite.user_id' => Yii::$app->user->id,
+            'Video.is_del' => 0,
+        ]);
+        
+        //添加字段
+        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 'Video.source_duration',  'Video.created_at',
+            'Video.is_ref', 'Video.favorite_count', 'Video.zan_count',
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ];
+        
+        return $this->search($params, $addArrays);
+    }
+
+    //在引用视频的情况下
     public function referenceSearch($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        $this->video_name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.video_name');    //课程id
+        $this->video_name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.video_name');    //视频名称
         
         self::getInstance();
         $this->load($params);
@@ -72,11 +93,16 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->andFilterWhere(['like', 'Video.name', $this->video_name]);
         
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 'Video.source_duration',  'Video.created_at',
-            'Video.is_ref', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
+            'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
-        self::$query->orderBy(["Favorite.{$sort_name}" => SORT_DESC]);
+        if($sort_name == 'created_at'){
+            self::$query->orderBy(["Favorite.{$sort_name}" => SORT_DESC]);
+        }else{
+            self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
+        }
         
         return $this->search($params, $addArrays);
     }
@@ -111,12 +137,14 @@ class VideoFavoriteSearch extends VideoFavorite
         //关联查询
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = Favorite.course_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
+        //以视频id为分组
+        self::$query->groupBy('Favorite.video_id');
+        //查询总数
+        $totalCount = self::$query->count('video_id');
         //添加字段
         self::$query->addSelect($addArrays);
         //显示数量
         self::$query->offset($page * $limit)->limit($limit);
-        //查询总数
-        $totalCount = self::$query->count('Favorite.id');
         //视频播放量结果
         $playResult = $playQuery->all();
         //查询标签结果
@@ -125,8 +153,8 @@ class VideoFavoriteSearch extends VideoFavorite
         $videoResult = self::$query->asArray()->all();
         //以video_id为索引
         $videos = ArrayHelper::index($videoResult, 'video_id');
-        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'),
-            ArrayHelper::index($playResult, 'video_id'));
+        $results = ArrayHelper::merge(ArrayHelper::index($playResult, 'video_id') ,
+            ArrayHelper::index($tagRefResult, 'object_id'));
         //合并查询后的结果
         foreach ($videos as $id => $item) {
             if(isset($results[$id])){

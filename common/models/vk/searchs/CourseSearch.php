@@ -81,46 +81,6 @@ class CourseSearch extends Course
         return $this->search($params, $addArrays); 
     }
     
-    //课程模块的情况下
-    public function courseSearch($params)
-    {
-        $is_official = Yii::$app->user->identity->is_official;  //当前用户是否为官网用户
-        $category_id = ArrayHelper::getValue($params, 'category_id');   //分类id
-        $teacher_name = ArrayHelper::getValue($params, 'teacher_name'); //老师名称
-        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
-        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        
-        self::getInstance();
-        
-        //选择内网搜索的情况下
-        if($level == self::INTRANET_LEVEL){
-            self::$query->andFilterWhere([
-                'Course.customer_id' => Yii::$app->user->identity->customer_id,
-                'Course.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
-                'Course.is_publish' => 1,
-            ]);
-        }
-        //选择全网搜索的情况下
-        if($level == self::PUBLIC_LEVEL){
-            self::$query->andFilterWhere([
-                'Course.level' => self::PUBLIC_LEVEL, 
-                'Course.is_publish' => 1
-            ]);
-        }
-        
-        self::$query->andFilterWhere(['Course.category_id' => $category_id]);
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'Teacher.name', $teacher_name]);
-        
-        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
-        
-        //排序
-        self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
-        
-        return $this->search($params);
-        
-    }
-    
     //建课中心模块的情况下
     public function buildCourseSearch($params)
     {        

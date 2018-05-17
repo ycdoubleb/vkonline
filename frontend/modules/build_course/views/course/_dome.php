@@ -24,7 +24,7 @@
                 <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
             </div>
             <span class="tuip-left">{%teacherName%}</span>
-            <span class="score tuip-right">{%avgStar%} 分</span>
+            <span class="avg-star tuip-red tuip-right">{%avgStar%} 分</span>
             <a href="/course/default/view?id={%id%}" class="btn btn-info preview tuip-right" target="_blank">预览</a>
         </div>
     </div>

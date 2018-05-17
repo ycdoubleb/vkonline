@@ -1,7 +1,11 @@
 <?php
+
 namespace common\models\vk;
 
-use common\models\User;
+use common\models\vk\CourseNode;
+use common\models\vk\Customer;
+use common\models\vk\Teacher;
+use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\FfmpegUtil;
 use Yii;
@@ -11,6 +15,7 @@ use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
+use yii\web\User;
 
 
 /**
@@ -119,11 +124,11 @@ class Video extends ActiveRecord
             //[['id'], 'required'],
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
-                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
-                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['source_duration'], 'number'], 
             [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
@@ -300,28 +305,6 @@ class Video extends ActiveRecord
         }
     }
     
-    /**
-     * 获取已上传的附件
-     * @return ActiveQuery
-     */
-    public static function getUploadfileByAttachment($id = null)
-    {
-        $uploadFile = (new Query());
-        $uploadFile->select(['Attachment.file_id AS id', 'Video.name AS video_name', 'Uploadfile.name', 'Uploadfile.size']);
-        $uploadFile->from(['Video' => self::tableName()]);
-        $uploadFile->leftJoin(['Attachment' => VideoAttachment::tableName()], 'Attachment.video_id = Video.id');
-        $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Attachment.file_id');
-        $uploadFile->where(['Attachment.video_id' => $id]);
-        $uploadFile->andWhere(['Attachment.is_del' => 0, 'Uploadfile.is_del' => 0]);
-        
-        $hasFile = $uploadFile->all();
-        if($hasFile !== null){
-            return $hasFile;
-        }else{
-            return [];
-        }
-    }
-     
     /**
      * 获取视频节点
      * @param array $condition  条件

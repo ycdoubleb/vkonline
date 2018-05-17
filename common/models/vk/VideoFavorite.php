@@ -11,11 +11,12 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "{{%video_favorite}}".
  *
- * @property string $id
+ * @property integer $id
  * @property string $course_id 课程ID
  * @property string $video_id 视频ID
  * @property string $user_id 用户ID
  * @property string $group 分组
+ * @property integer $is_del 是否删除：0否 1是
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 

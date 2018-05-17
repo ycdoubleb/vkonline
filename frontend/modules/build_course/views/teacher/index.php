@@ -127,7 +127,7 @@ $js =
     function dataLoad(pageNum) {
         var maxPageNum =  ($totalCount - 8) / 8;
         // 当前页数是否大于最大页数
-        if((pageNum + 1) > Math.ceil(maxPageNum)){
+        if((pageNum) > Math.ceil(maxPageNum)){
             return;
         }
         $.get("$url", {page: (pageNum + 1)}, function(rel){

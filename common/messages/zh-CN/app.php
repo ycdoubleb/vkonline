@@ -77,6 +77,7 @@ return [
     'Set' => '设置',
     'Make' => '制作',
     'Preview' => '预览',
+    'Choice' => '选择',
     'Submit' => '提交',
     'Create' => '创建',
     'Update' => '更新',

@@ -6,6 +6,7 @@ use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
+use common\models\vk\CourseAttachment;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
@@ -57,6 +58,7 @@ class ActionUtils
         {  
             if($model->save()){
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
+                $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
             }else{
@@ -89,6 +91,7 @@ class ActionUtils
         {  
             if($model->save()){
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
+                $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
                     $oldCategory = Category::findOne($oldAttr['category_id']);
                     $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
@@ -799,26 +802,26 @@ class ActionUtils
     }
     
     /**
-     * 保存视频附件
-     * @param string $video_id
+     * 保存课程附件
+     * @param string $course_id
      * @param array $files
      */
-    private function saveVideoAttachment($video_id, $files)
+    private function saveCourseAttachment($course_id, $files)
     {
         $atts = [];
         if($files != null){
             foreach ($files as $id) {
                 $atts[] = [
-                    'video_id' => $video_id, 'file_id' => $id,
+                    'course_id' => $course_id, 'file_id' => $id,
                     'created_at' => time(), 'updated_at' => time()
                 ];
             }
             //删除
-            Yii::$app->db->createCommand()->delete(VideoAttachment::tableName(), 
-                ['video_id' => $video_id])->execute();
+            Yii::$app->db->createCommand()->delete(CourseAttachment::tableName(), 
+                ['course_id' => $course_id])->execute();
         }
         //添加
-        Yii::$app->db->createCommand()->batchInsert(VideoAttachment::tableName(),
+        Yii::$app->db->createCommand()->batchInsert(CourseAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
     }
     

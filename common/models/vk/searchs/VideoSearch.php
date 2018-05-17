@@ -97,38 +97,6 @@ class VideoSearch extends Video
         return $this->search($params, $addArrays); 
     }
     
-    //视频模块的情况下
-    public function videoSearch($params)
-    {
-        $is_official = Yii::$app->user->identity->is_official;  //当前用户是否为官网用户
-        $level = ArrayHelper::getValue($params, 'level', !$is_official ? self::INTRANET_LEVEL : self::PUBLIC_LEVEL);   //搜索等级
-        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        
-        self::getInstance();
-        
-        //选择内网搜索的情况下
-        if($level == self::INTRANET_LEVEL){
-            self::$query->andFilterWhere([
-                'Video.customer_id' => Yii::$app->user->identity->customer_id,
-                'Video.level' => [self::INTRANET_LEVEL, self::PUBLIC_LEVEL],
-                'Video.is_publish' => 1,
-            ]);
-        }
-        //选择全网搜索的情况下
-        if($level == self::PUBLIC_LEVEL){
-            self::$query->andFilterWhere([
-                'Video.level' => self::PUBLIC_LEVEL, 
-                'Video.is_publish' => 1
-            ]);
-        }
-        
-        //排序
-        self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
-        
-        return $this->search($params);
-        
-    }
-
     //建课中心模块的情况下
     public function buildCourseSearch($params)
     {

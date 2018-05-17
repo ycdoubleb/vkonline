@@ -166,17 +166,17 @@ body .select2-container--krajee
     border-bottom: 1px solid #999;
 }
 
-.sort > ul {
-    padding: 0;
-    margin: 0;
-}
-
-.sort ul.keep-left {
+.sort .keep-left {
     float: left;
 }
 
-.sort ul.keep-right {
+.sort .keep-right {
     float: right;
+}
+
+.sort > ul {
+    padding: 0;
+    margin: 0;
 }
 
 .sort > ul > li {
@@ -215,12 +215,28 @@ body .select2-container--krajee
     margin: 0 !important;
 }
 
+.list .tuip-btn {
+    display: block;
+    padding: 4px 8px;
+    margin-top: -10px;
+    font-size: 14px;
+    color: #fff;
+} 
+
 .list .tuip-green {
     color: #339966;
 }
 
 .list .tuip-red {
     color: #ff3300;
+}
+
+.list .tuip-bg-green {
+    background-color: #339966;
+}
+
+.list .tuip-bg-red {
+    background-color: #ff3300;
 }
 /*******************************************************************************
  * 列表
@@ -326,16 +342,19 @@ body .select2-container--krajee
     background-color: #26bfcd;
 }
 
-.list .item .speaker .score {
-    display: block;
-    color: #ff6600;
-}
-
 .list .item .speaker .tuip > a {
-    display: none;
     margin: 8px 0;
     border-radius: 0;
 }
+
+.list .item .speaker .avg-star {
+    display: block;
+}
+
+.list .item .speaker .preview {
+    display: none;
+}
+
 /*******************************************************************************
  * 分页
  *******************************************************************************/
@@ -449,9 +468,25 @@ body .select2-container--krajee
     display: block;
     width: 100%;
 }
-.main.modal .modal-height {
-    min-height: 480px;
+.main.modal .modal-width {
+    width: 1150px;
 }
+.main.modal .modal-height {
+    height: 730px;
+    overflow-y: auto;
+}
+
+/*******************************************************************************
+ * 模态框视频列表样式
+ *******************************************************************************/
+.main.modal .list .item .pic {
+    height: 157px;
+}
+
+.main.modal .list .item .pic > .title {
+    line-height: 157px;
+}
+
 /*******************************************************************************
  * 课程框架
  *******************************************************************************/
@@ -558,23 +593,6 @@ body .select2-container--krajee
 .video-index .list .item .pic > .title {
     line-height: 157px;
 }
-
-.video-index .list .item .cont .tuip-right {
-    display: block;
-    padding: 4px 8px;
-    margin-top: -10px;
-    font-size: 14px;
-    color: #fff;
-} 
-
-.video-index .list .tuip-bg-green {
-    background-color: #339966;
-}
-
-.video-index .list .tuip-bg-red {
-    background-color: #ff3300;
-}
-
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/
@@ -628,3 +646,71 @@ body .select2-container--krajee
 .field-video-is_ref .form-group {
     margin-bottom: 0;
 }
+
+.video-reference .form-group {
+    margin: 0 !important;
+}
+
+.video-reference .form-group .form-label {
+    padding: 10px 0; 
+    color: #999; 
+    font-weight: bold; 
+}
+
+.video-reference .sort {
+    display: inline-block;
+    margin-top: 0;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+.video-reference .sort .form {
+    width: 65%;
+    margin-top: 5px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.video-reference .item.reference {
+    position: relative;
+    width: 200px;
+    margin-right: 25px;
+}
+
+.video-reference .item.reference .details {
+    position: absolute;
+    top: 0;
+    left: 225px;
+    z-index: 1026;
+}
+
+.video-reference .item.reference > a > .pic {
+    height: 112px !important;
+}
+
+.video-reference .item.reference > a > .pic > title {
+    line-height: 112px !important;
+}
+
+.video-reference .item.reference > .cont {
+    height: 40px;
+    padding: 0 5px 0 6px;
+    line-height: 40px;
+    border-bottom: none;
+}
+
+.video-reference .item.reference > .cont > a {
+    margin: 5px 0;
+    border-radius: 0;
+}
+
+.video-reference .item.reference > .cont .choice {
+    display: none;
+}
+
+/*******************************************************************************
+ * 滚动条大小
+ ******************************************************************************/
+/*.video-create .modal-body::-webkit-scrollbar {  
+   width: 1px;  
+   height: 1px;  
+}  */
