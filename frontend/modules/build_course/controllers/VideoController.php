@@ -128,7 +128,7 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->CreateVideo($model, Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             $data = [
                 'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
                 'duration' => DateUtil::intToTime($model->source_duration),
@@ -141,7 +141,6 @@ class VideoController extends Controller
         } else {
             return $this->renderAjax('create', [
                 'model' => $model,
-                'allRef' => $this->getVideoByReference(),
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
@@ -168,7 +167,7 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->UpdateVideo($model, Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
             $data = [
                 'id' => $model->id, 'name' => $model->name,
                 'duration' => DateUtil::intToTime($model->source_duration),
@@ -181,7 +180,6 @@ class VideoController extends Controller
         } else {
             return $this->renderAjax('update', [
                 'model' => $model,
-                'allRef' => $this->getVideoByReference(),
                 'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
@@ -206,7 +204,7 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->DeleteVideo($model);
+            $result = ActionUtils::getInstance()->deleteVideo($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'message' => ''
@@ -225,12 +223,28 @@ class VideoController extends Controller
      */
     public function actionReference()
     {
-        $searchModel = new VideoFavoriteSearch();
-        $result = $searchModel->referenceSearch(Yii::$app->request->queryParams);
+        $params = Yii::$app->request->queryParams;
+        $id = ArrayHelper::getValue($params, 'id');
         
+        $searchModel = new VideoFavoriteSearch();
+        $result = $searchModel->referenceSearch(array_merge($params, ['limit' => 15]));
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
         ]);
+        
+        if($id != null) {
+            Yii::$app->getResponse()->format = 'json';
+            return [
+                'code'=> 200,
+                'data' => [
+                    'filters' => $result['filter'],
+                    'videos' => $result['data']['video'][$id],
+                    'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
+                    'videoFiles' => Video::getUploadfileByVideo($result['data']['video'][$id]['source_id']),
+                ],
+                'message' => '请求成功！',
+            ];
+        }
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,
@@ -238,25 +252,6 @@ class VideoController extends Controller
             'totalCount' => $result['total'],
             'dataProvider' => $dataProvider,
         ]);
-        
-        
-        
-        $result = $this->findVideoByCiteInfo($id);
-        Yii::$app->getResponse()->format = 'json';
-        
-        if (Yii::$app->request->isPost) {
-            return [
-                'code' => 200,
-                'data' => $result,
-                'message' => '引用成功'
-            ];
-        }else{
-            return [
-                'code' => 404,
-                'data' => '',
-                'message' => '引用失败'
-            ];
-        }
     }
     
     /**
@@ -314,26 +309,5 @@ class VideoController extends Controller
             ->andWhere(['id' => $courseIds])->all();
         
         return ArrayHelper::map($courses, 'id', 'name');
-    }
-
-    /**
-     * 获取可以引用的视频
-     * @return array
-     */
-    protected function getVideoByReference()
-    {
-        $refs = [];
-        $vidos = Video::getVideoNode(['created_by' => Yii::$app->user->id]);
-        if($vidos != null){
-            foreach ($vidos as $model) {
-                $refs[] = [
-                    'id' => $model->id,
-                    'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
-                            ' / ' . $model->name .'（'. $model->teacher->name .'）'
-                ];
-            }
-        }
-        
-        return ArrayHelper::map($refs, 'id', 'name');
     }
 }

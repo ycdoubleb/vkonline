@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\models\User;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\Teacher;
@@ -15,7 +16,6 @@ use yii\db\ActiveRecord;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\web\UploadedFile;
-use yii\web\User;
 
 
 /**
@@ -56,6 +56,8 @@ use yii\web\User;
  * @property Video $reference 获取引用视频
  * @property Uploadfile $source 获取源视频
  * @property VideoProgress $progress 获取视频播放进度
+ * @property TagRef[] $tagRefs 获取标签
+ * @property PlayStatistics[] $playStatistics 获取标签
  */
 class Video extends ActiveRecord
 {
@@ -282,6 +284,22 @@ class Video extends ActiveRecord
     public function getProgress()
     {
         return $this->hasOne(VideoProgress::class, ['video_id' => 'id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getTagRefs()
+    {
+        return $this->hasMany(TagRef::class, ['object_id' => 'id'])->with('tags');
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getPlayStatistics()
+    {
+        return $this->hasMany(PlayStatistics::class, ['video_id' => 'id']);
     }
         
     /**

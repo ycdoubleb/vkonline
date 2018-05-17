@@ -13,7 +13,7 @@
             </div>
             <div class="tuip">
                 <span>{%createdAt%}</span>
-                <span class="tuip-right tuip-bg-{%colorName%}">{%isRef%}</span>
+                <span class="tuip-btn tuip-right tuip-bg-{%colorName%}">{%isRef%}</span>
             </div>
         </div>
     </a>

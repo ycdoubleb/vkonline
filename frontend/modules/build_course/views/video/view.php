@@ -4,6 +4,7 @@ use common\models\vk\Course;
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -44,7 +45,7 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', 'Reference'),
                     'format' => 'raw',
                     'value' => !empty($model->ref_id) ? 
-                        Html::a($model->reference->courseNode->course->name . ' / ' . $model->reference->courseNode->name . ' / ' .$model->reference->name, ['view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
+                        Html::a($model->reference->courseNode->course->name . ' >> ' . $model->reference->courseNode->name . ' >> ' .$model->reference->name, ['view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
                 ],
                 [
                     'attribute' => 'node_id',
@@ -79,9 +80,9 @@ ModuleAssets::register($this);
                     'value' => "<div class=\"detail-des\">{$model->des}</div>",
                 ],
                 [
-                    //'attribute' => 'level',
                     'label' => Yii::t('app', 'Tag'),
-                    'value' => Course::$levelMap[$model->level],
+                    'value' => count($model->tagRefs) > 0 ? 
+                        implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->tagRefs, 'tags'), 'name'))) : null,
                 ],
                 [
                     'attribute' => 'created_by',

@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\Video;
+use common\utils\DateUtil;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
@@ -71,19 +72,90 @@ $this->registerJs($format, View::POS_HEAD);
         ], 
     ]); ?>
     
-    <?= $form->field($model, 'is_ref')->widget(SwitchInput::class, [
-        'disabled' => !$model->is_ref ? false : true,
-        'pluginOptions' => [
-            'handleWidth' => 20,
-            'onText' => 'Yes',
-            'offText' => 'No',
-        ],
-        'pluginEvents' => [
-            "switchChange.bootstrapSwitch" => "function(event, state) { switchLog(event, state) }",
-        ],
-    ])->label(Yii::t('app', '{Reference}{Video}', [
-        'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
-    ])) ?>
+    <?php
+        $reelect = !$model->is_ref ? Html::a('重选', ['reference', 'node_id' => $model->node_id], [
+            'id' => 'video-reelect',
+            'class' => 'btn btn-info hidden',
+            'onclick' => 'reelectEvent($(this)); return false;'
+        ]) : '';
+        $refHiddenInput = $model->is_ref ? Html::activeHiddenInput($model, 'is_ref', ['id' => 'video-is_ref-hidden']) : '';
+        echo $form->field($model, 'is_ref', [
+        'template' => "{label}\n<div class=\"col-lg-2 col-md-2\" style=\"width: 135px;\">{input}{$refHiddenInput}</div>" .
+            "<div class=\"col-lg-1 col-md-1\">{$reelect}</div>\n" . 
+            "<div class=\"col-lg-6 col-md-6\">{error}</div>"
+        ])->widget(SwitchInput::class, [
+            'disabled' => !$model->is_ref ? false : true,
+            'pluginOptions' => [
+                'onText' => 'Yes',
+                'offText' => 'No',
+            ],
+            'pluginEvents' => [
+                "switchChange.bootstrapSwitch" => "function(event, state) { switchLog(event, state) }",
+            ],
+        ])->label(Yii::t('app', '{Reference}{Video}', [
+            'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
+        ]));
+    ?>
+    
+    <div class="form-group field-video-details">
+        <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+        <div class="col-lg-6 col-md-6">
+            <div id="details">
+                <?php if($model->is_ref): ?>
+                <div class="list">
+                    <div class="item clear-margin">
+                        <a href="../video/view?id=<?= $model->reference->id ?>">
+                            <div class="pic">
+                                <?php if(empty($model->reference->img)): ?>
+                                <div class="title">
+                                    <span><?= $model->reference->name ?></span>
+                                </div>
+                                <?php else: ?>
+                                <?= Html::img(['/' . $model->reference->img], ['width' => '100%']) ?>
+                                <?php endif; ?>
+                                <div class="duration">
+                                    <?= DateUtil::intToTime($model->reference->source_duration) ?>
+                                </div>
+                            </div>
+                            <div class="cont">
+                                <div class="tuip">
+                                    <span class="tuip-name">
+                                        <?= $model->reference->courseNode->course->name . '&nbsp;&nbsp;' . $model->reference->name ?>
+                                    </span>
+                                </div>
+                                <div class="tuip">
+                                    <span>
+                                        <?= count($model->reference->tagRefs) > 0 ?
+                                            implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->reference->tagRefs, 'tags'), 'name'))) : 'null' ?>
+                                    </span>
+                                </div>
+                                <div class="tuip">
+                                    <span><?= Date('Y-m-d H:i', $model->reference->created_at) ?></span>
+                                    <span class="tuip-btn tuip-right <?= !$model->reference->is_ref ? 'tuip-bg-green' : 'tuip-bg-red' ?>">
+                                        <?= !$model->reference->is_ref ? '原创' : '引用' ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="speaker">
+                            <div class="tuip">
+                                <div class="avatar img-circle">
+                                    <?= !empty($model->reference->teacher_id) ? 
+                                        Html::img($model->reference->teacher->avatar, ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                                </div>
+                                <span class="tuip-left"><?= $model->reference->teacher->name ?></span>
+                                <span class="tuip-right"><i class="fa fa-eye"></i>&nbsp;
+                                    <?= count($model->reference->playStatistics) > 0 ? 
+                                        array_sum(ArrayHelper::getColumn($model->reference->playStatistics, 'play_count')) : 0 ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
     
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...'
@@ -96,15 +168,21 @@ $this->registerJs($format, View::POS_HEAD);
             Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
                 'class' => 'btn btn-primary', 'onclick' => 'refresh($(this)); return false;'
             ]) : '';
-        $newAdd = !$model->is_ref ? Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']) : '';
-        $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
+        $newAdd = !$model->is_ref ? Html::a('新增', ['teacher/create'], [
+            'class' => 'btn btn-primary', 'target' => '_blank'
+        ]) : '';
+        $prompt =!$model->is_ref ? Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']) : '';
+        $hiddenInput = Html::activeHiddenInput($model, 'teacher_id', ['id' => 'video-teacher_id-hidden']);
         echo  $form->field($model, 'teacher_id', [
-            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>\n" .
+            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{$hiddenInput}{input}</div>"  . 
+                "<div id=\"video-teacher_operate\" class=\"col-lg-4 col-md-4\">" .
+                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+                "</div>\n" .
             "<div class=\"col-lg-6 col-md-6\">{error}</div>",
         ])->widget(Select2::class,[
+            'disabled' => !$model->is_ref ? false : true,
             'data' => ArrayHelper::map($allTeacher, 'id', 'name'), 
             'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => [
@@ -156,6 +234,8 @@ $this->registerJs($format, View::POS_HEAD);
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
     
+    <?= Html::activeHiddenInput($model, 'ref_id') ?>
+    
     <?php ActiveForm::end(); ?>
 
 </div>
@@ -188,7 +268,7 @@ $js =
     window.onloadUploader = function () {
         require(['euploader'], function (euploader) {
             //公共配置
-            var config = {
+            window.config = {
                 swf: "$swfpath" + "/Uploader.swf",
                 // 文件接收服务端。
                 server: '/webuploader/default/upload',
@@ -225,10 +305,10 @@ $js =
             };
             
             //视频
-            window.uploader = new euploader.Uploader(config, euploader.FilelistView);
+            window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
             window.uploader.addCompleteFiles($videoFiles);
             if($model->is_ref){
-                uploader.setEnabled(false);
+                window.uploader.setEnabled(false);
             }
         });
     }

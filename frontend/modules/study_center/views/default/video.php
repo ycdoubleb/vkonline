@@ -37,26 +37,26 @@ ModuleAssets::register($this);
         <?php foreach ($dataProvider->allModels as $index => $model): ?>
         <div class="item <?= $index % 3 == 2 ? 'item-right' : null ?>">
             <div class="pic">
-                <?php if($model['video']['img'] == ''): ?>
+                <?php if($model['img'] == ''): ?>
                 <div class="title">
-                    <span><?= $model['video']['name'] ?></span>
+                    <span><?= $model['name'] ?></span>
                 </div>
                 <?php else: ?>
-                <?= Html::img(['/' . $model['video']['img']], ['width' => '100%']) ?>
+                <?= Html::img(['/' . $model['img']], ['width' => '100%']) ?>
                 <?php endif; ?>
                 <div class="float"> 
                     <span><?= isset($model['play_num']) ? $model['play_num'] : 0 ?><i class="fa fa-eye"></i></span>
-                    <span><?= $model['video']['favorite_count'] ?><i class="fa fa-heart"></i></span>
-                    <span class="right"><?= $model['video']['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>
+                    <span><?= $model['favorite_count'] ?><i class="fa fa-heart"></i></span>
+                    <span class="right"><?= $model['zan_count'] ?><i class="fa fa-thumbs-up"></i></span>
                 </div>
                 <div class="duration">
-                    <span><?= DateUtil::intToTime($model['video']['source_duration']) ?></span>
+                    <span><?= DateUtil::intToTime($model['source_duration']) ?></span>
                 </div>
             </div>
             <div class="cont">
-                <div class="name">课程：<span><?= $model['course']['name'] ?></span></div>
-                <div class="tuip">名称：<span><?= $model['video']['name'] ?></span></div>
-                <div class="tuip">主讲：<span><?= $model['video']['teacher']['name'] ?></span>
+                <div class="name">课程：<span><?= $model['course_name'] ?></span></div>
+                <div class="tuip">名称：<span><?= $model['name'] ?></span></div>
+                <div class="tuip">主讲：<span><?= $model['teacher_name'] ?></span>
                     <?= Html::a('<i class="fa fa-play-circle"></i>', ['view', 'id' => $model['video_id']], ['class' => 'play']) ?>
                 </div>
             </div>
@@ -64,19 +64,6 @@ ModuleAssets::register($this);
         <?php endforeach; ?>
     </div>
 
-    <div class="page center">
-        <?=  LinkPager::widget([
-            'pagination' => $pagers,
-            'options' => ['class' => 'pagination', 'style' => 'margin: 0px;border-radius: 0px;'],
-            'prevPageCssClass' => 'page-prev',
-            'nextPageCssClass' => 'page-next',
-            'prevPageLabel' => '<i>&lt;</i>'.Yii::t('app', 'Prev'),
-            'nextPageLabel' => Yii::t('app', 'Next').'<i>&gt;</i>',
-            'maxButtonCount' => 5,
-        ]); ?>
-    </div>
-
-    
 </div>
 
 <?php

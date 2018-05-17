@@ -3,6 +3,7 @@
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\switchinput\SwitchInputAsset;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -131,9 +132,9 @@ SwitchInputAsset::register($this);
                     'value' => Course::$levelMap[$model->level],
                 ],
                 [
-                    //'attribute' => 'level',
                     'label' => Yii::t('app', 'Tag'),
-                    'value' => Course::$levelMap[$model->level],
+                    'value' => count($model->tagRefs) > 0 ? 
+                        implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->tagRefs, 'tags'), 'name'))) : null,
                 ],
                 [
                     'attribute' => 'created_at',

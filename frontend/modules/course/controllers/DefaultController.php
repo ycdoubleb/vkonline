@@ -196,7 +196,8 @@ class DefaultController extends Controller
         try
         {  
             if(!$favorite->isNewRecord){
-                if($favorite->delete()){
+                $favorite->is_del = 1;
+                if($favorite->update()){
                     $model->favorite_count = $model->favorite_count - 1;
                     $model->save(true, ['favorite_count']);
                 }
@@ -327,7 +328,7 @@ class DefaultController extends Controller
      */
     protected function findFavoriteModel($course_id)
     {
-        $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
+        $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id, 'is_del' => 0]);
         if ($model !== null) {
             return $model;
         } else {

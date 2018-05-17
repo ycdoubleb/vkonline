@@ -39,6 +39,7 @@ use yii\web\UploadedFile;
  * @property Category $category     获取分类
  * @property User $createdBy        获取创建者
  * @property Teacher $teacher       获取老师
+ * @property TagRef[] $tagRefs      获取所有标签
  */
 
 class Course extends ActiveRecord
@@ -219,6 +220,14 @@ class Course extends ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getTagRefs()
+    {
+        return $this->hasMany(TagRef::class, ['object_id' => 'id'])->with('tags');
     }
     
     /**
