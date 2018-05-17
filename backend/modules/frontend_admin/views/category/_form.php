@@ -32,6 +32,8 @@ use yii\widgets\ActiveForm;
         'values' => $model->parent_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($model->parent_id)->path))),
     ]) ?>
     
+    <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
+    
     <?= $form->field($model, 'sort_order')->textInput() ?>
 
     <?= $form->field($model, 'is_show')->widget(SwitchInput::classname(), [

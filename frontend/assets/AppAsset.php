@@ -18,8 +18,8 @@ class AppAsset extends AssetBundle
     ];
     public $js = [
         'js/hm.js',     //百度站点统计
-        //'js/render.js'  //渲染
-        'js/wskeee.stringutils.js'  //渲染
+        'js/wskeee.stringutils.js',  //渲染
+        'js/wskeee.dateUtils.js'  //日期格式
     ];
     public $depends = [
         'rmrevin\yii\fontawesome\AssetBundle',

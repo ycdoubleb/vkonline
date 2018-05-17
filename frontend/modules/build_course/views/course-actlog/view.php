@@ -12,13 +12,15 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
-$this->title = $model->title;
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
+$this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
+    'Operation' => Yii::t('app', 'Operation'), 'Log' => Yii::t('app', 'Log'),
+    'Detail' => Yii::t('app', 'Detail')
+]);
+
 ?>
 <div class="coutse_actlog-view main modal">
 
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog" role="document" style="width: 70%">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -29,10 +31,9 @@ $this->title = $model->title;
             <div class="modal-body">
                 <?= DetailView::widget([
                     'model' => $model,
-                    //'options' => ['class' => 'table table-bordered detail-view '],
-                    'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+                    'options' => ['class' => 'table table-bordered detail-view '],
+                    'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                     'attributes' => [
-                        'id',
                         'action',
                         'title',
                         [
@@ -48,10 +49,11 @@ $this->title = $model->title;
                             'attribute' => 'course_id',
                             'value' => !empty($model->course_id) ? $model->course->name : null,
                         ],
-                        [
-                            'attribute' => 'related_id',
-                            'value' => $model->related_id,
-                        ],
+//                        [
+//                            'attribute' => 'related_id',
+//                            'label' => Yii::t('app', 'Relative') . 'ID',
+//                            'value' => $model->related_id,
+//                        ],
                         [
                             'attribute' => 'created_at',
                             'value' => date('Y-m-d H:i',$model->created_at),
@@ -64,7 +66,9 @@ $this->title = $model->title;
                 ]) ?>
             </div>
             <div class="modal-footer">
-                <?= Html::button(Yii::t('app', 'Close'), ['class' => 'btn btn-default','data-dismiss' => 'modal', 'aria-label' => 'Close']) ?>
+                <?= Html::button(Yii::t('app', 'Close'), [
+                    'class' => 'btn btn-default','data-dismiss' => 'modal', 'aria-label' => 'Close'
+                ]) ?>
             </div>
        </div>
     </div>

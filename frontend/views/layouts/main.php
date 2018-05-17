@@ -66,7 +66,7 @@ AppAsset::register($this);
             <ul>
                 <li class="contacts-left"><?= Html::a('关于我们', 'about') ?></li>
                 <li class="contacts-left"><?= Html::a('联系我们', 'contact') ?></li>
-                <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/?app_id=app-frontend') ?></li>
+                <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/?app_id=app-frontend&id=1') ?></li>
             </ul>
             <ul>
                 <li class="contacts-left"><?= Html::a('意见反馈', 'feedback') ?></li>

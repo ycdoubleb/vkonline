@@ -90,7 +90,7 @@ class DefaultController extends Controller
     public function actionMyCollect()
     {
         $searchModel = new VideoFavoriteSearch();
-        $result = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $result = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
@@ -98,7 +98,6 @@ class DefaultController extends Controller
         
         return $this->render('video', [
             'filters' => $result['filter'],
-            'pagers' => $result['pager'],
             'dataProvider' => $dataProvider,
         ]);
     }
@@ -226,7 +225,8 @@ class DefaultController extends Controller
         try
         {  
             if(!$favorite->isNewRecord){
-                if($favorite->delete()){
+                $favorite->is_del = 1;
+                if($favorite->update()){
                     $model->favorite_count = $model->favorite_count - 1;
                     $model->save(true, ['favorite_count']);
                 }
@@ -359,7 +359,10 @@ class DefaultController extends Controller
      */
     protected function findFavoriteModel($course_id, $video_id)
     {
-        $model = VideoFavorite::findOne(['course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id]);
+        $model = VideoFavorite::findOne([
+            'course_id' => $course_id, 'video_id' => $video_id, 
+            'user_id' => Yii::$app->user->id, 'is_del' => 0
+        ]);
         if ($model !== null) {
             return $model;
         } else {

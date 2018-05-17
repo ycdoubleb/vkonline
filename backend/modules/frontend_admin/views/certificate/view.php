@@ -103,7 +103,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'label' => Yii::t('app', 'Avatar'),
                     'format' => 'raw',
-                    'value' => !empty($model->teacher->avatar) ? Html::img(WEB_ROOT . $model->teacher->avatar, ['class' => 'img-circle', 'width' => '128px']) : null,
+                    'value' => !empty($model->teacher->avatar) ? Html::img(WEB_ROOT . $model->teacher->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']) : null,
                 ],
                 [
                     'label' => Yii::t('app', '{Authentication}{Status}',[

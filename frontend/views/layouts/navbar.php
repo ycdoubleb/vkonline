@@ -65,7 +65,7 @@ $menuItems = [
     //搜索与个人信息
     '<li><div class="search-box"><input id="search-input" class="search-input"/><i class="glyphicon glyphicon-search"></i></div></li>',
     [
-        'label' => Html::img([Yii::$app->user->identity->avatar], ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']),
+        'label' => !Yii::$app->user->isGuest ? Html::img([Yii::$app->user->identity->avatar], ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']) : null,
         'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
         'options' => ['class' => 'logout'],
         'linkOptions' => ['class' => 'logout', 'style' => 'line-height: 50px;'],

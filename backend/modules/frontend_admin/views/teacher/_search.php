@@ -17,6 +17,7 @@ use yii\widgets\ActiveForm;
         'action' => ['index'],
         'method' => 'get',
         'options' => [
+            'id' => 'teacher-form',
             'class' => 'form-horizontal',
             'enctype' => 'multipart/form-data',
         ],
@@ -28,20 +29,35 @@ use yii\widgets\ActiveForm;
     
     <div class="search col-lg-12 col-md-12">
         
-        <?= $form->field($model, 'name')
-            ->label(Yii::t('app', '{Teacher}{Name}：', ['Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')])) ?>
+        <?= $form->field($model, 'name')->textInput([
+            'placeholder' => '请输入...', 'maxlength' => true
+        ])->label(Yii::t('app', '{Teacher}{Name}：', [
+            'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')])) ?>
 
         <?= $form->field($model, 'is_certificate')->radioList(Teacher::$certificateStatus, ['class' => 'label-name'])
             ->label(Yii::t('app', '{Authentication}{Status}：', ['Authentication' => Yii::t('app', 'Authentication'),
                 'Status' => Yii::t('app', 'Status')]))?>
-        
-        <div class="form-group">
-            <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>
-            <?= Html::resetButton(Yii::t('app', 'Reset'), ['class' => 'btn btn-default']) ?>
-        </div>
-        
+       
     </div>
 
     <?php ActiveForm::end(); ?>
     
 </div>
+<?php
+
+$js = 
+<<<JS
+    //失去焦点提交表单
+    $("#teachersearch-name").blur(function(){
+        $('#teacher-form').submit();
+    });
+   
+    //单击选中radio提交表单
+    $('input[name="TeacherSearch[is_certificate]"]').click(function(){
+        $('#teacher-form').submit();
+    });
+        
+        
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

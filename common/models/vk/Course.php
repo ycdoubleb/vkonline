@@ -3,10 +3,12 @@
 namespace common\models\vk;
 
 use common\models\User;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 use yii\web\UploadedFile;
 
 /**
@@ -37,6 +39,7 @@ use yii\web\UploadedFile;
  * @property Category $category     获取分类
  * @property User $createdBy        获取创建者
  * @property Teacher $teacher       获取老师
+ * @property TagRef[] $tagRefs      获取所有标签
  */
 
 class Course extends ActiveRecord
@@ -217,6 +220,36 @@ class Course extends ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getTagRefs()
+    {
+        return $this->hasMany(TagRef::class, ['object_id' => 'id'])->with('tags');
+    }
+    
+    /**
+     * 获取已上传的附件
+     * @return ActiveQuery
+     */
+    public static function getUploadfileByAttachment($id = null)
+    {
+        $uploadFile = (new Query());
+        $uploadFile->select(['Attachment.file_id AS id', 'Course.name AS course_name', 'Uploadfile.name', 'Uploadfile.size']);
+        $uploadFile->from(['Course' => self::tableName()]);
+        $uploadFile->leftJoin(['Attachment' => CourseAttachment::tableName()], 'Attachment.course_id = Course.id');
+        $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Attachment.file_id');
+        $uploadFile->where(['Attachment.course_id' => $id]);
+        $uploadFile->andWhere(['Attachment.is_del' => 0, 'Uploadfile.is_del' => 0]);
+        
+        $hasFile = $uploadFile->all();
+        if($hasFile !== null){
+            return $hasFile;
+        }else{
+            return [];
+        }
     }
     
     /**

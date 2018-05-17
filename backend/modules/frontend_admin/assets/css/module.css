@@ -176,10 +176,16 @@ and open the template in the editor.
     border: 1px solid #dedede;
 }
 
-.teacher-index .teacher-list .teacher-content .certificate{
+.teacher-index .teacher-list .teacher-content .fa-vimeo{
     position: relative;
-    left: 35px;
-    bottom: 45px;
+    left: 33px;
+    bottom: 47px;
+    font-size: 30px;
+    color: #ffcc01;
+}
+
+.teacher-index .teacher-list .teacher-content .fa-vimeo.certificate{
+    color: rgba(255, 255, 255, 0);
 }
 
 .teacher-index .teacher-list .teacher-content .teacher-name {

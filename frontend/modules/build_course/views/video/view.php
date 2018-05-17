@@ -4,6 +4,7 @@ use common\models\vk\Course;
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -44,7 +45,7 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', 'Reference'),
                     'format' => 'raw',
                     'value' => !empty($model->ref_id) ? 
-                        Html::a($model->reference->courseNode->course->name . ' / ' . $model->reference->courseNode->name . ' / ' .$model->reference->name, ['view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
+                        Html::a($model->reference->courseNode->course->name . ' >> ' . $model->reference->courseNode->name . ' >> ' .$model->reference->name, ['view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
                 ],
                 [
                     'attribute' => 'node_id',
@@ -54,7 +55,9 @@ ModuleAssets::register($this);
                 ],
                 [
                     'attribute' => 'level',
-                    'label' => Yii::t('app', 'DataVisible Range'),
+                    'label' => Yii::t('app', '{Visible}{Range}', [
+                        'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')
+                    ]),
                     'format' => 'raw',
                     'value' => Course::$levelMap[$model->level],
                 ],
@@ -66,20 +69,20 @@ ModuleAssets::register($this);
                 [
                     'attribute' => 'teacher_id',
                     'format' => 'raw',
-                    'label' => Yii::t('app', '{MainSpeak}{Teacher}', [
-                        'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                    'label' => Yii::t('app', '{mainSpeak}{Teacher}', [
+                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                     ]),
                     'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
                 ],
                 [
                     'label' => Yii::t('app', 'Des'),
                     'format' => 'raw',
-                    'value' => "<div class=\"viewdetail-td-des\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des\">{$model->des}</div>",
                 ],
                 [
-                    //'attribute' => 'level',
                     'label' => Yii::t('app', 'Tag'),
-                    'value' => Course::$levelMap[$model->level],
+                    'value' => count($model->tagRefs) > 0 ? 
+                        implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->tagRefs, 'tags'), 'name'))) : null,
                 ],
                 [
                     'attribute' => 'created_by',
@@ -113,7 +116,7 @@ ModuleAssets::register($this);
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Relation}{Course}',[
-                'Relation' => Yii::t('app', 'Relation'), 'Course' => Yii::t('app', 'Course'),
+                    'Relation' => Yii::t('app', 'Relation'), 'Course' => Yii::t('app', 'Course'),
                 ]) ?>
             </span>
         </div>            
@@ -141,18 +144,11 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'border-left' => 'none',
                             'border-bottom-width' => '1px'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'white-space' => 'nowrap',
-                            'border-left' => 'none',
                         ],
                     ],
                 ],
@@ -167,16 +163,13 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'white-space' => 'nowrap',
+                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -188,16 +181,13 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '125px',
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'white-space' => 'nowrap',
+                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -218,49 +208,31 @@ ModuleAssets::register($this);
                                 'symbol' => '&nbsp;',
                                 'adminOptions' => true,
                             ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                            return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
                         },
                     ],
                     'headerOptions' => [
                         'style' => [
                             'width' => '75px',
-                            'height' => '48px',
-                            'text-align' => 'center',
-                            'border-right' => 'none',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
                             'width' => '75px',
-                            'height' => '48px',
                             'padding' => '4px 0px',
-                            'text-align' => 'center',
-                            'border-right' => 'none',
+                            'border-left-width' => '1px',
                         ],
                     ],
                     'template' => '{view}',
                 ],
             ],
         ]); ?>
+        
         <div class="summary">
             <span>共 <?= $dataProvider->totalcount ?> 条记录</span>
         </div>
+        
     </div>
 </div>
-
-<?php
-
-$js = 
-<<<JS
-   
-    //显示模态框
-    window.showModal = function(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-        return false;
-    }    
-                
-JS;
-    //$this->registerJs($js,  View::POS_READY);
-?>

@@ -19,30 +19,38 @@ ModuleAssets::register($this);
 <div class="teacher-view main">
     
     <div class="crumbs">
-        <i class="fa fa-file-text"></i>
-        <span><?= Yii::t('app', '{Teacher}{Detail}', [
-            'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
-        ]) ?></span>
+        <span>
+            <?= Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
+                'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
+            ]) ?>
+        </span>
+        <div class="btngroup">
+            <?php 
+                if($model->created_by == Yii::$app->user->id){
+                    if(!$is_applying){
+                        echo Html::a(Yii::t('app', '{Proposer}{Authentication}', [
+                            'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication')
+                        ]), ['applyr', 'id' => $model->id], ['class' => 'btn btn-success']) . ' ';
+                    }
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+                }
+            ?>
+        </div>
     </div>
-    
-    <p>
-        <?= Html::a('<i class="fa fa-edit"></i>&nbsp;'.Yii::t('app', 'Update'), 
-            ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-    </p>
-    
-    <div class="col-xs-12 frame">
-        <div class="col-xs-12 title">
-            <i class="fa fa-file-text-o"></i>
-            <span><?= Yii::t('app', '{Basic}{Info}',[
-                'Basic' => Yii::t('app', 'Basic'),
-                'Info' => Yii::t('app', 'Info'),
-            ]) ?></span>
+        
+    <div class="frame">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Basic}{Info}',[
+                    'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
+                ]) ?>
+            </span>
         </div>
         <div id="<?= $model->id ?>">
             <?= DetailView::widget([
                 'model' => $model,
                 'options' => ['class' => 'table table-bordered detail-view'],
-                'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+                'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                 'attributes' => [
                     [
                         'attribute' => 'name',
@@ -57,7 +65,28 @@ ModuleAssets::register($this);
                     [
                         'attribute' => 'avatar',
                         'format' => 'raw',
-                        'value' => Html::img([$model->avatar], ['class' => 'img-circle', 'width' => 128, 'height' => 128]),
+                        'value' => '<div class="avatars img-circle">' .
+                                Html::img([$model->avatar], ['class' => 'img-circle', 'width' => '100%', 'height' => '96px']) .
+                                ($model->is_certificate ? '<i class="fa fa-vimeo"></i>' : '') .
+                            '</div>',
+                    ],
+                    [
+                        'attribute' => 'is_certificate',
+                        'label' => Yii::t('app', '{Authentication}{Status}', [
+                            'Authentication' => Yii::t('app', 'Authentication'), 'Status' => Yii::t('app', 'Status')
+                        ]),
+                        'format' => 'raw',
+                        'value' => $model->is_certificate ? '已认证' : '未认证',
+                    ],
+                    [
+                        'label' => Yii::t('app', 'Des'),
+                        'format' => 'raw',
+                        'value' => "<div class=\"detail-des\">{$model->des}</div>",
+                    ],
+                    [
+                        'attribute' => 'created_by',
+                        'format' => 'raw',
+                        'value' => !empty($model->created_by) ? $model->createdBy->nickname : null,
                     ],
                     [
                         'attribute' => 'created_at',
@@ -69,99 +98,158 @@ ModuleAssets::register($this);
                         'format' => 'raw',
                         'value' => date('Y-m-d H:i', $model->updated_at),
                     ],
-                    [
-                        'label' => Yii::t('app', 'Des'),
-                        'format' => 'raw',
-                        'value' => "<div class=\"viewdetail-td-des\">{$model->des}</div>",
-                    ],
                 ],
             ]) ?>
         </div>
     </div>
     
-    <div class="col-xs-12 frame">
-        <div class="col-xs-12 title">
-            <i class="fa fa-list"></i>
-            <span><?= Yii::t('app', '{Course}{List}',[
-                'Course' => Yii::t('app', 'Course'),
-                'List' => Yii::t('app', 'List'),
-            ]) ?></span>
+    <div class="frame">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{mainSpeak}{Course}',[
+                    'mainSpeak' => Yii::t('app', 'Main Speak'), 'Course' => Yii::t('app', 'Course')
+                ]) ?>
+            </span>
         </div>
-        <div id="<?= $model->id ?>">
-            
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'layout' => "{items}\n{summary}\n{pager}",
-                'summaryOptions' => [
-                    'class' => 'summary',
-                    'style' => 'float: left'
-                ],
-                'pager' => [
-                    'maxButtonCount' => 5,
-                    'options' => [
-                        'class' => 'pagination',
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'layout' => "{items}\n{summary}\n{pager}",
+            'summaryOptions' => [
+                'class' => 'hidden',
+            ],
+            'pager' => [
+                'options' => [
+                    'class' => 'hidden',
+                ]
+            ],
+            'tableOptions' => ['class' => 'table table-bordered'],
+            'columns' => [
+                [
+                    'label' => Yii::t('app', '{The}{Customer}', [
+                        'The' => Yii::t('app', 'The'), 'Customer' => Yii::t('app', 'Customer')
+                    ]),
+                    'format' => 'raw',
+                    'value'=> function($model){
+                        /* @var $model Course */
+                        return !empty($model->customer_id) ? $model->customer->name : null;
+                    },
+                    'headerOptions' => [
                         'style' => [
-                            'float' => 'right',
-                            'margin-top' => '-15px;',
-                            'margin-bottom' => '0;',
-                        ]
-                    ]
+                            'width' => '500px',
+                            'border-bottom-width' => '1px'
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+
+                        ],
+                    ],
                 ],
-                'tableOptions' => ['class' => 'table table-striped table-bordered'],
-                'columns' => [
-                    [
-                        'label' => Yii::t('app', '{Course}{Name}', ['Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')]),
-                        'format' => 'raw',
-                        'value'=> function($data){
-                            return $data['name'];
+                [
+                    'label' => Yii::t('app', '{Course}{Name}', [
+                        'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
+                    ]),
+                    'format' => 'raw',
+                    'value'=> function($model){
+                        /* @var $model Course */
+                        return $model->name;
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '500px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', 'Created By'),
+                    'format' => 'raw',
+                    'value'=> function($model){
+                        /* @var $model Course */
+                        return !empty($model->created_by) ? $model->createdBy->nickname : null;
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '125px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', 'Created At'),
+                    'format' => 'raw',
+                    'value'=> function($model){
+                        /* @var $model Course */
+                        return date('Y-m-d H:i', $model->created_at);
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '165px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                ],
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'buttons' => [
+                        'view' => function ($url, $data) {
+                            $options = [
+                                'title' => Yii::t('yii', 'View'),
+                                'aria-label' => Yii::t('yii', 'View'),
+                                'data-pjax' => '0',
+                                'target' => '_black'
+                            ];
+                            $buttonHtml = [
+                                'name' => '<span class="fa fa-eye"></span>',
+                                'url' => ['/course/default/view', 'id' => $data['id']],
+                                'options' => $options,
+                                'symbol' => '&nbsp;',
+                                'adminOptions' => true,
+                            ];
+                            return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
                         },
-                        'headerOptions' => [
-                            'class'=>[
-                            ],
-                            'style' => [
-                                'width' => '800px',
-                                'padding' => '8px',
-                                'text-align' => 'left'
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                                'padding' => '8px',
-                                'text-align' => 'left',
-                                'white-space' => 'nowrap',
-                            ],
+                    ],
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '75px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
                         ],
                     ],
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'buttons' => [
-                            'view' => function ($url, $data) {
-                                $options = [
-                                    'title' => Yii::t('yii', 'View'),
-                                    'aria-label' => Yii::t('yii', 'View'),
-                                    'data-pjax' => '0',
-                                ];
-                                return Html::a('<span class="fa fa-eye"></span>', ['/course/default/view', 'id' => $data['id']], $options);
-                            },
+                    'contentOptions' =>[
+                        'style' => [
+                            'width' => '75px',
+                            'padding' => '4px 0px',
+                            'border-left-width' => '1px',
                         ],
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '16px',
-                                'padding' => '8px;',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                                'width' => '16px',
-                                'padding' => '8px',
-                            ],
-                        ],
-                        'template' => '{view}',
                     ],
-                ],    
-            ]); ?>
-            
+                    'template' => '{view}',
+                ],
+            ],    
+        ]); ?>
+        
+        <div class="summary">
+            <span>共 <?= $dataProvider->totalCount ?> 条记录</span>
         </div>
+        
     </div>
     
 </div>

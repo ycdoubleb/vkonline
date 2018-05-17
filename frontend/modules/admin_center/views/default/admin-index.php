@@ -126,7 +126,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             'onclick' => 'deleteAdmin($(this));return false;'
                         ];
                         $buttonHtml = [
-                            'name' => '<span class="fa fa-user-times"></span>',
+                            'name' => '<span class="glyphicon glyphicon-trash"></span>',
                             'url' => ['delete-admin', 'id' => $model->id],
                             'options' => $options,
                             'symbol' => '&nbsp;',

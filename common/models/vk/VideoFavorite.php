@@ -11,7 +11,7 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "{{%video_favorite}}".
  *
- * @property string $id
+ * @property integer $id
  * @property string $course_id 课程ID
  * @property string $video_id 视频ID
  * @property string $user_id 用户ID

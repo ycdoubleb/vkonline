@@ -10,7 +10,7 @@ use yii\db\ActiveRecord;
  *
  * @property string $id             课程属性名
  * @property string $name           属性名
- * @property string $attribute_id    所属分类id
+ * @property string $category_id    所属分类id
  * @property int $type              0唯一属性 1单选属性 2复选属性
  * @property int $input_type        0手工输入 1多行输入 2列表选择
  * @property int $sort_order        排序索引
@@ -62,7 +62,7 @@ class CourseAttribute extends ActiveRecord
     public function rules()
     {
         return [
-            [['attribute_id','type', 'input_type', 'index_type', 'is_del' , 'sort_order'], 'integer'],
+            [['category_id','type', 'input_type', 'index_type', 'is_del' , 'sort_order'], 'integer'],
             [['values'], 'string'],
             [['name'], 'string', 'max' => 50],
         ];
@@ -76,7 +76,7 @@ class CourseAttribute extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
-            'attribute_id' => Yii::t('app', 'Category'),
+            'category_id' => Yii::t('app', 'Category'),
             'type' => Yii::t('app', 'Type'),
             'input_type' => Yii::t('app', '{Input}{Type}',['Input' => Yii::t('app', 'Input'),'Type' => Yii::t('app', 'Type'),]),
             'sort_order' => Yii::t('app', 'Sort Order'),

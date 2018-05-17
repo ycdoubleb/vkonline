@@ -16,17 +16,20 @@ $this->title = Yii::t('app', '{Create}{User}',[
 ?>
 <div class="user-create main">
     <div class="frame">
-        <div class="frame-title">
-            <i class="icon fa fa-edit"></i>
-            <span><?= Yii::t('app', '{Create}{User}',[
-                'Create' => Yii::t('app', 'Create'),
-                'User' => Yii::t('app', 'User'),
-            ]) ?></span>
+        <div class="frame-content">
+            <div class="frame-title">
+                <span><?= Yii::t('app', '{Create}{User}',[
+                    'Create' => Yii::t('app', 'Create'),
+                    'User' => Yii::t('app', 'User'),
+                ]) ?></span>
+            </div>
+            <div class="content-content">
+                <?= $this->render('_form', [
+                    'model' => $model,
+                    'customer' => $customer,
+                ]) ?>
+            </div>
         </div>
-        <?= $this->render('_form', [
-            'model' => $model,
-            'customer' => $customer,
-        ]) ?>
     </div>
 </div>
 

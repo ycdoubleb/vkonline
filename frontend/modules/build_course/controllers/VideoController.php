@@ -3,6 +3,8 @@
 namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Course;
+use common\models\vk\CourseNode;
+use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -65,11 +67,21 @@ class VideoController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
         ]);
+        
+        if(\Yii::$app->request->isAjax){
+            Yii::$app->getResponse()->format = 'json';
+            return [
+                'code'=> 200,
+                'page' => $result['filter']['page'],
+                'data' => array_values($result['data']['video']),
+                'message' => '请求成功！',
+            ];
+        }
       
         return $this->render('index', [
             'searchModel' => $searchModel,
             'filters' => $result['filter'],
-            'pagers' => $result['pager'],
+            'totalCount' => $result['total'],
             'dataProvider' => $dataProvider,
             'courseMap' => $this->getCourseByCreatedBy(),
         ]);
@@ -110,9 +122,13 @@ class VideoController extends Controller
         ]);
         $model->loadDefaultValues();
         
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->CreateVideo($model, Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             $data = [
                 'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
                 'duration' => DateUtil::intToTime($model->source_duration),
@@ -125,8 +141,7 @@ class VideoController extends Controller
         } else {
             return $this->renderAjax('create', [
                 'model' => $model,
-                'allRef' => $this->getVideoByReference(),
-                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->identity->customer_id),
+                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
@@ -146,9 +161,13 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->UpdateVideo($model, Yii::$app->request->post());
+            $result = ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
             $data = [
                 'id' => $model->id, 'name' => $model->name,
                 'duration' => DateUtil::intToTime($model->source_duration),
@@ -161,8 +180,7 @@ class VideoController extends Controller
         } else {
             return $this->renderAjax('update', [
                 'model' => $model,
-                'allRef' => $this->getVideoByReference(),
-                'allTeacher' => Teacher::getTeacherByLevel($model->customer_id),
+                'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
@@ -180,9 +198,13 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->DeleteVideo($model);
+            $result = ActionUtils::getInstance()->deleteVideo($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'message' => ''
@@ -195,29 +217,41 @@ class VideoController extends Controller
     }
     
     /**
-     * 引用 现有的 Video 模型。
+     * 引用 已有的 Video 模型。
      * 如果是post传值，返回成功的json数据，否则返回失败
-     * @param string $id
      * @return json
      */
-    public function actionReference($id)
+    public function actionReference()
     {
-        $result = $this->findVideoByCiteInfo($id);
-        Yii::$app->getResponse()->format = 'json';
+        $params = Yii::$app->request->queryParams;
+        $id = ArrayHelper::getValue($params, 'id');
         
-        if (Yii::$app->request->isPost) {
+        $searchModel = new VideoFavoriteSearch();
+        $result = $searchModel->referenceSearch(array_merge($params, ['limit' => 15]));
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['video']),
+        ]);
+        
+        if($id != null) {
+            Yii::$app->getResponse()->format = 'json';
             return [
-                'code' => 200,
-                'data' => $result,
-                'message' => '引用成功'
-            ];
-        }else{
-            return [
-                'code' => 404,
-                'data' => '',
-                'message' => '引用失败'
+                'code'=> 200,
+                'data' => [
+                    'filters' => $result['filter'],
+                    'videos' => $result['data']['video'][$id],
+                    'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
+                    'videoFiles' => Video::getUploadfileByVideo($result['data']['video'][$id]['source_id']),
+                ],
+                'message' => '请求成功！',
             ];
         }
+        
+        return $this->renderAjax('reference', [
+            'searchModel' => $searchModel,
+            'filters' => $result['filter'],
+            'totalCount' => $result['total'],
+            'dataProvider' => $dataProvider,
+        ]);
     }
     
     /**
@@ -264,31 +298,16 @@ class VideoController extends Controller
      */
     protected function getCourseByCreatedBy()
     {
-        $courses = Course::find()
-            ->where(['created_by' => Yii::$app->user->id])
-            ->all();
+        //根据已存在的视频查询课程id
+        $courseIds = Video::find()->select(['CourseNode.course_id'])
+            ->from(['Video' => Video::tableName()])
+            ->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)')
+            ->where(['Video.created_by' => Yii::$app->user->id, 'Video.is_del' => 0]);
+        
+        //查询课程
+        $courses = Course::find()->where(['created_by' => Yii::$app->user->id])
+            ->andWhere(['id' => $courseIds])->all();
         
         return ArrayHelper::map($courses, 'id', 'name');
-    }
-
-    /**
-     * 获取可以引用的视频
-     * @return array
-     */
-    protected function getVideoByReference()
-    {
-        $refs = [];
-        $vidos = Video::getVideoNode(['created_by' => Yii::$app->user->id]);
-        if($vidos != null){
-            foreach ($vidos as $model) {
-                $refs[] = [
-                    'id' => $model->id,
-                    'name' => $model->courseNode->course->name . ' / ' . $model->courseNode->name . 
-                            ' / ' . $model->name .'（'. $model->teacher->name .'）'
-                ];
-            }
-        }
-        
-        return ArrayHelper::map($refs, 'id', 'name');
     }
 }

@@ -5,6 +5,7 @@ use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -35,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer.name',
+                    'attribute' => 'customer_name',
                     'label' => Yii::t('app', '{The}{Customer}',[
                         'The' => Yii::t('app', 'The'),
                         'Customer' => Yii::t('app', 'Customer'),
@@ -57,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'category.name',
+                    'attribute' => 'category_name',
                     'label' => Yii::t('app', '{The}{Category}',[
                         'The' => Yii::t('app', 'The'),
                         'Category' => Yii::t('app', 'Category'),
@@ -91,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'teacher.name',
+                    'attribute' => 'teacher_name',
                     'label' => Yii::t('app', '{Main Speak}{Teacher}',[
                         'Main Speak' => Yii::t('app', 'Main Speak'),
                         'Teacher' => Yii::t('app', 'Teacher'),
@@ -113,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'createdBy.nickname',
+                    'attribute' => 'nickname',
                     'label' => Yii::t('app', 'Created By'),
                     'filter' => Select2::widget([
                         'model' => $searchModel,
@@ -229,23 +230,20 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     
     <?php
-        $page = !isset($param['page']) ? 1 :$param['page'];
+        $page = !isset($filters['page']) ? 1 : $filters['page'];
         $pageCount = ceil($totalCount / 20);
         if($pageCount > 0){
             echo '<div class="summary">' . 
                     '第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。' .
                 '</div>';
         }
-        
-        echo LinkPager::widget([
-            'pagination' => $pagers,
-            'options' => ['class' => 'pagination', 'style' => 'margin: 0px;border-radius: 0px;'],
-            'prevPageCssClass' => 'page-prev',
-            'nextPageCssClass' => 'page-next',
-            'prevPageLabel' => '<i>&lt;</i>'.Yii::t('app', 'Prev'),
-            'nextPageLabel' => Yii::t('app', 'Next').'<i>&gt;</i>',
-            'maxButtonCount' => 5,
-    ]); ?>
+
+        echo LinkPager::widget([  
+            'pagination' => new Pagination([
+                'totalCount' => $totalCount,  
+            ]),  
+        ])
+    ?>
     
 </div>
 <?php

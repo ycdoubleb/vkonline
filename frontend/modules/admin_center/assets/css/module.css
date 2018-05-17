@@ -12,7 +12,6 @@
     float: right;  
     width: 1000px;
     height: auto;
-    padding-left: 35px;
     font-size: 14px;
 }
 
@@ -20,40 +19,76 @@
     width: 100%;
     padding-left: 0;
     padding-right: 0;
-    display: inline-block
+    display: inline-block;
 }
 
-.main
-.frame-title {
-    padding: 10px 0 28px 10px;
-    color: #ffffff;
-    line-height: 20px;
-    background-color: rgba(153, 153, 153, 1);
+.main .page-title {
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    margin-bottom: 45px;
+    font-size: 16px;
+    color: #666666;
+    background-color: #ffffff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.main
-.frame-title .icon {
-    float: left; 
-    margin-top: 3px;
-    margin-right: 5px;
+.main .frame-content .frame-title {    
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #999999;
+    background-color: #ffffff;
 }
 
-.main
-.frame-title>span {
-    display: block;
-    float: left;
+.main .frame-content {
+    margin-bottom: 45px;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.main .frame
-.frame-title>.framebtn {
-    position: absolute;
-    margin-top: -6px;
-    right: 6px;
+.main .frame-content .table>tr {
+    background-color: #ffffff;
+    min-height: 48px !important;
+}
+
+.main .frame .frame-title .framebtn {
+    position: relative;
+    padding-right: 15px;
+    float: right;
+}
+
+.main .frame .frame-title .framebtn a {
+    font-size: 14px;
+    width: 100px;
+    height: 35px;
+    line-height: 25px;
+    background-color: rgba(40, 178, 139, 1);
+    border: 0;
+    border-radius: 0;
+}
+
+.main .frame .frame-title .framebtn #copyBtn {
+    background-color: #5bc0de;
+}
+
+.main .frame .frame-title .framebtn button {
+    font-size: 14px;
+    width: 100px;
+    height: 35px;
+    line-height: 25px;
+    background-color: rgba(40, 178, 139, 1);
+    border: 0;
+    border-radius: 0;
 }
 
 /** table表格th样式 */
 .main .viewdetail-th {
-    color: #666666;
+    color: #999999;
+    background-color: #ffffff;
     width: 13%;
     font-weight: normal;
     text-align: center;
@@ -64,6 +99,7 @@
 /** table表格th-head样式 */
 .main .viewdetail-th-head {
     color: #000000;
+    background-color: #ffffff;
     float: left;
     font-weight: bold;
 }
@@ -72,14 +108,22 @@
     table-layout: fixed;
 }
 
-.table > thead > tr > th, 
-.table > tbody > tr > th,
-.table > tfoot > tr > th, 
-.table > thead > tr > td, 
-.table > tbody > tr > td, 
-.table > tfoot > tr > td {
+.table > thead > tr > th, .table > tbody > tr > th,
+.table > tfoot > tr > th, .table > thead > tr > td, 
+.table > tbody > tr > td, .table > tfoot > tr > td {
     padding: 4px;
-    vertical-align: middle;
+    vertical-align: middle !important;
+    background-color: #ffffff;
+}
+
+.table-striped > tbody > tr{
+    height: 48px;
+    font-size: 14px;
+}
+
+.form-control,
+.select2-container--krajee .select2-selection{
+    border-radius: 0px;
 }
 
 /***  概况  **/
@@ -88,19 +132,88 @@
 }
 
 /***  用户模块  **/
-.admin_center-default-index .frame .frame-title {
-    color: #000000;
-    background-color: #d2d2d2;
+.main .frame-content .grid-view {
+    background-color: #ffffff;
 }
 
-/***  用户模块  **/
-.user-create .frame .frame-title, .user-update .frame .frame-title {
+.main .frame-content .grid-view .table > thead:first-child > tr:first-child > th{
+    text-align: center;
+    height: 48px;
+    font-weight: 700;
+    color: rgb(102, 102, 102);
+    background-color: #f9f9f9;
+}
+
+.main .frame-content .grid-view .table > tbody > tr > td {
+    min-height: 45px;
+    text-align: center;
+}
+
+.main .frame-content .grid-view .summary {
+    padding-left: 10px;
+    padding-bottom: 20px;
+    color: #CCCCCC;
+}
+
+.main .frame-content .content-content {
+    background-color: #ffffff;
+    border-top: 1px solid #f2f2f2;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.main .frame-content .content-content .btn-addupd .btn {
+    font-size: 14px;
+    width: 100px;
+    height: 35px;
+    line-height: 25px;
+    background-color: rgba(40, 178, 139, 1);
+    border: 0;
+    border-radius: 0;
+}
+
+.main .frame .page-title span {
+    position: relative;
+    float: right;
+    padding-right: 10px;
+    
+}
+
+.main .frame .page-title span a{
+    width: 100px;
+    height: 35px;
+    line-height: 25px;
+    border: 0;
+    border-radius: 0;
+}
+
+.user-view.main .viewdetail-th {
+    text-align: right;
+}
+
+/***  课程/视频管理模块  **/
+.video-index.main .table, .course-index.main .table{
+    margin-bottom: 0px;
+}
+
+.video-index.main .video-bottom, .course-index.main .course-bottom {
+    padding-top: 15px;
+    padding-left: 10px;
+    background-color: #ffffff;
     color: #999999;
-    background-color: #f2f2f2;
-    margin-bottom: 10px;
 }
 
-/***  宣传栏模块  **/
+.video-index.main .video-bottom .pagination,
+.course-index.main .course-bottom .pagination{
+    margin: 15px 0;
+}
+
+/***  分类管理模块  **/
+.category-view.main .viewdetail-th, .course-attribute-view.main .viewdetail-th {
+    text-align: right;
+}
+
+/***  banner管理模块  **/
 .banner-create .frame .frame-title, .banner-update .frame .frame-title {
     color: #999999;
     background-color: #f2f2f2;
@@ -126,5 +239,5 @@
 /*** 邀请码去边框 加底色 **/
 #inviteCode{
     border: 0;
-    background-color: #f9f9f9;
+    background-color: #ffffff;
 }

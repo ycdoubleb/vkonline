@@ -88,7 +88,7 @@ class Category extends ActiveRecord
     public function rules()
     {
         return [
-            [['parent_id','level', 'is_show', 'created_at', 'updated_at'], 'integer'],
+            [['parent_id', 'level', 'sort_order', 'is_show', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
             [['created_by', 'customer_id'], 'string', 'max' => 32],
             [['path', 'image', 'des'], 'string', 'max' => 255],
@@ -109,6 +109,9 @@ class Category extends ActiveRecord
         if (parent::beforeSave($insert)) {
             if ($this->mobile_name == "") {
                 $this->mobile_name = $this->name;
+            }
+            if ($this->customer_id == "") {
+                $this->customer_id = Yii::$app->user->identity->customer_id;
             }
             $file_name = md5(time());
             //图片上传

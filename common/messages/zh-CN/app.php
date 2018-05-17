@@ -77,6 +77,7 @@ return [
     'Set' => '设置',
     'Make' => '制作',
     'Preview' => '预览',
+    'Choice' => '选择',
     'Submit' => '提交',
     'Create' => '创建',
     'Update' => '更新',
@@ -131,6 +132,8 @@ return [
     'Reference' => '引用',
     'Keyword' => '关键字',
     'Attribute' => '属性',
+    'Top Level' => '顶级',
+    'Sublevel' => '子级',
   
     //提示消息
     "Can't be empty." => '不能为空。',

@@ -14,18 +14,18 @@ ModuleAssets::register($this);
 ?>
 <div class="teacher-update main">
 
+    <!--面包屑-->
     <div class="crumbs">
-        <i class="fa fa-pencil"></i>
-        <span><?= Yii::t('app', '{Update}{Teacher}', [
-            'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')
-        ]) ?></span>
+        <span>
+            <?= Yii::t('app', '{Update}{Teacher}', [
+                'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')
+            ]) ?>
+        </span>
     </div>
-    
+    <!--表单-->
     <?= $this->render('_form', [
         'model' => $model,
-        'allTags' => $allTags,
-        'tagsSelected' => $tagsSelected,
     ]) ?>
-
+   
 </div>
 

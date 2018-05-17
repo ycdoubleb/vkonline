@@ -3,6 +3,7 @@
 */
 /* 
     创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-15, 13:11:00;
 */
 
 /*******************************************************************************
@@ -20,6 +21,21 @@
 .frame {
     background-color: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.summary {
+    float: left;
+    width: 100%;
+    padding: 20px 10px 0;
+    font-size: 16px;
+    color: #999;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
 }
 
 /*******************************************************************************
@@ -76,12 +92,21 @@
     font-weight: bold;
 }
 
+.form .form-group a {
+    border-radius: 0;
+}
+
 .form .form-group .form-control,
 .form .form-group .select2-selection {
     height: 40px;
     padding: 10px 24px 10px 12px;
     border-radius: 0;
     box-shadow: none;
+}
+
+body .select2-container--krajee 
+.select2-search--dropdown .select2-search__field {
+    border-radius: 0;
 }
 
 .form .form-group textarea.form-control {
@@ -105,6 +130,39 @@
 .select2-selection__choice {
     margin: 0 6px 1px 0;
 }
+
+#select2-course-teacher_id-results > li {
+    border-top: 1px solid #e4e4e4;
+}
+
+.select2-results .icon-vimeo {
+    width: 16px;
+    font-size: 16px !important;
+    color: #ffcc01;
+}
+
+.select2-results .avatars {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+
+.select2-results .job-title {
+    margin-left: 5px;
+    color: #999;
+}
+
+.select2-results .links {
+    position: relative;
+    z-index: 1000;
+    float: right;
+    margin-right: 15px;
+    color: #333 !important;
+    line-height: 35px;
+}
+
 /*******************************************************************************
  * 排序
  *******************************************************************************/
@@ -114,6 +172,14 @@
     margin: 30px 0 35px;
     line-height: 54px;
     border-bottom: 1px solid #999;
+}
+
+.sort .keep-left {
+    float: left;
+}
+
+.sort .keep-right {
+    float: right;
 }
 
 .sort > ul {
@@ -157,12 +223,28 @@
     margin: 0 !important;
 }
 
+.list .tuip-btn {
+    display: block;
+    padding: 4px 8px;
+    margin-top: -10px;
+    font-size: 14px;
+    color: #fff;
+} 
+
 .list .tuip-green {
     color: #339966;
 }
 
 .list .tuip-red {
     color: #ff3300;
+}
+
+.list .tuip-bg-green {
+    background-color: #339966;
+}
+
+.list .tuip-bg-red {
+    background-color: #ff3300;
 }
 /*******************************************************************************
  * 列表
@@ -217,8 +299,8 @@
 
 .list .item .pic .duration {
     position: absolute;
-    bottom: -1px;
-    right: 1px;
+    bottom: 2px;
+    right: 2px;
     height: 20px;
     padding: 0 5px;
     color: #fff;
@@ -246,12 +328,6 @@
     font-weight: bold;
 }
 
-.list .item .tuip-nodenum {
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-}
-
 .list .item .speaker {
     height: 50px;
     margin: 0 10px;
@@ -274,16 +350,19 @@
     background-color: #26bfcd;
 }
 
-.list .item .speaker .score {
-    display: block;
-    color: #ff6600;
-}
-
 .list .item .speaker .tuip > a {
-    display: none;
     margin: 8px 0;
     border-radius: 0;
 }
+
+.list .item .speaker .avg-star {
+    display: block;
+}
+
+.list .item .speaker .preview {
+    display: none;
+}
+
 /*******************************************************************************
  * 分页
  *******************************************************************************/
@@ -334,21 +413,22 @@
     border-radius: 0;
 }
 
-.frame .frame-height {
+.frame .frame-right-height {
     min-height: 418px;
     max-height: 418px;
     overflow-y: auto;
 }
 
-.frame .summary {
-    padding: 20px 10px;
-    color: #666;
+.frame .frame-height {
+    min-height: 580px;
+    max-height: 580px;
+    overflow-y: auto;
 }
 
 /*******************************************************************************
  * table样式
  *******************************************************************************/
-.frame .table {
+.content .table {
     margin: -1px 0 0;
     color: #666;
     border-right: none;
@@ -357,17 +437,18 @@
 
 .table .detail-th {
     width: 150px;
-    height: 48px;
     color: #878787;
     font-weight: normal;
-    text-align: right;
+    text-align: right !important;
+    border-right-width: 1px !important;
     border-left: none;
 }
 
 .table .detail-td {
     width: 454px;
-    height: 48px;
-    border-left: none;
+    text-align: left !important;
+    font-weight: normal;
+    white-space: inherit !important;;
 }
 
 .table .detail-des {
@@ -376,15 +457,18 @@
     vertical-align:middle; 
 }
 
-.table > thead  > tr > th,
-.table > tbody > tr > th,
-.table > tbody > tr > td {
-    vertical-align: middle !important;
-    border-color: #e4e4e4 !important;
+.main .table > thead  > tr > th,
+.main .table > tbody > tr > th,
+.main .table > tbody > tr > td {
+    height: 48px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-color: #e4e4e4;
+    border-right-width: 0;
+    border-left-width: 0;
 }
-/*.frame .table.height > .actlog {
-    max-height: 555px;
-}*/
+
 /*******************************************************************************
  * 模态框样式
  *******************************************************************************/
@@ -392,9 +476,25 @@
     display: block;
     width: 100%;
 }
-.main.modal .modal-height {
-    min-height: 480px;
+.main.modal .modal-width {
+    width: 1150px;
 }
+.main.modal .modal-height {
+    height: 730px;
+    overflow-y: auto;
+}
+
+/*******************************************************************************
+ * 模态框视频列表样式
+ *******************************************************************************/
+.main.modal .list .item .pic {
+    height: 157px;
+}
+
+.main.modal .list .item .pic > .title {
+    line-height: 157px;
+}
+
 /*******************************************************************************
  * 课程框架
  *******************************************************************************/
@@ -455,6 +555,7 @@
 }
 
 .sortable .nodes .head {
+    position: relative;
     height: 50px;
     line-height: 50px;
 }
@@ -485,12 +586,12 @@
 .recent:hover {
     cursor:pointer;
 }
-
-/*.recent.active {
-    border-color: #666;
-    background-color:#ddd;
-}*/
-
+/*******************************************************************************
+ * 记录详情
+ *******************************************************************************/
+.coutse_actlog-view .modal-body .table-bordered {
+    border: 1px solid #e4e4e4;
+}
 /*******************************************************************************
  * 我的视频
  *******************************************************************************/
@@ -501,43 +602,124 @@
 .video-index .list .item .pic > .title {
     line-height: 157px;
 }
-
-.video-index .list .item .cont .tuip-right {
-    display: block;
-    padding: 4px 8px;
-    margin-top: -10px;
-    font-size: 14px;
-    color: #fff;
-} 
-
-.video-index .list .tuip-bg-green {
-    background-color: #339966;
-}
-
-.video-index .list .tuip-bg-red {
-    background-color: #ff3300;
-}
-
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/
+.teacher-index .list {
+    margin-top: 30px;
+}
 .teacher-index .list .item {
-    width: 140px;
-    height: 165px;
-    padding: 20px;
-    margin-right: 25px;
-    border: 1px rgba(204, 204, 204, 1) solid;
-    background-color: rgba(242, 242, 242, 1);
+    width: 200px;
+    height: 203px;
+    padding: 20px 50px;
+    margin-right: 66.5px;
 }
 
-.teacher-index .list .item .pic.avatars {
-    width: 96px;
-    height: 96px;
-}
-
-.teacher-index .list .item .cont {
-    margin: 14px 0;
+.teacher-index .list .cont {
+    margin: 14px 0 0;
     text-align: center;
-    color: #333;
-    background-color: transparent;
+    font-size: 16px;
+    color: #666;
+    border: none;
 }
+
+.teacher-index .list .cont .tuip {
+    font-size: 14px;
+    color: #ccc;
+    margin: 0 -50px;
+}
+/**
+ * 公共部分
+ */
+.teacher-index .avatars,
+.teacher-view .avatars {
+    position: relative;
+    display: inline-block;
+    width: 100px !important;
+    height: 100px !important;
+    padding: 2px;
+    background-color: #f2f2f2 !important;
+}
+
+.teacher-index .avatars > i,
+.teacher-view .avatars > i {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    font-size: 30px;
+    color: #ffcc01;
+}
+/*******************************************************************************
+ * 引用视频
+ *******************************************************************************/
+.field-video-is_ref .form-group {
+    margin-bottom: 0;
+}
+
+.video-reference .form-group {
+    margin: 0 !important;
+}
+
+.video-reference .form-group .form-label {
+    padding: 10px 0; 
+    color: #999; 
+    font-weight: bold; 
+}
+
+.video-reference .sort {
+    display: inline-block;
+    margin-top: 0;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+.video-reference .sort .form {
+    width: 65%;
+    margin-top: 5px;
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.video-reference .item.reference {
+    position: relative;
+    width: 200px;
+    margin-right: 25px;
+}
+
+.video-reference .item.reference .details {
+    position: absolute;
+    top: 0;
+    left: 225px;
+    z-index: 1026;
+}
+
+.video-reference .item.reference > a > .pic {
+    height: 112px !important;
+}
+
+.video-reference .item.reference > a > .pic > title {
+    line-height: 112px !important;
+}
+
+.video-reference .item.reference > .cont {
+    height: 40px;
+    padding: 0 5px 0 6px;
+    line-height: 40px;
+    border-bottom: none;
+}
+
+.video-reference .item.reference > .cont > a {
+    margin: 5px 0;
+    border-radius: 0;
+}
+
+.video-reference .item.reference > .cont .choice {
+    display: none;
+}
+
+/*******************************************************************************
+ * 滚动条大小
+ ******************************************************************************/
+/*.video-create .modal-body::-webkit-scrollbar {  
+   width: 1px;  
+   height: 1px;  
+}  */

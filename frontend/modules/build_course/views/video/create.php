@@ -15,13 +15,12 @@ ModuleAssets::register($this);
 $this->title = Yii::t('app', "{Add}{Video}",[
     'Add' => Yii::t('app', 'Add'), 'Video' => Yii::t('app', 'Video')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = $this->title;
+
 ?>
 
 <div class="video-create main modal">
 
-    <div class="modal-dialog modal-lg" style="width: 1000px" role="document">
+    <div class="modal-dialog modal-lg modal-width" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -33,7 +32,6 @@ $this->title = Yii::t('app', "{Add}{Video}",[
                 
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'allRef' => $allRef,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
                     'allTags' => $allTags,
@@ -55,7 +53,24 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/video/_node.php')));
 $js = 
 <<<JS
-    window.onloadUploader();    //加载文件上传  
+    
+    if($("#video-is_ref").val() <= 0){
+        window.onloadUploader();    //加载文件上传   
+    }
+    //开关事件
+    function switchLog(event, state){
+        if(state == true){
+            $(".myModal .modal-dialog .modal-body").load("../video/reference?node_id=$model->node_id");
+        }else{
+            $(".myModal").load("../video/create?node_id=$model->node_id");
+        }
+    }
+    //重选引用视频事件
+    function reelectEvent(elem){
+        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
+        return false;
+    }
+        
     // 提交表单
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;
@@ -79,9 +94,9 @@ $js =
             return;
         }
         var items = $domes;    
-        $.post("../video/create?node_id=$model->node_id",$('#build-course-form').serialize(),function(rel){
+        $.post("../video/create?node_id=$model->node_id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){
-                var dome = renderHtml(items, rel['data']);
+                var dome = Wskeee.StringUtil.renderDOM(items, rel['data']);
                 $('#' + rel['data']['node_id'] + ' > div > .sortable').append(dome);
                 sortable('.sortable', {
                     forcePlaceholderSize: true,
