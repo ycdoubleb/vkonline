@@ -170,10 +170,12 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'template' => '{view} {update}{delete}',
+                        'headerOptions' => ['style' => 'width:70px'],
+                        'contentOptions' => ['style' => 'text-align:center;color:#666666'],
                         'buttons' => [
                             'view' => function ($url, $data, $key) {
                                  $options = [
-                                    'class' => 'btn btn-xs',
+                                    'class' => '',
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),
@@ -191,7 +193,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             },
                             'update' => function ($url, $data, $key) use ($userLevel) {
                                  $options = [
-                                    'class' => 'btn btn-xs ' . (($data['id'] == Yii::$app->user->id) ? ' ' : 
+                                    'class' => (($data['id'] == Yii::$app->user->id) ? ' ' : 
                                         (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'Update'),
@@ -210,7 +212,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             },
                             'delete' => function ($url, $data, $key) use ($userLevel) {
                                 $options = [
-                                    'class' => 'btn btn-xs ' . (($data['id'] == Yii::$app->user->id) ? 'disabled' : 
+                                    'class' => (($data['id'] == Yii::$app->user->id) ? 'disabled' : 
                                         (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'Delete'),

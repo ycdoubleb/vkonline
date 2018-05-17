@@ -53,10 +53,7 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/video/_node.php')));
 $js = 
 <<<JS
-    
-    if($("#video-is_ref").val() <= 0){
-        window.onloadUploader();    //加载文件上传   
-    }
+
     //开关事件
     function switchLog(event, state){
         if(state == true){

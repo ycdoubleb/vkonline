@@ -96,6 +96,13 @@
     vertical-align: middle;
 }
 
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+
 /** table表格th-head样式 */
 .main .viewdetail-th-head {
     color: #000000;

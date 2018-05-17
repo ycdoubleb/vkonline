@@ -53,7 +53,7 @@ $this->title = Yii::t(null, "{Edit}{Video}", [
 <?php
 $js = 
 <<<JS
-    window.onloadUploader();    //加载文件上传  
+        
     // 提交表单
     $("#submitsave").click(function(){
         //$("#build-course-form").submit();return;
