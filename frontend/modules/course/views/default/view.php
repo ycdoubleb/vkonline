@@ -29,7 +29,7 @@ $this->title = Yii::t('app', 'Course');
             <!-- 课程导航 -->
             <div class="course-nav">
                 <a href="/course/default/list">全部课程</a> >
-                <?php foreach(Category::getCatById($model['category_id'])->getParent(true) as $index => $category): ?>
+                <?php foreach(Category::getCatById($model['category_id'])->getParents() as $index => $category): ?>
                 <a href="/course/default/list?cat_id=<?=$category->id?>"><?=$category->name?></a> >
                 <?php endforeach; ?>
                 <span class="name"><?= $model['name'] ?></span>
