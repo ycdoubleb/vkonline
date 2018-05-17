@@ -64,12 +64,12 @@ AppAsset::register($this);
     <div class="contacts-box">
         <div class="container contacts-content">
             <ul>
-                <li class="contacts-left"><?= Html::a('关于我们', 'about') ?></li>
-                <li class="contacts-left"><?= Html::a('联系我们', 'contact') ?></li>
+                <li class="contacts-left"><?= Html::a('关于我们', '/other/default/about') ?></li>
+                <li class="contacts-left"><?= Html::a('联系我们', '/other/default/contact') ?></li>
                 <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/?app_id=app-frontend&id=1') ?></li>
             </ul>
             <ul>
-                <li class="contacts-left"><?= Html::a('意见反馈', 'feedback') ?></li>
+                <li class="contacts-left"><?= Html::a('意见反馈', '/other/default/feedback') ?></li>
             </ul>
             <ul class="contacts-right-box">
                 <li class="contacts-right">

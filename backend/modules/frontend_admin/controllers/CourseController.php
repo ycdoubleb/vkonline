@@ -54,7 +54,7 @@ class CourseController extends Controller
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->backendSearch(Yii::$app->request->queryParams);
+        $result = $searchModel->backendSearch(Yii::$app->request->queryParams, null);
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => $result['data']['course']

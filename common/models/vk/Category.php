@@ -395,6 +395,7 @@ class Category extends ActiveRecord
             if ($catgegory->parent_id == 0)
                 break;
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
+        
         return $categorys;
     }
     
@@ -409,7 +410,7 @@ class Category extends ActiveRecord
      * @return array [[level_1],[level_2],..]
      */
     public static function getSameLevelCats($id , $containerSelfLevel = false, $recursion = true, $include_unshow = false){
-        return self::getCustomerSameLevelCats($id, null, $include_unshow, $recursion, $containerSelfLevel);
+        return self::getCustomerSameLevelCats($id, null, $containerSelfLevel, $recursion, $include_unshow);
     }
 
     /**

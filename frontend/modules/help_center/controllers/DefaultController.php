@@ -15,9 +15,6 @@ use yii\helpers\Url;
 use yii\web\Controller;
 use yii\widgets\Menu;
 
-
-
-
 /**
  * Default controller for the `helpcenter` module
  */

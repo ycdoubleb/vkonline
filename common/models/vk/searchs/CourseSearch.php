@@ -53,15 +53,15 @@ class CourseSearch extends Course
     
     
     //后台-课程
-    public function backendSearch($params)
+    public function backendSearch($params, $categoryId)
     {
+        self::getInstance();    
         $this->load($params);
-        
-        self::getInstance();
+       
         //条件查询
         self::$query->andFilterWhere([
             'Course.customer_id' => $this->customer_id,
-            'Course.category_id' => $this->category_id,
+            'Course.category_id' => !empty($categoryId) ? ArrayHelper::merge([$this->category_id], $categoryId) : $this->category_id,
             'Course.teacher_id' => $this->teacher_id,
             'Course.created_by' => $this->created_by,
             'Course.is_publish' => $this->is_publish,
@@ -72,10 +72,9 @@ class CourseSearch extends Course
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         
         //添加字段
-        $addArrays = ['Customer.name AS customer_name','Category.name AS category_name' , 'Course.name', 
-             'Course.is_publish', 'Course.level',  'Course.created_at',
+        $addArrays = ['Customer.name AS customer_name','Category.name AS category_name', 'Course.name', 
+            'Course.is_publish', 'Course.level', 'Course.created_at', 'Course.category_id',
             'User.nickname', 'Teacher.name AS teacher_name',
-            
         ];
         
         return $this->search($params, $addArrays); 
@@ -110,14 +109,15 @@ class CourseSearch extends Course
     //管理中心模块的情况下
     public function adminCenterSearch($params)
     {
+        self::getInstance();
         $this->load($params);
         
-        self::getInstance();
-       
+        $categoryId = Category::getCatChildrenIds($this->category_id, true);    //获取分类的子级ID
+        
         //查询条件
         self::$query->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id]);
         
-        return $this->backendSearch($params);
+        return $this->backendSearch($params, $categoryId);
     }
 
     /**
@@ -130,7 +130,7 @@ class CourseSearch extends Course
      */
     protected function search($params, $addArrays = [])
     {
-        $page = ArrayHelper::getValue($params, 'page', 0); //分页
+        $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //复制课程对象
         $copyCourse= clone self::$query;    
@@ -149,7 +149,7 @@ class CourseSearch extends Course
         //添加字段
         self::$query->addSelect($addArrays);
         //显示数量
-        self::$query->offset($page * $limit)->limit($limit);
+        self::$query->offset(($page - 1) * $limit)->limit($limit);
         //关联查询
         self::$query->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id');
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');

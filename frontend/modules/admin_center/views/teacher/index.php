@@ -1,5 +1,6 @@
 <?php
 
+use common\models\vk\Teacher;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -47,7 +48,7 @@ ModuleAssets::register($this);
             'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
         
-        <?= $form->field($searchModel, 'is_certificate')->radioList(['' => '全部', 1 => '已认证', 0 => '未认证'], [
+        <?= $form->field($searchModel, 'is_certificate')->radioList(Teacher::$certificateStatus, [
             'value' => ArrayHelper::getValue($filters, 'TeacherSearch.is_certificate', ''),
             'itemOptions'=>[
                 'labelOptions'=>[
@@ -97,7 +98,7 @@ ModuleAssets::register($this);
 <?php
 $url = Url::to(array_merge(['index'], $filters));   //链接
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/teacher/_dome.php')));
+    $this->renderFile('@frontend/modules/admin_center/views/teacher/_dome.php')));
 $js = 
 <<<JS
    
@@ -122,7 +123,7 @@ $js =
     function dataLoad(pageNum) {
         var maxPageNum =  ($totalCount - 8) / 8;
         // 当前页数是否大于最大页数
-        if((pageNum + 1) > Math.ceil(maxPageNum)){
+        if((pageNum) > Math.ceil(maxPageNum)){
             return;
         }
         $.get("$url", {page: (pageNum + 1)}, function(rel){

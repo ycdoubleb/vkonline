@@ -1,13 +1,16 @@
 <?php
 
+use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
+use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\LinkPager;
 
@@ -41,28 +44,25 @@ $this->title = Yii::t('app', '{Course}{List}',[
                 ],
                 'columns' => [
                     [
-                        'attribute' => 'category_name',
-                        'label' => Yii::t('app', '{Top Level}{Category}',[
-                            'Top Level' => Yii::t('app', 'Top Level'),
-                            'Category' => Yii::t('app', 'Category'),
-                        ]),
-                        'filter' => Select2::widget([
+                        'attribute' => 'category_id',
+                        'label' => Yii::t('app', 'Category'),
+                        'value' => function($data) {
+                            /** @var $model Course **/
+                            $model= Course::findOne(['id' => $data['id']]);
+                            return $model->category->fullPath;
+                        },
+                        'filter' => DepDropdown::widget([
                             'model' => $searchModel,
                             'attribute' => 'category_id',
-                            'data' => $category,
-                            'hideSearch' => false,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
+                            'plugOptions' => [
+                                'url' => Url::to('search-children', false),
+                                'level' => 3,
                             ],
-                        ]),
-                        'headerOptions' => ['style' => 'width:110px'],
-                        'contentOptions' => ['style' => 'white-space:normal'],
-                    ],
-                    [
-                        'label' => Yii::t('app', '{Sublevel}{Category}',[
-                            'Sublevel' => Yii::t('app', 'Sublevel'),
-                            'Category' => Yii::t('app', 'Category'),
+                            'items' => Category::getSameLevelCats($searchModel->category_id, true),
+                            'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
+                            'itemOptions' => [
+                                'style' => 'display:inline-block;',
+                            ],
                         ]),
                         'headerOptions' => ['style' => 'width:220px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
@@ -147,7 +147,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             return ($data['level'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                         Course::$levelMap[$data['level']] . '</span>' : null;
                         },
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:70px'],
                     ],
                     [
                         'label' => Yii::t('app', 'Tag'),

@@ -53,6 +53,7 @@ return [
             'build_course/*',
             'admin_center/*',
             'help_center/*',
+            'other/*',
         ]
     ],
     'params' => $params,
