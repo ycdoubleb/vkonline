@@ -224,9 +224,70 @@ a.desc:after {
 
 /***************************************************************
 *
-* tab样式
+* 按钮样式
 *
 ***************************************************************/
+/* 正常大小 */
+.btn{
+    border-radius: 0px;
+    line-height: 23px;
+    padding: 7px 20px;
+}
+/*  */
+.btn-sm{
+    border-radius: 0px;
+    line-height: 23px;
+    padding: 2px 10px;
+}
+/* 危险 */
+.btn-primary { 
+    color: #fff; 
+    background-color: #FC583D; 
+    border-color: #FC583D; 
+}
+.btn-primary:hover, .btn-primary:active:hover, .btn-primary:focus, .btn-primary:active, .btn-primary:active:focus, .btn-primary.active  { 
+    color: #fff; 
+    background-color: #ff725b; 
+    border-color: #ff725b; 
+}
+/* 一般信息 */
+.btn-info { 
+    color: #fff; 
+    background-color: #5BC0DE; 
+    border-color: #5BC0DE; 
+}
+.btn-info:hover,.btn-info:active:hover, .btn-info:focus, .btn-info:active, .btn-info:active:focus, .btn-info.active { 
+    color: #fff; 
+    background-color: #7ACDE4; 
+    border-color: #7ACDE4; 
+}
+
+/* 成功 */
+.btn-success { 
+    color: #fff; 
+    background-color: #28B28B; 
+    border-color: #28B28B; 
+}
+.btn-success:hover,.btn-success:active:hover, .btn-success:focus, .btn-success:active, .btn-success:active:focus, .btn-success.active { 
+    color: #fff; 
+    background-color: #2CC098; 
+    border-color: #2CC098; 
+}
+
+/*****************************************************
+*
+* 进度条
+*
+*****************************************************/
+.progress{
+    height: 15px;
+    margin-bottom: 0;
+    background-color: #DEDEDE;
+    border-radius: 0px;
+}
+.progress-bar-success{
+    background-color: #28B28B; 
+}
 
 
 /*****************************************************

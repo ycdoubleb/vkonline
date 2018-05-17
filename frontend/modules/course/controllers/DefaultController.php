@@ -8,6 +8,7 @@ use common\models\vk\CourseAttribute;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
+use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\PraiseLog;
 use common\models\vk\SearchLog;
@@ -18,6 +19,7 @@ use common\models\vk\Video;
 use frontend\modules\course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -51,30 +53,6 @@ class DefaultController extends Controller
                 ],
             ]
         ];
-    }
-    
-    /**
-     * 呈现模块的索引视图。
-     * @return mixed [allCategory => 所有分类, filters => 过滤参数,
-     *    pagers => 分页, dataProvider => 课程数据
-     * ]
-     */
-    public function actionIndex()
-    {
-        $searchModel = new CourseSearch();
-        $result = $searchModel->courseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['course']),
-        ]);
-        
-        unset($result['filter']['limit']);
-        return $this->render('index', [
-            'allCategory' => Category::getCatsByLevel(1, true),
-            'filters' => $result['filter'],
-            'pagers' => $result['pager'],
-            'dataProvider' => $dataProvider,
-        ]);
     }
     
     /**
@@ -119,7 +97,6 @@ class DefaultController extends Controller
         Yii::$app->response->format = 'json';
         $code = 0;
         $mes = '';
-        $data = [];
         try{
             $result = CourseListSearch::search(Yii::$app->request->queryParams,2);
         } catch (\Exception $ex) {
@@ -127,150 +104,43 @@ class DefaultController extends Controller
         }
         return [
             'code' => $code,
-            'mes' => '',
+            'mes' => $mes,
             'data' => [
                 'page' => ArrayHelper::getValue(Yii::$app->request->queryParams, 'page' ,1),
                 'courses' => $result['courses'],
             ],
         ];
     }
-    
+
     /**
-     * 搜索结果 保存搜索的关键字
-     * 如果保存成功，浏览器将被重定向到“index”页面。
-     * @return mixed
-     */
-    public function actionResult()
-    {
-        $params = Yii::$app->request->queryParams;
-        $keyword = ArrayHelper::getValue($params, 'keyword');
-        
-        $logModel = new SearchLog();
-        
-        $logModel->keyword = $keyword;
-        
-        if($logModel->save()){
-            return $this->redirect(array_merge(['index'], $params));
-        } else {
-            Yii::$app->getSession()->setFlash('error','操作失败');
-        }
-    }
-    
-    /**
-     * 显示一个单一的 Course 模型.
+     * 查看课程详情
      * @param string $id
-     * @return mixed  [
-     *  model => 模型, favorite => 关注的课程模型,
-     *  praise => 点赞的课程模型, videoNum => 视频数
-     *  courseNodes => 课程节点, msgDataProvider => 留言数据
-     * ]
      */
     public function actionView($id)
     {
-        $model = $this->findModel($id);
-        $searchModel = new CourseMessageSearch();
+        $detail = $this->findViewDetail($id);
         
         return $this->render('view', [
-            'model' => $model,
-            'favorite' => $this->findFavoriteModel($id),
-            'praise' => $this->findPraiseModel($id),
-            'videoNum' => $this->getVideoNumByCourseNode($id),
-            'courseNodes' => $this->findCourseNode($id),
-            'msgDataProvider' => $searchModel->search(['course_id' => $id]),
+            'model' => $detail['course'],
+            'study_progress' => $detail['study_progress'],
+        ]);
+    }
+
+    /**
+     * 获取课程目录列表
+     * @param string $course_id 课程ID
+     */
+    public function actionGetNode($course_id){
+        return $this->renderAjax('__nodes', [
+            
         ]);
     }
     
     /**
-     * 点击关注
-     * @param string $id    //course_id
-     * @return json
+     * 获取评价
+     * @param string $id 课程ID
      */
-    public function actionFavorite($id)
-    {
-        Yii::$app->getResponse()->format = 'json';
-        $model = $this->findModel($id);
-        $favorite = $this->findFavoriteModel($id);
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if(!$favorite->isNewRecord){
-                if($favorite->delete()){
-                    $model->favorite_count = $model->favorite_count - 1;
-                    $model->save(true, ['favorite_count']);
-                }
-            }else{
-                if($favorite->save()){
-                    $model->favorite_count = $model->favorite_count + 1;
-                    $model->save(true, ['favorite_count']);
-                }
-            }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code' => 200,
-                'data' => $model->favorite_count,
-                'message' => '操作成功！'
-            ];
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return [
-                'code' => 404,
-                'data' => $model->favorite_count,
-                'message' => '操作失败！',
-            ];
-        }
-    }
-    
-    /**
-     * 点击点赞
-     * @param string $id    //course_id
-     * @return json
-     */
-    public function actionPraise($id)
-    {
-        Yii::$app->getResponse()->format = 'json';
-        $model = $this->findModel($id);
-        $praise = $this->findPraiseModel($id);
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if(!$praise->isNewRecord){
-                if($praise->delete()){
-                    $model->zan_count = $model->zan_count - 1;
-                    $model->save(true, ['zan_count']);
-                }
-            }else{
-                if($praise->save()){
-                    $model->zan_count = $model->zan_count + 1;
-                    $model->save(true, ['zan_count']);
-                }
-            }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code' => 200,
-                'data' => $model->zan_count,
-                'message' => '操作成功！'
-            ];
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return [
-                'code' => 404,
-                'data' => $model->zan_count,
-                'message' => '操作失败！',
-            ];
-        }
-    }
-
-    /**
-     * 留言列表视图
-     * @return mixed [dataProvider => 留言数据]
-     */
-    public function actionMsgIndex()
+    public function actionGetcomment()
     {
         $searchModel = new CourseMessageSearch();
         
@@ -320,35 +190,51 @@ class DefaultController extends Controller
     }
     
     /**
-     * 基于其course_id 和 user_id找到 CourseFavorite 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
-     * @param string $course_id
-     * @return model CourseFavorite
+     * 查找课程详细信息
+     * @param string $id 课程ID
+     * @return array [Course,StudyProgress];
      */
-    protected function findFavoriteModel($course_id)
-    {
-        $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
-        if ($model !== null) {
-            return $model;
-        } else {
-            return new CourseFavorite(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
-        }
-    }
-    
-    /**
-     * 基于其type、course_id 和 user_id找到 PraiseLog 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
-     * @param string $course_id
-     * @return model PraiseLog
-     */
-    protected function findPraiseModel($course_id)
-    {
-        $model = PraiseLog::findOne(['type' => 1, 'course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
-        if ($model !== null) {
-            return $model;
-        } else {
-            return new PraiseLog(['type' => 1, 'course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
-        }
+    protected function findViewDetail($id){
+        
+        $user_id = Yii::$app->user->id;
+        /* @var $query Query */
+        $course_query = (new Query())
+                ->select([
+                    'Course.id','Course.name','Course.category_id','Course.cover_img',
+                    'Course.customer_id','Customer.name as customer_name',
+                    'Course.avg_star','Course.learning_count','Course.content_time','Course.content',
+                    '(Favorite.is_del = 0) as is_favorite'
+                ])
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()],"Course.customer_id = Customer.id")
+                ->leftJoin(['Favorite' => CourseFavorite::tableName()],"Course.id = Favorite.course_id AND Favorite.user_id = '$user_id'")
+                ->where(['Course.id' => $id]);
+        
+        /* 查找视频环节 */
+        $video_num_query = (new Query())
+                ->select(['Video.id'])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['Node' => CourseNode::tableName()], 'Node.id = Video.node_id')
+                ->where([
+                    'Node.course_id' => $id,
+                    'Node.is_del' => 0,
+                    'Video.is_del' => 0,
+                ]);
+        
+        /* 查找学习进度 */
+        $study_progress_query = (new Query())
+                ->select(['StudyProgress.*','Video.name as video_name'])
+                ->from(['StudyProgress' => CourseProgress::tableName()])
+                ->leftJoin(['Video' => Video::tableName()], 'Video.id = StudyProgress.last_video')
+                ->where([
+                    'StudyProgress.course_id' => $id,
+                    'StudyProgress.user_id' => $user_id,
+                ]);
+        
+        return [
+            'course' => array_merge($course_query->one(),['node_count' => $video_num_query->count()]),
+            'study_progress' => $study_progress_query->one(),
+        ];
     }
     
     /**
