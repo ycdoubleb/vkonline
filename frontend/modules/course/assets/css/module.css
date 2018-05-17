@@ -241,3 +241,391 @@
 .course-default-index .no_more{
     color: #999;
 }
+
+
+
+
+/******************************************************************************
+ *
+ * 课程查看页 
+ *
+ ******************************************************************************/
+.course-default-view .container{
+    padding: 0px;
+}
+/* 选择状态 */
+.course-default-view .yes{
+    color: #FC583D;
+}
+/***************************************************************
+* 课程头部
+***************************************************************/
+.course-default-view .course-head{
+    background-color: #333;
+    color: #666666;
+}
+
+/***************************************
+* 导航
+****************************************/
+.course-default-view .course-head .course-nav{
+    padding: 30px 0;
+}
+.course-default-view .course-head .course-nav .name{
+    color: #ccc;
+    font-weight: bold;
+}
+
+/***************************************
+* 预览
+****************************************/
+.course-default-view .course-head .preview{
+    display: inline-block;
+    width: 660px;
+    height: 350px;
+    margin-right: 25px;
+    background-color: #000;
+}
+.course-default-view .course-head .preview video{
+    width: 100%;
+    height: 100%;
+}
+
+/***************************************
+* 课程基本信息
+****************************************/
+.course-default-view .course-head .info-box{
+    position: relative;
+    display: inline-block;
+    float: right;
+    width: 480px;;
+    height: 350px;
+    color: #ccc;
+    background-color: #3c3c3c;
+    font-size: 12px;
+}
+/* 课程名 */
+.course-default-view .course-head .info-box .name-box{
+    line-height: 70px;
+    margin: 0 20px;
+}
+.course-default-view .course-head .info-box .name-box .course-name{
+    color: #fff;
+    font-size: 20px;
+}
+.course-default-view .course-head .info-box .name-box .customer-name{
+    float: right;
+}
+
+/* 星星 */
+.course-default-view .course-head .info-box .star-box{
+    line-height: 55px;
+    background-color: #444444;
+    padding: 0 20px;
+}
+.course-default-view .course-head .info-box .star-box .avg-star{
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 18px;
+}
+.course-default-view .course-head .info-box .star-box .learning-count{
+    float: right;
+    color: #FC583D;
+}
+
+/* 节点、内容时长 */
+.course-default-view .course-head .info-box .node-box{
+    line-height: 55px;
+    padding: 0 20px;
+}
+.course-default-view .course-head .info-box .node-box i{
+    margin-right: 5px;
+}
+.course-default-view .course-head .info-box .node-box .content-time{
+    float: right;
+}
+
+/* 控制按钮 */
+.course-default-view .course-head .info-box .control-box{
+    position: absolute;
+    line-height: 44px;
+    bottom: 20px;
+    left: 0px;
+    right: 0px;
+    padding: 0px 20px;
+}
+.course-default-view .course-head .info-box .control-box .last_pos{
+    margin-left: 10px;
+    color: #999999;
+}
+.course-default-view .course-head .info-box .control-box .control{
+    display: inline-block;
+    float: right;
+}
+.course-default-view .course-head .info-box .control-box .control a{
+    cursor: pointer;
+    color: inherit;
+}
+.course-default-view .course-head .info-box .control-box .control i{
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+/* 分享面板 */
+.course-default-view .course-head .info-box .share-panel{
+    display: none;
+    background-color: #444444;
+    z-index: 100;
+    position: absolute;
+    width: 300px;
+    right: 0px;
+    top: 351px;
+}
+.course-default-view .course-head .info-box .share-panel .icon{
+    background: url(../imgs/share-logo.png) no-repeat;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+.course-default-view .course-head .info-box .share-panel .icon-wx{background-position: 0 0;}
+.course-default-view .course-head .info-box .share-panel .icon-qq{background-position: -32px 0;}
+.course-default-view .course-head .info-box .share-panel .icon-xl{background-position: -64px 0;}
+.course-default-view .course-head .info-box .share-panel .icon-link{background-position: -96px 0;}
+.course-default-view .course-head .info-box .share-panel ul{
+    padding: 20px;
+    margin: 0 -20px 0 0;
+}
+.course-default-view .course-head .info-box .share-panel ul li{
+    display: inline-block;
+    margin-right: 20px;
+    width: 115px;
+    text-align: center;
+    height: 128px;
+}
+.course-default-view .course-head .info-box .share-panel .title{
+    border-bottom: 1px solid #585353;
+    padding: 15px;
+}
+.course-default-view .course-head .info-box .share-panel .content-box{
+    width: 90px;
+    height:85px;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+
+/***************************************************************
+* 内容导航
+***************************************************************/
+.course-default-view .content-nav .sort{
+    margin: 30px 0 0px;
+    color: #F2F2F2;
+}
+.course-default-view .content-nav .sort ul{
+    padding: 0;
+    margin: 0;
+}
+.course-default-view .content-nav .sort li{
+    display: inline-block;
+}
+.course-default-view .content-nav .sort li a{
+    display: block;
+    padding: 17px 25px;
+    color: inherit;
+    text-decoration: none;
+}
+.course-default-view .content-nav .sort li a:hover{
+    color: #FF3300;
+}
+.course-default-view .content-nav .sort .active{
+    border-bottom: 2px solid #FF3300;
+    color: #FF3300;
+    font-weight: bold;
+}
+
+/***************************************************************
+* 内容区
+***************************************************************/
+.course-default-view .content{
+    margin-top: 45px;
+    margin-bottom: 45px;
+}
+.course-default-view .panel{
+    border: none;
+    border-radius: 0px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.course-default-view .panel .panel-head{
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #333333;
+    border-bottom: 1px solid #f2f2f2;
+}
+.course-default-view .panel .panel-body{
+    padding: 20px;
+}
+.course-default-view .left-box{
+    display: inline-block;
+    width: 870px;
+}
+.course-default-view .right-box{
+    display: inline-block;
+    width: 280px;
+    float: right;
+}
+/***************************************
+* 左则内容
+****************************************/
+.course-default-view .left-box ul{
+    padding: 0;
+}
+.course-default-view .left-box > ul > li{
+    display: none;
+}
+.course-default-view .left-box .active{
+    display: block;
+}
+/***************************************
+* 课程目录
+****************************************/
+.course-default-view .left-box .c-nodes .panel-body p{
+    color: #999999;
+}
+/* 列表样式，不需要内边距 */
+.course-default-view .left-box .c-nodes .node-list .panel-body{
+    padding: 0;
+}
+.course-default-view .left-box .c-nodes .node-list .node{
+    color: #999999;
+    vertical-align: middle;
+}
+/* 列表项 */
+.course-default-view .left-box .c-nodes .node-list .head{
+    border-bottom: 1px solid #f2f2f2;
+}
+.course-default-view .left-box .c-nodes .node-list .control{
+    display: inline-block;
+    float: right;
+}
+/* 完成进度 */
+.course-default-view .left-box .c-nodes .node-list .progress{
+    height: 10px;
+    width: 34px;
+    display: inline-block;
+}
+.course-default-view .left-box .c-nodes .node-list .glyphicon-play{
+    margin: 0 20px;
+}
+/* 一级头部样式 */
+.course-default-view .left-box .c-nodes .node-list .level_1 .head{
+    height: 60px;
+    line-height: 60px;
+    padding: 0 20px;
+    color: #666666;
+}
+/* 二级头部样式 */
+.course-default-view .left-box .c-nodes .node-list .level_2 .head{
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 40px;
+    color: #999999;
+    cursor: pointer;
+}
+.course-default-view .left-box .c-nodes .node-list .level_2 .head:hover{
+    background-color: #F9F9F9;
+}
+/* 开始学习、继续学习按钮 */
+.course-default-view .left-box .c-nodes .node-list .level_2 .head .play{
+    display: none;
+    position: absolute;
+    right: 25px;
+    top: 5px;
+}
+.course-default-view .left-box .c-nodes .node-list .level_2 .head:hover .play{
+    display: block;
+}
+
+
+
+/***************************************
+* 右则内容
+****************************************/
+.course-default-view .right-box ul{
+    padding: 0px;
+    margin: 0px -20px -20px 0px;
+}
+.course-default-view .right-box ul li{
+    display: inline-block;
+    margin: 0px 8px 20px 0;
+}
+/* 图片封面 */
+.course-default-view .right-box .course-cover{
+    width: 115px;
+    height: 86pxx;
+}
+.course-default-view .right-box .course-name{
+    font-size: 12px;
+    color: #666666;
+    width: 115px;
+    margin: 0;
+}
+
+
+/***************************************
+* 主讲老师
+****************************************/
+.course-default-view .right-box .lecturer{
+    
+}
+.course-default-view .right-box .lecturer .info{
+    text-align: center;
+}
+.course-default-view .right-box .lecturer .avatar{
+    width:120px;
+    height:120px;
+    border-radius: 50%;
+}
+.course-default-view .right-box .lecturer .name{
+    font-size: 16px;
+    margin-top: 30px;
+}
+.course-default-view .right-box .lecturer .job_title{
+    font-size: 12px;
+    color: #999999;
+}
+.course-default-view .right-box .lecturer hr{
+    margin: 20px -20px;
+}
+
+/***************************************
+* 学过该课学员
+****************************************/
+.course-default-view .right-box .relative-user{
+    
+}
+.course-default-view .right-box .relative-user ul{
+    position: relative;
+    padding: 0px;
+    margin: 0px -20px -20px 0px;
+}
+.course-default-view .right-box .relative-user ul li{
+    display: inline-block;
+    margin: 0 16px 20px 0;
+}
+.course-default-view .right-box .relative-user .avatar{
+    width: 45px;
+    height:45px;
+    border-radius: 50%;
+}
+.course-default-view .right-box .relative-user .name{
+    width: 45px;
+    color: #999;
+    font-size: 12px;
+    text-align: center;
+}

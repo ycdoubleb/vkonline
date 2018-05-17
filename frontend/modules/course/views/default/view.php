@@ -1,213 +1,274 @@
 <?php
 
-use common\models\vk\Course;
+use common\models\vk\Category;
 use common\models\vk\CourseFavorite;
 use common\models\vk\PraiseLog;
-use frontend\modules\course\assets\MainAssets;
+use common\utils\DateUtil;
 use frontend\modules\course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
-/* @var $model Course */
+/* @var $model Array */
 /* @var $favorite CourseFavorite */
 /* @var $praise PraiseLog */
 
-
-MainAssets::register($this);
+GrowlAsset::register($this);
 ModuleAssets::register($this);
 
 $this->title = Yii::t('app', 'Course');
-
 ?>
 
-<style type="text/css">
-    body .wrap > .container {
-        width: 100%;
-    }
-</style>
 
-<header class="header filling">
-    <div class="content center">
-        <div class="course">
-            <h2><?= $model->name ?></h2>
-            <p>环节数：<span><?= $videoNum['node_num'] ?>&nbsp;节</span></p>
-        </div>
-        <div class="share">
-            <div class="share-btns"></div>
-        </div>
-        <div class="iframe">
-            <?php
-                if($favorite->isNewRecord){
-                    echo Html::a("<span class=\"fave\">{$model->favorite_count}<i class=\"fa fa-star-o\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'false']);
-                }else{
-                    echo Html::a("<span class=\"fave\">{$model->favorite_count}<i class=\"fa fa-star\"></i></span>", ['favorite', 'id' => $model->id], ['id' => 'favorite', 'data-toggled' => 'true']);
-                    echo '<span class="fave right"><i class="fa fa-star"></i>已关注</span>';
-                }
-                if($praise->isNewRecord){
-                    echo Html::a("<span class=\"zan\">{$model->zan_count}<i class=\"fa fa-thumbs-o-up\"></i></span>", ['praise', 'id' => $model->id], ['id' => 'praise', 'data-toggled' => 'false']);
-                }else{
-                    echo Html::a("<span class=\"zan\">{$model->zan_count}<i class=\"fa fa-thumbs-up\"></i></span>", ['praise', 'id' => $model->id], ['id' => 'praise', 'data-toggled' => 'true']);
-                }
-            ?>
-        </div>
-    </div>
-</header>
-
-<div class="content center">
-    
-    <div class="course-default-view main">
-        <div class="tabs">
-            <ul role="tablist">
-                <li role="presentation" class="active">
-                    <?= Html::a(Yii::t('app', '{Course}{Catalog}', [
-                        'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
-                    ]), '#catalog', ['role' => 'tab', 'data-toggle' => 'tab', 'aria-controls' => 'catalog', 'aria-expanded' => true]) ?>
-                </li>
-                <li role="presentation">
-                    <?= Html::a(Yii::t('app', 'Message'), '#msg', ['role' => 'tab', 'data-toggle' => 'tab', 'aria-controls' => 'msg']) ?>
-                </li>
-            </ul>
-        </div>
-        <div class="tab-content">
-            <div id="catalog" class="tab-pane fade active in"  role="tabpanel" aria-labelledby="catalog-tab">
-                <ul class="sortable list">
-                    <?php $endNodes = end($courseNodes); ?>
-                    <?php foreach($courseNodes as $index => $nodes): ?>
-                    <li id="<?= $nodes->id ?>">
-                        <div class="head <?= $nodes->id == $endNodes->id ? 'remove' : ''?>">
-                            <?php  
-                                $videoNum = count($nodes->videos);
-                                if($index == 0){
-                                    echo Html::a("<i class=\"fa fa-minus-square\"></i><span class=\"name\">{$nodes->name}<span class=\"number\">（{$videoNum}）</span></span>", "#toggle_{$nodes->id}", ['data-toggle'=>'collapse', 'aria-expanded'=> 'true', 'onclick'=>'replace($(this))']);
-                                }else{
-                                    echo Html::a("<i class=\"fa fa-plus-square\"></i><span class=\"name\">{$nodes->name}<span class=\"number\">（{$videoNum}）</span></span>", "#toggle_{$nodes->id}", ['data-toggle'=>'collapse', 'aria-expanded'=> 'false', 'onclick'=>'replace($(this))']);
-                                } 
-                            ?>
-                        </div>
-                        <?php if($index == 0): ?>
-                        <div id="toggle_<?= $nodes->id ?>" class="collapse in foot <?= $nodes->id == $endNodes->id ? 'remove' : ''?>" aria-expanded="true">
-                        <?php else: ?>
-                        <div id="toggle_<?= $nodes->id ?>" class="collapse foot <?= $nodes->id == $endNodes->id ? 'remove' : ''?>" aria-expanded="false">
-                        <?php endif; ?>
-                            <ul class="sortable list">
-                                <?php foreach($nodes->videos as $video): ?>
-                                <li>
-                                    <div class="head nodes">
-                                        <?= Html::a("<span class=\"name\">{$video->name}</span><i class=\"fa fa-play-circle\"></i>", ['/study_center/default/view', 'id' => $video->id]) ?>
-                                    </div>
-                                </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
+<div class="course-default-view">
+    <!-- 课程头部 -->
+    <div class="course-head">
+        <div class="container">
+            <!-- 课程导航 -->
+            <div class="course-nav">
+                <a href="/course/default/list">全部课程</a> >
+                <?php foreach(Category::getCatById($model['category_id'])->getParent(true) as $index => $category): ?>
+                <a href="/course/default/list?cat_id=<?=$category->id?>"><?=$category->name?></a> >
+                <?php endforeach; ?>
+                <span class="name"><?= $model['name'] ?></span>
             </div>
-            <div id="msg" class="tab-pane fade" role="tabpanel" aria-labelledby="msg-tab">
-                <div class="col-xs-12 frame">
-                    <div class="col-xs-12 table">
-                        <div id="msg_list" class="msglist">
-                            <?= $this->render('message', ['dataProvider' => $msgDataProvider]) ?>
+            <!-- 课程信息 -->
+            <div class="course-info">
+                <div class="preview">
+                    <video poster="<?=$model['cover_img']?>" src=""></video>
+                </div>
+                <div class="info-box">
+                    <div class="name-box">
+                        <span class="course-name"><?=$model['name']?></span>
+                        <span class="customer-name"><?=$model['customer_name']?></span>
+                    </div>
+                    <div class="star-box">
+                        <div class="avg-star">
+                            <?php for($i=0;$i<5;$i++): ?>
+                            <i class="glyphicon glyphicon-star <?= (int)$model['avg_star'] > $i ? 'yes' : '' ?>"></i>
+                            <?php endfor; ?>
                         </div>
-                        <div class="msgform">
-                            <div class="col-xs-11 msginput">
-
-                                <?php $form = ActiveForm::begin([
-                                    'options'=>['id' => 'msg-form', 'class'=>'form-horizontal','method' => 'post',],
-                                    'action'=>['add-msg', 'id' => $model->id]
-                                ]); ?>
-
-                                <?= Html::textarea('content', null, ['placeholder' => '请输入你想说的话...']);  ?>
-
-                                <?php ActiveForm::end(); ?>
-
-                            </div>
-                            <div class="col-xs-1 msgbtn">
-                                <?= Html::a(Yii::t('app', 'Message'), 'javascript:;', ['id'=>'submitsave', 'class'=>'btn btn-primary']) ?>
-                            </div>
+                        <span><?= $model['avg_star'] ?> 分</span>
+                        <span class="learning-count"><?= $model['learning_count'] ?>人在学</span>
+                    </div>
+                    <div class="node-box">
+                        <span class="nodes"><i class="glyphicon glyphicon-th-list"></i><?= $model['node_count'] ?>个环节</span>
+                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],true) ?></span>
+                    </div>
+                    <div class="control-box">
+                        <a class="btn btn-primary">继续学习</a>
+                        
+                        <?php if($study_progress && $study_progress['last_video']!="" ): ?>
+                        <span class="last_pos">上次学习到<?= $study_progress['video_name'] ?></span>
+                        <?php endif; ?>
+                        
+                        <div class="control">
+                            <a onclick="favoriteC()" id="favorite">
+                                <i class="glyphicon glyphicon-star <?= $model['is_favorite'] ? 'yes' : '' ?>"></i>
+                                <span><?= $model['is_favorite'] ? '已收藏' : '收藏' ?></span>
+                            </a>
+                            <a onclick="$('.share-panel').toggle()"><i class="glyphicon glyphicon-share"></i>分享</a>
                         </div>
+                    </div>
+                    
+                    <!-- 分享面板 -->
+                    <div class="share-panel">
+                        <div class="title">分享给朋友</div>
+                        <ul>
+                            <li>
+                                <div class="content-box">
+                                    <img class="code" src="/imgs/course/images/ewm.png"/>
+                                </div>
+                                <p>扫码分享</p>
+                            </li>
+                            <li>
+                                <div class="content-box">
+                                    <span class="icon icon-wx"></span>
+                                    <span class="icon icon-qq"></span>
+                                    <span class="icon icon-xl"></span>
+                                    <span class="icon icon-link"></span>
+                                </div>
+                                <p>扫码分享</p>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="sidebars">
-            <h2><?= Yii::t('app', '{MainSpeak}{Teacher}', ['MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')])?></h2>
-            <div class="teacher">
-                <?= Html::img([$model->teacher->avatar], ['class' => 'img-circle', 'width' => 96, 'height' => 96]) ?>
-                <p><span><?= Html::encode($model->teacher->name) ?></span></p>
-                <div class="des"><?= Html::encode($model->teacher->des) ?></div>
+            <!-- 内容导航 -->
+            <div class="content-nav">
+                <div class="sort">
+                    <ul>
+                        <li data-sort="course_content" class="active">
+                            <?= Html::a('课程简介',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_content',url:''})")]) ?>
+                        </li>
+                        <li data-sort="course_node">
+                            <?= Html::a('课程目录',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_node',url:'/course/default/get-node'},true)")]) ?>
+                        </li>
+                        <li data-sort="course_comment">
+                            <?= Html::a('学员评价',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_comment',url:'/course/default/get-comment'},true)")]) ?>
+                        </li>
+                        <li data-sort="course_task">
+                            <?= Html::a('课程作业',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_task',url:'/course/default/get-task'},true)")]) ?>
+                        </li>
+                        <li data-sort="course_attachment">
+                            <?= Html::a('资源下载',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_attachment',url:'/course/default/get-attachment'},true)")]) ?>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-         
-    </div>    
-
+    </div>
+    <!-- 内容区 -->
+    <div class="container content">
+        <div class="left-box">
+            <ul>
+                <li id="course_content" class="active">
+                    <div class="panel">
+                        <div class="panel-head">课程简介</div>
+                        <div class="panel-body" style="min-height:500px;">
+                            <?= Html::decode($model['content']) ?>
+                        </div>
+                    </div>
+                </li>
+                <li id="course_node"><span class="loading"></span></li>
+                <li id="course_comment"><span class="loading"></span></li>
+                <li id="course_task"><span class="loading"></span></li>
+                <li id="course_attachment"><span class="loading"></span></li>
+            </ul>
+        </div>
+        <div class="right-box">
+            <div class="panel lecturer">
+                <div class="panel-head">主讲老师</div>
+                <div class="panel-body">
+                    <div class="info">
+                        <img class="avatar" src="/upload/teacher/avatars/teacher.png" />
+                        <p class="name">何卡呀</p>
+                        <p class="job_title">北京大学附属中学化学高级教师，高三化学组组长，海淀区兼职教研员，青年骨干教师，海淀区优秀青年教师，优秀班主任。</p>
+                    </div>
+                    
+                    <hr/>
+                    <p style="margin-bottom: 20px;">主讲的其他课程：</p>
+                    <ul>
+                        <a href="#">
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
+                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
+                            </li>
+                        </a>
+                        <a href="#">
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
+                                <p class="single-clamp course-name">黑白照片上色</p>
+                            </li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel relative-course">
+                <div class="panel-head">相关课程</div>
+                <div class="panel-body">
+                    <ul>
+                        <a href="#">
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
+                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
+                            </li>
+                        </a>
+                        <a href="#">
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
+                                <p class="single-clamp course-name">黑白照片上色</p>
+                            </li>
+                        </a>
+                       <a>
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
+                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
+                            </li>
+                        </a>
+                        <a href="#">
+                            <li>
+                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
+                                <p class="single-clamp course-name">黑白照片上色</p>
+                            </li>
+                        </a>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel relative-user">
+                <div class="panel-head">学过该课的学员</div>
+                <div class="panel-body">
+                    <ul>
+                        <?php for($i=0;$i<16;$i++): ?>
+                        <a href="#">
+                            <li>
+                                <img class="avatar" src="/upload/teacher/avatars/teacher.png">
+                                <p class="name">刘杨商</p>
+                            </li>
+                        </a>
+                        <?php endfor; ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-    
-<?php
 
-$js = 
-<<<JS
-    
-    //替换图标
-    window.replace = function (elem){
-        if(elem.attr('aria-expanded') == 'true'){
-            elem.children('i').removeClass('fa-minus-square').addClass('fa-plus-square');
+<script type="text/javascript">
+    /**
+     * 收藏操作
+     * @returns void
+     */
+    function favoriteC(){
+        if($("#favorite span").html() == '已收藏'){
+            //移除收藏
+            $.get('/course/api/del-favorite',{course_id:'<?= $model['id'] ?>'},function(result){
+                if(result.code == 200){
+                    //成功
+                    $("#favorite span").html('收藏');
+                    $("#favorite i").removeClass('yes');
+                }
+            });
         }else{
-            elem.children('i').removeClass('fa-plus-square').addClass('fa-minus-square');
+            //添加收藏
+            $.get('/course/api/add-favorite',{course_id:'<?= $model['id'] ?>'},function(result){
+                if(result.code == 200){
+                    //成功
+                    $("#favorite span").html('已收藏');
+                    $("#favorite i").addClass('yes');
+                    $.notify({
+                        message: '收藏成功！请到学习中心查看！'
+                    },{
+                        type: 'success',
+                        animate: {
+                            enter: 'animated fadeInRight',
+                            exit: 'animated fadeOutRight'
+                        }
+                    });
+                }
+            });
         }
     }
-    //点击关注
-    $('#favorite').click(function(e){
-        e.preventDefault();
-        var elem = $(this);
-        $.get($(this).attr('href'), function(rel){
-            if(rel['code'] == '200'){
-                if(elem.attr('data-toggled') == 'false'){
-                    elem.find('span.fave').html(rel['data'] + '<i class="fa fa-star"></i>');
-                    elem.attr('data-toggled', true);
-                    elem.parent('.iframe').append('<span class="fave right"><i class="fa fa-star"></i>已关注</span>');
-                }else{
-                    elem.find('span.fave').html(rel['data'] + '<i class="fa fa-star-o"></i>');
-                    elem.attr('data-toggled', false);
-                    elem.siblings('span').remove();
-                }
-            }else{
-                alert(rel['message'])
-            }
-        });
-    });
-    //点击点赞
-    $('#praise').click(function(e){
-        e.preventDefault();
-        var elem = $(this);
-        $.get($(this).attr('href'), function(rel){
-            if(rel['code'] == '200'){
-                if(elem.attr('data-toggled') == 'false'){
-                    elem.find('span.zan').html(rel['data'] + '<i class="fa fa-thumbs-up"></i>');
-                    elem.attr('data-toggled', true);
-                }else{
-                    elem.find('span.zan').html(rel['data'] + '<i class="fa fa-thumbs-o-up"></i>');
-                    elem.attr('data-toggled', false);
-                }
-            }else{
-                alert(rel['message'])
-            }
-        });
-    });
-    //提交表单
-    $('#submitsave').click(function(){
-        //$('#msg-form').submit();return;
-        $.post("../default/add-msg?id={$model->id}", $('#msg-form').serialize(), function(rel){
-            if(rel['code'] == '200'){
-                $('#msg_list').load("../default/msg-index?course_id={$model->id}"); 
-                $('#msg-form textarea').val('');
-            }
-        });
-    });
-
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>
+    
+    /**
+     * 动态加载课程内容 
+     **/
+    function loadContent(params,forceReflash){
+        //隐藏、启用tab
+        $('.content-nav li').removeClass('active');
+        $('.content-nav li[data-sort='+params['id']+"]").addClass('active');
+        //隐藏、启用内容容器
+        $('.left-box li').removeClass('active');
+        $('.left-box li[id='+params['id']+']').addClass('active');
+        
+        if(forceReflash){
+            $.get(params['url'],{course_id:'<?= $model['id'] ?>'},function(result){
+                //显示加载内容
+                $('.left-box li[id='+params['id']+']').html(result);
+            });
+        }
+    }
+    
+</script>

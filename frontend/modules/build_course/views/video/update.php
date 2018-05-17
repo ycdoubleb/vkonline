@@ -32,7 +32,6 @@ $this->title = Yii::t(null, "{Edit}{Video}", [
                 
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'allRef' => $allRef,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
                     'allTags' => $allTags,

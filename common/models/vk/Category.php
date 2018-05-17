@@ -169,6 +169,20 @@ class Category extends ActiveRecord
         self::initCache();
         return self::getCatById($this->parent_id);
     }
+    
+    /**
+     * 获取所有父级
+     * @return type
+     */
+    public function getParents(){
+        self::initCache();
+        $parentids = array_values(array_filter(explode(',', $this->path)));
+        $parents = [];
+        foreach ($parentids as $index => $id) {
+            $parents [] = self::getCatById($id);
+        }
+        return $parents;
+    }
 
     /**
      * 获取全路径

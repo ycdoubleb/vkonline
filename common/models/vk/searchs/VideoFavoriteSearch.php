@@ -95,7 +95,9 @@ class VideoFavoriteSearch extends VideoFavorite
         //添加字段
         $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
             'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
-            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+            'Video.des', 'Video.source_id',
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar',
+            'Teacher.name AS teacher_name'
         ];
         //排序
         if($sort_name == 'created_at'){

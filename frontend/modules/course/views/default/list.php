@@ -36,7 +36,7 @@ foreach(explode("@", ArrayHelper::getValue($params, 'ev_attr')) as $ev_item){
 ModuleAssets::register($this);
 ?>
 
-<div class="course-default-index main">
+<div class="course-default-index">
     <!-- 搜索区 -->
     <div class="filter-result">
         <div class="container content">

@@ -110,14 +110,14 @@ ModuleAssets::register($this);
                 </div>
                 <div class="cont">
                     <div class="tuip">
-                        <span class="tuip-name"><?=$model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
+                        <span class="tuip-name"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
                     </div>
                     <div class="tuip">
                         <span><?= isset($model['tags']) ? $model['tags'] : '无' ?></span>
                     </div>
                     <div class="tuip">
                         <span><?= date('Y-m-d H:i', $model['created_at']) ?></span>
-                        <span class="tuip-right <?= !$model['is_ref'] ? 'tuip-bg-green' : 'tuip-bg-red' ?>"><?= !$model['is_ref'] ? '原创' : '引用' ?></span>
+                        <span class="tuip-btn tuip-right <?= !$model['is_ref'] ? 'tuip-bg-green' : 'tuip-bg-red' ?>"><?= !$model['is_ref'] ? '原创' : '引用' ?></span>
                     </div>
                 </div>
             <?= Html::endTag('a') ?>
@@ -167,7 +167,7 @@ $js =
     $(".sort ul li[id=$sort]").addClass('active');    
    
     //下拉加载更多
-    var page = 0;
+    var page = 1;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
             dataLoad(page);
@@ -177,7 +177,7 @@ $js =
     function dataLoad(pageNum) {
         var maxPageNum =  ($totalCount - 6) / 6;
         // 当前页数是否大于最大页数
-        if((pageNum + 1) > Math.ceil(maxPageNum)){
+        if((pageNum) > Math.ceil(maxPageNum)){
             return;
         }
         $.get("$url", {page: (pageNum + 1)}, function(rel){
