@@ -9,7 +9,9 @@
 namespace frontend\modules\course\controllers;
 
 use common\models\vk\Course;
+use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
+use common\models\vk\searchs\CourseCommentSearch;
 use common\models\vk\searchs\CourseListSearch;
 use Exception;
 use Yii;
@@ -25,6 +27,8 @@ use yii\web\Response;
  * @author Administrator
  */
 class ApiController extends Controller  {
+    
+    //public $enableCsrfValidation = false;
     /**
      * @inheritdoc
      */
@@ -32,7 +36,7 @@ class ApiController extends Controller  {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index', 'view'],
+               // 'only' => ['index', 'view'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -43,7 +47,10 @@ class ApiController extends Controller  {
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'get-course-data' => ['get'],
+                    'search-course' => ['get'],
+                    'add-favorite' => ['get'],
+                    'remove-favorite' => ['get'],
+                    'add-comment' => ['post'],
                 ],
             ],
         ];
@@ -147,5 +154,32 @@ class ApiController extends Controller  {
             return ['error' => $ex->getMessage()];
         }
         return ['favorite_count' => $course_model->favorite_count];
+    }
+    
+    /**
+     * 添加评论
+     * @post = [course_id,star,content]
+     */
+    public function actionAddComment(){
+        $post = Yii::$app->request->post();
+        $model = new CourseComment();
+        if($model->load($post) && $model->validate() && $model->save()){
+            return [];
+        }else{
+            return ['error' => $model->getErrorSummary(true)];
+        }
+    }
+    
+    /**
+     * 获取评论
+     * @params [course_id,page]
+     * @return array [
+     *  page,
+     *  max_count,
+     *  comments : [ comment_id,content,star,user_id,user_nickname,user_avatar,is_praise]
+     * ]
+     */
+    public function actionGetComment(){
+        return CourseCommentSearch::search(Yii::$app->request->queryParams);
     }
 }

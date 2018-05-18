@@ -1,4 +1,7 @@
 <?php
+/* 
+ * 课程目录结构视图 
+ */
 
 use common\models\vk\CourseMessage;
 use yii\helpers\Html;
@@ -57,12 +60,3 @@ $finish_percent = floor($finish_count/$video_count*100);
         </div>
     </div>
 </div>
-
-
-<?php
-$js = <<<JS
-   
-        
-JS;
-$this->registerJs($js, View::POS_READY);
-?>

@@ -3,6 +3,8 @@
 namespace common\models\vk;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%course_comment}}".
@@ -16,7 +18,7 @@ use Yii;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
-class CourseComment extends \yii\db\ActiveRecord
+class CourseComment extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -24,6 +26,12 @@ class CourseComment extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return '{{%course_comment}}';
+    }
+    
+    public function behaviors() {
+        return [
+            TimestampBehavior::class,
+        ];
     }
 
     /**
