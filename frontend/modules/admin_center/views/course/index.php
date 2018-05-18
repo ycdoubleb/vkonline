@@ -165,7 +165,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                         'buttons' => [
                             'view' => function ($url, $data, $key) {
                                  $options = [
-                                    'class' => 'btn btn-xs '.($data['is_publish'] == 0 ? 'disabled' : ' '),
+                                    'class' => ($data['is_publish'] == 0 ? 'disabled' : ' '),
                                     'style' => '',
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),

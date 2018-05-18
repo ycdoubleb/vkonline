@@ -1,6 +1,6 @@
 <?php
 
-use frontend\modules\help_center\assets\HelpCenterAssets;
+use frontend\modules\other\assets\OtherAssets;
 use yii\web\View;
 
 /* @var $this View */
@@ -11,7 +11,7 @@ $this->title = Yii::t('app', '{About}{We}', [
 
 ?>
 
-<div class="default-index">
+<div class="default-about other">
     
     <div class="category-title"><?= $this->title;?></div>
     
@@ -30,24 +30,7 @@ $this->title = Yii::t('app', '{About}{We}', [
 $js = 
 <<<JS
         
-    $(".post-title").each(function(){
-        var elem = $(this);
-        if(!elem.next("div.post-content").is(":hidden")){
-            elem.css("color","#FF6600");
-        }else{
-            elem.css("color","#999999");
-        };
-        elem.click(function(){
-            elem.next("div.post-content").toggle();
-            if(!elem.next("div.post-content").is(":hidden")){
-                elem.css("color","#FF6600");
-            }else{
-                elem.css("color","#999999");
-            };
-        })
-    }); 
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
-    HelpCenterAssets::register($this);
+    OtherAssets::register($this);
 ?>

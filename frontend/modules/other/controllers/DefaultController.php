@@ -2,6 +2,8 @@
 
 namespace frontend\modules\other\controllers;
 
+use common\models\vk\UserFeedback;
+use Yii;
 use yii\web\Controller;
 
 /**
@@ -35,6 +37,14 @@ class DefaultController extends Controller
      */
     public function actionFeedback()
     {
-        return $this->render('feedback');
+        $model = new UserFeedback();
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['feedback']);
+        }
+        
+        return $this->render('feedback',[
+            'model' => $model,
+        ]);
     }
 }

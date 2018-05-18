@@ -136,6 +136,8 @@ return [
     'Sublevel' => '子级',
     'We' => '我们',
     'Opinion' => '意见',
+    'Problem' => '问题',
+    'Specific' => '具体',
   
     //提示消息
     "Can't be empty." => '不能为空。',
@@ -263,6 +265,9 @@ return [
     'Verifier' => '审核',
     'Remarks' => '备注',
     'Reset' => '重置',
+    'Solve' => '解决',
+    'Processer' => '处理人',
+    'Feedbacker' => '反馈者',
     
     //前台-公共
     'Avg Star' => '评分',
