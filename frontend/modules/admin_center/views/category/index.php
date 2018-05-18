@@ -98,12 +98,12 @@ use yii\web\View;
                     ],
                     [
                         'class' => 'yii\grid\ActionColumn',
-                        'headerOptions' => ['style' => 'width:90px'],
+                        'headerOptions' => ['style' => 'width:70px'],
                         'contentOptions' => ['style' => 'text-align:center;color:#666666'],
                         'buttons' => [
                             'view' => function ($url, $model, $key) {
                                  $options = [
-                                    'class' => 'btn btn-xs',
+                                    'class' => '',
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),
@@ -121,7 +121,7 @@ use yii\web\View;
                             },
                             'update' => function ($url, $model, $key) {
                                  $options = [
-                                    'class' => 'btn btn-xs ',
+                                    'class' => ' ',
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'Update'),
                                     'aria-label' => Yii::t('app', 'Update'),
@@ -139,7 +139,7 @@ use yii\web\View;
                             },
                             'delete' => function ($url, $model, $key){
                                 $options = [
-                                    'class' => 'btn btn-xs ' . (count($model->courseAttribute) > 0 ? 
+                                    'class' => (count($model->courseAttribute) > 0 ? 
                                         'disabled' : ''),
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'Delete'),

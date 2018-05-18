@@ -10,15 +10,12 @@ use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
-use common\models\vk\PraiseLog;
-use common\models\vk\SearchLog;
 use common\models\vk\searchs\CourseListSearch;
 use common\models\vk\searchs\CourseMessageSearch;
-use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
+use common\models\vk\VideoProgress;
 use frontend\modules\course\utils\ActionUtils;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -131,9 +128,7 @@ class DefaultController extends Controller
      * @param string $course_id 课程ID
      */
     public function actionGetNode($course_id){
-        return $this->renderAjax('__nodes', [
-            
-        ]);
+        return $this->renderAjax('__nodes', $this->findNodeDetail($course_id));
     }
     
     /**
@@ -234,6 +229,71 @@ class DefaultController extends Controller
         return [
             'course' => array_merge($course_query->one(),['node_count' => $video_num_query->count()]),
             'study_progress' => $study_progress_query->one(),
+        ];
+    }
+    
+    /**
+     * 获取节点详细，包括节点数据和视频数据
+     * @param string $course_id     课程ID
+     */
+    protected function findNodeDetail($course_id){
+        $user_id = Yii::$app->user->id;
+        //查询所有环节的学习情况
+        $study_progress = (new Query())
+                ->select([
+                    'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
+                    'Video.id as video_id','Video.name video_name','Video.is_ref','Video.source_duration as duration','Video.sort_order as video_sort_order',
+                    'Progress.is_finish','Progress.finish_time','Progress.last_time'])
+                ->from(['Node' => CourseNode::tableName()])
+                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id')
+                ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
+                        ['course_id' => $course_id,'user_id'=>$user_id])
+                ->where([
+                    'Node.course_id' => $course_id,
+                    'Node.is_del' => 0,
+                ])
+                //先排节点再排视频
+                ->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC])
+                ->all();
+        
+        $nodes = [];            //节点
+        $video_count = 0;       //视频总数
+        $finish_count = 0;      //已完成视频数
+        foreach($study_progress as $progress){
+            //先建节点数据
+            if(!isset($nodes[$progress['node_id']])){
+                $nodes[$progress['node_id']] = [
+                    'node_id' => $progress['node_id'], 
+                    'node_name' => $progress['node_name'],
+                    'sort_order' => $progress['node_sort_order'],
+                    'videos' => [],
+                ];
+            }
+            //添加视频到节点
+            if($progress['video_id']!=null){
+                $video_count ++;
+                if($progress['is_finish'] == 1){
+                    $finish_count ++;
+                }
+                $nodes[$progress['node_id']]['videos'] []= [
+                    'node_id' => $progress['node_id'],
+                    'video_id' => $progress['video_id'],
+                    'video_name' => $progress['video_name'],
+                    'is_ref' => $progress['is_ref'],
+                    'duration' => $progress['duration'],
+                    'sort_order' => $progress['video_sort_order'],
+                    'is_finish' => $progress['is_finish'],
+                    'finish_time' => $progress['finish_time'],
+                    'last_time' => $progress['last_time'],
+                ];
+            }
+        }
+        
+        //var_dump($study_progress,$video_count,$finish_count);exit;
+        return [
+            'video_count' => $video_count,
+            'finish_count' => $finish_count,
+            'nodes' => $nodes,
         ];
     }
     

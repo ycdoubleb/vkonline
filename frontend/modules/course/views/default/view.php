@@ -29,7 +29,7 @@ $this->title = Yii::t('app', 'Course');
             <!-- 课程导航 -->
             <div class="course-nav">
                 <a href="/course/default/list">全部课程</a> >
-                <?php foreach(Category::getCatById($model['category_id'])->getParent(true) as $index => $category): ?>
+                <?php foreach(Category::getCatById($model['category_id'])->getParents() as $index => $category): ?>
                 <a href="/course/default/list?cat_id=<?=$category->id?>"><?=$category->name?></a> >
                 <?php endforeach; ?>
                 <span class="name"><?= $model['name'] ?></span>
@@ -54,14 +54,14 @@ $this->title = Yii::t('app', 'Course');
                         <span class="learning-count"><?= $model['learning_count'] ?>人在学</span>
                     </div>
                     <div class="node-box">
-                        <span class="nodes"><i class="glyphicon glyphicon-th-list"></i><?= $model['node_count'] ?>个环节</span>
+                        <span class="nodes"><i class="glyphicon glyphicon-th-list"></i>共有 <?= $model['node_count'] ?> 个环节</span>
                         <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],true) ?></span>
                     </div>
                     <div class="control-box">
-                        <a class="btn btn-primary">继续学习</a>
+                        <a class="btn btn-highlight"><?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?></a>
                         
                         <?php if($study_progress && $study_progress['last_video']!="" ): ?>
-                        <span class="last_pos">上次学习到<?= $study_progress['video_name'] ?></span>
+                        <span class="last_pos single-clamp">上次学到【<?= $study_progress['video_name'] ?>】</span>
                         <?php endif; ?>
                         
                         <div class="control">

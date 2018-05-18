@@ -265,8 +265,7 @@ $js =
         
     window.uploader;
     //加载文件上传  
-    window.onloadUploader = function () {
-        require(['euploader'], function (euploader) {
+    require(['euploader'], function (euploader) {
             //公共配置
             window.config = {
                 swf: "$swfpath" + "/Uploader.swf",
@@ -303,7 +302,7 @@ $js =
                 }
 
             };
-            
+            console.log($videoFiles);
             //视频
             window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
             window.uploader.addCompleteFiles($videoFiles);
@@ -311,7 +310,6 @@ $js =
                 window.uploader.setEnabled(false);
             }
         });
-    }
     /**
     * 上传文件完成才可以提交
     * @return {uploader.isFinish}

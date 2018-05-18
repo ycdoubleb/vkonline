@@ -169,9 +169,11 @@ $js =
                     $('#video-des').val(data['videos'].des);
                     $("#tag_id").val(data['tagsSelected']).trigger("change");
                     $("#video-ref_id").val(data['videos'].video_id);
-                    window.onloadUploader();    //加载文件上传 
-                    window.uploader.addCompleteFiles(data['videoFiles']);
-                    window.uploader.setEnabled(false);
+                    setTimeout(function(){
+                        window.uploader.addCompleteFiles(data['videoFiles']);
+                        window.uploader.setEnabled(false);
+                    },10);
+                    
                 });
             }
         });

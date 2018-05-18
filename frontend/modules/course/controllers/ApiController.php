@@ -10,10 +10,12 @@ namespace frontend\modules\course\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
+use common\models\vk\searchs\CourseListSearch;
 use Exception;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -61,6 +63,31 @@ class ApiController extends Controller  {
         });
     }
     
+    /**
+     * 搜索课程
+     * @param array queryParams 请求参数:   <br/>
+     * 
+     *  keyword：关键字，主要搜索课程名称及课程关键字模糊匹配<br/>
+     *  customer_id：窗户ID<br/>
+     *  cat_id：课程所属分类<br/>
+     *  ev_attr:已选属性，多个用 @ 分隔key=value@key=value<br/>
+     *  sort：排序<br/>
+     *  page：分页，当前页<br/>
+     *  size：一页显示数量<br/>
+     */
+    public function actionSearchCourse() {
+        try {
+            $result = CourseListSearch::search(Yii::$app->request->queryParams, 2);
+        } catch (\Exception $ex) {
+            $mes = $ex->getMessage();
+            return ['error' => $ex->getMessage()];
+        }
+        return [
+            'page' => ArrayHelper::getValue(Yii::$app->request->queryParams, 'page', 1),
+            'courses' => $result['courses'],
+        ];
+    }
+
     /**
      * 添加收藏
      * @param string $course_id 课程ID
