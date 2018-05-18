@@ -10,6 +10,8 @@ use common\models\helpcenter\searchs\PostCommentSearch;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
@@ -22,6 +24,21 @@ class DefaultController extends Controller
 {
     public $layout = "main";
 
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
+    
     /**
      * Renders the index view for the module
      * @return string

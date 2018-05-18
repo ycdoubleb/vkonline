@@ -10,15 +10,14 @@ use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -225,7 +224,8 @@ class VideoController extends Controller
     {
         $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
         $id = ArrayHelper::getValue($params, 'id');
-        
+        $isNewRecord = ArrayHelper::getValue($params, 'isNewRecord');
+       
         $searchModel = new VideoFavoriteSearch();
         $result = $searchModel->referenceSearch(array_merge($params, ['limit' => 15]));
         $dataProvider = new ArrayDataProvider([

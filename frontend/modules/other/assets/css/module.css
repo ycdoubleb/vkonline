@@ -1,0 +1,74 @@
+/* 
+    模块的样式
+    例如：.other .样式名 {
+            样式...
+        }
+*/
+/****************** default--->index----样式 ******************/
+.subnav,.other {
+    display: inline-block;
+}
+
+.other{
+    width: 1000px;
+    height: 100%;
+    color: #333333;
+    background-color: #ffffff;
+    -webkit-box-shadow: 1px 1px 3px rgba(102, 102, 102, 0.349019607843137);
+    box-shadow: 1px 1px 3px rgba(102, 102, 102, 0.349019607843137);
+}
+
+.other .category-title {
+    height: 60px;
+    font-size: 16px;
+    color: #000000;
+    line-height: 60px;
+    padding-left: 20px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.other .posts-content {
+    padding: 15px 20px;
+    min-height: 200px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.other .posts-content .post-title {
+    font-family: 'Arial Negreta', 'Arial';
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.other .posts-content .post-content {
+    color: #333333;
+    padding: 15px 20px;
+    margin-bottom: 40px;
+}
+
+.other .posts-content .post-content span {
+    color: #ff3300;
+}
+
+.other .posts-content .post-content .kouhao {
+    margin-bottom: 30px;
+}
+.other .posts-content .post-content .emil {
+    margin-bottom: 40px;
+}
+
+/*** 反馈页面 ***/
+.other .posts-content .feedback-title{
+    padding: 0 20px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    color: #ff3300;
+}
+
+.other .posts-content .form-horizontal{
+    padding: 0 30px;
+}
+
+.other .posts-content .form-control {
+    border-radius: 0px;
+}

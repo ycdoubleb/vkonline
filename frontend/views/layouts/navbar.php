@@ -42,7 +42,11 @@ if ($moduleId == 'app-frontend') {
     foreach ($menuUrls as $url) {
         $urls[] = array_filter(explode('/', $url[0]));
     }
+    $lastUrls = end($urls);     //获取最后一个模型URL（课工厂模块）
     foreach ($urls as $val) {
+        if($lastUrls[1] == $val[1]){
+            $vals['admin_center'] = 'build_course/default';     //强制设置admin_center模块
+        }
         $vals[$val[1]] = implode('/', $val);
     }
     try {

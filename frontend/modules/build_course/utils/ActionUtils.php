@@ -474,7 +474,9 @@ class ActionUtils
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
-                VideoAttachment::updateAll(['is_del' => $model->is_del], ['video_id' => $model->id]);
+                $courseModel = Course::findOne($model->courseNode->course_id);
+                $courseModel->content_time = $courseModel->content_time - $model->source_duration;
+                $courseModel->update(false, ['content_time']);
                 $this->saveCourseActLog(['action' => '删除', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name} >> {$model->name}",
                     'course_id' => $model->courseNode->course_id,]);

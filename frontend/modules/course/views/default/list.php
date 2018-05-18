@@ -288,10 +288,9 @@ $js =
             //合并且当前已选择参数
             var params = $.extend($params_js,{page:target_page,size:$page_size});
             //异步执行查询
-            $.get('search-list',params,function(result){
-                console.log(result);
+            $.get('/course/api/search-course',params,function(result){
                 isPageLoading = false;
-                if(result.code == 0){
+                if(result.code == '200'){
                     //添加查询到的课程
                     $.each(result.data.courses,function(){
                         this.content_time = Wskeee.StringUtil.intToTime(this.content_time,true);
@@ -312,7 +311,7 @@ $js =
                     
                 }else{
                     if(console && console.error){
-                        console.error(result.msg);
+                        console.error(result.data.error);
                     }
                 }
                 //隐藏loading

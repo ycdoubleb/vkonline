@@ -5,13 +5,15 @@ use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
+$finish_percent = floor($finish_count/$video_count*100);
+
 ?>
 <div class="c-nodes">
     <div class="panel">
         <div class="panel-body">
-            <p>已学习完<?= 48 ?>%</p>
+            <p>已学习完 <?= $finish_percent ?> %</p>
             <div class="progress">
-                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $finish_percent ?>" aria-valuemin="0" aria-valuemax="100" style="width: <?= $finish_percent ?>%;">
                 </div>
             </div>
         </div>
@@ -20,68 +22,37 @@ use yii\web\View;
         <div class="panel-head">课程目录</div>
         <div class="panel-body">
             <ul class="list">
+                <!-- 生成节点列表 -->
+                <?php foreach($nodes as $node_id => $node): ?>
                 <li class="node level_1">
                     <div class="head">
                         <i class="glyphicon glyphicon-th-list"></i>
-                        <span>第一章 从实验学化学（5）</span>
+                        <span><?= $node['node_name'] ?></span>
                     </div>
                     <ul class="list">
+                        <!-- 生成视频列表 -->
+                        <?php foreach($node['videos'] as $video): ?>
                         <li class="node level_2">
                             <div class="head">
-                                <span>化学实验基本方法简介</span>
+                                <span><?= $video['video_name'] ?></span>
                                 <div class="control">
                                     <div class="progress">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                                        <!-- 每个视频的完成进度 -->
+                                        <?php $video_finish_percent = $video['is_finish'] ? 100 :  floor($video['finish_time']/$video['duration']*100) ?>
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $video_finish_percent ?>" 
+                                             aria-valuemin="0" aria-valuemax="100" style="width: <?= $video_finish_percent ?>%;">
                                         </div>
                                     </div>
                                     <i class="glyphicon glyphicon-play"></i>
-                                    <span>08:52</span>
+                                    <span><?= $video['duration'] ?></span>
                                 </div>
-                                <a class="btn btn-primary play">开始学习</a>
+                                <a class="btn btn-primary play"><?= $video['finish_time'] > 0 ? '继续学习' : '开始学习' ?></a>
                             </div>
-                        </li>
-                        <li class="node level_2">
-                            <div class="head">
-                                <span>物质的量的概念</span>
-                                <div class="control">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                        </div>
-                                    </div>
-                                    <i class="glyphicon glyphicon-play"></i>
-                                    <span>08:52</span>
-                                </div>
-                                <a class="btn btn-primary play">开始学习</a>
-                            </div>
-                        </li>
-                        <li class="node level_2">
-                            <div class="head">
-                                <span>物质的量的概念的运用</span>
-                                <div class="control">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-                                        </div>
-                                    </div>
-                                    <i class="glyphicon glyphicon-play"></i>
-                                    <span>08:52</span>
-                                </div>
-                                <a class="btn btn-primary play">开始学习</a>
-                            </div>
-                        </li>
+                        </li>        
+                        <?php endforeach; ?>   
                     </ul>
                 </li>
-                <li class="node level_1">
-                    <div class="head">
-                        <i class="glyphicon glyphicon-th-list"></i>
-                        <span>第二章 化学物质及其变化（11）</span>
-                    </div>
-                </li>
-                <li class="node level_1">
-                    <div class="head">
-                        <i class="glyphicon glyphicon-th-list"></i>
-                        <span>第三章 金属及其化合物（8）</span>
-                    </div>
-                </li>
+                <?php endforeach; ?>
             </ul>
         </div>
     </div>

@@ -53,6 +53,7 @@ $format = <<< SCRIPT
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
+
 ?>
 
 <div class="video-form form clear">
@@ -71,7 +72,7 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
-    
+    <!--引用视频-->
     <?php
         $reelect = !$model->is_ref ? Html::a('重选', ['reference', 'node_id' => $model->node_id], [
             'id' => 'video-reelect',
@@ -84,7 +85,7 @@ $this->registerJs($format, View::POS_HEAD);
             "<div class=\"col-lg-1 col-md-1\">{$reelect}</div>\n" . 
             "<div class=\"col-lg-6 col-md-6\">{error}</div>"
         ])->widget(SwitchInput::class, [
-            'disabled' => !$model->is_ref ? false : true,
+            'disabled' => $model->isNewRecord ? false : true,
             'pluginOptions' => [
                 'onText' => 'Yes',
                 'offText' => 'No',
@@ -96,7 +97,7 @@ $this->registerJs($format, View::POS_HEAD);
             'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
         ]));
     ?>
-    
+    <!--显示引用视频的详情-->
     <div class="form-group field-video-details">
         <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-6 col-md-6">
@@ -156,13 +157,13 @@ $this->registerJs($format, View::POS_HEAD);
             </div>
         </div>
     </div>
-    
+    <!--视频名称-->
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Name}', [
         'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
-    
+    <!--主讲老师-->
     <?php
         $refresh = !$model->is_ref ? 
             Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
@@ -194,16 +195,15 @@ $this->registerJs($format, View::POS_HEAD);
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
-
+    <!--视频描述-->
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea([
-        'value' => $model->isNewRecord ? '无' : $model->des, 
-        'rows' => 3, 'placeholder' => '请输入...'
+        'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Des}', [
         'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
     ])) ?>
-   
+    <!--标签-->
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
@@ -225,7 +225,7 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
-    
+    <!--视频文件-->
     <div class="form-group field-video-source_id">
         <?= Html::label(Yii::t('app', '{Video}{File}', [
             'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
@@ -233,7 +233,7 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
-    
+    <!--隐藏属性-->
     <?= Html::activeHiddenInput($model, 'ref_id') ?>
     
     <?php ActiveForm::end(); ?>
@@ -249,6 +249,21 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
+    
+    //开关事件
+    function switchLog(event, state){
+        if(state == true){
+            $(".myModal .modal-dialog .modal-body").load("../video/reference?node_id=$model->node_id");
+        }else{
+            $(".myModal").load("../video/create?node_id=$model->node_id");
+        }
+    }
+    //重选引用视频事件
+    function reelectEvent(elem){
+        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
+        return false;
+    }
+        
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
         $('#video-teacher_id').html("");

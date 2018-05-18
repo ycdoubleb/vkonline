@@ -357,6 +357,7 @@
 .course-default-view .course-head .info-box .control-box .last_pos{
     margin-left: 10px;
     color: #999999;
+    max-width: 204px;
 }
 .course-default-view .course-head .info-box .control-box .control{
     display: inline-block;

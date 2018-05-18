@@ -2,6 +2,9 @@
 
 namespace frontend\modules\other\controllers;
 
+use common\models\vk\UserFeedback;
+use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 
 /**
@@ -10,6 +13,21 @@ use yii\web\Controller;
 class DefaultController extends Controller
 {
     public $layout = "main";
+    
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => VerbFilter::className(),
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
     
     /**
      * Renders the index view for the module
@@ -35,6 +53,19 @@ class DefaultController extends Controller
      */
     public function actionFeedback()
     {
-        return $this->render('feedback');
+        $model = new UserFeedback();
+        
+        if(!empty(\Yii::$app->user->id)){
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                return $this->redirect(['feedback']);
+            }
+
+            return $this->render('feedback',[
+                'model' => $model,
+            ]);
+        } else {
+            return $this->redirect('/site/login');
+        }
+        
     }
 }
