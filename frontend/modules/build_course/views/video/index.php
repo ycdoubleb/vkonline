@@ -81,10 +81,10 @@ ModuleAssets::register($this);
     <div class="sort">
         <ul>
             <li id="created_at">
-                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at', 'data-sort' => 'created_at']) ?>
+                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at']) ?>
             </li>
             <li id="course_id">
-                <?= Html::a('按课程排序', array_merge(['index'], array_merge($filters, ['sort' => 'course_id'])), ['id' => 'course_id', 'data-sort' => 'course_id']) ?>
+                <?= Html::a('按课程排序', array_merge(['index'], array_merge($filters, ['sort' => 'course_id'])), ['id' => 'course_id']) ?>
             </li>
         </ul>
     </div>

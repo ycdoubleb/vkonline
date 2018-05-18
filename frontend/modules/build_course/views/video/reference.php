@@ -67,12 +67,12 @@ $this->title = Yii::t('app', "{Add}{Video}",[
         <ul class="keep-right">
             <li id="created_at">
                 <?= Html::a('按时间排序', array_merge(['reference'], array_merge($filters, ['sort' => 'created_at'])), [
-                    'id' => 'zan_count', 'onclick' => 'clickSortEvent($(this)); return false;'
+                    'id' => 'created_at', 'onclick' => 'clickSortEvent($(this)); return false;'
                 ]) ?>
             </li>
             <li id="is_publish">
                 <?= Html::a('按状态排序', array_merge(['reference'], array_merge($filters, ['sort' => 'is_publish'])), [
-                    'id' => 'favorite_count', 'onclick' => 'clickSortEvent($(this)); return false;'
+                    'id' => 'is_publish', 'onclick' => 'clickSortEvent($(this)); return false;'
                 ]) ?>
             </li>
         </ul>

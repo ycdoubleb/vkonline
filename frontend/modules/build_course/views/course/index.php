@@ -92,13 +92,13 @@ ModuleAssets::register($this);
     <div class="sort">
         <ul>
             <li id="created_at">
-                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'zan_count', 'data-sort' => 'zan_count']) ?>
+                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at']) ?>
             </li>
             <li id="is_publish">
-                <?= Html::a('按状态排序', array_merge(['index'], array_merge($filters, ['sort' => 'is_publish'])), ['id' => 'favorite_count', 'data-sort' => 'favorite_count']) ?>
+                <?= Html::a('按状态排序', array_merge(['index'], array_merge($filters, ['sort' => 'is_publish'])), ['id' => 'is_publish']) ?>
             </li>
             <li id="level">
-                <?= Html::a('按权限排序', array_merge(['index'], array_merge($filters, ['sort' => 'level'])), ['id' => 'created_at', 'data-sort' => 'created_at']) ?>
+                <?= Html::a('按权限排序', array_merge(['index'], array_merge($filters, ['sort' => 'level'])), ['id' => 'level']) ?>
             </li>
         </ul>
     </div>
