@@ -14,9 +14,7 @@ ModuleAssets::register($this);
 $this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
     'Delete' => Yii::t('app', 'Delete'),'HelpMan' => Yii::t('app', 'Help Man')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="course-user-delete main modal">
 

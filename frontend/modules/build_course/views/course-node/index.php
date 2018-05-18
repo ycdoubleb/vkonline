@@ -40,7 +40,7 @@ ModuleAssets::register($this);
         <!--框架-->
         <ul id="course_node" class="sortable list">
             <?php if(count($dataProvider) <= 0): ?>
-            <li>
+            <li class="empty">
                 <div class="head">
                     <center>没有找到数据。</center>
                 </div>

@@ -217,13 +217,13 @@ class VideoController extends Controller
     }
     
     /**
-     * 引用 已有的 Video 模型。
-     * 如果是post传值，返回成功的json数据，否则返回失败
+     * 引用 自己收藏的视频
+     * 如果是 id 非为空，返回成功的json数据，否则返回收藏的视频
      * @return json
      */
     public function actionReference()
     {
-        $params = Yii::$app->request->queryParams;
+        $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
         $id = ArrayHelper::getValue($params, 'id');
         
         $searchModel = new VideoFavoriteSearch();
@@ -232,7 +232,15 @@ class VideoController extends Controller
             'allModels' => array_values($result['data']['video']),
         ]);
         
-        if($id != null) {
+        if(Yii::$app->request->isPost) {
+            Yii::$app->getResponse()->format = 'json';
+            return [
+                'code'=> 200,
+                'filters' => $result['filter'],
+                'data' => array_values($result['data']['video']),
+                'message' => '请求成功！',
+            ];
+        }else if($id != null){
             Yii::$app->getResponse()->format = 'json';
             return [
                 'code'=> 200,
@@ -268,28 +276,6 @@ class VideoController extends Controller
         } else {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
-    }
-    
-    /**
-     * 查询引用视频的关联信息
-     * @param string $id
-     * @return array
-     */
-    protected function  findVideoByCiteInfo($id)
-    {
-        //查询引用的视频信息
-        $video = (new Query())->select(['id', 'teacher_id', 'source_id', 'name', 'des'])
-            ->from(Video::tableName())->where(['id' => $id])->one();
-        //查询视频文件
-        $source_id = ArrayHelper::getValue($video, 'source_id');
-        $source = (new Query())->select(['id', 'name', 'size'])
-            ->from(Uploadfile::tableName())->where(['id' => $source_id])->one();
-        
-        //返回数据
-        return [
-            'video' => $video,
-            'source' => [$source],
-        ];
     }
     
     /**

@@ -128,11 +128,11 @@ ModuleAssets::register($this);
                         <span class="tuip-right"><?= DateUtil::intToTime($model['content_time']) ?></span>
                     </div>
                     <div class="tuip">
-                        <span><?= isset($model['tags']) ? $model['tags'] : '无' ?></span>
+                        <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
                     </div>
                     <div class="tuip">
                         <span class="<?= $model['is_publish'] ? 'tuip-green' : 'tuip-red' ?>"><?= $model['is_publish'] ? '已发布' : '未发布' ?></span>
-                        <span class="tuip-right tuip-green">25463人在学</span>
+                        <span class="tuip-right tuip-green"><?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学</span>
                     </div>
                 </div>
             <?= Html::endTag('a') ?>
@@ -163,7 +163,7 @@ ModuleAssets::register($this);
 $url = Url::to(array_merge(['index'], $filters));   //链接
 $sort = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/course/_dome.php')));
+    $this->renderFile('@frontend/modules/build_course/views/course/_list.php')));
 $js = 
 <<<JS
     //单击选中radio提交表单
@@ -213,10 +213,10 @@ $js =
                         isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
                         name: data[i].name,
                         contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
-                        tags: data[i].tags != undefined ? data[i].tags : '无',
+                        tags: data[i].tags != undefined ? data[i].tags : 'null',
                         colorName: data[i].is_publish == 1 ? 'green' : 'red',
                         publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
-                        number: 25463,
+                        number: data[i].people_num != undefined ? data[i].people_num : 0,
                         teacherAvatar: data[i].teacher_avatar,
                         teacherName: data[i].teacher_name,
                         avgStar: data[i].avg_star

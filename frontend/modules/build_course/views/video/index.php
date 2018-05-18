@@ -113,7 +113,7 @@ ModuleAssets::register($this);
                         <span class="tuip-name"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
                     </div>
                     <div class="tuip">
-                        <span><?= isset($model['tags']) ? $model['tags'] : '无' ?></span>
+                        <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
                     </div>
                     <div class="tuip">
                         <span><?= date('Y-m-d H:i', $model['created_at']) ?></span>
@@ -144,7 +144,7 @@ ModuleAssets::register($this);
 $url = Url::to(array_merge(['index'], $filters));   //链接
 $sort = ArrayHelper::getValue($filters, 'sort', 'created_at');   //排序
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/video/_dome.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
 $js = 
 <<<JS
         
@@ -194,7 +194,7 @@ $js =
                         courseName: data[i].course_name,
                         name: data[i].name,
                         duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
-                        tags: data[i].tags != undefined ? data[i].tags : '无',
+                        tags: data[i].tags != undefined ? data[i].tags : 'null',
                         createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data[i].created_at),
                         colorName: data[i].is_ref == 0 ? 'green' : 'red',
                         isRef: data[i].is_ref == 0 ? '原创' : '引用',

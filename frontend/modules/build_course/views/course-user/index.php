@@ -14,8 +14,6 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
-//$this->title = Yii::t('app', 'Mcbs Courses');
-//$this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="course-user-index">
     <div class="frame right-frame">

@@ -42,7 +42,7 @@ $format = <<< SCRIPT
         //返回结果（html）
         return isShow + 
             '<div class="avatars">' + 
-                '<img class="img-circle" src="' + src + '" width="100%"/>' + 
+                '<img class="img-circle" src="' + src + '" width="32" height="32"/>' + 
             '</div>' 
             + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
             '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank">' + 
@@ -266,50 +266,49 @@ $js =
     window.uploader;
     //加载文件上传  
     require(['euploader'], function (euploader) {
-            //公共配置
-            window.config = {
-                swf: "$swfpath" + "/Uploader.swf",
-                // 文件接收服务端。
-                server: '/webuploader/default/upload',
-                //检查文件是否存在
-                checkFile: '/webuploader/default/check-file',
-                //分片合并
-                mergeChunks: '/webuploader/default/merge-chunks',
-                //自动上传
-                auto: false,
-                //开起分片上传
-                chunked: true,
-                name: 'Video[source_id]',
-                // 上传容器
-                container: '#uploader-container',
-                //验证文件总数量, 超出则不允许加入队列
-                fileNumLimit: 1,
-                //指定选择文件的按钮容器
-                pick: {
-                    id:  '#uploader-container .euploader-btns > div',
-                    multiple: false,
-                },
-                //指定接受哪些类型的文件
-                accept: {
-                    extensions: 'mp4',
-                },
-                formData: {
-                    _csrf: "$csrfToken",
-                    //指定文件上传到的应用
-                    app_id: "$app_id",
-                    //同时创建缩略图
-                    makeThumb: 1
-                }
-
-            };
-            console.log($videoFiles);
-            //视频
-            window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
-            window.uploader.addCompleteFiles($videoFiles);
-            if($model->is_ref){
-                window.uploader.setEnabled(false);
+        //公共配置
+        window.config = {
+            swf: "$swfpath" + "/Uploader.swf",
+            // 文件接收服务端。
+            server: '/webuploader/default/upload',
+            //检查文件是否存在
+            checkFile: '/webuploader/default/check-file',
+            //分片合并
+            mergeChunks: '/webuploader/default/merge-chunks',
+            //自动上传
+            auto: false,
+            //开起分片上传
+            chunked: true,
+            name: 'Video[source_id]',
+            // 上传容器
+            container: '#uploader-container',
+            //验证文件总数量, 超出则不允许加入队列
+            fileNumLimit: 1,
+            //指定选择文件的按钮容器
+            pick: {
+                id:  '#uploader-container .euploader-btns > div',
+                multiple: false,
+            },
+            //指定接受哪些类型的文件
+            accept: {
+                extensions: 'mp4',
+            },
+            formData: {
+                _csrf: "$csrfToken",
+                //指定文件上传到的应用
+                app_id: "$app_id",
+                //同时创建缩略图
+                makeThumb: 1
             }
-        });
+
+        };
+        //视频
+        window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
+        window.uploader.addCompleteFiles($videoFiles);
+        if($model->is_ref){
+            window.uploader.setEnabled(false);
+        }
+    });
     /**
     * 上传文件完成才可以提交
     * @return {uploader.isFinish}

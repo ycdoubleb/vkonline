@@ -4,6 +4,8 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Category;
 use common\models\vk\Course;
+use common\models\vk\CourseAttr;
+use common\models\vk\CourseAttribute;
 use common\models\vk\searchs\CourseActLogSearch;
 use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseSearch;
@@ -11,10 +13,10 @@ use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
-use common\models\vk\Video;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -105,7 +107,9 @@ class CourseController extends Controller
             'courseUsers' => $searchUserModel->search(['course_id' => $model->id]),
             'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]),
             'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),
+            'courseAttrs' => $this->getCourseAttrByCourseId($model->id),
             'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id),
+            'path' => $this->getCategoryFullPath($model->category_id),
             'is_hasEditNode' => ActionUtils::getInstance()->getIsHasEditNodePermission($model->id),
         ]);
     }
@@ -166,7 +170,9 @@ class CourseController extends Controller
                 'allCategory' => Category::getCatsByLevel(1, true),
                 'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'attFiles' => Course::getUploadfileByAttachment($model->id),
+                'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 1)),
             ]);
         }
@@ -221,6 +227,31 @@ class CourseController extends Controller
     }
     
     /**
+     * 通过分类id查找分类下对应的属性
+     * @param integer $cate_id
+     * @return json
+     */
+    public function actionAttrSearch($cate_id)
+    {
+        $courseAttrs = $this->getCourseAttributeByCategoryId($cate_id);
+        Yii::$app->getResponse()->format = 'json';
+        
+        if(Yii::$app->request->isPost){
+            return [
+                'code'=> 200,
+                'data' => $courseAttrs,
+                'message' => '请求成功！',
+            ];
+        }
+        
+        return [
+            'code'=> 404,
+            'data' => [],
+            'message' => '请求失败！',
+        ];
+    }
+
+    /**
      * 基于其主键值找到 Course 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
@@ -234,5 +265,66 @@ class CourseController extends Controller
         } else {
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
+    }
+    
+    /**
+     * 获取课程分类下的对应属性
+     * @param integer $category_id  
+     * @return type
+     */
+    protected function getCourseAttributeByCategoryId($categoryId)
+    {
+        $attributes = (new Query())->select(['id', 'name', 'values', 'sort_order'])
+            ->from(CourseAttribute::tableName())->where(['category_id' => $categoryId])
+            ->orderBy(['sort_order' => SORT_ASC])->all();
+        
+        $attrs = [];
+        foreach ($attributes as $attr){
+            $attrs[$attr['name']] = [
+                'id' => $attr['id'],
+                'values' => explode("\n", $attr['values']),
+                'sort_order' => $attr['sort_order']
+            ];
+        }
+        
+        return $attrs;
+    }
+    
+    /**
+     * 获取已经选择的课程属性
+     * @param string $courseId
+     * @return array
+     */
+    protected function getCourseAttrByCourseId($courseId)
+    {
+        $attributes = (new Query())
+            ->select(['CourseAttr.attr_id', 'CourseAttr.value', 'CourseAttribute.name', 'CourseAttr.sort_order'])
+            ->from(['CourseAttr' => CourseAttr::tableName()])
+            ->leftJoin(['CourseAttribute' => CourseAttribute::tableName()], 'CourseAttribute.id = CourseAttr.attr_id')
+            ->where(['course_id' => $courseId, 'CourseAttr.is_del' => 0])->orderBy(['sort_order' => SORT_ASC])->all();
+        
+        $attrs = [];
+        foreach ($attributes as $attr) {
+            $val = $attr['attr_id'] . '_' . $attr['sort_order'] . '_' . $attr['value'];
+            $attrs[$val] = $attr['name'] . '：' . $attr['value'];
+        }
+        
+        return $attrs;
+    }
+    
+    /**
+     * 获取分类全路径
+     * @param integer $categoryId
+     * @return string
+     */
+    protected function getCategoryFullPath($categoryId) 
+    {
+        $parentids = array_values(array_filter(explode(',', Category::getCatById($categoryId)->path)));
+        $path = '';
+        foreach ($parentids as $index => $id) {
+            $path .= ($index == 0 ? '' : ' \ ') . Category::getCatById($id)->name;
+        }
+        
+        return $path;
     }
 }

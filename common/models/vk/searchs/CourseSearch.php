@@ -6,6 +6,7 @@ use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -142,6 +143,11 @@ class CourseSearch extends Course
         $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
         $tagRefQuery->groupBy('TagRef.object_id');
+        //查询参与课程的在学人数
+        $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
+            ->from(['Progress' => CourseProgress::tableName()]);
+        $studyQuery->where(['Progress.course_id' => $copyCourse]);
+        $studyQuery->groupBy('Progress.course_id');
         //以课程id为分组
         self::$query->groupBy(['Course.id']);
         //查询总数
@@ -157,12 +163,14 @@ class CourseSearch extends Course
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
+        //查询在学人数结果
+        $studyResult = $studyQuery->asArray()->all(); 
         //查询课程结果
         $courseResult = self::$query->asArray()->all();
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
-               ArrayHelper::index($courseSize, 'course_id'));
+               ArrayHelper::merge(ArrayHelper::index($studyResult, 'course_id'), ArrayHelper::index($courseSize, 'course_id')));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {

@@ -136,6 +136,7 @@ return [
     'Sublevel' => '子级',
     'We' => '我们',
     'Opinion' => '意见',
+    'Synopsis' => '简介',
   
     //提示消息
     "Can't be empty." => '不能为空。',

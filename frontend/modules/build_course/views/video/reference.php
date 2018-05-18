@@ -42,8 +42,9 @@ $this->title = Yii::t('app', "{Add}{Video}",[
             <div class="col-lg-6 col-md-6"><div class="help-block"></div></div>
         </div>
     </div>
-    <!-- 排序 -->
+    <!-- 搜索和排序 -->
     <div class="sort">
+        <!-- 搜索 -->
         <div class="form keep-left">
             <?php $form = ActiveForm::begin([
                 'action' => array_merge(['reference'], $filters),
@@ -62,6 +63,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
             
             <?php ActiveForm::end(); ?>
         </div>
+        <!-- 排序 -->
         <ul class="keep-right">
             <li id="created_at">
                 <?= Html::a('按时间排序', array_merge(['reference'], array_merge($filters, ['sort' => 'created_at'])), [
@@ -77,6 +79,9 @@ $this->title = Yii::t('app', "{Add}{Video}",[
     </div>
     <!--列表-->
     <div class="list" style="display: table;">
+        <?php if(count($dataProvider->allModels) <= 0): ?>
+        <h5>没有找到数据。</h5>
+        <?php endif; ?>
         <?php foreach ($dataProvider->allModels as $index => $model): ?>
         <div class="item reference <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
             <?= Html::beginTag('a', ['href' => Url::to(array_merge(['reference'], array_merge($filters, ['id' => $model['video_id']])))]) ?>
@@ -113,8 +118,10 @@ $this->title = Yii::t('app', "{Add}{Video}",[
 <?php
 $url = Url::to(array_merge(['reference'], $filters));   //链接
 $sort = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
+$refList = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+    $this->renderFile('@frontend/modules/build_course/views/video/_refList.php')));
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/video/_dome.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
 $js = 
 <<<JS
         
@@ -179,37 +186,53 @@ $js =
         });
         return false;
     }            
+   
+    //下拉加载更多
+    var page = 1;
+    $(".myModal .modal-body").scroll(function(){
+        var contentHeight = $(this).innerHeight();   //内容高度  
+        var scrollHeight  = $(this).get(0).scrollHeight;   //真实的宽高  
+        var scrollTop  = $(this).get(0).scrollTop ;  //滚动的最顶端部分
+        if(scrollHeight - scrollTop <= contentHeight) { 
+            dataLoad(page);
+        }  
+    });       
+    //分页请求加载数据
+    function dataLoad(pageNum) {
+        var maxPageNum =  ($totalCount - 15) / 15;
+        // 当前页数是否大于最大页数
+        if((pageNum) > Math.ceil(maxPageNum)){
+            return;
+        }
+        $.post("$url", {page: (pageNum + 1)}, function(rel){
+            var items = $refList;
+            var dome = "";
+            var data = rel['data'];
+            page = Number(rel['filters'].page);
+            console.log(data, page);
+            if(rel['code'] == '200'){
+                for(var i in data){
+                    dome += Wskeee.StringUtil.renderDOM(items, {
+                        className: i % 5 == 4 ? 'clear-margin' : '',
+                        url: "../video/reference?node_id=" + rel['filters'].node_id + "&id=" + data[i].video_id,
+                        isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
+                        duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
+                        name: data[i].name,
+                    });
+                }
+                $(".video-reference .list").append(dome);
+                hoverEvent();
+            }
+        });
+    }         
         
     //经过、离开事件
     function hoverEvent(){
-//        var tooltip = $('<div class="details" />');
         $(".list .item > a").each(function(){
             var elem = $(this);
             elem.hover(function(){
-//                var items = $domes;
-//                var dome = "";
-//                $.get(elem.attr("href"), function(rel){
-//                    var data = rel['data'];
-//                    dome = Wskeee.StringUtil.renderDOM(items, {
-//                        className: 'clear-margin',
-//                        id: data['videos'].video_id,
-//                        isExist: data['videos'].img == null || data['videos'].img == '' ? '<div class="title"><span>' + data['videos'].name + '</span></div>' : '<img src="/' + data['videos'].img + '" width="100%" />',
-//                        courseName: data['videos'].course_name,
-//                        name: data['videos'].name,
-//                        duration: Wskeee.DateUtil.intToTime(data['videos'].source_duration),
-//                        tags: data['videos'].tags != undefined ? data['videos'].tags : 'null',
-//                        createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data['videos'].created_at),
-//                        colorName: data['videos'].is_ref == 0 ? 'green' : 'red',
-//                        isRef: data['videos'].is_ref == 0 ? '原创' : '引用',
-//                        teacherAvatar: data['videos'].teacher_avatar,
-//                        teacherName: data['videos'].teacher_name,
-//                        playNum: data['videos'].play_num != undefined ? data['videos'].play_num : 0,
-//                    });
-//                    tooltip.html('<div class="list">' + dome + '</div>').appendTo(elem.parent(".reference "));
-//                });
                 elem.next(".cont").find("a.choice").css({display: "block"});
             }, function(){
-//                tooltip.html("");
                 elem.next(".cont").find("a.choice").css({display: "none"});
             });    
         });

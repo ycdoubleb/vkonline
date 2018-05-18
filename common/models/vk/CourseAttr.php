@@ -3,6 +3,8 @@
 namespace common\models\vk;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%course_attr}}".
@@ -13,8 +15,10 @@ use Yii;
  * @property string $value 属性值,用','分隔项
  * @property int $sort_order 排序
  * @property int $is_del 是否删除：0否 1是
+ * 
+ * @property CourseAttribute $courseAttribute  获取课程属性
  */
-class CourseAttr extends \yii\db\ActiveRecord
+class CourseAttr extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -49,5 +53,13 @@ class CourseAttr extends \yii\db\ActiveRecord
             'sort_order' => Yii::t('app', 'Sort Order'),
             'is_del' => Yii::t('app', 'Is Del'),
         ];
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getCourseAttribute()
+    {
+        return $this->hasOne(CourseAttribute::class, ['id' => 'attr_id']);
     }
 }

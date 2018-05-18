@@ -35,11 +35,12 @@ use yii\web\UploadedFile;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
- * @property Customer $customer     获取客户
- * @property Category $category     获取分类
- * @property User $createdBy        获取创建者
- * @property Teacher $teacher       获取老师
- * @property TagRef[] $tagRefs      获取所有标签
+ * @property Customer $customer         获取客户
+ * @property Category $category         获取分类
+ * @property User $createdBy            获取创建者
+ * @property Teacher $teacher           获取老师
+ * @property CourseAttr[] $courseAttr   获取所有课程属性
+ * @property TagRef[] $tagRefs          获取所有标签
  */
 
 class Course extends ActiveRecord
@@ -220,6 +221,15 @@ class Course extends ActiveRecord
     public function getTeacher()
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getCourseAttr()
+    {
+        return $this->hasMany(CourseAttr::class, ['course_id' => 'id'])->with('courseAttribute')
+            ->orderBy(['sort_order' => SORT_ASC]);
     }
     
     /**
