@@ -173,6 +173,7 @@ return [
     'Administrators' => '管理员',
     'Renew' => '续费',
     'Invite Code' => '邀请码',
+    'Invitation Link' => '邀请链接',
     'Basic' => '基本',
     'Courses' => '所有课程',
     'Total Capacity' => '总容量',

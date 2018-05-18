@@ -118,11 +118,13 @@ use yii\widgets\DetailView;
             <div class="frame-title">
                 <span><?= Yii::t('app', '{Signup}{User}',['Signup' => Yii::t('app', 'Signup'), 'User' => Yii::t('app', 'User')]) ?></span>
                 <div class="framebtn">
-                    <?= Html::button(Yii::t('app', '{Produce}{Invite Code}',['Produce' => Yii::t('app', 'Produce'), 'Invite Code' => Yii::t('app', 'Invite Code')]),
+                    <?= Html::button(Yii::t('app', '{Produce}{Invite Code}',['Produce' => Yii::t('app', 'Produce'),
+                        'Invite Code' => Yii::t('app', 'Invite Code')]),
                             ['id' => 'createInviteCode', 'class' => 'btn btn-sm btn-success',
                                 'onclick'=>'return inviteCode($(this));'])
                     ?>
-                    <?= Html::button(Yii::t('app', '{Copy}{Invite Code}',['Copy' => Yii::t('app', 'Copy'), 'Invite Code' => Yii::t('app', 'Invite Code')]),
+                    <?= Html::button(Yii::t('app', '{Copy}{Invitation Link}',['Copy' => Yii::t('app', 'Copy'),
+                        'Invitation Link' => Yii::t('app', 'Invitation Link')]),
                             ['id' => 'copyBtn', 'class' => 'btn btn-sm btn-primary',
                                 'onclick'=>'return jsCopy($(this));'])
                     ?>
@@ -248,7 +250,7 @@ $js =
         
     /** 生成邀请码 */
     window.inviteCode = function inviteCode() {
-        $.post("default/create-invite-code?id=$model->id",function(data){
+        $.post("/admin_center/default/create-invite-code?id=$model->id",function(data){
             if(data == '200'){
                 $("#signup-user").load("$signupIndex"); 
             }
@@ -258,11 +260,11 @@ $js =
     /** 复制邀请码 */
     window.jsCopy = function jsCopy() {
         var e=document.getElementById("inviteCode");//对象是inviteCode
-//        e.values = "$WEB_ROOT/site/signup?code="+e.value;
-        e.select(); //选择对象
-        tag=document.execCommand("Copy"); //执行浏览器复制命令
+        e.value = "$WEB_ROOT/site/signup?code="+e.value;
+        e.select();                         //选择复制对象
+        tag=document.execCommand("Copy");   //执行浏览器复制命令
         if(tag){
-          alert('复制邀请码成功');
+          alert('复制邀请链接成功');
         }
     }; 
         

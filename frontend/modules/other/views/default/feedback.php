@@ -34,7 +34,8 @@ $this->title = Yii::t('app', '{Opinion}{Feedback}', [
         ]); ?>
         
         <?= Html::activeHiddenInput($model, 'user_id', ['value' => Yii::$app->user->id])?>
-        <?= Html::activeHiddenInput($model, 'customer_id', ['value' => Yii::$app->user->identity->customer_id])?>
+        <?= Html::activeHiddenInput($model, 'customer_id', ['value' => empty(Yii::$app->user->id) ?
+                                    '' : Yii::$app->user->identity->customer_id])?>
 
         <?= $form->field($model, 'type')->radioList(UserFeedback::$feedbackType,[
             'itemOptions'=>[
@@ -68,9 +69,9 @@ $this->title = Yii::t('app', '{Opinion}{Feedback}', [
 
 $js = 
 <<<JS
-    $(".btn-success").click(function(){
-　　　　alert("感谢您的反馈，我们会尽快处理！");
-　　});
+//    $(".btn-success").click(function(){
+//　　　　alert("感谢您的反馈，我们会尽快处理！");
+//　　});
 JS;
     $this->registerJs($js,  View::POS_READY);
     OtherAssets::register($this);

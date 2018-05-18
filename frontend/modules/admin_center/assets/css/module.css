@@ -65,7 +65,7 @@
     font-size: 14px;
     width: 100px;
     height: 35px;
-    line-height: 25px;
+    line-height: 33px;
     background-color: rgba(40, 178, 139, 1);
     border: 0;
     border-radius: 0;
@@ -254,8 +254,11 @@
     overflow-y: auto;
 }
 
-/*** 邀请码去边框 加底色 **/
+/*** 邀请码去边框 置底隐藏 加底色 **/
 #inviteCode{
+    position: absolute;
     border: 0;
+    opacity: 0;
+    z-index: -10;
     background-color: #ffffff;
 }
