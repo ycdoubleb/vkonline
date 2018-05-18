@@ -128,9 +128,20 @@
     font-size: 14px;
 }
 
+/***修改输入框样式***/
 .form-control,
 .select2-container--krajee .select2-selection{
+    height: 40px;
     border-radius: 0px;
+}
+
+/***修改下拉框样式***/
+.select2-selection__rendered{
+    line-height: 28px;
+}
+
+.select2-container--krajee .select2-selection--single .select2-selection__arrow{
+    height: 38px;
 }
 
 /***  概况  **/

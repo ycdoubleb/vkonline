@@ -5,6 +5,7 @@ namespace backend\modules\frontend_admin\controllers;
 use common\models\Config;
 use common\models\User;
 use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
@@ -99,9 +100,11 @@ class DefaultController extends Controller
     public function getUsedSpace()
     {
         $files = $this->findCustomerFile()->all();
+        $courseFiles = $this->finCourseFile()->all();
+        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
         $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
         $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
         
         $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
             ->from(['Uploadfile' => Uploadfile::tableName()]);
@@ -127,6 +130,23 @@ class DefaultController extends Controller
         $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
                 
         $query->groupBy('Video.source_id');
+        
+        return $query;
+    }
+    
+    /**
+     * 查找课程关联的文件
+     * @return Query
+     */
+    protected function finCourseFile()
+    {
+        $query = (new Query())->select(['Attachment.file_id'])
+            ->from(['Customer' => Customer::tableName()]);
+        
+        $query->leftJoin(['Course' => Course::tableName()], 'Course.customer_id = Customer.id');
+        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
+        
+//        $query->groupBy('Course.source_id');
         
         return $query;
     }

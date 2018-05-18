@@ -6,6 +6,7 @@ use common\models\AdminUser;
 use common\models\Region;
 use common\models\User;
 use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\Customer;
 use common\models\vk\CustomerActLog;
 use common\models\vk\CustomerAdmin;
@@ -298,9 +299,11 @@ class CustomerSearch extends Customer
     public function findUsedSizeByCustomer()
     {
         $files = $this->findCustomerFile()->all();
+        $courseFiles = $this->findCustomerCourseFile()->asArray()->all();
+        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
         $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
         $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
         
         $query = (new Query())->select(['Customer.id', 'SUM(Uploadfile.size) AS customer_size'])
             ->from(['Uploadfile' => Uploadfile::tableName()]);
@@ -330,6 +333,23 @@ class CustomerSearch extends Customer
 
         $query->groupBy('Video.source_id');
         
+        return $query;
+    }
+    
+    /**
+     * 查找客户课程关联的文件
+     * @return Query
+     */
+    protected function findCustomerCourseFile()
+    {
+        $query = Customer::find()->select(['Attachment.file_id'])
+            ->from(['Customer' => Customer::tableName()]);
+        
+        $query->leftJoin(['Course' => Course::tableName()], '(Course.customer_id = Customer.id)');
+        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
+        
+//        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
+                
         return $query;
     }
     
