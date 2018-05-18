@@ -14,7 +14,7 @@
             </div>
             <div class="tuip">
                 <span class="tuip-{%colorName%}">{%publishStatus%}</span>
-                <span class="tuip-right tuip-green">{%number%}人在学</span>
+                <span class="tuip-right tuip-green">{%number%} 人在学</span>
             </div>
         </div>
     </a>

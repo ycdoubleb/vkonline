@@ -48,6 +48,7 @@ return [
     'as access' => [
         'allowActions' => [
             /* 开放课程、学习中心、课工厂栏目权限限制 */
+            'user/*',
             'course/*',
             'study_center/*',
             'build_course/*',

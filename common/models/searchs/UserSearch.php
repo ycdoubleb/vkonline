@@ -3,6 +3,8 @@
 namespace common\models\searchs;
 
 use common\models\User;
+use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Video;
@@ -168,9 +170,11 @@ class UserSearch extends User
     public function findUsedSizeByUser()
     {
         $files = $this->findUserFile()->asArray()->all();
+        $courseFiles = $this->findUserCourseFile()->asArray()->all();
+        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
         $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
         $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
         
         $query = Uploadfile::find()
                 ->select(['Uploadfile.created_by', 'SUM(Uploadfile.size) AS user_size'])
@@ -201,6 +205,24 @@ class UserSearch extends User
         
         $query->groupBy('Video.source_id');
         
+        return $query;
+    }
+    
+    /**
+     * 查找用户课程关联的文件
+     * @return Query
+     */
+    protected function findUserCourseFile()
+    {
+        self::getInstance();
+        $query = User::find()->select(['Attachment.file_id'])
+            ->from(['User' => User::tableName()]);
+        
+        $query->leftJoin(['Course' => Course::tableName()], '(Course.created_by = User.id)');
+        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
+        
+        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
+                
         return $query;
     }
 

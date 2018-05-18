@@ -16,9 +16,7 @@ ModuleAssets::register($this);
 $this->title = Yii::t(null, "{Delete}{Node}：{$model->name}", [
     'Delete' => Yii::t('app', 'Delete'), 'Node' => Yii::t('app', 'Node')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="course-node-delete main modal">
 
@@ -67,6 +65,9 @@ $js =
         $.post("../course-node/delete?id=$model->id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
                 $("#$model->id").remove();
+                if($("#course_node li").length <= 0){
+                    $('<li class="empty"><div class="head"><center>没有找到数据。</center></div></li>').appendTo($("#course_node"));
+                }
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
         });

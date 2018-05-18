@@ -104,12 +104,11 @@ SwitchInputAsset::register($this);
                 [
                     'attribute' => 'category_id',
                     'label' => Yii::t('app', 'Category'),
-                    'value' => !empty($model->category_id) ? $model->category->name : null,
+                    'value' => !empty($model->category_id) ? $path : null,
                 ],
                 [
-                    //'attribute' => 'category_id',
                     'label' => Yii::t('app', 'Attribute'),
-                    'value' => !empty($model->category_id) ? $model->category->name : null,
+                    'value' => count($courseAttrs) > 0 ? implode('，', $courseAttrs) : null,
                 ],
                 [
                     'attribute' => 'name',
@@ -118,10 +117,12 @@ SwitchInputAsset::register($this);
                 ],
                 [
                     'attribute' => 'teacher_id',
+                    'format' => 'raw',
                     'label' => Yii::t('app', '{mainSpeak}{Teacher}', [
                         'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                     ]),
-                    'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
+                    'value' => !empty($model->teacher_id) ? 
+                        Html::img([$model->teacher->avatar], ['class' => 'img-circle', 'width' => 32, 'height' => 32]) . '&nbsp;' . $model->teacher->name : null,
                 ],
                 [
                     'attribute' => 'level',

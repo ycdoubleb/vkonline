@@ -119,7 +119,7 @@ class VideoFavoriteSearch extends VideoFavorite
      */
     protected function search($params, $addArrays = [])
     {
-        $page = ArrayHelper::getValue($params, 'page', 0); //分页
+        $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //关联查询
         self::$query->leftJoin(['Video' => Video::tableName()], 'Video.id = Favorite.video_id');
@@ -146,7 +146,7 @@ class VideoFavoriteSearch extends VideoFavorite
         //添加字段
         self::$query->addSelect($addArrays);
         //显示数量
-        self::$query->offset($page * $limit)->limit($limit);
+        self::$query->offset(($page - 1) * $limit)->limit($limit);
         //视频播放量结果
         $playResult = $playQuery->all();
         //查询标签结果

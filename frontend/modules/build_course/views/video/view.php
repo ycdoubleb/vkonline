@@ -72,7 +72,8 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', '{mainSpeak}{Teacher}', [
                         'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                     ]),
-                    'value' => !empty($model->teacher_id) ? $model->teacher->name : null,
+                    'value' => !empty($model->teacher_id) ? 
+                        Html::img([$model->teacher->avatar], ['class' => 'img-circle', 'width' => 32, 'height' => 32]) . '&nbsp;' . $model->teacher->name : null,
                 ],
                 [
                     'label' => Yii::t('app', 'Des'),

@@ -136,6 +136,9 @@ return [
     'Sublevel' => '子级',
     'We' => '我们',
     'Opinion' => '意见',
+    'Problem' => '问题',
+    'Specific' => '具体',
+    'Synopsis' => '简介',
   
     //提示消息
     "Can't be empty." => '不能为空。',
@@ -171,6 +174,7 @@ return [
     'Administrators' => '管理员',
     'Renew' => '续费',
     'Invite Code' => '邀请码',
+    'Invitation Link' => '邀请链接',
     'Basic' => '基本',
     'Courses' => '所有课程',
     'Total Capacity' => '总容量',
@@ -263,6 +267,9 @@ return [
     'Verifier' => '审核',
     'Remarks' => '备注',
     'Reset' => '重置',
+    'Solve' => '解决',
+    'Processer' => '处理人',
+    'Feedbacker' => '反馈者',
     
     //前台-公共
     'Avg Star' => '评分',

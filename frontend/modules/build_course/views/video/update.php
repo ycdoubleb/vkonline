@@ -14,13 +14,11 @@ ModuleAssets::register($this);
 $this->title = Yii::t(null, "{Edit}{Video}", [
     'Edit' => Yii::t('app', 'Edit'), 'Video' => Yii::t('app', 'Video')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="video-update main modal">
 
-    <div class="modal-dialog modal-lg" style="width: 1000px" role="document">
+    <div class="modal-dialog modal-lg modal-width" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">

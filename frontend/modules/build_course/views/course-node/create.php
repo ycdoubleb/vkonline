@@ -60,7 +60,11 @@ $js =
         var items = $domes;    
         $.post("../course-node/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(rel){
             if(rel['code'] == '200'){
+                var hasClass = $('#course_node li').hasClass('empty');
                 var dome = Wskeee.StringUtil.renderDOM(items, rel['data']);
+                if(hasClass){
+                    $('#course_node li.empty').remove();
+                }
                 $(".sortable").eq(0).append(dome);
                 sortable('.sortable', {
                     forcePlaceholderSize: true,

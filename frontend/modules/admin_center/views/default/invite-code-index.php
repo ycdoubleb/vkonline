@@ -20,8 +20,7 @@ $this->title = Yii::t('app', 'Customer');
             [
                 'label' => Yii::t('app', 'Invite Code'),
                 'format' => 'raw',
-                'value' => !empty($model->invite_code) ? Html::input('input', 'inviteCode', $model->invite_code,
-                                ['id' => 'inviteCode', 'readonly'=> 'readonly']) : null,
+                'value' => !empty($model->invite_code) ? $model->invite_code : null,
             ],
             [
                 'label' => Yii::t('app', '{Already}{Signup}',[
@@ -32,7 +31,9 @@ $this->title = Yii::t('app', 'Customer');
             ],
         ],
      ])?>
-        
+      
+    <!--被置底不显示的邀请码框-->
+    <?= Html::input('input', 'inviteCode', $model->invite_code, ['id' => 'inviteCode', 'readonly'=> 'readonly'])?>
 </div>
 
 <?php

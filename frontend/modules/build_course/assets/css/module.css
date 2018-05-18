@@ -109,8 +109,14 @@ body .select2-container--krajee
     border-radius: 0;
 }
 
-.form .form-group textarea.form-control {
+.form .form-group textarea.form-control,
+.form .form-group .edui-default {
     height: auto
+}
+
+.form .form-group .edui-default {
+    padding: 0;
+    border-radius: 4px;
 }
 
 .form .form-group .select2-selection 
@@ -191,6 +197,7 @@ body .select2-container--krajee
     float: left;
     padding: 0 20px;
     margin-top: -2px;
+    cursor: pointer;
 }
 
 .sort > ul > li > a {

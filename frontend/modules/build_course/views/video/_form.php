@@ -42,7 +42,7 @@ $format = <<< SCRIPT
         //返回结果（html）
         return isShow + 
             '<div class="avatars">' + 
-                '<img class="img-circle" src="' + src + '" width="100%"/>' + 
+                '<img class="img-circle" src="' + src + '" width="32" height="32"/>' + 
             '</div>' 
             + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
             '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank">' + 
@@ -53,6 +53,7 @@ $format = <<< SCRIPT
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
+
 ?>
 
 <div class="video-form form clear">
@@ -71,7 +72,7 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
-    
+    <!--引用视频-->
     <?php
         $reelect = !$model->is_ref ? Html::a('重选', ['reference', 'node_id' => $model->node_id], [
             'id' => 'video-reelect',
@@ -84,7 +85,7 @@ $this->registerJs($format, View::POS_HEAD);
             "<div class=\"col-lg-1 col-md-1\">{$reelect}</div>\n" . 
             "<div class=\"col-lg-6 col-md-6\">{error}</div>"
         ])->widget(SwitchInput::class, [
-            'disabled' => !$model->is_ref ? false : true,
+            'disabled' => $model->isNewRecord ? false : true,
             'pluginOptions' => [
                 'onText' => 'Yes',
                 'offText' => 'No',
@@ -96,7 +97,7 @@ $this->registerJs($format, View::POS_HEAD);
             'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
         ]));
     ?>
-    
+    <!--显示引用视频的详情-->
     <div class="form-group field-video-details">
         <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-6 col-md-6">
@@ -156,13 +157,13 @@ $this->registerJs($format, View::POS_HEAD);
             </div>
         </div>
     </div>
-    
+    <!--视频名称-->
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Name}', [
         'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
-    
+    <!--主讲老师-->
     <?php
         $refresh = !$model->is_ref ? 
             Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
@@ -194,16 +195,15 @@ $this->registerJs($format, View::POS_HEAD);
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
-
+    <!--视频描述-->
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea([
-        'value' => $model->isNewRecord ? '无' : $model->des, 
-        'rows' => 3, 'placeholder' => '请输入...'
+        'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Des}', [
         'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
     ])) ?>
-   
+    <!--标签-->
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
@@ -225,7 +225,7 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
-    
+    <!--视频文件-->
     <div class="form-group field-video-source_id">
         <?= Html::label(Yii::t('app', '{Video}{File}', [
             'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
@@ -233,7 +233,7 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
-    
+    <!--隐藏属性-->
     <?= Html::activeHiddenInput($model, 'ref_id') ?>
     
     <?php ActiveForm::end(); ?>
@@ -249,6 +249,21 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
+    
+    //开关事件
+    function switchLog(event, state){
+        if(state == true){
+            $(".myModal .modal-dialog .modal-body").load("../video/reference?node_id=$model->node_id");
+        }else{
+            $(".myModal").load("../video/create?node_id=$model->node_id");
+        }
+    }
+    //重选引用视频事件
+    function reelectEvent(elem){
+        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
+        return false;
+    }
+        
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
         $('#video-teacher_id').html("");
@@ -266,50 +281,49 @@ $js =
     window.uploader;
     //加载文件上传  
     require(['euploader'], function (euploader) {
-            //公共配置
-            window.config = {
-                swf: "$swfpath" + "/Uploader.swf",
-                // 文件接收服务端。
-                server: '/webuploader/default/upload',
-                //检查文件是否存在
-                checkFile: '/webuploader/default/check-file',
-                //分片合并
-                mergeChunks: '/webuploader/default/merge-chunks',
-                //自动上传
-                auto: false,
-                //开起分片上传
-                chunked: true,
-                name: 'Video[source_id]',
-                // 上传容器
-                container: '#uploader-container',
-                //验证文件总数量, 超出则不允许加入队列
-                fileNumLimit: 1,
-                //指定选择文件的按钮容器
-                pick: {
-                    id:  '#uploader-container .euploader-btns > div',
-                    multiple: false,
-                },
-                //指定接受哪些类型的文件
-                accept: {
-                    extensions: 'mp4',
-                },
-                formData: {
-                    _csrf: "$csrfToken",
-                    //指定文件上传到的应用
-                    app_id: "$app_id",
-                    //同时创建缩略图
-                    makeThumb: 1
-                }
-
-            };
-            console.log($videoFiles);
-            //视频
-            window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
-            window.uploader.addCompleteFiles($videoFiles);
-            if($model->is_ref){
-                window.uploader.setEnabled(false);
+        //公共配置
+        window.config = {
+            swf: "$swfpath" + "/Uploader.swf",
+            // 文件接收服务端。
+            server: '/webuploader/default/upload',
+            //检查文件是否存在
+            checkFile: '/webuploader/default/check-file',
+            //分片合并
+            mergeChunks: '/webuploader/default/merge-chunks',
+            //自动上传
+            auto: false,
+            //开起分片上传
+            chunked: true,
+            name: 'Video[source_id]',
+            // 上传容器
+            container: '#uploader-container',
+            //验证文件总数量, 超出则不允许加入队列
+            fileNumLimit: 1,
+            //指定选择文件的按钮容器
+            pick: {
+                id:  '#uploader-container .euploader-btns > div',
+                multiple: false,
+            },
+            //指定接受哪些类型的文件
+            accept: {
+                extensions: 'mp4',
+            },
+            formData: {
+                _csrf: "$csrfToken",
+                //指定文件上传到的应用
+                app_id: "$app_id",
+                //同时创建缩略图
+                makeThumb: 1
             }
-        });
+
+        };
+        //视频
+        window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
+        window.uploader.addCompleteFiles($videoFiles);
+        if($model->is_ref){
+            window.uploader.setEnabled(false);
+        }
+    });
     /**
     * 上传文件完成才可以提交
     * @return {uploader.isFinish}

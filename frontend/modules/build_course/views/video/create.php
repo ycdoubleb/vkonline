@@ -54,20 +54,6 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
 $js = 
 <<<JS
 
-    //开关事件
-    function switchLog(event, state){
-        if(state == true){
-            $(".myModal .modal-dialog .modal-body").load("../video/reference?node_id=$model->node_id");
-        }else{
-            $(".myModal").load("../video/create?node_id=$model->node_id");
-        }
-    }
-    //重选引用视频事件
-    function reelectEvent(elem){
-        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
-        return false;
-    }
-        
     // 提交表单
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;

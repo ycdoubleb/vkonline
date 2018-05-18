@@ -7,6 +7,7 @@ use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
 use common\models\vk\CourseAttachment;
+use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
@@ -57,6 +58,7 @@ class ActionUtils
         try
         {  
             if($model->save()){
+                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
                 $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
@@ -90,6 +92,7 @@ class ActionUtils
         try
         {  
             if($model->save()){
+                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
                 $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
@@ -185,7 +188,7 @@ class ActionUtils
      * @param type $post
      * @throws Exception
      */
-    public function CreateCourseUser($model, $post)
+    public function createCourseUser($model, $post)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -216,7 +219,7 @@ class ActionUtils
      * @param CourseUser $model
      * @throws Exception
      */
-    public function UpdateCourseUser($model)
+    public function updateCourseUser($model)
     {
         $newAttr = $model->getDirtyAttributes();    //获取新属性值
         $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
@@ -248,7 +251,7 @@ class ActionUtils
      * @param CourseUser $model
      * @throws Exception
      */
-    public function DeleteCourseUser($model)
+    public function deleteCourseUser($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -277,7 +280,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function CreateCourseNode($model)
+    public function createCourseNode($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -306,7 +309,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function UpdateCourseNode($model)
+    public function updateCourseNode($model)
     {
         //获取所有新属性值
         $newAttr = $model->getDirtyAttributes();
@@ -342,7 +345,7 @@ class ActionUtils
      * @param CourseNode $model
      * @throws Exception
      */
-    public function DeleteCourseNode($model)
+    public function deleteCourseNode($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -385,6 +388,9 @@ class ActionUtils
         try
         {  
             if($model->save()){
+                $courseModel = Course::findOne($model->courseNode->course_id);
+                $courseModel->content_time = $courseModel->content_time + $model->source_duration;
+                $courseModel->update(false, ['content_time']);
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
                 $this->saveCourseActLog(['action' => '增加', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name}>> {$model->name}",  
@@ -423,6 +429,9 @@ class ActionUtils
         {  
             $isEqual = $oldAttr['source_id'] != $model->source_id;
             if($model->save()){
+                $courseModel = Course::findOne($model->courseNode->course_id);
+                $courseModel->content_time = $courseModel->content_time + $model->source_duration;
+                $courseModel->update(false, ['content_time']);
                 $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
                 if(!empty($newAttr) || $isEqual){
                     $oldRef = Video::findOne($oldAttr['ref_id']);
@@ -465,7 +474,9 @@ class ActionUtils
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
-                VideoAttachment::updateAll(['is_del' => $model->is_del], ['video_id' => $model->id]);
+                $courseModel = Course::findOne($model->courseNode->course_id);
+                $courseModel->content_time = $courseModel->content_time - $model->source_duration;
+                $courseModel->update(false, ['content_time']);
                 $this->saveCourseActLog(['action' => '删除', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name} >> {$model->name}",
                     'course_id' => $model->courseNode->course_id,]);
@@ -491,7 +502,7 @@ class ActionUtils
      * @return boolean
      * @throws Exception
      */
-    public function MoveNode($post, $course_id, $number = 0)
+    public function moveNode($post, $course_id, $number = 0)
     {
         $table = ArrayHelper::getValue($post, 'tableName');
         $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
@@ -621,6 +632,32 @@ class ActionUtils
     }
     
     /**
+     * 保存课程属性
+     * @param string $courseId
+     * @param array $attributes
+     */
+    private function saveCourseAttribute($courseId, $attributes)
+    {
+        $attrs = [];
+        //删除已存在的标签
+        CourseAttr::updateAll(['is_del' => 1], ['course_id' => $courseId]);
+        if(!empty($attributes)){
+            foreach ($attributes as $attr) {
+                $courseAttr = explode("_", $attr);
+                $attrs[] = [
+                    'course_id' => $courseId,
+                    'attr_id' => $courseAttr[0],
+                    'value' => $courseAttr[2],
+                    'sort_order' => $courseAttr[1],
+                ];
+            }
+        }
+        //添加
+        Yii::$app->db->createCommand()->batchInsert(CourseAttr::tableName(),
+            isset($attrs[0]) ? array_keys($attrs[0]) : [], $attrs)->execute();
+    }
+    
+    /**
      * 保存对象标签
      * @param string $objectId  对象id
      * @param array $tagIds     标签id
@@ -720,14 +757,21 @@ class ActionUtils
     
     /**
      * 保存操作记录
-     * $params['action' => '动作','title' => '标题','content' => '内容','created_by' => '创建者','course_id' => '课程id','related_id' => '相关id']
-     * @param array $params                                   
+     * @param array $params  
+     * $params[ 
+     *   'action' => '动作', 
+     *   'title' => '标题', 
+     *   'content' => '内容', 
+     *   'created_by' => '创建者', 
+     *   'course_id' => '课程id',
+     *   'related_id' => '相关id'
+     * ]
      */
-    private function saveCourseActLog($params=null)
+    private function saveCourseActLog($params = [])
     {
         $action = ArrayHelper::getValue($params, 'action'); //动作
         $title = ArrayHelper::getValue($params, 'title');   //标题  
-        $content = ArrayHelper::getValue($params, 'content');   //内容
+        $content = ArrayHelper::getValue($params, 'content', '无');   //内容
         $created_by = ArrayHelper::getValue($params, 'created_by', Yii::$app->user->id);    //创建者
         $course_id = ArrayHelper::getValue($params, 'course_id');   //课程id
         $related_id = ArrayHelper::getValue($params, 'related_id'); //相关环节

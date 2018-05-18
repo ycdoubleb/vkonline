@@ -74,7 +74,7 @@ class CourseNodeController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->CreateCourseNode($model);
+            $result = ActionUtils::getInstance()->createCourseNode($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'data' => $result ? ['id' => $model->id, 'name' => $model->name] : [],
@@ -103,7 +103,7 @@ class CourseNodeController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->UpdateCourseNode($model);
+            $result = ActionUtils::getInstance()->updateCourseNode($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'data'=> $result ? ['id' => $model->id, 'name' => $model->name,] : [],
@@ -132,7 +132,7 @@ class CourseNodeController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->DeleteCourseNode($model);
+            $result = ActionUtils::getInstance()->deleteCourseNode($model);
             return [
                 'code'=> $result ? 200 : 404,
                 'message' => ''
@@ -160,7 +160,7 @@ class CourseNodeController extends Controller
                 
         Yii::$app->getResponse()->format = 'json';
         if(Yii::$app->request->isPost){
-            $result = ActionUtils::getInstance()->MoveNode($post, $course_id);
+            $result = ActionUtils::getInstance()->moveNode($post, $course_id);
             
             return [
                 'code' => $result ? 200 : 404,
