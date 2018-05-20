@@ -37,7 +37,7 @@ ModuleAssets::register($this);
     <div class="course-form form set-margin"> 
         
         <?php $form = ActiveForm::begin([
-            'action' => array_merge(['index'], $filters),
+            'action' => ['index'],
             'method' => 'get',
             'options'=>[
                 'id' => 'build-course-form',

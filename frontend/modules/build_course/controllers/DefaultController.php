@@ -43,6 +43,6 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return $this->redirect(['course/index', 'utils' => 'bs_utils']);
+        return $this->redirect(['course/index']);
     }
 }
