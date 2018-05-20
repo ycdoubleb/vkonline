@@ -552,6 +552,79 @@
     display: block;
 }
 
+/***************************************
+* 课程评论
+****************************************/
+.course-default-view .left-box .c-comment{}
+.course-default-view .left-box .c-comment .scroe{
+    
+}
+/*********** 创建评论容器 *************/
+.course-default-view .left-box .c-comment .create-comment-box .panel-head{
+    color: #999;
+}
+.course-default-view .left-box .c-comment .create-comment-box .user-star{
+    margin-top: -5px;
+}
+.course-default-view .left-box .c-comment .create-comment-box .editer{
+    width: 100%;
+    border-color: #E4E4E4;
+}
+.course-default-view .left-box .c-comment .create-comment-box .input_num{
+    float: right;
+    color: #ccc;
+}
+.course-default-view .left-box .c-comment .create-comment-box .submit{
+    float: right;
+}
+/************* 你的评论 *************/
+.course-default-view .left-box .c-comment .my-comment-box {
+    margin-bottom: 100px;  
+}
+.course-default-view .left-box .c-comment .my-comment-box .panel-head{
+    color: #999;
+}
+
+/************* 评论项 *************/
+.course-default-view .left-box .c-comment .comment-item {
+    position: relative;
+    height: 120px;
+    border-bottom: 1px solid #f2f2f2;
+    color: #999;
+    margin: 0 -20px 20px;
+    padding: 0 20px;
+}
+.course-default-view .left-box .c-comment .comment-item .avatar-box{
+    text-align: center;
+    float: left;
+    font-size: 12px;
+}
+.course-default-view .left-box .c-comment .comment-item .avatar-box .avatar{
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin: 10px 0px;
+}
+.course-default-view .left-box .c-comment .comment-item .comment-body {
+    margin-left: 65px;
+}
+.course-default-view .left-box .c-comment .comment-item .comment-body .created_time{
+    float: right;
+    font-size: 12px;
+}
+.course-default-view .left-box .c-comment .comment-item .comment-body .comment-content{
+    margin: 10px 0;
+    color: #666;
+}
+.course-default-view .left-box .c-comment .comment-item .comment-body .zan_count{
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+}
+/* 点赞 */
+.course-default-view .left-box .c-comment .comment-item .comment-body .zan_count .is_praise{
+    color: #FC583D;
+}
 
 
 /***************************************

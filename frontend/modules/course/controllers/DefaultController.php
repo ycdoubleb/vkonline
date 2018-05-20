@@ -2,16 +2,18 @@
 
 namespace frontend\modules\course\controllers;
 
+use common\models\User;
 use common\models\vk\Category;
+use common\models\vk\CommentPraise;
 use common\models\vk\Course;
 use common\models\vk\CourseAttribute;
+use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CourseListSearch;
-use common\models\vk\searchs\CourseMessageSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoProgress;
 use frontend\modules\course\utils\ActionUtils;
@@ -86,28 +88,6 @@ class DefaultController extends Controller
             'courses' => [],        //课程
         ]);
     }
-    
-    /**
-     * 滚动换页
-     */
-    public function actionSearchList(){
-        Yii::$app->response->format = 'json';
-        $code = 0;
-        $mes = '';
-        try{
-            $result = CourseListSearch::search(Yii::$app->request->queryParams,2);
-        } catch (\Exception $ex) {
-            $mes = $ex->getMessage();
-        }
-        return [
-            'code' => $code,
-            'mes' => $mes,
-            'data' => [
-                'page' => ArrayHelper::getValue(Yii::$app->request->queryParams, 'page' ,1),
-                'courses' => $result['courses'],
-            ],
-        ];
-    }
 
     /**
      * 查看课程详情
@@ -132,15 +112,33 @@ class DefaultController extends Controller
     }
     
     /**
-     * 获取评价
+     * 获取评价视图
      * @param string $id 课程ID
      */
-    public function actionGetcomment()
+    public function actionGetComment($course_id)
     {
-        $searchModel = new CourseMessageSearch();
+        /* 查询我的评论 */
+        $model = (new Query())
+                ->select([
+                    'Comment.id comment_id','Comment.content','Comment.star','Comment.created_at',
+                    'User.id as user_id','User.nickname as user_nickname','User.avatar as user_avatar',
+                    '(CommentPraise.result=1) as is_praise',
+                    ])
+                ->from(['Comment' => CourseComment::tableName()])
+                ->leftJoin(['User' => User::tableName()], 'Comment.user_id = User.id')
+                ->leftJoin(['CommentPraise' => CommentPraise::tableName()], 'CommentPraise.comment_id = Comment.id')
+                ->where([
+                    'Comment.course_id' => $course_id,
+                    'Comment.user_id' => Yii::$app->user->id,
+                ])->one();
+        /* 数量 */
+        $count = CourseComment::find()->where(['course_id' => $course_id])->count();
         
-        return $this->renderAjax('message', [
-            'dataProvider' => $searchModel->search(Yii::$app->request->queryParams)
+        return $this->renderAjax('__comment', [
+                'course_id' => $course_id,
+                'myComment' => $model,
+                'max_count' => $count,
+                'page' => 1,
         ]);
     }
     

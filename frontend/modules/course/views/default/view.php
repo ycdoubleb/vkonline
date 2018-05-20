@@ -17,7 +17,7 @@ use yii\web\View;
 
 GrowlAsset::register($this);
 ModuleAssets::register($this);
-
+$moduleAssetsPath = $this->assetManager->getPublishedUrl(ModuleAssets::register($this)->sourcePath);
 $this->title = Yii::t('app', 'Course');
 ?>
 
@@ -46,9 +46,7 @@ $this->title = Yii::t('app', 'Course');
                     </div>
                     <div class="star-box">
                         <div class="avg-star">
-                            <?php for($i=0;$i<5;$i++): ?>
-                            <i class="glyphicon glyphicon-star <?= (int)$model['avg_star'] > $i ? 'yes' : '' ?>"></i>
-                            <?php endfor; ?>
+                            
                         </div>
                         <span><?= $model['avg_star'] ?> 分</span>
                         <span class="learning-count"><?= $model['learning_count'] ?>人在学</span>
@@ -217,6 +215,14 @@ $this->title = Yii::t('app', 'Course');
 </div>
 
 <script type="text/javascript">
+    window.onload = function(){
+        $('.avg-star').raty({
+            path : '<?= "$moduleAssetsPath/imgs/raty/" ?>',
+            width : false,
+            readOnly: true, 
+            score: <?= $model['avg_star'] ?>
+        });
+    }
     /**
      * 收藏操作
      * @returns void
