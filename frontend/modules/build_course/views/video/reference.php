@@ -47,15 +47,16 @@ $this->title = Yii::t('app', "{Add}{Video}",[
         <!-- 搜索 -->
         <div class="form keep-left">
             <?php $form = ActiveForm::begin([
-                'action' => array_merge(['reference'], $filters),
+                'action' => ['reference'],
                 'method' => 'get',
                 'options'=>[
                     'id' => 'build-course-form',
                     'class'=>'form-horizontal',
+                    'onkeydown' => 'if(event.keyCode == 13) return false;'
                 ],
             ]); ?>
             
-            <?= $form->field($searchModel, 'video_name', [
+            <?= $form->field($searchModel, 'name', [
                 'template' => "<div class=\"col-lg-5 col-md-5\" style=\"padding: 0\">{input}</div>\n",  
             ])->textInput([
                 'placeholder' => '请输入...', 'maxlength' => true
@@ -126,7 +127,7 @@ $js =
 <<<JS
         
     //失去焦点提交表单
-    $("#videofavoritesearch-video_name").blur(function(){
+    $("#videofavoritesearch-name").blur(function(){
         $(".myModal .modal-dialog .modal-body").load("$url", $('#build-course-form').serialize());
     });     
         
