@@ -1,10 +1,8 @@
 <?php
 /* 
- * 课程目录结构视图 
+ * 课程目录作业/任务视图 
  */
 
-use common\models\vk\CourseMessage;
-use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */

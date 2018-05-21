@@ -3,7 +3,6 @@
  * 课程评论视图 
  */
 
-use common\models\vk\CourseMessage;
 use yii\helpers\Html;
 use yii\web\View;
 

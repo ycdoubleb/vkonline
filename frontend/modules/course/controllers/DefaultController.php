@@ -6,17 +6,17 @@ use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\CommentPraise;
 use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttribute;
 use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
-use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CourseListSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoProgress;
-use frontend\modules\course\utils\ActionUtils;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -144,9 +144,32 @@ class DefaultController extends Controller
     
     /**
      * 获取作业/任务视图
+     * @param string $id 课程ID
      */
-    public function actionGetTask(){
+    public function actionGetTask($course_id){
         return $this->renderAjax('__task', [
+        ]);
+    }
+    
+    /**
+     * 获取附件/资源视图
+     * @param string $id 课程ID
+     */
+    public function actionGetAttachment($course_id){
+        //查询所有附件
+        $attachments = (new Query())
+                ->select([
+                    'File.id','File.name','File.size','File.is_del'
+                ])
+                ->from(['Attachment' => CourseAttachment::tableName()])
+                ->leftJoin(['File' => Uploadfile::tableName()],'File.id = Attachment.file_id')
+                ->where([
+                    'Attachment.course_id' => $course_id,
+                    'Attachment.is_del' => 0,
+                ])
+                ->all();
+        return $this->renderAjax('__attachment', [
+            'attachments' => $attachments,
         ]);
     }
     

@@ -556,6 +556,9 @@
 * 课程评论
 ****************************************/
 .course-default-view .left-box .c-comment{}
+.course-default-view .left-box .c-comment .panel-body{
+    padding: 0;
+}
 .course-default-view .left-box .c-comment .scroe{
     
 }
@@ -591,8 +594,7 @@
     height: 120px;
     border-bottom: 1px solid #f2f2f2;
     color: #999;
-    margin: 0 -20px 20px;
-    padding: 0 20px;
+    padding: 20px 20px;
 }
 .course-default-view .left-box .c-comment .comment-item .avatar-box{
     text-align: center;
@@ -632,8 +634,57 @@
 }
 /* loading */
 .course-default-view .left-box .c-comment .loading-box{
+    padding: 20px;
     text-align: center;
 }
+.course-default-view .left-box .c-comment .loading-box .get-more{
+    margin: 0;
+}
+
+
+/***************************************
+* 课程评论
+****************************************/
+.course-default-view .left-box .c-attachment{
+    
+}
+.course-default-view .left-box .c-attachment .panel-body{
+    padding: 0;
+}
+.course-default-view .left-box .c-attachment .list{
+    
+}
+.course-default-view .left-box .c-attachment .list .item{
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 20px;
+    border-bottom: 1px solid #f2f2f2;
+    color: #666;
+}
+.course-default-view .left-box .c-attachment .list .item:hover{
+    background-color: #F9F9F9;
+}
+.course-default-view .left-box .c-attachment .list .item .control-box{
+    float: right;
+    color: #999;
+    margin-right: 52px;
+}
+.course-default-view .left-box .c-attachment .list .item .control-box .size{
+    margin-right: 30px;
+}
+.course-default-view .left-box .c-attachment .list .item .download{
+    position: absolute;
+    display:none;
+    right: 20px;
+    top:6px;
+}
+.course-default-view .left-box .c-attachment .list .item:hover .download{
+    display: inline-block;
+}
+
+
+
 
 
 /***************************************
