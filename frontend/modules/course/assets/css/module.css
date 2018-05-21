@@ -419,6 +419,15 @@
 /***************************************************************
 * 内容导航
 ***************************************************************/
+.course-default-view .content-nav{
+    background-color: #333;
+}
+.course-default-view .content-nav-fixed{
+    position: fixed;
+    top: 80px;
+    width: 100%;
+    z-index: 100;
+}
 .course-default-view .content-nav .sort{
     margin: 30px 0 0px;
     color: #F2F2F2;
@@ -701,7 +710,7 @@
 /* 图片封面 */
 .course-default-view .right-box .course-cover{
     width: 115px;
-    height: 86pxx;
+    height: 86px;
 }
 .course-default-view .right-box .course-name{
     font-size: 12px;
@@ -719,6 +728,10 @@
 }
 .course-default-view .right-box .lecturer .info{
     text-align: center;
+}
+.course-default-view .right-box .lecturer .info a{
+    text-decoration:none;
+    color: inherit;
 }
 .course-default-view .right-box .lecturer .avatar{
     width:120px;

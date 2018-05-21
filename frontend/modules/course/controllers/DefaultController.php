@@ -95,12 +95,7 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
-        $detail = $this->findViewDetail($id);
-        
-        return $this->render('view', [
-            'model' => $detail['course'],
-            'study_progress' => $detail['study_progress'],
-        ]);
+        return $this->render('view',$this->findViewDetail($id));
     }
 
     /**
@@ -203,11 +198,13 @@ class DefaultController extends Controller
                     'Course.id','Course.name','Course.category_id','Course.cover_img',
                     'Course.customer_id','Customer.name as customer_name',
                     'Course.avg_star','Course.learning_count','Course.content_time','Course.content',
+                    'Teacher.id teacher_id','Teacher.name teacher_name','Teacher.avatar teacher_avatar','Teacher.job_title teacher_job_title',
                     '(Favorite.is_del = 0) as is_favorite'
                 ])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Customer' => Customer::tableName()],"Course.customer_id = Customer.id")
                 ->leftJoin(['Favorite' => CourseFavorite::tableName()],"Course.id = Favorite.course_id AND Favorite.user_id = '$user_id'")
+                ->leftJoin(['Teacher' => \common\models\vk\Teacher::tableName()],"Course.teacher_id = Teacher.id")
                 ->where(['Course.id' => $id]);
         
         /* 查找视频环节 */
@@ -221,6 +218,8 @@ class DefaultController extends Controller
                     'Video.is_del' => 0,
                 ]);
         
+        $course = array_merge($course_query->one(),['node_count' => $video_num_query->count()]);
+        
         /* 查找学习进度 */
         $study_progress_query = (new Query())
                 ->select(['StudyProgress.*','Video.name as video_name'])
@@ -231,9 +230,39 @@ class DefaultController extends Controller
                     'StudyProgress.user_id' => $user_id,
                 ]);
         
+        /* 主讲老师其它课程 */
+        $teacher_other_courses = (new Query())
+                ->select(['Course.id','Course.name','Course.cover_img'])
+                ->from(['Course'=> Course::tableName()])
+                ->where([
+                    'Course.teacher_id' => $course['teacher_id'],
+                    'Course.level' => Course::PUBLIC_LEVEL,
+                ])->limit(2)->all();
+        
+        /* 相关课程 */
+        $relative_courses = (new Query())
+                ->select(['Course.id','Course.name','Course.cover_img'])
+                ->from(['Course'=> Course::tableName()])
+                ->where([
+                    'Course.category_id' => $course['category_id'],
+                    'Course.level' => Course::PUBLIC_LEVEL,
+                ])->limit(4)->all();
+        
+        /* 学过本课的学员 */
+        $other_users = (new Query)
+                ->select(['User.id','User.nickname','User.avatar'])
+                ->from(['CourseProgress'=> CourseProgress::tableName()])
+                ->leftJoin(['User' => User::tableName()],'CourseProgress.user_id = User.id')
+                ->where([
+                    'CourseProgress.course_id' => $course['id'],
+                ])->limit(16)->all();
+        
         return [
-            'course' => array_merge($course_query->one(),['node_count' => $video_num_query->count()]),
+            'model' => $course,
             'study_progress' => $study_progress_query->one(),
+            'teacher_other_courses' => $teacher_other_courses,
+            'relative_courses' => $relative_courses,
+            'other_users' => $other_users,
         ];
     }
     
