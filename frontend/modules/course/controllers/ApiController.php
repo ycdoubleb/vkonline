@@ -8,6 +8,7 @@
 
 namespace frontend\modules\course\controllers;
 
+use common\models\vk\CommentPraise;
 use common\models\vk\Course;
 use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
@@ -51,6 +52,7 @@ class ApiController extends Controller  {
                     'add-favorite' => ['get'],
                     'remove-favorite' => ['get'],
                     'add-comment' => ['post'],
+                    'add-comment-praise' => ['post'],
                 ],
             ],
         ];
@@ -181,5 +183,32 @@ class ApiController extends Controller  {
      */
     public function actionGetComment(){
         return CourseCommentSearch::search(Yii::$app->request->queryParams);
+    }
+    
+    /**
+     * 添加评论点赞
+     * @param $post [comment_id]
+     */
+    public function actionAddCommentPraise(){
+        $post = Yii::$app->request->post();
+        $model = new CommentPraise();
+        $trans = Yii::$app->db->beginTransaction();
+        try{
+            if($model->load($post) && $model->validate() && $model->save()){
+                //修改评论的点赞总数
+                $comment = CourseComment::findOne(['id' => $model->comment_id]);
+                $comment->zan_count ++;
+                $comment->save();
+                $trans->commit();
+                return [
+                    'zan_count' => $comment->zan_count,
+                ];
+            }else{
+                return ['error' => $model->getErrorSummary(true)];
+            }
+        } catch (\Exception $ex) {
+            $trans->rollBack();
+            return ['error' => $ex->getMessage()];
+        }
     }
 }

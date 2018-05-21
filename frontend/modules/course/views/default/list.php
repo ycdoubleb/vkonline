@@ -133,31 +133,6 @@ ModuleAssets::register($this);
         </div>
         
         <div class="course-list">
-            <!--
-            <?php foreach($courses as $course): ?>
-                <div class="course-tile">
-                    <div class="pic-box">
-                        <img src="<?= $course['cover_img'] ?>"/>
-                    </div>
-                    <div class="name-box">
-                        <span class="name single-clamp"><?= $course['name'] ?></span>
-                        <span class="content-time"><?= Yii::$app->formatter->asDuration($course['content_time']) ?></span>
-                    </div>
-                    <div class="tag-box">
-                        <span class="tag single-clamp"><?= $course['tags'] == "" ? '无' : $course['tags'] ?></span>
-                    </div>
-                    <div class="customer-box">
-                        <span class="customer"><?= $course['customer_name'] ?></span>
-                        <span class="leaning"><?= $course['learning_count'] ?>人在学</span>
-                    </div>
-                    <div class="foot-box">
-                        <img class="teacher-avatar" src="<?= $course['teacher_avatar'] ?>"/>
-                        <span class="teacher-name"><?= $course['teacher_name'] ?></span>
-                        <span class="star"><?= $course['avg_star'] ?> 分</span>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            -->
         </div>
 
         <div class="loading-box">

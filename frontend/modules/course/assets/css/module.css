@@ -620,10 +620,19 @@
     position: absolute;
     bottom: 10px;
     right: 20px;
+    cursor: pointer;
 }
 /* 点赞 */
-.course-default-view .left-box .c-comment .comment-item .comment-body .zan_count .is_praise{
+.course-default-view .left-box .c-comment .comment-item .comment-body .is_praise{
     color: #FC583D;
+    font-weight: bold;
+}
+.course-default-view .left-box .c-comment .comment-item .comment-body .zan_count i{
+    margin-right: 5px;
+}
+/* loading */
+.course-default-view .left-box .c-comment .loading-box{
+    text-align: center;
 }
 
 

@@ -120,9 +120,9 @@ class DefaultController extends Controller
         /* 查询我的评论 */
         $model = (new Query())
                 ->select([
-                    'Comment.id comment_id','Comment.content','Comment.star','Comment.created_at',
+                    'Comment.id comment_id','Comment.content','Comment.star','Comment.created_at','Comment.zan_count',
                     'User.id as user_id','User.nickname as user_nickname','User.avatar as user_avatar',
-                    '(CommentPraise.result=1) as is_praise',
+                    '(CommentPraise.result=1) as is_praise'
                     ])
                 ->from(['Comment' => CourseComment::tableName()])
                 ->leftJoin(['User' => User::tableName()], 'Comment.user_id = User.id')
@@ -143,27 +143,11 @@ class DefaultController extends Controller
     }
     
     /**
-     * 添加一条新的留言
-     * 如果创建成功，则返回json数据，否者则返回上一步
-     * @param string $id    //course_id
-     * @return json|goBack
+     * 获取作业/任务视图
      */
-    public function actionAddMsg($id)
-    {
-        $model = new CourseMessage(['course_id' => $id, 'type' => CourseMessage::COURSE_TYPE]);
-        $model->loadDefaultValues();
-        
-        if(Yii::$app->request->isPost){
-            Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->addCourseMsg($model, Yii::$app->request->post());
-            
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
-        } else {
-            return $this->goBack(['course/default/view', 'id' => $model->course_id]);
-        }
+    public function actionGetTask(){
+        return $this->renderAjax('__task', [
+        ]);
     }
     
     /**
@@ -293,40 +277,5 @@ class DefaultController extends Controller
             'finish_count' => $finish_count,
             'nodes' => $nodes,
         ];
-    }
-    
-    /**
-     * 查询所有课程节点
-     * @param string $course_id
-     * @return model CourseNode 
-     */
-    protected function findCourseNode($course_id)
-    {
-        $qurey = CourseNode::find();
-            
-        $qurey->where(['course_id' => $course_id, 'is_del' => 0]);
-        
-        $qurey->orderBy(['sort_order' => SORT_ASC]);
-        
-        return $qurey->all();
-    }
-    
-    /**
-     * 获取环节数
-     * @param string $course_id
-     * @return array 
-     */
-    protected function getVideoNumByCourseNode($course_id)
-    {
-         $query = Video::find()->select(['COUNT(Video.id) AS node_num'])
-            ->from(['Video' => Video::tableName()]);
-        
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        
-        $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => $course_id]);
-        
-        $query->groupBy('CourseNode.course_id');
-        
-        return $query->asArray()->one();
     }
 }
