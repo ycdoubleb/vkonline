@@ -61,11 +61,15 @@ class CourseCommentSearch {
         //限制数量
         $query->offset(($page - 1) * $pageSize);
         $query->limit($pageSize);
+        $comments = $query->all();
+        foreach ($comments as &$comment){
+            $comment['created_at'] = \Yii::$app->formatter->asRelativeTime($comment['created_at']);
+        }
 
         return [
             'page' => $page,
             'max_count' => isset($max_count) ? $max_count : 0,
-            'comments' => $query->all(),
+            'comments' => $comments,
         ];
     }
 

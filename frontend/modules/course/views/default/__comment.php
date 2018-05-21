@@ -44,10 +44,10 @@ $is_comment = !empty($myComment);
                         <p class="nickname"><?= $myComment['user_nickname'] ?></p>
                     </div>
                     <div class="comment-body">
-                        <span class="scroe" data-score="1"></span>
+                        <span class="scroe" data-score="<?= $myComment['star'] ?>"></span>
                         <span class="created_time"><?= Yii::$app->formatter->asRelativeTime($myComment['created_at']) ?></span>
                         <p class="comment-content"><?= $myComment['content'] ?></p>
-                        <span class="zan_count"><i class="glyphicon glyphicon-thumbs-up"></i> <?= $myComment['star'] ?></span>
+                        <span class="zan_count"><i class="glyphicon glyphicon-thumbs-up"></i> <?= $myComment['zan_count'] ?></span>
                     </div>
                 </div>
             </div>
@@ -61,8 +61,9 @@ $is_comment = !empty($myComment);
             <div class="panel-body">
                 <div id="comments-box"></div>
                 <div class="loading-box">
+                    <a href="javascript:" onclick="getComment(currentPage+1)"><p class="get-more">显示更多</p></a>
                     <span class="loading"></span>
-                    <span class="no_more">没有更多了</span>
+                    <span class="no-more">没有更多了</span>
                 </div>
             </div>
         </div>
@@ -79,15 +80,23 @@ $is_comment = !empty($myComment);
                        +' <span class="scroe" data-score="{%star%}"></span>'
                         +'<span class="created_time">{%created_at%}</span>'
                         +'<p class="comment-content">{%content%}</p>'
-                        +'<span class="zan_count"><i class="glyphicon glyphicon-thumbs-up {%is_praise%}"></i> {%zan_count%}</span>'
+                        +'<div class="zan_count {%is_praise%}" data-comment-id="{%comment_id%}">'
+                            +'<i class="glyphicon glyphicon-thumbs-up"></i>'
+                            +'<sapn class="txt">{%zan_count%}</span>'
+                        +'</div>'
                     +'</div>'
                 +'</div>';
         
-    //同步执行    
-    getComment(1);
+    //同步执行   
+    var max_count = <?= $max_count ?>           //所有评论数
+    var size = 10;                               //每页显示评论数
+    var currentPage = 1                          //当前页
+    var totalPage = Math.ceil(max_count/size);   //计算最大页数
+    
+    getComment(currentPage);
     //还没评论，初始评论星星
     if(<?= $is_comment ? 0 : 1 ?>){
-        initUserCommentStar();
+        initUserCommentAct();
     }
     
     
@@ -98,7 +107,8 @@ $is_comment = !empty($myComment);
      */
     function submitComment(){
         $.post('/course/api/add-comment',$('.c-comment #user-comment').serialize(),function(result){
-            console.log();
+            //调用父级重新加载评论页
+            loadContent({id:'course_comment',url:'/course/default/get-comment'},true);
         });
     }
     
@@ -109,24 +119,36 @@ $is_comment = !empty($myComment);
     function getComment(page){
         var parems = {
             course_id:'<?= $course_id ?>',
-            page:'<?= $page ?>'
+            page:page,
+            szie:size,
         };
+        currentPage = page;
+        $('.loading-box .get-more').hide();
+        $('.loading-box .no-more').hide();
+        $('.loading-box .loading').show();
         $.get('/course/api/get-comment',parems,function(result){
-            if(result.code == '200'){
+            if(result.code == '200' && result.data.error == undefined){
+                $('.loading-box .loading').hide();
                 $.each(result.data.comments,function(){
-                    var item = Wskeee.StringUtil.renderDOM(comment_itme_dom,this);
-                    console.log(item);
-                    $("#comments-box").append(item);
+                    //已经点赞改变样式
+                    this['is_praise'] = this['is_praise'] == "1" ? 'is_praise' : "";
+                    var item = $(Wskeee.StringUtil.renderDOM(comment_itme_dom,this)).appendTo($("#comments-box"));
+                    initZanAct($(item).find('.zan_count'));
+                    if(currentPage != totalPage){
+                        $('.loading-box .get-more').show();
+                    }else{
+                        $('.loading-box .no-more').show();
+                    }
                 });
                 //初始其它人评论星星
-                initOtherUserCommentStar();
+                initOtherUserCommentAct();
             }
         });
     }
     /**
      * 初始用户评分星星 
      **/
-    function initUserCommentStar(){
+    function initUserCommentAct(){
         /* 初始用户评分 */
         $('.c-comment .user-star').raty({
             scoreName: 'CourseComment[star]',
@@ -138,8 +160,8 @@ $is_comment = !empty($myComment);
         });
     }
     
-    /* 初始其它评论星星 */
-    function initOtherUserCommentStar(){
+    /* 初始其它评论星星和点赞操作 */
+    function initOtherUserCommentAct(){
         /* 初始其它用户的评分 */
         $('.c-comment .comment-body .scroe').raty({
             score: function() {
@@ -148,6 +170,30 @@ $is_comment = !empty($myComment);
             path : '/imgs/course/images/raty/',
             width : false,
             readOnly: true, 
+        });
+    }
+    
+    /**
+     * 初始点赞操作
+     * @param {DOM} $item   
+     * @returns {undefined}     
+     **/
+    function initZanAct($item){
+        $item.on('click',function(){
+            var _this = $(this);
+            if(!$(this).hasClass('is_praise')){
+               $.post('/course/api/add-comment-praise',{
+                   "CommentPraise[comment_id]":$(this).attr('data-comment-id'),
+                   "CommentPraise[user_id]":'<?= Yii::$app->user->id ?>',
+                   "CommentPraise[result]":1,
+                },function(result){
+                   if(result.code == 200 && result.data.error == undefined){
+                       console.log(_this);
+                       _this.addClass('is_praise');
+                       _this.find('.txt').html(result.data.zan_count);
+                   }
+               });
+           }
         });
     }
 </script>
