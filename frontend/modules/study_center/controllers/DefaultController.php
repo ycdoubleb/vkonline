@@ -262,6 +262,7 @@ class DefaultController extends Controller
                 'last_time' => $progress['last_time'],
             ];
         }
+        
         return $nodes;
     }
     
