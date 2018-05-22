@@ -13,7 +13,9 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\SearchLog;
 use common\models\vk\searchs\CourseListSearch;
+use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
@@ -52,6 +54,20 @@ class DefaultController extends Controller
                 ],
             ]
         ];
+    }
+    
+    /**
+     * 搜索课程
+     * 添加到搜索记录，再跳转到显示列表
+     */
+    public function actionSearch($keyword){
+        $model = new SearchLog(['keyword' => $keyword]);
+        try{
+            $model->save();
+        } catch (\Exception $ex) {
+            
+        }
+        return $this->redirect(['list', 'keyword' => $keyword]);
     }
     
     /**
@@ -204,7 +220,7 @@ class DefaultController extends Controller
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Customer' => Customer::tableName()],"Course.customer_id = Customer.id")
                 ->leftJoin(['Favorite' => CourseFavorite::tableName()],"Course.id = Favorite.course_id AND Favorite.user_id = '$user_id'")
-                ->leftJoin(['Teacher' => \common\models\vk\Teacher::tableName()],"Course.teacher_id = Teacher.id")
+                ->leftJoin(['Teacher' => Teacher::tableName()],"Course.teacher_id = Teacher.id")
                 ->where(['Course.id' => $id]);
         
         /* 查找视频环节 */

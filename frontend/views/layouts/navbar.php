@@ -111,8 +111,9 @@ $js = <<<JS
      **/
     $("input[id=search-input]").keypress(function(e){
         var eCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
-        if (eCode == 13){
-            window.location.href = "/course/default/list?keyword="+$(this).val();
+        var keyword = Wskeee.StringUtil.trim($(this).val());
+        if (eCode == 13 && keyword != ''){
+            window.location.href = "/course/default/search?keyword="+keyword;
         }
     })
 
