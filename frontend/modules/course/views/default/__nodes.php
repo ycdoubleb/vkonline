@@ -47,7 +47,7 @@ $finish_percent = $video_count == 0 ? 0 : floor($finish_count/$video_count*100);
                                     <i class="glyphicon glyphicon-play"></i>
                                     <span><?= $video['duration'] ?></span>
                                 </div>
-                                <a class="btn btn-highlight play"><?= $video['finish_time'] > 0 ? '继续学习' : '开始学习' ?></a>
+                                <a class="btn btn-highlight play" href="/study_center/default/view?id=<?= $video['video_id'] ?>"><?= $video['finish_time'] > 0 ? '继续学习' : '开始学习' ?></a>
                             </div>
                         </li>        
                         <?php endforeach; ?>   
