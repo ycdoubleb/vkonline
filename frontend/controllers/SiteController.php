@@ -86,54 +86,34 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $categoryId = ArrayHelper::getValue(\Yii::$app->request->queryParams, 'id');
-        $customerModel = ChoiceUtils::findCustomer();
-        $bannerModel = Banner::findAll(['customer_id' => $customerModel->id, 'is_publish' => 1]);
-        $classifys = ChoiceUtils::getChoiceCatsByLevel();
-        $firstCateId = ArrayHelper::getValue(reset($classifys), 'id');
-        $cateId = empty($categoryId) ? $firstCateId : $categoryId;
-        $courses = ChoiceUtils::getChoiceCourseByCategoryId($cateId);
-        $courseRanks = $this->getCourseRank($customerModel->id, $customerModel->is_official);
+        /* 宣传 */
+        $banners = Banner::find()
+                ->where(['is_publish' => Banner::YES_PUBLISH])
+                ->orderBy('sort_order')
+                ->all();
+        
+        /* 搜索排行 */
+        $hotSearch = (new Query())
+                ->select(['keyword','count(*) as count'])
+                ->from(SearchLog::tableName())
+                ->where(['and',['>=','created_at', strtotime("first day of ".date('Y-m'))],['<','created_at', strtotime(date('Y').'-'.(date('m')+1))]])
+                ->groupBy('keyword')
+                ->orderBy(['count' => SORT_DESC])
+                ->limit(20)
+                ->all();
+        
+        /* 入驻伙伴 */
+        $customers = (new Query())
+                ->select(['id','name','logo'])
+                ->from(Customer::tableName())
+                ->where(['status' => Customer::STATUS_ACTIVE,'is_official' => 0])
+                ->limit(10)
+                ->all();
         
         return $this->render('index', [
-            'bannerModel' => $bannerModel,
-            'categorys' => Category::getCatsByLevel(),
-            'hotSearchs' => $this->getSearchLog(),
-            'classifys' => $classifys,
-            'courses' => $courses,
-            'courseRanks' => $courseRanks,
-            'categoryId' => $cateId,
-        ]);
-    }
-    
-    /**
-     * Displays squarepage.
-     *
-     * @return mixed
-     */
-    public function actionSquare()
-    {
-        if(\Yii::$app->user->identity->is_official){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-        }
-        ChoiceUtils::$isBelongToIndex = false;
-        $categoryId = ArrayHelper::getValue(\Yii::$app->request->queryParams, 'id');
-        $bannerModel = Banner::findAll(['is_official' => 1, 'is_publish' => 1]);
-        $classifys = ChoiceUtils::getChoiceCatsByLevel();
-        $firstCateId = ArrayHelper::getValue(reset($classifys), 'id');
-        $cateId = empty($categoryId) ? $firstCateId : $categoryId;
-        $courses = ChoiceUtils::getChoiceCourseByCategoryId($cateId);
-        $courseRanks = $this->getCourseRank(null, 1);
-        
-        return $this->render('index', [
-            'bannerModel' => $bannerModel,
-            'categorys' => Category::getCatsByLevel(),
-            'hotSearchs' => $this->getSearchLog(),
-            'classifys' => $classifys,
-            'courses' => $courses,
-            'courseRanks' => $courseRanks,
-            'categoryId' => $cateId,
-            'isBelongToIndex' => false,
+            'banners' => $banners,
+            'hotSearchs' => ArrayHelper::map($hotSearch, 'keyword', 'count'),
+            'customers' => $customers,
         ]);
     }
 

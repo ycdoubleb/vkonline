@@ -6,17 +6,19 @@ use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\CommentPraise;
 use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttribute;
 use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
-use common\models\vk\CourseMessage;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\SearchLog;
 use common\models\vk\searchs\CourseListSearch;
+use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoProgress;
-use frontend\modules\course\utils\ActionUtils;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -52,6 +54,20 @@ class DefaultController extends Controller
                 ],
             ]
         ];
+    }
+    
+    /**
+     * 搜索课程
+     * 添加到搜索记录，再跳转到显示列表
+     */
+    public function actionSearch($keyword){
+        $model = new SearchLog(['keyword' => $keyword]);
+        try{
+            $model->save();
+        } catch (\Exception $ex) {
+            
+        }
+        return $this->redirect(['list', 'keyword' => $keyword]);
     }
     
     /**
@@ -95,12 +111,7 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
-        $detail = $this->findViewDetail($id);
-        
-        return $this->render('view', [
-            'model' => $detail['course'],
-            'study_progress' => $detail['study_progress'],
-        ]);
+        return $this->render('view',$this->findViewDetail($id));
     }
 
     /**
@@ -144,9 +155,32 @@ class DefaultController extends Controller
     
     /**
      * 获取作业/任务视图
+     * @param string $id 课程ID
      */
-    public function actionGetTask(){
+    public function actionGetTask($course_id){
         return $this->renderAjax('__task', [
+        ]);
+    }
+    
+    /**
+     * 获取附件/资源视图
+     * @param string $id 课程ID
+     */
+    public function actionGetAttachment($course_id){
+        //查询所有附件
+        $attachments = (new Query())
+                ->select([
+                    'File.id','File.name','File.size','File.is_del'
+                ])
+                ->from(['Attachment' => CourseAttachment::tableName()])
+                ->leftJoin(['File' => Uploadfile::tableName()],'File.id = Attachment.file_id')
+                ->where([
+                    'Attachment.course_id' => $course_id,
+                    'Attachment.is_del' => 0,
+                ])
+                ->all();
+        return $this->renderAjax('__attachment', [
+            'attachments' => $attachments,
         ]);
     }
     
@@ -180,11 +214,13 @@ class DefaultController extends Controller
                     'Course.id','Course.name','Course.category_id','Course.cover_img',
                     'Course.customer_id','Customer.name as customer_name',
                     'Course.avg_star','Course.learning_count','Course.content_time','Course.content',
+                    'Teacher.id teacher_id','Teacher.name teacher_name','Teacher.avatar teacher_avatar','Teacher.job_title teacher_job_title',
                     '(Favorite.is_del = 0) as is_favorite'
                 ])
                 ->from(['Course' => Course::tableName()])
                 ->leftJoin(['Customer' => Customer::tableName()],"Course.customer_id = Customer.id")
                 ->leftJoin(['Favorite' => CourseFavorite::tableName()],"Course.id = Favorite.course_id AND Favorite.user_id = '$user_id'")
+                ->leftJoin(['Teacher' => Teacher::tableName()],"Course.teacher_id = Teacher.id")
                 ->where(['Course.id' => $id]);
         
         /* 查找视频环节 */
@@ -198,6 +234,8 @@ class DefaultController extends Controller
                     'Video.is_del' => 0,
                 ]);
         
+        $course = array_merge($course_query->one(),['node_count' => $video_num_query->count()]);
+        
         /* 查找学习进度 */
         $study_progress_query = (new Query())
                 ->select(['StudyProgress.*','Video.name as video_name'])
@@ -208,9 +246,39 @@ class DefaultController extends Controller
                     'StudyProgress.user_id' => $user_id,
                 ]);
         
+        /* 主讲老师其它课程 */
+        $teacher_other_courses = (new Query())
+                ->select(['Course.id','Course.name','Course.cover_img'])
+                ->from(['Course'=> Course::tableName()])
+                ->where([
+                    'Course.teacher_id' => $course['teacher_id'],
+                    'Course.level' => Course::PUBLIC_LEVEL,
+                ])->limit(2)->all();
+        
+        /* 相关课程 */
+        $relative_courses = (new Query())
+                ->select(['Course.id','Course.name','Course.cover_img'])
+                ->from(['Course'=> Course::tableName()])
+                ->where([
+                    'Course.category_id' => $course['category_id'],
+                    'Course.level' => Course::PUBLIC_LEVEL,
+                ])->limit(4)->all();
+        
+        /* 学过本课的学员 */
+        $other_users = (new Query)
+                ->select(['User.id','User.nickname','User.avatar'])
+                ->from(['CourseProgress'=> CourseProgress::tableName()])
+                ->leftJoin(['User' => User::tableName()],'CourseProgress.user_id = User.id')
+                ->where([
+                    'CourseProgress.course_id' => $course['id'],
+                ])->limit(16)->all();
+        
         return [
-            'course' => array_merge($course_query->one(),['node_count' => $video_num_query->count()]),
+            'model' => $course,
             'study_progress' => $study_progress_query->one(),
+            'teacher_other_courses' => $teacher_other_courses,
+            'relative_courses' => $relative_courses,
+            'other_users' => $other_users,
         ];
     }
     
@@ -227,7 +295,7 @@ class DefaultController extends Controller
                     'Video.id as video_id','Video.name video_name','Video.is_ref','Video.source_duration as duration','Video.sort_order as video_sort_order',
                     'Progress.is_finish','Progress.finish_time','Progress.last_time'])
                 ->from(['Node' => CourseNode::tableName()])
-                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id')
+                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id AND Video.is_del = 0')
                 ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
                         ['course_id' => $course_id,'user_id'=>$user_id])
                 ->where([

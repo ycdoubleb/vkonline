@@ -419,6 +419,15 @@
 /***************************************************************
 * 内容导航
 ***************************************************************/
+.course-default-view .content-nav{
+    background-color: #333;
+}
+.course-default-view .content-nav-fixed{
+    position: fixed;
+    top: 80px;
+    width: 100%;
+    z-index: 100;
+}
 .course-default-view .content-nav .sort{
     margin: 30px 0 0px;
     color: #F2F2F2;
@@ -556,6 +565,9 @@
 * 课程评论
 ****************************************/
 .course-default-view .left-box .c-comment{}
+.course-default-view .left-box .c-comment .panel-body{
+    padding: 0;
+}
 .course-default-view .left-box .c-comment .scroe{
     
 }
@@ -591,8 +603,7 @@
     height: 120px;
     border-bottom: 1px solid #f2f2f2;
     color: #999;
-    margin: 0 -20px 20px;
-    padding: 0 20px;
+    padding: 20px 20px;
 }
 .course-default-view .left-box .c-comment .comment-item .avatar-box{
     text-align: center;
@@ -632,8 +643,57 @@
 }
 /* loading */
 .course-default-view .left-box .c-comment .loading-box{
+    padding: 20px;
     text-align: center;
 }
+.course-default-view .left-box .c-comment .loading-box .get-more{
+    margin: 0;
+}
+
+
+/***************************************
+* 课程评论
+****************************************/
+.course-default-view .left-box .c-attachment{
+    
+}
+.course-default-view .left-box .c-attachment .panel-body{
+    padding: 0;
+}
+.course-default-view .left-box .c-attachment .list{
+    
+}
+.course-default-view .left-box .c-attachment .list .item{
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 20px;
+    border-bottom: 1px solid #f2f2f2;
+    color: #666;
+}
+.course-default-view .left-box .c-attachment .list .item:hover{
+    background-color: #F9F9F9;
+}
+.course-default-view .left-box .c-attachment .list .item .control-box{
+    float: right;
+    color: #999;
+    margin-right: 52px;
+}
+.course-default-view .left-box .c-attachment .list .item .control-box .size{
+    margin-right: 30px;
+}
+.course-default-view .left-box .c-attachment .list .item .download{
+    position: absolute;
+    display:none;
+    right: 20px;
+    top:6px;
+}
+.course-default-view .left-box .c-attachment .list .item:hover .download{
+    display: inline-block;
+}
+
+
+
 
 
 /***************************************
@@ -650,7 +710,7 @@
 /* 图片封面 */
 .course-default-view .right-box .course-cover{
     width: 115px;
-    height: 86pxx;
+    height: 86px;
 }
 .course-default-view .right-box .course-name{
     font-size: 12px;
@@ -668,6 +728,10 @@
 }
 .course-default-view .right-box .lecturer .info{
     text-align: center;
+}
+.course-default-view .right-box .lecturer .info a{
+    text-decoration:none;
+    color: inherit;
 }
 .course-default-view .right-box .lecturer .avatar{
     width:120px;

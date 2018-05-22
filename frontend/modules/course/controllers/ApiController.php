@@ -12,10 +12,16 @@ use common\models\vk\CommentPraise;
 use common\models\vk\Course;
 use common\models\vk\CourseComment;
 use common\models\vk\CourseFavorite;
+use common\models\vk\Customer;
+use common\models\vk\PlayStatistics;
 use common\models\vk\searchs\CourseCommentSearch;
 use common\models\vk\searchs\CourseListSearch;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
+use common\models\vk\Teacher;
 use Exception;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -53,6 +59,7 @@ class ApiController extends Controller  {
                     'remove-favorite' => ['get'],
                     'add-comment' => ['post'],
                     'add-comment-praise' => ['post'],
+                    'get-play-rank' => ['get'],
                 ],
             ],
         ];
@@ -136,7 +143,7 @@ class ApiController extends Controller  {
         Yii::$app->getResponse()->format = 'json';
         $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
         if ($model == null) {
-            $model = new CourseFavorite(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
+            return ['error' => '找不到对应课程！'];
         }
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -210,5 +217,126 @@ class ApiController extends Controller  {
             $trans->rollBack();
             return ['error' => $ex->getMessage()];
         }
+    }
+    
+    /**
+     * 获取推荐课，目前为随机推荐
+     * @param array $params [page,size]
+     */
+    public function actionGetRecommend(){
+        //本单位
+        $myCustomer_id = \Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        
+        $params = Yii::$app->request->queryParams;
+        //当前页
+        $page = ArrayHelper::getValue($params, 'page', 1);
+        //每页数量是多少
+        $size = ArrayHelper::getValue($params, 'size', 4);
+        
+        //查询课程详细
+        $query = (new Query())
+                ->select([
+                    'Course.id', 'Course.name', 'Course.content_time', 'Course.learning_count', 'Course.avg_star','Course.cover_img','GROUP_CONCAT(Tags.name) tags',
+                    'Customer.name customer_name',
+                    'Teacher.id teacher_id', 'Teacher.name teacher_name', 'Teacher.avatar teacher_avatar'
+                ])
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)')
+                ->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id')
+                ->leftJoin(['Teacher' => Teacher::tableName()], "Course.teacher_id = Teacher.id")
+                ->leftJoin(['Customer' => Customer::tableName()], 'Course.customer_id = Customer.id')
+                ->groupBy('Course.id');
+        
+        //限定为已发布课程
+        $query->andWhere(['Course.is_publish' => Course::YES_PUBLISH]);
+        //限定公开范围
+        if($myCustomer_id!=null){
+            //没有指定单位并且已加入某单位时
+            $query->andWhere(['or',['Course.level' => Course::PUBLIC_LEVEL],['Course.level' => Course::INTRANET_LEVEL,'Course.customer_id' => $myCustomer_id]]);
+        }else{
+            //设置只限为公开的课程
+            $query->andWhere(['Course.level' => Course::PUBLIC_LEVEL]);
+        }
+        //限制数量
+        $query->offset(($page - 1) * $size);
+        $query->limit($size);
+        
+        return [
+            'page' => $page,
+            'courses' => $query->all(),
+        ];
+    }
+    
+    /**
+     * 获取课程播放排行
+     * @params array [rank_num,year,month]
+     */
+    public function actionGetPlayRank(){
+        $params = Yii::$app->request->queryParams;
+        //取排名前几
+        $rank_num = ArrayHelper::getValue($params, 'rank_num', 6);
+        //指定年份，默认当前年份
+        $year = ArrayHelper::getValue($params, 'year', date('Y'));
+        //指定月份,默认当月
+        $month = ArrayHelper::getValue($params, 'month', date('n'));
+        
+        //查出播放量排名前rank_num的课程ID
+        $ranks = (new Query())
+                ->select(['PlayStatistics.course_id','SUM(PlayStatistics.play_count) play_count',])
+                ->from(['PlayStatistics' => PlayStatistics::tableName()])
+                ->where([
+                    'year' => $year,
+                    'month' => $month,
+                ])
+                ->groupBy('PlayStatistics.course_id')
+                ->orderBy(['play_count' => SORT_DESC])
+                ->limit($rank_num)
+                ->all();
+        
+        /* 计算排名 */
+        $curRank = 0;
+        $perData = 0;
+        $incRank = 1;
+        foreach($ranks as $index => &$rank){
+            //数量相同排名一致
+            $curRank = $perData == $rank['play_count'] ? $curRank : $incRank;
+            $incRank++;
+            $perData = $rank['play_count'];
+            $rank['rank'] = $curRank;
+        }
+        
+        $ranks = ArrayHelper::index($ranks, 'course_id');
+        
+        //查询课程详细
+        $courses = (new Query())
+                ->select([
+                    'Course.id', 'Course.name', 'Course.content_time', 'Course.learning_count', 'Course.avg_star','Course.cover_img','GROUP_CONCAT(Tags.name) tags',
+                    'Customer.name customer_name',
+                    'Teacher.id teacher_id', 'Teacher.name teacher_name', 'Teacher.avatar teacher_avatar'
+                ])
+                ->from(['Course' => Course::tableName()])
+                ->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)')
+                ->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id')
+                ->leftJoin(['Teacher' => Teacher::tableName()], "Course.teacher_id = Teacher.id")
+                ->leftJoin(['Customer' => Customer::tableName()], 'Course.customer_id = Customer.id')
+                ->where(['Course.id' => ArrayHelper::getColumn($ranks, 'course_id')])
+                ->groupBy('Course.id')
+                ->all();
+        
+        /* 合并排行数据 */
+        foreach($courses as &$course){
+            $course['month_play_count'] = $ranks[$course['id']]['play_count'];
+            $course['rank'] = $ranks[$course['id']]['rank'];
+        }
+        
+        ArrayHelper::multisort($courses, 'rank');
+        
+        return [
+            'rank_num' => $rank_num,
+            'year' => $year,
+            'month' => $month,
+            'ranks' => $courses
+        ];
+        
     }
 }

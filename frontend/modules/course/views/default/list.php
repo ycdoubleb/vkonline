@@ -293,6 +293,7 @@ $js =
                 $('.loading').hide();
             });
             $('.loading').show();
+            $('.no_more').hide();
         }
     }
         

@@ -33,10 +33,12 @@ class CourseListSearch {
      * 
      */
     static public function search($params,$type=3) {
+        //本单位
+        $myCustomer_id = \Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
         //关键字
         $keyword = trim(ArrayHelper::getValue($params, 'keyword', ''));
         //单位ID
-        $customer_id = ArrayHelper::getValue($params, 'customer_id');
+        $customer_id = ArrayHelper::getValue($params, 'customer_id',null);
         //分类
         $cat_id = ArrayHelper::getValue($params, 'cat_id' , 0);
         //已选属性
@@ -55,7 +57,16 @@ class CourseListSearch {
                 ->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
         //限定为已发布课程
-        $query->andWhere(['Course.is_publish' => 1]);
+        $query->andWhere(['Course.is_publish' => Course::YES_PUBLISH]);
+        //限定公开范围
+        if(($customer_id == null && $myCustomer_id!=null) || ($myCustomer_id !=null && $myCustomer_id == $customer_id )){
+            //没有指定单位并且已加入某单位时
+            $query->andWhere(['or',['Course.level' => Course::PUBLIC_LEVEL],['Course.level' => Course::INTRANET_LEVEL,'Course.customer_id' => $myCustomer_id]]);
+        }else{
+            //设置只限为公开的课程
+            $query->andWhere(['Course.level' => Course::PUBLIC_LEVEL]);
+        }
+        
         //客户过滤
         $query->andFilterWhere(['Course.customer_id' => $customer_id]);
         //关键字过滤

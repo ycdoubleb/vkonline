@@ -94,30 +94,33 @@ $this->title = Yii::t('app', 'Course');
                     </div>
                 </div>
             </div>
-            <!-- 内容导航 -->
-            <div class="content-nav">
-                <div class="sort">
-                    <ul>
-                        <li data-sort="course_content" class="active">
-                            <?= Html::a('课程简介',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_content',url:''})")]) ?>
-                        </li>
-                        <li data-sort="course_node">
-                            <?= Html::a('课程目录',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_node',url:'/course/default/get-node'},true)")]) ?>
-                        </li>
-                        <li data-sort="course_comment">
-                            <?= Html::a('学员评价',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_comment',url:'/course/default/get-comment'},true)")]) ?>
-                        </li>
-                        <li data-sort="course_task">
-                            <?= Html::a('课程作业',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_task',url:'/course/default/get-task'},true)")]) ?>
-                        </li>
-                        <li data-sort="course_attachment">
-                            <?= Html::a('资源下载',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_attachment',url:'/course/default/get-attachment'},true)")]) ?>
-                        </li>
-                    </ul>
-                </div>
+        </div>
+    </div>
+    <!-- 内容导航 -->
+    <div class="content-nav">
+        <div class="container">
+            <div class="sort">
+                <ul>
+                    <li data-sort="course_content" class="active">
+                        <?= Html::a('课程简介',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_content',url:''})")]) ?>
+                    </li>
+                    <li data-sort="course_node">
+                        <?= Html::a('课程目录',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_node',url:'/course/default/get-node'},true)")]) ?>
+                    </li>
+                    <li data-sort="course_comment">
+                        <?= Html::a('学员评价',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_comment',url:'/course/default/get-comment'},true)")]) ?>
+                    </li>
+                    <li data-sort="course_task">
+                        <?= Html::a('课程作业',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_task',url:'/course/default/get-task'},true)")]) ?>
+                    </li>
+                    <li data-sort="course_attachment">
+                        <?= Html::a('资源下载',null,['href' => 'javascript:','onclick'=> new JsExpression("loadContent({id:'course_attachment',url:'/course/default/get-attachment'},true)")]) ?>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
+            
     <!-- 内容区 -->
     <div class="container content">
         <div class="left-box">
@@ -141,26 +144,24 @@ $this->title = Yii::t('app', 'Course');
                 <div class="panel-head">主讲老师</div>
                 <div class="panel-body">
                     <div class="info">
-                        <img class="avatar" src="/upload/teacher/avatars/teacher.png" />
-                        <p class="name">何卡呀</p>
-                        <p class="job_title">北京大学附属中学化学高级教师，高三化学组组长，海淀区兼职教研员，青年骨干教师，海淀区优秀青年教师，优秀班主任。</p>
+                        <a href="javascript:">
+                            <img class="avatar" src="<?= $model['teacher_avatar'] ?>" />
+                            <p class="name"><?= $model['teacher_name'] ?></p>
+                            <p class="job_title"><?= $model['teacher_job_title'] ?></p>
+                        </a>
                     </div>
                     
                     <hr/>
                     <p style="margin-bottom: 20px;">主讲的其他课程：</p>
                     <ul>
-                        <a href="#">
+                        <?php foreach($teacher_other_courses as $course): ?>
+                        <a href="/course/default/view?id=<?= $course['id'] ?>">
                             <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
-                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
+                                <img class="course-cover" src="<?= $course['cover_img'] ?>">
+                                <p class="single-clamp course-name"><?= $course['name'] ?></p>
                             </li>
                         </a>
-                        <a href="#">
-                            <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
-                                <p class="single-clamp course-name">黑白照片上色</p>
-                            </li>
-                        </a>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             </div>
@@ -168,45 +169,29 @@ $this->title = Yii::t('app', 'Course');
                 <div class="panel-head">相关课程</div>
                 <div class="panel-body">
                     <ul>
-                        <a href="#">
+                        <?php foreach($relative_courses as $course): ?>
+                        <a href="/course/default/view?id=<?= $course['id'] ?>">
                             <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
-                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
+                                <img class="course-cover" src="<?= $course['cover_img'] ?>">
+                                <p class="single-clamp course-name"><?= $course['name'] ?></p>
                             </li>
                         </a>
-                        <a href="#">
-                            <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
-                                <p class="single-clamp course-name">黑白照片上色</p>
-                            </li>
-                        </a>
-                       <a>
-                            <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1497355778072.jpg">
-                                <p class="single-clamp course-name">刘杨商业人像精修全能班</p>
-                            </li>
-                        </a>
-                        <a href="#">
-                            <li>
-                                <img class="course-cover" src="/upload/course/cover_imgs/1523272532280.jpg">
-                                <p class="single-clamp course-name">黑白照片上色</p>
-                            </li>
-                        </a>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             </div>
             <div class="panel relative-user">
-                <div class="panel-head">学过该课的学员</div>
+                <div class="panel-head">学员们</div>
                 <div class="panel-body">
                     <ul>
-                        <?php for($i=0;$i<16;$i++): ?>
+                        <?php foreach($other_users as $user): ?>
                         <a href="#">
                             <li>
-                                <img class="avatar" src="/upload/teacher/avatars/teacher.png">
-                                <p class="name">刘杨商</p>
+                                <img class="avatar" src="<?= $user['avatar'] ?>">
+                                <p class="name"><?= $user['nickname'] ?></p>
                             </li>
                         </a>
-                        <?php endfor; ?>
+                        <?php endforeach; ?>
                     </ul>
                 </div>
             </div>
@@ -217,12 +202,32 @@ $this->title = Yii::t('app', 'Course');
 <script type="text/javascript">
     window.onload = function(){
         $('.avg-star').raty({
-            path : '<?= "$moduleAssetsPath/imgs/raty/" ?>',
+            path : '/imgs/course/images/raty/',
             width : false,
             readOnly: true, 
-            score: <?= $model['avg_star'] ?>
+            score: <?= $model['avg_star'] ?>,
+            starHalf : 'star-half-big.png',
+            starOff  : 'star-off-big.png',
+            starOn   : 'star-on-big.png'
         });
+        
+        /* 侦听滚动事件 */
+        $(window).scroll(checkContentNavFix);
+        checkContentNavFix();
     }
+    
+    /**
+     * 检查内容导航是否需要启用fix样式
+     * @returns {undefined}     
+     **/
+    function checkContentNavFix(){
+        if($(document).scrollTop()>436){
+            $('.content-nav').addClass('content-nav-fixed');
+        }else{
+            $('.content-nav').removeClass('content-nav-fixed');
+        }
+    }
+    
     /**
      * 收藏操作
      * @returns void
