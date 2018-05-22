@@ -2,6 +2,7 @@
 
 use common\models\vk\Video;
 use frontend\modules\study_center\assets\PalyAssets;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -23,7 +24,7 @@ $this->title = $model['name'];
         ]) ?>
     </div>
     <div class="player">
-        <video id="myVideo" src="/<?= $model['path'] ?>" poster="/<?= $model['img'] ?>" width="100%" height="500"></video>
+        <video id="myVideo" src="/<?= $model['path'] ?>" controls autoplay poster="/<?= $model['img'] ?>" width="100%" height="500"></video>
         <?= $this->render('_node', ['nodes' => $nodes]) ?>
     </div>
     <div class="operation">
@@ -56,7 +57,7 @@ $this->title = $model['name'];
         </div>
         <div class="keep-right">
             <?= Html::a('<i class="fa fa-envelope-o"></i>反馈', 'javascript:;') ?>
-            <?= Html::a('<i class="fa fa-arrow-circle-o-right"></i>下一节', 'javascript:;') ?>
+            <?= Html::a('<i class="fa fa-arrow-circle-o-right"></i>下一节', 'javascript:;', ['id' => 'next-section']) ?>
             <?= Html::checkbox('autoplay'); ?>自动播放下一节
         </div>
     </div>
@@ -81,9 +82,30 @@ $this->title = $model['name'];
 </div>
 
 <?php
+$id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'id');
+$videoIs = [];
+foreach ($nodes as $node) {
+    foreach ($node['videos'] as $index => $video) {
+        $videoIs[] = $video['video_id'];
+    }
+}
+
+$videoIs = json_encode((object)$videoIs);
 $currentTime = $model['is_finish'] ? $model['finish_time'] : $model['last_time'];
 $js = 
 <<<JS
+    var id = "$id";
+    var videoIs = $videoIs;
+    for(var i in videoIs){
+        if(videoIs[i] == id){
+            $("#next-section").attr({"href": videoIs[i + 1]});
+            return;
+        }
+    }    
+    console.log(videoIs);
+    /*
+     * 媒体操作事件
+     */
     var myVideo = document.getElementById('myVideo');
     var timeOut;
     myVideo.currentTime = $currentTime
