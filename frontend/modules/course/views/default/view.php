@@ -56,7 +56,10 @@ $this->title = Yii::t('app', 'Course');
                         <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],true) ?></span>
                     </div>
                     <div class="control-box">
-                        <a class="btn btn-highlight" href="/study_center/default/view?id=<?= $study_progress['last_video'] ?>"><?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?></a>
+                        <?php $lastVideo = $study_progress['last_video'] != null ? $study_progress['last_video'] : $model['first_video']; ?>
+                        <a class="btn btn-highlight" href="/study_center/default/view?id=<?= $lastVideo ?>">
+                            <?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?>
+                        </a>
                         
                         <?php if($study_progress && $study_progress['last_video']!="" ): ?>
                         <span class="last_pos single-clamp">上次学到【<?= $study_progress['video_name'] ?>】</span>

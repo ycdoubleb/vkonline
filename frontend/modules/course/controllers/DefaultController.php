@@ -232,9 +232,10 @@ class DefaultController extends Controller
                     'Node.course_id' => $id,
                     'Node.is_del' => 0,
                     'Video.is_del' => 0,
-                ]);
+                ])->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC]);
         
-        $course = array_merge($course_query->one(),['node_count' => $video_num_query->count()]);
+        $nodes = $video_num_query->column();
+        $course = array_merge($course_query->one(),['node_count' => count($nodes),'first_video' => count($nodes) > 0 ? $nodes[0] : null]);
         
         /* 查找学习进度 */
         $study_progress_query = (new Query())
@@ -245,7 +246,7 @@ class DefaultController extends Controller
                     'StudyProgress.course_id' => $id,
                     'StudyProgress.user_id' => $user_id,
                 ]);
-        
+                
         /* 主讲老师其它课程 */
         $teacher_other_courses = (new Query())
                 ->select(['Course.id','Course.name','Course.cover_img'])

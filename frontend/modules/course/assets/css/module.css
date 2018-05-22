@@ -522,14 +522,16 @@
     display: inline-block;
     float: right;
 }
+.course-default-view .left-box .c-nodes .node-list .control .duration{
+    display: inline-block;
+    width: 45px;
+}
 /* 完成进度 */
 .course-default-view .left-box .c-nodes .node-list .progress{
     height: 10px;
     width: 34px;
     display: inline-block;
-}
-.course-default-view .left-box .c-nodes .node-list .glyphicon-play{
-    margin: 0 20px;
+    margin-right: 10px;
 }
 /* 一级头部样式 */
 .course-default-view .left-box .c-nodes .node-list .level_1 .head{
@@ -545,7 +547,6 @@
     line-height: 50px;
     padding: 0 40px;
     color: #999999;
-    cursor: pointer;
 }
 .course-default-view .left-box .c-nodes .node-list .level_2 .head:hover{
     background-color: #F9F9F9;
@@ -554,8 +555,8 @@
 .course-default-view .left-box .c-nodes .node-list .level_2 .head .play{
     display: none;
     position: absolute;
-    right: 25px;
-    top: 5px;
+    right: 40px;
+    top: 7px;
 }
 .course-default-view .left-box .c-nodes .node-list .level_2 .head:hover .play{
     display: block;
