@@ -30,7 +30,7 @@ use yii\helpers\Url;
                                 <div class="control">
                                     <div class="progress">
                                         <!-- 每个视频的完成进度 -->
-                                        <?php $video_finish_percent = $video['is_finish'] ? 100 :  floor($video['finish_time']/$video['duration']*100) ?>
+                                        <?php $video_finish_percent = $video['is_finish'] ? 100 : ($video['duration'] > 0 ? floor($video['finish_time'] / $video['duration'] * 100) : 0) ?>
                                         <div class="progress-bar progress-bar-success" style="width: <?= $video_finish_percent ?>%;">
                                         </div>
                                     </div>
