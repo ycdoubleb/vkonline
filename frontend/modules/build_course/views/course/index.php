@@ -153,6 +153,11 @@ ModuleAssets::register($this);
         <?php endforeach; ?>
     </div>
 
+    <div class="loading-box">
+        <span class="loading" style="display: none"></span>
+        <span class="no_more" style="display: none">没有更多了</span>
+    </div>
+    
     <div class="summary">
         <span>共 <?= $totalCount ?> 条记录</span>
     </div>
@@ -187,6 +192,7 @@ $js =
     
     //下拉加载更多
     var page = 1;
+    var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
             dataLoad(page);
@@ -197,44 +203,61 @@ $js =
         var maxPageNum =  ($totalCount - 6) / 6;
         // 当前页数是否大于最大页数
         if((pageNum) > Math.ceil(maxPageNum)){
+            $('.loading').hide();
+            $('.no_more').show();
             return;
         }
-        $.get("$url", {page: (pageNum + 1)}, function(rel){
-            page = Number(rel['page']);
-            var items = $domes;
-            var dome = "";
-            var data = rel['data'];
-            if(rel['code'] == '200'){
-                for(var i in data){
-                    dome += Wskeee.StringUtil.renderDOM(items, {
-                        className: i % 3 == 2 ? 'clear-margin' : '',
-                        id: data[i].id,
-                        isShow: data[i].level == 1 ? '<div class="icon tuip-red"><i class="fa fa-lock"></i></div>' : '',
-                        isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
-                        name: data[i].name,
-                        contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
-                        tags: data[i].tags != undefined ? data[i].tags : 'null',
-                        colorName: data[i].is_publish == 1 ? 'green' : 'red',
-                        publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
-                        number: data[i].people_num != undefined ? data[i].people_num : 0,
-                        teacherAvatar: data[i].teacher_avatar,
-                        teacherName: data[i].teacher_name,
-                        avgStar: data[i].avg_star
-                    });
+        if(!isPageLoading){
+            //设置已经加载当中...
+            isPageLoading = true;
+            $.get("$url", {page: (pageNum + 1)}, function(rel){
+                isPageLoading = false;
+                page = Number(rel['page']);
+                var items = $domes;
+                var dome = "";
+                var data = rel['data'];
+                if(rel['code'] == '200'){
+                    for(var i in data){
+                        dome += Wskeee.StringUtil.renderDOM(items, {
+                            className: i % 3 == 2 ? 'clear-margin' : '',
+                            id: data[i].id,
+                            isShow: data[i].level == 1 ? '<div class="icon tuip-red"><i class="fa fa-lock"></i></div>' : '',
+                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
+                            name: data[i].name,
+                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
+                            tags: data[i].tags != undefined ? data[i].tags : 'null',
+                            colorName: data[i].is_publish == 1 ? 'green' : 'red',
+                            publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
+                            number: data[i].people_num != undefined ? data[i].people_num : 0,
+                            teacherAvatar: data[i].teacher_avatar,
+                            teacherName: data[i].teacher_name,
+                            avgStar: data[i].avg_star
+                        });
+                    }
+                    $(".list").append(dome);
+                    hoverEvent();   //鼠标经过、离开事件
+                    if(page > Math.ceil(maxPageNum)){
+                        //没有更多了
+                        $('.no_more').show();
+                    }
                 }
-                $(".list").append(dome);
-            }
-            hoverEvent();   //鼠标经过、离开事件
-        });
+                //隐藏loading
+                $('.loading').hide();
+            });
+            $('.loading').show();
+            $('.no_more').hide();
+        }
     }
     //经过、离开事件
     function hoverEvent(){
         $(".list .item > a").each(function(){
             var elem = $(this);
             elem.hover(function(){
+                elem.parent("div.item").addClass('hover');
                 elem.next(".speaker").find("span.avg-star").css({display: "none"});
                 elem.next(".speaker").find("a.preview").css({display: "block"});
             },function(){
+                elem.parent("div.item").removeClass('hover');
                 elem.next(".speaker").find("span.avg-star").css({display: "block"});
                 elem.next(".speaker").find("a.preview").css({display: "none"});
             });    

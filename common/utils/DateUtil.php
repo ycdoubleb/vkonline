@@ -8,6 +8,8 @@
 
 namespace common\utils;
 
+use Yii;
+
 /**
  * Description of DateUtil
  *
@@ -26,12 +28,12 @@ class DateUtil {
         $w=date('w',strtotime($date));  //获取当前周的第几天 周日是 0 周一到周六是 1 - 6
         $now_start=date('Y-m-d',strtotime("$date -".($w ? $w - $first : 6).' days')); //获取本周开始日期，如果$w是0，则表示周日，减去 6 天
         $now_end=date('Y-m-d',strtotime("$now_start +7 days"));  //本周结束日期
-        if($offset!=0)
+        if($offset != 0)
         {
-            $off_start = $offset*7;
-            $off_end = $offset*7+7;
-            $now_start=date('Y-m-d',strtotime("$now_start $off_start days"));  //上周开始日期
-            $now_end=date('Y-m-d',strtotime("$now_start $off_end days"));  //上周结束日期
+            $off_start = $offset * 7;
+            $off_end = $offset * 7 + 7;
+            $now_start=date('Y-m-d', strtotime("$now_start $off_start days"));  //上周开始日期
+            $now_end=date('Y-m-d', strtotime("$now_start $off_end days"));  //上周结束日期
         }
         
         return [
@@ -73,41 +75,43 @@ class DateUtil {
     /**
      * 数字转换成时间格式
      * @param integer $value
+     * @param string $format
      * @param boolean $default [true(hh:mm:ss), false(mm:ss)]
      */
-    public static function intToTime($value, $default = false)
+    public static function intToTime($value, $format = ':', $default = false)
     {
         $h = floor($value / 3600);
-        $m = floor($value % 3600 / 60);
+        $i = floor($value % 3600 / 60);
         $s = floor($value % 60);
         
-        return ($default ? self::zeor($h) . ':' : null) . self::zeor($m) . ':' . self::zeor($s);
+        return ($default ? self::zeor($h) . $format : null) . self::zeor($i) . $format . self::zeor($s);
     }
+    
     /**
      * 字符转int
      * 
      * @param string $strTime     12:20:21
      * @return int 长度
      */
-    public static function timeToInt($strTime){
+    public static function timeToInt($strTime)
+    {
         if(!is_numeric($strTime))  
         {  
-            if(strpos($strTime ,":"))  
-            {  
+            if(strpos($strTime ,":")){  
                 $times =  explode(":", $strTime);  
             }else if(strpos($strTime ,'：')){  
                 $times =  explode(":", $strTime);  
-            }else  
-            {  
+            }else {  
                 return 0;  
             }  
             $h = (int)$times[0] ;  
             $m = (int)$times[1];  
             $s = count($times) == 3 ? (int)$times[2] : 0;  
             return $h * 3600 + $m * 60 + $s;  
-        }else
-            return 0;
-;    }
+        }
+        
+        return 0;
+    }
     
     /**
      * 小于9自动在数字前添加0

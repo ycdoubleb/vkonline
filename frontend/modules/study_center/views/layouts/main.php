@@ -1,9 +1,9 @@
 <?php
 
 use frontend\modules\study_center\assets\MainAssets;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $content string */
@@ -18,55 +18,70 @@ $this->title = Yii::t('app', '{Study}{Center}',[
 ?>
 
 <?php
-$menu = '';
+$menuHtml = '';
 $actionId = Yii::$app->controller->action->id;  //当前actionID
 //导航
 $menuItems = [
     [
-        'label' => '我关注的课程',
-        'url' => ['my-favorite'],
-        'icons' => '<i class="fa fa-star"></i>', 
+        'label' => '我的任务',
+        'url' => ['my-task'],
+        'icons' => null, 
         'options' => ['class' => 'links']
     ],
     [
-        'label' => '我收藏的视频',
-        'url' => ['my-collect'],
-        'icons' => '<i class="fa fa-heart"></i>', 
-        'options' => ['class' => 'links']
-    ],
-    [
-        'label' => '学习历史记录',
+        'label' => '参与的课程',
         'url' => ['history'],
-        'icons' => '<i class="fa fa-clock-o"></i>', 
+        'icons' => null, 
+        'options' => ['class' => 'links']
+    ],
+    [
+        'label' => '收藏的课程',
+        'url' => ['collect-course'],
+        'icons' => null, 
+        'options' => ['class' => 'links']
+    ],
+    [
+        'label' => '收藏的视频',
+        'url' => ['collect-video'],
+        'icons' => null, 
         'options' => ['class' => 'links']
     ],
 ];
-//导航
-end($menuItems);
-$lastIndex = key($menuItems);
+//组装菜单
 foreach ($menuItems as $index => $item) {
-    $menu .= ($actionId == $item['url'][0] ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
-        Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
+    $menuHtml .= ($actionId == $item['url'][0] ? '<li class="active">' :  '<li class="">').
+        Html::a($item['icons'] . $item['label'], $item['url'], $item['options']).'</li>';
 }
 
+//搜索表单
+$searchForm = $this->render('_form', [
+    'actionId' => $actionId,
+    'searchModel' => $this->params['searchModel'],
+]);
+
+//排序
+$sort = Html::a('按默认排序', array_merge([$actionId], array_merge($this->params['filters'], ['sort' => 'default'])), ['id' => 'default', 'class' => 'sort-order']) .
+    Html::a('按时间排序', array_merge([$actionId], array_merge($this->params['filters'], ['sort' => 'created_at'])), ['id' => 'created_at', 'class' => 'sort-order']);
+
 $html = <<<Html
-    <header class="header">
-        <img src="/imgs/build_course/images/u5303.png" />
-    </header>
-    
-    <div class="content">
-        <nav class="subnav">
-            <div class="menu">
-                <div class="title">
-                    <i class="fa fa-list-ul"></i>
-                    <span>导航</span>
-                </div>
-                <ul>{$menu}</ul>
+    <!-- 头部 -->
+    <header class="header"></header>
+    <!-- 内容 -->
+    <div class="container content">
+        <!-- 菜单、搜索和排序 -->
+        <div class="sort">
+            <!--菜单-->
+            <ul class="keep-left">{$menuHtml}</ul>
+            <div class="col-lg-5 col-md-5 keep-right">
+                <!-- 搜索 -->
+                <div class="form keep-left">{$searchForm}</div>
+                <!-- 排序 -->
+                <div class="keep-right">{$sort}</div>
             </div>
-        </nav>
+        </div>
 Html;
 
-    $content = $html.$content.'</div>';
+    $content = $html . $content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
     
 ?>

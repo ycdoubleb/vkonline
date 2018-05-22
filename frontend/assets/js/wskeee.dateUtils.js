@@ -72,10 +72,25 @@
     DateUtil.intToTime = function (value, defaultFormat)
     {
         var h = parseInt(value / 3600);
-        var m = parseInt(value % 3600 / 60);
+        var i = parseInt(value % 3600 / 60);
         var s = parseInt(value % 60);
         
-        return (defaultFormat ? this.zeor(h) + ':' : '')  + this.zeor(m) + ':' +  this.zeor(s);
+        return (defaultFormat ? this.zeor(h) + ':' : '')  + this.zeor(i) + ':' +  this.zeor(s);
+    };
+    
+    /**
+     * 表示作为人类可读格式的持续时间的值
+     * @param integer value
+     * @param boolean defaultFormat [true(hh:mm:ss), false(mm:ss)]
+     * @returns hh:mm:ss|mm:ss
+     */
+    DateUtil.asDuration = function (value, defaultFormat)
+    {
+        var h = parseInt(value / 3600);
+        var i = parseInt(value % 3600 / 60);
+        var s = parseInt(value % 60);
+        
+        return (defaultFormat ? (h > 0 ? h + '时' : '') : '') + (i > 0 ? i + '分钟' : '') + (s > 0 ? s + '秒' : '');
     };
     
     /**

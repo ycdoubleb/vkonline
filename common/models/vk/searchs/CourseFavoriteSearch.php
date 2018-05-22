@@ -4,12 +4,14 @@ namespace common\models\vk\searchs;
 
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
-use common\models\vk\CourseNode;
-use common\models\vk\Video;
+use common\models\vk\CourseProgress;
+use common\models\vk\Customer;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
+use common\models\vk\Teacher;
 use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -23,6 +25,12 @@ class CourseFavoriteSearch extends CourseFavorite
      * @var Query 
      */
     private static $query;
+    
+    /**
+     * 课程名称
+     * @var string 
+     */
+    public $name;
     
     /**
      * @inheritdoc
@@ -45,53 +53,67 @@ class CourseFavoriteSearch extends CourseFavorite
     }
 
     /**
-     * Creates data provider instance with search query applied
+     * 使用搜索查询创建数据提供程序实例
      *
      * @param array $params
      *
-     * @return ActiveDataProvider
+     * @return ArrayDataProvider
      */
     public function search($params)
     {
-        $keyword = ArrayHelper::getValue($params, 'keyword'); //关键字
-        $page = ArrayHelper::getValue($params, 'page'); //分页
-        $limit = ArrayHelper::getValue($params, 'limit'); //显示数
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'default');    //排序
+        $this->name = ArrayHelper::getValue($params, 'CourseFavoriteSearch.name');  //课程名
+        $page = ArrayHelper::getValue($params, 'page', 1); //分页
+        $limit = ArrayHelper::getValue($params, 'limit', 8); //显示数
         
         self::getInstance();
-
-        if($this->load($params)){
-            self::$query->andFilterWhere([
-                'Favorite.id' => $this->id,
-                'Favorite.course_id' => $this->course_id,
-                'Favorite.user_id' => $this->user_id,
-                'Favorite.group' => $this->group,
-                'Favorite.created_at' => $this->created_at,
-                'Favorite.updated_at' => $this->updated_at,
-            ]);
-        }else{
-            self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
-        }
-        
-        //查询所有课程下的环节数
-        $nodeResult = self::findVideoByCourseNode()->asArray()->all();  
+        $this->load($params);
+        //条件查询
+        self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
         //关联查询
-        self::$query->with('course', 'course.teacher');
-        //添加字段
-        self::$query->select(['Favorite.*']);
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = Favorite.course_id');
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Course.name', $keyword]);
-        //显示数量
-        self::$query->offset(($page-1) * $limit)->limit($limit);
-        $courseResult = self::$query->asArray()->all();
+        self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
+        //复制课程对象
+        $copyCourse= clone self::$query;    
+        //查询课程下的标签
+        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
+            ->from(['TagRef' => TagRef::tableName()]);
+        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
+        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
+        $tagRefQuery->groupBy('TagRef.object_id');
+        //查询参与课程的在学人数
+        $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
+            ->from(['Progress' => CourseProgress::tableName()]);
+        $studyQuery->where(['Progress.course_id' => $copyCourse]);
+        $studyQuery->groupBy('Progress.course_id');
+        //以课程id为分组
+        self::$query->groupBy(['Favorite.course_id']);
         //查询总数
-        $totalCount = count($courseResult);
-        //分页
-        $pages = new Pagination(['totalCount' => $totalCount, 'defaultPageSize' => $limit]); 
-        
+        $totalCount = self::$query->count('course_id');
+        //排序
+        if($sort_name != 'default'){
+            self::$query->orderBy(["Favorite.{$sort_name}" => SORT_DESC]);
+        }
+        //添加字段
+        self::$query->addSelect(['Customer.name AS customer_name', 'Course.name', 'Course.cover_img',  
+            'Course.content_time', 'Course.avg_star', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ]);
+        //显示数量
+        self::$query->offset(($page - 1) * $limit)->limit($limit);
+        //关联查询
+        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
+        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
+        //查询标签结果
+        $tagRefResult = $tagRefQuery->asArray()->all(); 
+        //查询在学人数结果
+        $studyResult = $studyQuery->asArray()->all(); 
+        //查询课程结果
+        $courseResult = self::$query->asArray()->all();
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'course_id');
-        $results = ArrayHelper::index($nodeResult, 'course_id');
+        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
+                ArrayHelper::index($studyResult, 'course_id'));
         
         //合并查询后的结果
         foreach ($courses as $id => $item) {
@@ -102,7 +124,6 @@ class CourseFavoriteSearch extends CourseFavorite
          
         return [
             'filter' => $params,
-            'pager' => $pages,
             'total' => $totalCount,
             'data' => [
                 'course' => $courses
@@ -119,26 +140,6 @@ class CourseFavoriteSearch extends CourseFavorite
             self::$query = self::findCourseFavorite();
         }
         return self::$query;
-    }
-    
-    /**
-     * 查询课程环节
-     * @return Query
-     */
-    protected static function findVideoByCourseNode()
-    {
-        self::getInstance();
-        $query = Video::find()
-            ->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num'])
-            ->from(['Video' => Video::tableName()]);
-        
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        
-        $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => self::$query]);
-        
-        $query->groupBy('CourseNode.course_id');
-        
-        return $query;
     }
     
     /**

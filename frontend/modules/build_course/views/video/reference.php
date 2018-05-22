@@ -110,6 +110,11 @@ $this->title = Yii::t('app', "{Add}{Video}",[
         <?php endforeach; ?>
     </div>
     
+    <div class="loading-box">
+        <span class="loading" style="display: none"></span>
+        <span class="no_more" style="display: none">没有更多了</span>
+    </div>
+    
     <div class="summary">
         <span>共 <?= $totalCount ?> 条记录</span>
     </div>
@@ -190,6 +195,7 @@ $js =
    
     //下拉加载更多
     var page = 1;
+    var isPageLoading = false;
     $(".myModal .modal-body").scroll(function(){
         var contentHeight = $(this).innerHeight();   //内容高度  
         var scrollHeight  = $(this).get(0).scrollHeight;   //真实的宽高  
@@ -203,28 +209,43 @@ $js =
         var maxPageNum =  ($totalCount - 15) / 15;
         // 当前页数是否大于最大页数
         if((pageNum) > Math.ceil(maxPageNum)){
+            $('.loading').hide();
+            $('.no_more').show();
             return;
         }
-        $.post("$url", {page: (pageNum + 1)}, function(rel){
-            var items = $refList;
-            var dome = "";
-            var data = rel['data'];
-            page = Number(rel['filters'].page);
-            console.log(data, page);
-            if(rel['code'] == '200'){
-                for(var i in data){
-                    dome += Wskeee.StringUtil.renderDOM(items, {
-                        className: i % 5 == 4 ? 'clear-margin' : '',
-                        url: "../video/reference?node_id=" + rel['filters'].node_id + "&id=" + data[i].video_id,
-                        isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
-                        duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
-                        name: data[i].name,
-                    });
+        if(!isPageLoading){
+            //设置已经加载当中...
+            isPageLoading = true;
+            $.post("$url", {page: (pageNum + 1)}, function(rel){
+                isPageLoading = false;
+                var items = $refList;
+                var dome = "";
+                var data = rel['data'];
+                page = Number(rel['filters'].page);
+                console.log(data, page);
+                if(rel['code'] == '200'){
+                    for(var i in data){
+                        dome += Wskeee.StringUtil.renderDOM(items, {
+                            className: i % 5 == 4 ? 'clear-margin' : '',
+                            url: "../video/reference?node_id=" + rel['filters'].node_id + "&id=" + data[i].video_id,
+                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
+                            duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
+                            name: data[i].name,
+                        });
+                    }
+                    $(".video-reference .list").append(dome);
+                    hoverEvent();
+                    if(page > Math.ceil(maxPageNum)){
+                        //没有更多了
+                        $('.no_more').show();
+                    }
                 }
-                $(".video-reference .list").append(dome);
-                hoverEvent();
-            }
-        });
+                //隐藏loading
+                $('.loading').hide();
+            });
+            $('.loading').show();
+            $('.no_more').hide();
+        }
     }         
         
     //经过、离开事件

@@ -3,6 +3,7 @@
 namespace common\models\vk\searchs;
 
 use common\models\vk\Course;
+use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -30,7 +31,7 @@ class VideoFavoriteSearch extends VideoFavorite
      * 视频名称
      * @var string 
      */
-    public $video_name;
+    public $name;
 
 
     /**
@@ -53,24 +54,28 @@ class VideoFavoriteSearch extends VideoFavorite
         return Model::scenarios();
     }
     
-    //我的收藏情况下
+    //收藏的视频情况下
     public function collectSearch($params)
     {
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'default');    //排序
+        $this->name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.name');    //视频名称
+        
         self::getInstance();
         $this->load($params);
         
         //条件查询
-        self::$query->andFilterWhere([
-            'Favorite.user_id' => Yii::$app->user->id,
-            'Video.is_del' => 0,
-        ]);
-        
+        self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 'Video.source_duration',  'Video.created_at',
-            'Video.is_ref', 'Video.favorite_count', 'Video.zan_count',
+        $addArrays = ['Customer.name AS customer_name', 'Course.name AS course_name', 
+            'Video.name', 'Video.img', 'Video.source_duration',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
-        
+        //排序
+        if($sort_name != 'default'){
+            self::$query->orderBy(["Favorite.{$sort_name}" => SORT_DESC]);
+        }
         return $this->search($params, $addArrays);
     }
 
@@ -78,19 +83,15 @@ class VideoFavoriteSearch extends VideoFavorite
     public function referenceSearch($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        $this->video_name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.video_name');    //视频名称
+        $this->name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.name');    //视频名称
         
         self::getInstance();
         $this->load($params);
         
         //条件查询
-        self::$query->andFilterWhere([
-            'Favorite.user_id' => Yii::$app->user->id,
-            'Video.is_del' => 0,
-        ]);
-        
+        self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $this->video_name]);
+        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         
         //添加字段
         $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
@@ -121,6 +122,8 @@ class VideoFavoriteSearch extends VideoFavorite
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
+        //必要条件
+        self::$query->andFilterWhere(['Video.is_del' => 0]);
         //关联查询
         self::$query->leftJoin(['Video' => Video::tableName()], 'Video.id = Favorite.video_id');
         //复制收藏视频对象
@@ -137,6 +140,7 @@ class VideoFavoriteSearch extends VideoFavorite
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyFavoriteVideo]);
         $tagRefQuery->groupBy('TagRef.object_id');
         //关联查询
+        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = Favorite.course_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         //以视频id为分组

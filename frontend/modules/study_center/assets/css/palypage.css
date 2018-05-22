@@ -1,0 +1,260 @@
+/*
+    用于播放页样式
+*/
+/* 
+    创建于 : 2018-5-21, 17:05:43
+*/
+
+/*******************************************************************************
+ * 视频播放页
+ *******************************************************************************/
+html, body{
+    height: 100%;
+}
+.wrap {
+    padding: 30px 0 20px !important;
+    margin: 0 auto -20px !important;
+    background-color: #282828 !important;
+}
+
+/*******************************************************************************
+ * 视频播放器
+ *******************************************************************************/
+.main {
+    display: inline-block;
+    width: 100%;
+    color: #ccc;
+}
+
+.main .keep-left {
+    float: left;
+}
+
+.main .keep-right {
+    float: right;
+}
+
+.main .title{
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    line-height: 60px;
+}
+
+.main a {
+    color: #ccc !important;
+    text-decoration: none !important;
+}
+ 
+.main i{
+    margin-right: 10px;
+}
+
+.main .title .title-name{
+    font-size: 16px;
+    color: #28B28B;
+}
+
+.main .player {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.main .operation {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    margin: 0 0 50px;
+    background-color: #313131;    
+    line-height: 48px;
+}
+
+.main .operation a {
+    margin-right: 25px;
+}
+
+.main .operation input {
+    margin: -1px 0 1px;
+    vertical-align: middle;
+}
+
+.main .operation > div.keep-left {
+    position: relative;
+}
+
+.main .operation .share-panel {
+    position: absolute;
+    top: 48px;
+    left: -15px;
+    display: none;
+    width: 300px;
+    height: 212px;
+    background-color: #444444;
+}
+
+.main .operation .share-panel .title {
+    border-bottom: 1px solid #585353;
+    padding: 15px;
+    text-align: left;
+    line-height: 0;
+}
+
+.main .operation .share-panel ul {
+    padding: 0;
+    margin: 0;
+}
+
+.main .operation .share-panel ul li {
+    display: inline-block;
+    margin-right: 20px;
+    width: 115px;
+    text-align: center;
+    height: 128px;
+}
+
+.main .operation .share-panel .content-box {
+    width: 90px;
+    height: 85px;
+    margin-bottom: 20px;
+    display: inline-block
+}
+
+.main .operation .share-panel .icon {
+    background: url(../imgs/share-logo.png) no-repeat;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    float: left;
+}
+
+.main .operation .share-panel .icon-wx {
+    background-position: 0 0;
+}
+.main .operation .share-panel .icon-qq {
+    background-position: -32px 0;
+}
+.main .operation .share-panel .icon-xl {
+    background-position: -64px 0;
+}
+.main .operation .share-panel .icon-link {
+    background-position: -94px 0;
+}
+
+.main .left-box {
+    display: inline-block;
+    width: 870px;
+}
+
+.main .panel {
+    color: #999;
+    border: none;
+    border-radius: 0px;
+    background-color: #313131;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.main .panel .panel-head {
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    border-bottom: 1px solid #282828;
+}
+
+.main .panel .panel-body {
+    padding: 20px
+}
+
+.main .right-box {
+    display: inline-block;
+    width: 280px;
+    float: right;
+}
+
+.main .right-box .info {
+    text-align: center;
+}
+
+.main .right-box .name {
+    font-size: 16px;
+    margin-top: 30px;
+}
+
+.main .right-box .job-title {
+    font-size: 12px;
+}
+
+/*******************************************************************************
+ * 视频播放页目录
+ *******************************************************************************/
+.node-list{
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    width: 330px;
+    height: 500px;
+    background-color: #222222;
+    overflow-y: auto;
+}
+/* 列表样式，不需要内边距 */
+.node-list .node-body{
+    padding: 0;
+}
+.node-list .node-body .list {
+    padding: 0;
+    margin: 0;
+}
+/* 列表项 */
+.node-list .head{
+    border-bottom: 1px solid #777777; 
+}
+
+.node-list .control {
+    display: inline-block;
+    float: right;
+}
+/* 完成进度 */
+.node-list .progress{
+    height: 5px;
+    width: 35px;
+    display: inline-block;
+}
+.node-list .control > span {
+    margin-left: 5px;
+}
+/* 一级头部样式 */
+.node-list .level_1 .head{
+    height: 60px;
+    line-height: 60px;
+    padding: 0 15px;
+    font-size: 14px;
+    color: #FC583D;
+    text-align: left;
+}
+/* 二级头部样式 */
+.node-list .level_2 .head {
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
+    color: #777777;
+    text-align: left;
+    border-bottom: 1px dashed #777777;
+}
+
+.node-list .level_2 .head i {
+    display: inline-block;
+    width: 12px;
+    height: 14px;
+    color: #28B28B;
+}
+
+.node-list .level_2 .head.active,
+.node-list .level_2 .head:hover{
+    background-color: #181818;
+}

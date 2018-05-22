@@ -1,640 +1,253 @@
-/***************************************main-公共****************************************/
+/*
+    用于模块页面样式
+*/
+/* 
+    创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-18, 19:40:00;
+*/
+
+/*******************************************************************************
+ * 公共部分
+ *******************************************************************************/
 .main {
     display: inline-block;
-    width: 1000px;
+    width: 100%;
     height: auto;
-    padding-left: 35px;
-    font-size: 14px;
 }
 
-.main > p,
-.main .search-frame {
-    padding: 0;
-    margin: 0 0 15px;
-}
-
-.search-frame > label {
+.loading-box {
+    width: 100%;
+    padding: 20px;
+    color: #999;
     text-align: center;
 }
 
-.main .form-label {
-    padding: 10px 0 !important;
-    margin-bottom: 0;
-    font-size: 14px;
-    color: #999;
-    font-weight: normal;
-    padding-right: 0px;
-}
-
-.main .form-control {
-    height: 40px !important;
-    padding: 10px 24px 10px 12px !important;
-    border-radius: 0 !important;
-}
-
-.main .table {
-/*    table-layout: fixed;*/
-}
-
-.main .table .td-table {
-    font-size: 14px;
-    white-space: nowrap;
-}
-
-.main .table .td-table > a > i {
-    font-size: 18px;
-    color: #4bd127;
-}
-
-/*********************搜索框架****************************/
-.search-frame div.remove {
-    padding: 0;
-}
-
-.search-frame .search-drop-downList,
-.search-frame .search-text-input {
+.summary {
     float: left;
     width: 100%;
-    height: auto;
-    padding-right: 45px;
-    border: 1px #ccc solid;
-}
-
-.search-frame .search-drop-downList {
-    padding-right: 0px;
-    margin-bottom: -20px;
-    border: none;
-}
-
-.search-frame .search-drop-downList > select,
-.search-frame .search-text-input > input {
-    height: 38px !important;
-    font-size: 14px;
-    border: none;
-}
-
-.search-frame .search-drop-downList > select:focus,
-.search-frame .search-text-input > input:focus {
-    outline: 0;
-    border-color: transparent;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-}
-
-.search-frame .search-text-input > input:focus {
-    outline: 0;
-    border-color: transparent;
-    box-shadow: none;
-    -webkit-box-shadow: none;
-}
-
-.search-frame .search-btn-frame {
-    position: absolute;
-    top: 0;
-    right: 0;
-    float: right;
-    padding: 9px 15px;
-    background-color: #00cc99;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-}
-
-.search-frame .search-btn-frame > a,
-.search-frame .search-btn-frame > a:focus,
-.search-frame .search-btn-frame > a:hover {
+    padding: 20px 10px 0;
     font-size: 16px;
+    color: #999;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+
+/*******************************************************************************
+ * 列表公共部分
+ *******************************************************************************/
+.list .tuip-right {
+    float: right;
+}
+
+.list .tuip-left {
+    float: left;
+}
+
+.list .clear-margin {
+    margin: 0 !important;
+}
+
+.list .tuip-btn {
+    display: block;
+    padding: 4px 8px;
+    margin-top: -10px;
+    font-size: 14px;
     color: #fff;
+} 
+
+.list .tuip-green {
+    color: #339966;
 }
 
+.list .tuip-red {
+    color: #ff3300;
+}
 
-/*********************分页****************************/
-.main .page {
+.list .tuip-bg-green {
+    background-color: #339966;
+}
+
+.list .tuip-bg-red {
+    background-color: #ff3300;
+}
+/*******************************************************************************
+ * 列表
+ *******************************************************************************/
+.list {
     display: inline-block;
     width: 100%;
-    height: 100%;
 }
-
-.main .page.center {
-    text-align: center;
-}
-
-/************************************列表*******************************************/
-.main .list {
-    /*position: relative;*/
-    width: 100%;
-    height: auto;
-    font-size: 0px;
-}
-
 .list .item {
-    display: inline-block;
-    width: 260px;
-    margin-right: 90px;
+    float: left;
+    width: 280px;
+    margin-right: 26.5px;
     margin-bottom: 30px;
-    font-size: 0px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
 }
 
-.list .item.item-right {
-    margin-right: 0 !important;
+.list .item.hover {
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+
+.list .item > a {
+    text-decoration: none;
 }
 
 .list .item .pic {
     position: relative;
-    display: inline-block;
     width: 100%;
-    height: 147px;
+    height: 210px;
     background-color: #26bfcd; 
 }
 
-.list .item .pic .title {
-    position: absolute;
-    width: 100%;
-    margin: 10px auto;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    line-height: 103px;
-}
-
-.list .item .pic .avatars {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 95px;
-    height: 112px;
-}
-
-.list .item .pic .float {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 260px;
-    height: 33px;
-    padding: 0 10px;
-    font-size: 14px;
-    color: #fff;
-    line-height: 33px;
-    background-color: rgba(0, 0, 0, .6);
-}
-
-.list .item .pic .float > span {
-    margin-right: 20px;
-}
-
-.list .item .pic .float > span.right {
-    float: right;
-    margin-right: 0;
-}
-
-.list .item .pic .float > span > i {
-    margin-left: 5px;
-}
-
-.list .item .pic .duration {
-    position: absolute;
-    top: 10px;
-    right: 5px;
-    height: 25px;
-    padding: 0 5px;
-    font-size: 14px;
-    color: #fff;
-    line-height: 25px;
-    background-color: rgba(0, 0, 0, .5);
-}
-
-.list .item .cont {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: auto;
-    padding: 0 15px;
-    font-size: 14px;
-    color: #999;
-    background-color: #f2f2f2; 
-}
-
-.list .item .cont .name,
-.list .item .cont .tuip {
-    padding: 12px 0;
-    text-align: left;
-}
-
-.list .item .cont .tuip {
-    position: relative;
-    border-top: dashed 1px #dedede;
-}
-
-.list .item .cont .name > span,
-.list .item .cont .tuip > span {
-    color: #666;
-}
-
-.list .item .cont .tuip > a,
-.list .item .cont .tuip .nodenum,
-.list .item .cont .tuip .labels {
-    float: right;
-    text-decoration: none;
-}
-
-.list .item .cont .tuip > a.into {
-    color: #0099FF;
-}
-
-.list .item .cont .tuip > a.see {
-    color: #FE862E;
-}
-
-.list .item .cont .tuip > a.play {
-    font-size: 18px;
-    color: #4bd127;
-}
-
-.list .item .cont .tuip .labels {
-    position: absolute;
-    top: 10px;
-    right: 0;
-}
-
-.list .item .cont .tuip .labels > span {
-    display: block;
-    float: left;
-    padding: 2px;
-    margin-right: 3px;
-    font-size: 14px;
-    background-color: #fff;
-}
-
-/***************************************内容****************************************/
-.content.center .main {
-    width: 1200px;
-    padding-left: 0;
-}
-
-.main .video {
-    position: relative;
-    display: inline-block;
+.list .item .pic > img {
     width: 100%;
     height: 100%;
-    background-color: #000;
-    overflow: hidden;
 }
 
-.video .title {
-    padding: 10px 15px;
-    background-color: #f2f2f2;
-}
-
-.video .title > span,
-.video .title > a {
-    color: #999;
-}
-
-.video .title > span > i,
-.video .title > a > i {
-    float: left;
-    margin-right: 5px;
-    font-size: 20px;
-}
-
-.video .title > a.right {
-    float: right;
-}
-
-.video .player {
-    position: relative;
-    display: inline-block;
-    float: left;
-    width: 945px;
-    height: 500px;
-    background-color: #000;
-}
-
-.video .player > a {
+.list .item .pic .icon {
     position: absolute;
-    top: 200px;
-    left: 50%;
-    display: block;
-    width: 85px;
-    height: 100px;
-    font-size: 100px;
-    color: #337ab7;
-    line-height: 100px;
-    text-align: center;
-}
-
-/**************************************目录*****************************************/
-.video .catalog {
-    position: absolute;
-    right: 0px;
-    display: inline-block;
-    float: right;
-    width: 255px;
-    height: 500px;
-    overflow-y: auto;
-    background-color: #2c2e30;
-}
-
-.main .sortable {
-    padding:0;
-    margin: 0;
-}
-
-.sortable li {
-    list-style: none outside none;
-    cursor: normal;
-}
-
-.sortable .head {
-    position: relative;
-    padding: 10px;
-    margin: 0;
-    font-size: 14px;
-    border-bottom: 1px #ccc solid;
-    background-color: #3f4345;
-}
-
-.sortable .foot {
-    background-color: #2c2e30;
-}
-
-.sortable .head.remove,
-.sortable .foot.remove {
-    border-bottom: none;
-}
-
-.sortable .nodes {
-    padding: 10px 10px 10px 35px;
-    border-bottom: 1px #cccccc80 dashed;
-    background-color: #2c2e30;
-}
-
-.sortable .head > a {
-    font-size: 14px;
-    color: #ccc;
-    line-height: 20px;
-    text-align: left;
-    text-decoration: none;
-}
-
-.sortable .head > a > i{
-    float: left;
-    margin-right: 5px;
-    font-size: 20px;
-}
-
-.sortable .head .number {
-   color: #ccc;
-}
-
-.sortable .nodes > a >  i {
-    display: none;
-    float: right;
-    color: #4bd127;
-}
-
-.sortable .nodes.active,
-.sortable .nodes:hover {
-    background-color: #131316;
-    cursor: pointer;
-}
-
-.sortable .nodes:hover i {
-    display: block;
-}
-
-/*******************播放量、点赞量、收藏**********************/
-.main > .iframe {
-    padding: 0;
-    margin-top: 5px;
-    font-size: 16px;
-}
-
-.main > .iframe > a {
-    text-decoration: none;
-}
-
-.main > .iframe .watch, 
-.main > .iframe .zan,
-.main > .iframe .fave {
-    margin-right: 25px;
-    color: #131316;
-    text-align: left;
-}
-
-.main > .iframe .fave .favenum {
-    font-size: 13px;
-    color: #ccc;
-}
-
-.main > .iframe .watch > i,
-.main > .iframe .zan > i,
-.main > .iframe .fave > i {
-    margin-left: 10px; 
-}
-
-.main > .iframe .fave.right {
-    float: right;
-    margin-right: 0;
-}
-
-.main > .iframe .fave.right > i {
-    margin-right: 10px; 
-}
-
-/*******************标签页*********************/
-.main .tabs {
-    display: inline-block;
-    width: 860px;
-    padding: 10px;
-    margin-top: 40px;
-    background-color: #f2f2f2;
-}
-
-.main .tabs > ul {
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-
-.main .tabs > ul > li {
-    float: left;
-    height: 40px;
-    padding: 10px 7px;
-    margin: -10px 5px;
-}
-
-.main .tabs > ul > li > a {
-    display: block;
-    padding: 0 7px;
-    margin: -10px -7px;
-    color: #999;
-    line-height: 40px;
-    text-decoration: none;
-}
-
-.main .tabs > ul > li.active,
-.main .tabs > ul > li:hover {
-    border-bottom: 2px #337ab7 solid;
-    /*cursor: pointer;*/
-}
-
-.main .tabs > ul > li.active > a,
-.main .tabs > ul > li:hover > a {
-    color: #337ab7;
-}
-.main .tab-content {
-    display: inline-block;
-    width: 860px;
-}
-
-.main .tab-content .target {
-    padding: 0 15px;
-    color: #999;
-    text-indent: 30px;
-}
-
-/********************留言*****************************/
-.main .frame {
-    padding-left: 0;
-    padding-right: 0;
-    display: inline-block
-}
-
-.frame .table {
-    padding: 0;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
-
-.frame .msglist {
-    width: 100%;
-    min-height: 388px;
-    padding-left: 75px;
-    padding-right: 15px;
-    position: relative;
-    overflow-y: auto;
-}
-
-.frame .time-vertical {
-    list-style-type: none;
-    border-left: 1px solid #eee;
-    padding: 0px;
-    margin-bottom: 0;
-}
-
-.frame .time-vertical li {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    position: relative;
-}
-
-.frame .time-vertical li b:before {
-    content: '';
-    position: absolute;
-    top: 20px;
-    left: -5px;
-    width: 10px;
-    height: 10px;
-    border: 2px solid #cccccc;
-    border-radius: 10px;
-    background: #cccccc;
-}
- 
-.frame .time-vertical li .img-circle {
-    width: 45px;
-    height: 45px;
-    position: absolute;
-    top: 5px;
-    left: -65px;
-    background-color: #ccc;
-}
-
-.frame .time-vertical li .arrow {
-    position: absolute;
-    top: 25px;
-    left: 10px;
-    width: 10px;
-    height: 10px;
-    margin-top: -10px;
-    border-width: 10px 10px 10px 0;
-    border-color: #ededed;
-    border-top-color: transparent;
+    top: 0;
+    left: 0;
+    z-index: 1022;
+    font-size: 18px;
+    border-color: #fff;
+    border-width: 24px 23px;
+    border-right-color: transparent;
     border-bottom-color: transparent;
     border-style: solid;
 }
 
-.frame .time-vertical li .msg-frame {
-    display: inline-block;
-    width: 755px;
-    margin-left: 20px;
-    padding: 10px;
-    color: #666;
-    background-color: #ededed;
+.list .item .pic .icon > i {
+    position: absolute;
+    top: -17px;
+    left: -17px;
 }
 
-.frame .time-vertical li .username {
-    color: #333;
-}
-
-.frame .time-vertical li .time {
-    margin-left: 5px;
-    color: #9d9b9b;
-}
-
-.frame .msgform {
-    height: 80px;
-    padding: 10px;
-    position: relative;
-    background-color: #ddd;
-}
-
-.frame .msginput {
-   padding: 0;
-}
-
-.frame .msginput textarea {
-   width: 100%;
-   height: 60px;
-   padding: 10px;
-}
-
-.frame .msgbtn {
-   padding-right: 0;
-   padding-left: 10px;
-}
-
-.frame .msgbtn > a {
-   width: 100%;
-   height: 60px;
-   padding-top: 20px;
-   padding-bottom: 20px;
-}
-
-/********************侧栏*****************************/
-.main .sidebars {
-    display: inline-block;
-    float: right;
-    width: 310px;
-    margin-top: -45px;
-    margin-left: 30px;
-}
-
-.main .sidebars > h2 {
-    margin: 0 0 30px;
-}
-
-.main .sidebars .teacher {
+.list .item .pic .title {
+    font-size: 20px;
+    color: #fff;
+    font-weight: 700;
     text-align: center;
+    line-height: 210px;
 }
 
-.main .sidebars .teacher > p {
-    margin: 15px 0;
-    font-size: 16px;
+.list .item .pic .duration {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    height: 20px;
+    padding: 0 5px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    background-color: rgba(0, 0, 0, .7);
+}
+
+.list .item .cont {
+    width: 100%;
+    padding: 0 10px 15px;
+    border-bottom: dashed 1px #dedede;
+}
+
+.list .item .tuip {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: normal;
+}
+
+.list .item .tuip-name {
+    font-size: 14px;
+    color: #666;
     font-weight: bold;
 }
 
-.main .sidebars .teacher .des {
-    color: #666;
-    text-align: left;
+.list .item .speaker {
+    height: 50px;
+    margin: 0 10px;
+}
+
+.list .item .speaker .tuip {
+    float: left;
+    width: 100%;
+    height: auto;
+    margin-top: 0;
+    line-height: 50px;
+}
+
+.list .item .avatar {
+    float: left;
+    width: 25px;
+    height: 25px;
+    margin: 12.5px 5px;
+    line-height: 0;
+    background-color: #26bfcd;
+}
+
+/*******************************************************************************
+ * 参与的课程
+ *******************************************************************************/
+.study_center-default-history .list .item {
+    width: 587px;
+    margin-right: 26px;
+}
+
+.study_center-default-history .list .item .pic {
+    float: left;
+    width: 280px;
+    height: 210px;
+}
+
+.study_center-default-history .list .item .pic > .title {
+    line-height: 210px;
+}
+
+.study_center-default-history .list .item .cont {
+    float: right;
+    width: 307px;
+    padding-left: 15px;
+}
+
+.study_center-default-history .list .item .speaker {
+    margin: 0;
+}
+
+.study_center-default-history .list .item .progress {
+    height: 4px;
+    margin: 4px 0 6px;
+}
+.study_center-default-history .list .item .progress-bar {
+    background-color: #339966;
+}
+
+.study_center-default-history .list .item .study {
+    padding: 4px 20px;
+    margin-top: 8px;
+    margin-right: 10px;
+}
+/*******************************************************************************
+ * 收藏的视频
+ *******************************************************************************/
+.study_center-default-video .list .item .pic {
+    height: 157px;
+}
+
+.study_center-default-video .list .item .pic > .title {
+    line-height: 157px;
 }

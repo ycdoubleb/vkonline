@@ -93,6 +93,11 @@ ModuleAssets::register($this);
         <?php endforeach; ?>
     </div>
     
+    <div class="loading-box">
+        <span class="loading" style="display: none"></span>
+        <span class="no_more" style="display: none">没有更多了</span>
+    </div>
+    
     <div class="summary">
         <span>共 <?= $totalCount ?> 条记录</span>
     </div>
@@ -116,11 +121,15 @@ $js =
         $('#build-course-form').submit();
     });
         
+    //鼠标经过、离开事件
+    hoverEvent();        
+        
     //下拉加载更多
     var page = 1;
+    var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
-            dataLoad(page);
+           dataLoad(page);
         }
     });       
     //分页请求加载数据
@@ -128,30 +137,57 @@ $js =
         var maxPageNum =  ($totalCount - 8) / 8;
         // 当前页数是否大于最大页数
         if((pageNum) > Math.ceil(maxPageNum)){
+            $('.loading').hide();
+            $('.no_more').show();
             return;
         }
-        $.get("$url", {page: (pageNum + 1)}, function(rel){
-            page = Number(rel['page']);
-            var items = $domes;
-            var dome = "";
-            var data = rel['data'];
-            if(rel['code'] == '200'){
-                for(var i in data){
-                    dome += Wskeee.StringUtil.renderDOM(items, {
-                        className: i % 4 == 3 ? 'clear-margin' : '',
-                        id: data[i].id,
-                        avatar: data[i].avatar,
-                        isShow: data[i].is_certificate == 1 ? '<i class="fa fa-vimeo"></i>' : '',
-                        name: data[i].name,
-                        jobTitle: data[i].job_title
-                    });
+        if(!isPageLoading){
+            //设置已经加载当中...
+            isPageLoading = true;
+            $.get("$url", {page: (pageNum + 1)}, function(rel){
+                isPageLoading = false;
+                page = Number(rel['page']);
+                var items = $domes;
+                var dome = "";
+                var data = rel['data'];
+                if(rel['code'] == '200'){
+                    for(var i in data){
+                        dome += Wskeee.StringUtil.renderDOM(items, {
+                            className: i % 4 == 3 ? 'clear-margin' : '',
+                            id: data[i].id,
+                            avatar: data[i].avatar,
+                            isShow: data[i].is_certificate == 1 ? '<i class="fa fa-vimeo"></i>' : '',
+                            name: data[i].name,
+                            jobTitle: data[i].job_title
+                        });
+                    }
+                    $(".list").append(dome);
+                    hoverEvent();   
+                    if(page > Math.ceil(maxPageNum)){
+                        //没有更多了
+                        $('.no_more').show();
+                    }
                 }
-                $(".list").append(dome);
-            }
-        });
+                //隐藏loading
+                $('.loading').hide();
+            });
+            $('.loading').show();
+            $('.no_more').hide();
+        }
     }        
         
-        
+    //经过、离开事件
+    function hoverEvent(){
+        $(".list .item").each(function(){
+            var elem = $(this);
+            elem.hover(function(){
+                elem.addClass('hover');
+                
+            },function(){
+                elem.removeClass('hover');
+            });    
+        });
+    }    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
