@@ -295,7 +295,7 @@ class DefaultController extends Controller
                     'Video.id as video_id','Video.name video_name','Video.is_ref','Video.source_duration as duration','Video.sort_order as video_sort_order',
                     'Progress.is_finish','Progress.finish_time','Progress.last_time'])
                 ->from(['Node' => CourseNode::tableName()])
-                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id')
+                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id AND Video.is_del = 0')
                 ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
                         ['course_id' => $course_id,'user_id'=>$user_id])
                 ->where([
