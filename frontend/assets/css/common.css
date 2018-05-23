@@ -251,13 +251,13 @@ a.desc:after {
     line-height: 23px;
     padding: 2px 10px;
 }
-/* 宽扁 */
-.btn-wf{
+/* 扁平 */
+.btn-flat{
     line-height: 23px;
     padding: 5px 23px;
 }
-/* 更宽扁 */
-.btn-wf-sm{
+/* 更扁平 */
+.btn-flat-sm{
     line-height: 22px;
     padding: 3px 23px;
 }
