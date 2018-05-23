@@ -1736,7 +1736,7 @@
                     style = opts.style;
     
                 if (style)
-                    button.addClass('webuploader-pick');
+                    button.addClass('webuploader-pick btn');
     
                 me.on( 'all', function( type ) {
                     var files;
