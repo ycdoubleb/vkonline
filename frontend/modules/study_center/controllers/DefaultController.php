@@ -181,7 +181,8 @@ class DefaultController extends Controller
         
         return $this->render('view', [
             'model' => $model,
-            'nodes' => $nodes
+            'nodes' => $nodes,
+            'params' => Yii::$app->request->queryParams,
         ]);
     }
     
@@ -235,6 +236,8 @@ class DefaultController extends Controller
             'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id', 
             ['course_id' => $course_id,'user_id'=>$user_id]);
         $study_progress->where(['Node.course_id' => $course_id, 'Node.is_del' => 0]);
+        //先分节点再分视频
+        $study_progress->groupBy('Node.id, Video.id');
         //先排节点再排视频
         $study_progress->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC]);
         
@@ -250,17 +253,19 @@ class DefaultController extends Controller
                 ];
             }
             //添加视频到节点
-            $nodes[$progress['node_id']]['videos'] [] = [
-                'node_id' => $progress['node_id'],
-                'video_id' => $progress['video_id'],
-                'video_name' => $progress['video_name'],
-                'is_ref' => $progress['is_ref'],
-                'duration' => DateUtil::intToTime($progress['duration']),
-                'sort_order' => $progress['video_sort_order'],
-                'is_finish' => $progress['is_finish'],
-                'finish_time' => $progress['finish_time'],
-                'last_time' => $progress['last_time'],
-            ];
+            if($progress['video_id'] != null){
+                $nodes[$progress['node_id']]['videos'][] = [
+                    'node_id' => $progress['node_id'],
+                    'video_id' => $progress['video_id'],
+                    'video_name' => $progress['video_name'],
+                    'is_ref' => $progress['is_ref'],
+                    'duration' => DateUtil::intToTime($progress['duration']),
+                    'sort_order' => $progress['video_sort_order'],
+                    'is_finish' => $progress['is_finish'],
+                    'finish_time' => $progress['finish_time'],
+                    'last_time' => $progress['last_time'],
+                ];
+            }
         }
         
         return $nodes;
