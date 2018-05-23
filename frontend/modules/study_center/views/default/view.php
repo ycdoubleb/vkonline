@@ -2,6 +2,7 @@
 
 use common\models\vk\Video;
 use frontend\modules\study_center\assets\PalyAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
@@ -11,13 +12,14 @@ use yii\web\View;
 
 
 PalyAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = $model['name'];
 ?>
 
 <div class="study_center-default-play main">
     <div class="title">
-        <?= Html::a('<i class="fa fa-arrow-circle-o-left"></i>' . Yii::t('app', 'Back'), 'javascript:;', ['class' => 'keep-left']) ?>
+        <?= Html::a('<i class="fa fa-arrow-circle-o-left"></i>' . Yii::t('app', 'Back'), ['/course/default/view', 'id' => $model['course_id']], ['class' => 'keep-left']) ?>
         <span class="title-name"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['node_name'] . ' - ' . $model['name'] ?></span>
         <?= Html::a('<i class="fa fa-list-ul"></i>播放列表', 'javascript:;', [
             'id' => 'bars', 'class' => 'keep-right', 'onclick' => '$(".node-list").toggle()'
@@ -25,7 +27,7 @@ $this->title = $model['name'];
     </div>
     <div class="player">
         <video id="myVideo" src="/<?= $model['path'] ?>" controls autoplay poster="/<?= $model['img'] ?>" width="100%" height="500"></video>
-        <?= $this->render('_node', ['nodes' => $nodes]) ?>
+        <?= $this->render('_node', ['nodes' => $nodes, 'params' => $params]) ?>
     </div>
     <div class="operation">
         <div class="keep-left">
@@ -58,7 +60,7 @@ $this->title = $model['name'];
         <div class="keep-right">
             <?= Html::a('<i class="fa fa-envelope-o"></i>反馈', 'javascript:;') ?>
             <?= Html::a('<i class="fa fa-arrow-circle-o-right"></i>下一节', 'javascript:;', ['id' => 'next-section']) ?>
-            <?= Html::checkbox('autoplay'); ?>自动播放下一节
+            <?= Html::checkbox('autoplay', ArrayHelper::getValue($params, 'checked') ? true : false); ?>自动播放下一节
         </div>
     </div>
     <div class="left-box">
@@ -82,7 +84,7 @@ $this->title = $model['name'];
 </div>
 
 <?php
-$id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'id');
+$currentId = ArrayHelper::getValue($params, 'id');
 $videoIs = [];
 foreach ($nodes as $node) {
     foreach ($node['videos'] as $index => $video) {
@@ -90,19 +92,14 @@ foreach ($nodes as $node) {
     }
 }
 
-$videoIs = json_encode((object)$videoIs);
+$videoIs = json_encode($videoIs);
 $currentTime = $model['is_finish'] ? $model['finish_time'] : $model['last_time'];
 $js = 
 <<<JS
-    var id = "$id";
-    var videoIs = $videoIs;
-    for(var i in videoIs){
-        if(videoIs[i] == id){
-            $("#next-section").attr({"href": videoIs[i + 1]});
-            return;
-        }
-    }    
-    console.log(videoIs);
+    var currentId = "$currentId";
+    var videoIds = $videoIs;
+    var id = getNextToId(currentId, videoIds);
+    $("#next-section").attr("href", "../default/view?id=" + id);
     /*
      * 媒体操作事件
      */
@@ -118,21 +115,23 @@ $js =
             saveProgress();
         }, 30000);
     }
-    //单击媒体时执行
-    myVideo.onclick = function(){
-        if(myVideo.paused){
-            myVideo.play();
-            saveProgress();
-        }else{
-            myVideo.pause();
-            clearTimeout(timeOut);
-        }
+    //媒体播放中执行
+    myVideo.onplaying = function(){
+        saveProgress();
     };
+    //媒体暂停播放执行
+    myVideo.onpause = function(){
+        clearTimeout(timeOut);
+    }
     //媒体播放结束时执行
     myVideo.onended = function(){
         clearTimeout(timeOut);
         $.post("../api/playend",{'course_id': "{$model['course_id']}",
             'video_id': "{$model['id']}",'current_time': myVideo.currentTime.toFixed(0),
+        }, function(){
+            if($('input[name="autoplay"]').is(":checked")){
+                window.location.replace("../default/view?id=" + id + '&checked=1');
+            } 
         })
     }   
         
@@ -170,6 +169,25 @@ $js =
             });
         }
     }
+            
+    /*
+     * 获取下一节的视频id
+     * @return nextId   //video_id
+     */
+    function getNextToId(id, data){
+        var nextId = "";
+        if(data[data.length - 1] == id){
+            nextId = data[0];
+        }else{
+            for(var i in data){
+                if(data[i] == id){
+                    nextId = data[parseInt(i) + 1];
+                    break;
+                }
+            }
+        }    
+        return nextId;
+    }        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

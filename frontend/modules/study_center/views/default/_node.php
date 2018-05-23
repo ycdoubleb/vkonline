@@ -20,7 +20,7 @@ use yii\helpers\Url;
                     <?php foreach($node['videos'] as $video): ?>
                     <li class="level_2">
                         <?php 
-                            $id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'id');
+                            $id = ArrayHelper::getValue($params, 'id');
                             $is_found = $video['video_id'] == $id
                         ?>
                         <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $video['video_id']])]) ?>
