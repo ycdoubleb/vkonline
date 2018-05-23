@@ -48,27 +48,7 @@ SiteAssets::register($this);
     <!-- 内容 -->
     <div class="container">
         <div class="main">
-            <!--精品推荐-->
-            <div class="recommend">
-                <div class="title">
-                    <span>为你推荐</span>
-                    <a href="javascript:" onclick="changeRecommend(recommend_page+1)">
-                        <span class="next">换一批 <i class="glyphicon glyphicon-refresh"></i></span>
-                    </a>
-                </div>
-                <div class="list">
-                </div>
-            </div>
-            <hr>
-            <!--排行榜-->
-            <div class="rank">
-                <div class="title">
-                    <span>热门课程</span>
-                </div>
-                <div class="list">
-                </div>
-            </div>
-
+            
             <!--热搜-->
             <div class="hot-search">
                 <div class="title">
@@ -81,8 +61,34 @@ SiteAssets::register($this);
                     <?php endforeach; ?>
                 </div>
             </div>
+            
+            <hr>
+            
+            <!--精品推荐-->
+            <div class="recommend">
+                <div class="title">
+                    <span>为你推荐</span>
+                    <a href="javascript:" onclick="changeRecommend(recommend_page+1)">
+                        <span class="next">换一批 <i class="glyphicon glyphicon-refresh"></i></span>
+                    </a>
+                </div>
+                <div class="list">
+                </div>
+            </div>
+            
+            <hr>
+            
+             <!--排行榜-->
+            <div class="rank">
+                <div class="title">
+                    <span>热门课程</span>
+                </div>
+                <div class="list">
+                </div>
+            </div>
 
             <hr>
+            
             <!--入驻伙伴-->
             <div class="partner">
                 <div class="title">
@@ -142,7 +148,7 @@ SiteAssets::register($this);
      * @returns {void}
      */
     function getRank(){
-        $.get('/course/api/get-play-rank',function(result){
+        $.get('/course/api/get-play-rank',{rank_num:8},function(result){
             if(result.code == '200' && result.data.error == undefined){
                 $.each(result.data.ranks,function(){
                     this['content_time'] = Wskeee.StringUtil.intToTime(this['content_time']);
