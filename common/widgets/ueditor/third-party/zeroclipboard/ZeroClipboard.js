@@ -1242,6 +1242,10 @@
   };
   _globalConfig.hoverClass = "zeroclipboard-is-hover";
   _globalConfig.activeClass = "zeroclipboard-is-active";
+  
+  window.ZeroClipboard = ZeroClipboard;
+  /*
+   * 直接使用 window 配置,author:wskeee  2018-05-23 16:21
   if (typeof define === "function" && define.amd) {
     define(function() {
       return ZeroClipboard;
@@ -1250,7 +1254,7 @@
     module.exports = ZeroClipboard;
   } else {
     window.ZeroClipboard = ZeroClipboard;
-  }
+  }*/
 })(function() {
   return this;
 }());
