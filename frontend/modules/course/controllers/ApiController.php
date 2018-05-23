@@ -56,7 +56,7 @@ class ApiController extends Controller  {
                 'actions' => [
                     'search-course' => ['get'],
                     'add-favorite' => ['get'],
-                    'remove-favorite' => ['get'],
+                    'del-favorite' => ['get'],
                     'add-comment' => ['post'],
                     'add-comment-praise' => ['post'],
                     'get-play-rank' => ['get'],
@@ -111,7 +111,6 @@ class ApiController extends Controller  {
      */
     public function actionAddFavorite($course_id)
     {
-        Yii::$app->getResponse()->format = 'json';
         $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
         if ($model == null) {
             $model = new CourseFavorite(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
@@ -140,7 +139,6 @@ class ApiController extends Controller  {
      */
     public function actionDelFavorite($course_id)
     {
-        Yii::$app->getResponse()->format = 'json';
         $model = CourseFavorite::findOne(['course_id' => $course_id, 'user_id' => Yii::$app->user->id]);
         if ($model == null) {
             return ['error' => '找不到对应课程！'];
