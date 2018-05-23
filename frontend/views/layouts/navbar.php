@@ -21,9 +21,6 @@ NavBar::begin([
     ],
 ]);
 $menuItems = [
-    //未登录
-    ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'], 'visible' => Yii::$app->user->isGuest],
-    ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login'], 'visible' => Yii::$app->user->isGuest],
     //登录
     ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index'], 'visible' => !Yii::$app->user->isGuest],
     ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list'], 'visible' => !Yii::$app->user->isGuest],
@@ -67,7 +64,7 @@ echo Nav::widget([
 //加上个人信息和搜索
 $menuItems = [
     //搜索与个人信息
-    '<li><div class="search-box"><input id="search-input" class="search-input"/><i class="glyphicon glyphicon-search"></i></div></li>',
+    '<li><div class="search-box"><input id="search-input" class="search-input"/><i class="glyphicon glyphicon-search search-icon"></i></div></li>',
     [
         'label' => !Yii::$app->user->isGuest ? Html::img([Yii::$app->user->identity->avatar], ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']) : null,
         'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
@@ -84,6 +81,9 @@ $menuItems = [
         'visible' => !Yii::$app->user->isGuest,
         'encode' => false,
     ],
+    //未登录
+    ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'], 'visible' => Yii::$app->user->isGuest],
+    ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login'], 'visible' => Yii::$app->user->isGuest],
 ];
 echo Nav::widget([
     'options' => ['class' => 'navbar-nav navbar-right'],
@@ -94,6 +94,7 @@ NavBar::end();
 ?>
 
 <?php
+
 
 $js = <<<JS
    
@@ -115,7 +116,29 @@ $js = <<<JS
         if (eCode == 13 && keyword != ''){
             window.location.href = "/course/default/search?keyword="+keyword;
         }
-    })
+    });
+        
+    /**
+     * 搜索框控制
+     **/
+    var search_input_delay_id;
+    $(".search-box .search-input").blur(function(){
+        clearTimeout(search_input_delay_id);
+        search_input_delay_id = setTimeout(function(){
+            $(".search-box .search-input").removeClass('active');
+        },100);
+    });
+    $(".search-box .search-input").focus(function(){
+        clearTimeout(search_input_delay_id);
+        search_input_delay_id = setTimeout(function(){
+            $(".search-box .search-input").addClass('active');;
+        },100);
+    });
+         
+    //搜索图标事件
+    $('.search-box .search-icon').on('click',function(){
+        $(".search-box .search-input").focus();
+    });
 
 JS;
 $this->registerJs($js, View::POS_READY);

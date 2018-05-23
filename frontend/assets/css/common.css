@@ -133,9 +133,24 @@ a.desc:after {
     margin: 0px 20px;
 }
 .nav .search-box .search-input{
-    height: 37px;
+    height: 40px;
     border: 1px solid #ccc;
-    padding: 0px 28px 0 5px;
+    padding: 0px 32px 0 5px;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+    width: 0px;
+    opacity: 0;
+}
+.nav .search-box .active{
+    width: 210px;
+    opacity: 1;
+}
+.nav .search-box .search-icon{
+    font-size: 22px;
+    color: #999999;
+    cursor: pointer;
 }
 .nav .search-box i{
     position: absolute;
