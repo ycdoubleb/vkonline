@@ -234,12 +234,35 @@
     border-top: 1px solid #dedede;
 }
 
+/***************************************************************
+* 热搜
+***************************************************************/
+.site-index .hot-search{
+    display: inline-block;
+    margin: 20px 0;
+}
+.site-index .hot-search .list{
+}
+.site-index .hot-search a{
+    font-size: 12px;
+    color: #888888;
+}
+.site-index .hot-search .list span{
+    color: #cccccc;
+}
+.site-index .hot-search .list .tag{
+    display: inline-block;
+    margin: 0 3px 6px 0;
+    padding: 7px 9px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
 
 /***************************************************************
 * 为你推荐
 ***************************************************************/
 .site-index .recommend {
-    margin: 60px 0 40px 0;
+    margin: 40px 0 60px 0;
 }
 .site-index .recommend .list {
     margin-right: -20px;
@@ -254,43 +277,18 @@
 * 排行榜
 ***************************************************************/
 .site-index .rank {
-    display: inline-block;
-    margin-bottom: 20px;
+    margin: 40px 0 60px 0;
 }
 .site-index .rank .list{
-    width: 884px;
+    margin-right: -20px;
 }
 
-/***************************************************************
-* 热搜
-***************************************************************/
-.site-index .hot-search{
-    display: inline-block;
-    width: 280px;
-    float: right;
-}
-.site-index .hot-search .list{
-}
-.site-index .hot-search a{
-    font-size: 12px;
-    color: #888888;
-}
-.site-index .hot-search .list span{
-    color: #999999;
-}
-.site-index .hot-search .list .tag{
-    display: inline-block;
-    margin: 0 3px 6px 0;
-    padding: 7px 9px;
-    background-color: #fff;
-}
 
 /***************************************************************
 * 入驻伙伴
 ***************************************************************/
 .site-index .partner {
-    display: inline-block;
-    margin-bottom: 20px;
+    margin: 40px 0 60px 0;
 }
 .site-index .partner .list{
     margin-right: -20px;
@@ -323,7 +321,7 @@
 .course-tile {
     display: inline-block;
     width: 280px;
-    margin: 0 14px 30px 0;
+    margin: 0 17px 30px 0;
     background-color: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     -webkit-transition: all 0.2s linear;

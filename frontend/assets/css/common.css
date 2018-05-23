@@ -245,14 +245,21 @@ a.desc:after {
 /* 正常大小 */
 .btn{
     border-radius: 0px;
+}
+/* 小 */
+.btn-sm{
+    line-height: 23px;
+    padding: 2px 10px;
+}
+/* 宽扁 */
+.btn-wf{
     line-height: 23px;
     padding: 5px 23px;
 }
-/*  */
-.btn-sm{
-    border-radius: 0px;
-    line-height: 23px;
-    padding: 2px 10px;
+/* 更宽扁 */
+.btn-wf-sm{
+    line-height: 22px;
+    padding: 3px 23px;
 }
 /* 危险 */
 .btn-highlight { 
