@@ -27,7 +27,7 @@ $this->title = Yii::t('app', '{Create}{Course}{Attribute}', [
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'category' => $category,
+                    'path' => $path,
                 ]) ?>
             </div>
         </div>

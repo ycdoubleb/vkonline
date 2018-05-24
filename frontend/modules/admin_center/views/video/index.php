@@ -48,7 +48,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         ]),
                         'filter' => Html::input('text', 'VideoSearch[course_name]', 
                                 ArrayHelper::getValue($filters, 'VideoSearch.course_name'), ['class' => 'form-control']),
-                        'headerOptions' => ['style' => 'width:120px'],
+                        'headerOptions' => ['style' => 'width:150px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
                     ],
                     [
@@ -56,7 +56,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         'label' => Yii::t('app', '{Video}{Name}',[
                             'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
                         ]),
-                        'headerOptions' => ['style' => 'width:120px'],
+                        'headerOptions' => ['style' => 'width:150px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
                     ],
                     [
@@ -74,7 +74,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                                 'allowClear' => true,
                             ],
                         ]),
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:65px'],
                     ],
                     [
                         'attribute' => 'nickname',
@@ -89,7 +89,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                                 'allowClear' => true,
                             ],
                         ]),
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [
                         'attribute' => 'is_publish',
@@ -109,7 +109,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                             return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                         Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                         },
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [   //可见范围
                         'attribute' => 'level',
@@ -129,7 +129,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                             return ($data['level'] != null) ?  '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                     Course::$levelMap[$data['level']] . '</span>' : null;
                         },
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [
                         'attribute' => 'is_ref',
@@ -147,7 +147,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                             'Occupy' => Yii::t('app', 'Occupy'),
                             'Space' => Yii::t('app', 'Space'),
                         ]),
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:70px'],
                         'value' => function ($data){
                             return Yii::$app->formatter->asShortSize($data['size'], 1);
                         },
@@ -158,17 +158,8 @@ $this->title = Yii::t('app', '{Video}{List}',[
                         'value' => function ($data){
                             return (isset($data['tags'])) ? $data['tags'] : null;
                         },
-                        'headerOptions' => ['style' => 'width:125px'],
+                        'headerOptions' => ['style' => 'width:110px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
-                    ],
-                    [
-                        'attribute' => 'created_at',
-                        'filter' => false,
-                        'value' => function ($data){
-                            return !empty($data['created_at']) ? date('Y-m-d H:i', $data['created_at']) : null;
-                        },
-                        'headerOptions' => ['style' => 'width:75px'],
-                        'contentOptions' => ['style' => 'white-space:normal;font-size:13px'],
                     ],
                     [
                         'class' => 'yii\grid\ActionColumn',

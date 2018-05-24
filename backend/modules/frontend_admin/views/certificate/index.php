@@ -65,6 +65,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => function ($data) {
                         return $data['job_title'];
                     },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                            'white-space' => 'unset'
+                        ]
+                    ]
                 ],
                 [
                     'label' => Yii::t('app', 'Des'),

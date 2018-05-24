@@ -64,7 +64,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                                 'style' => 'display:inline-block;',
                             ],
                         ]),
-                        'headerOptions' => ['style' => 'width:220px'],
+                        'headerOptions' => ['style' => 'width:248px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
                     ],
                     [
@@ -73,7 +73,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             'Course' => Yii::t('app', 'Course'),
                             'Name' => Yii::t('app', 'Name'),
                         ]),
-                        'headerOptions' => ['style' => 'width:150px'],
+                        'headerOptions' => ['style' => 'width:140px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
                     ],
                     [
@@ -92,7 +92,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                                 'allowClear' => true,
                             ],
                         ]),
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:65px'],
                     ],
                     [
                         'attribute' => 'nickname',
@@ -107,7 +107,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                                 'allowClear' => true,
                             ],
                         ]),
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [
                         'attribute' => 'is_publish',
@@ -127,7 +127,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                         Course::$publishStatus[$data['is_publish']] . '</span>' : null;
                         },
-                        'headerOptions' => ['style' => 'width:75px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [   //可见范围
                         'attribute' => 'level',
@@ -147,7 +147,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                             return ($data['level'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                         Course::$levelMap[$data['level']] . '</span>' : null;
                         },
-                        'headerOptions' => ['style' => 'width:70px'],
+                        'headerOptions' => ['style' => 'width:60px'],
                     ],
                     [
                         'label' => Yii::t('app', 'Tag'),
@@ -155,7 +155,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                         'value' => function ($data){
                             return (isset($data['tags'])) ? $data['tags'] : null;
                         },
-                        'headerOptions' => ['style' => 'width:180px'],
+                        'headerOptions' => ['style' => 'width:100px'],
                         'contentOptions' => ['style' => 'white-space:normal'],
                     ],
                     [

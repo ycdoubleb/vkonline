@@ -158,7 +158,7 @@ and open the template in the editor.
 }
 
 .teacher-index .teacher-list .teacher-content {
-    display: inline-block;
+    display: inline-grid;
     width: 200px;
     height: 200px;
     margin-right: 10px;
@@ -170,7 +170,7 @@ and open the template in the editor.
 }
 
 .teacher-index .teacher-list .teacher-content .teacher-img{
-    margin: 20px 40px;
+    margin: 20px 50px;
     width: 96px;
     height: 96px;
     border: 1px solid #dedede;
