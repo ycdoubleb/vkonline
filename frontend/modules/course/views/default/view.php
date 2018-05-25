@@ -56,7 +56,7 @@ $this->title = Yii::t('app', 'Course');
                     </div>
                     <div class="node-box">
                         <span class="nodes"><i class="glyphicon glyphicon-th-list"></i>共有 <?= $model['node_count'] ?> 个环节</span>
-                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],true) ?></span>
+                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],":",true) ?></span>
                     </div>
                     <div class="control-box">
                         <?php $lastVideo = $study_progress['last_video'] != null ? $study_progress['last_video'] : $model['first_video']; ?>
@@ -96,7 +96,7 @@ $this->title = Yii::t('app', 'Course');
         </div>
     </div>
     <!-- 内容导航 -->
-    <div class="content-nav-copy">占位</div>
+    <div class="content-nav-copy" style="height:0px">占位</div>
     <div class="content-nav">
         <div class="container">
             <div class="sort">
