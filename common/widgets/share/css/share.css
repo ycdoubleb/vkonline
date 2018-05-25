@@ -1,0 +1,35 @@
+/* 分享面板 */
+ .share-panel{
+    position: absolute;
+    display: none;
+    background-color: #fff;
+    z-index: 100;
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+ .share-panel .icon{
+    background: url(../imgs/share-logo.png) no-repeat;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin: 0 10px 0 0;
+    float: left;
+}
+.share-panel .icon-wx{background-position: 0 0;}
+.share-panel .icon-qq{background-position: -34px 0;}
+.share-panel .icon-xl{background-position: -65px 0;}
+.share-panel .icon-link{background-position: -62px 0;}
+.share-panel .icon-qzone{background-position: -122px 0;}
+.share-panel .panel-head{
+    border-bottom: 1px solid #585353;
+    padding: 15px 20px;
+}
+.share-panel .panel-body{
+    padding: 20px;
+}
+.share-panel .panel-body .qrcode-box{
+    
+}
+.share-panel .panel-body .share-icon-box{
+    margin-top: 10px;
+}

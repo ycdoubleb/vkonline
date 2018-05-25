@@ -260,7 +260,8 @@ class DefaultController extends Controller
         $relative_courses = (new Query())
                 ->select(['Course.id','Course.name','Course.cover_img'])
                 ->from(['Course'=> Course::tableName()])
-                ->where([
+                ->where(['<>','Course.id',$id])
+                ->andWhere([
                     'Course.category_id' => $course['category_id'],
                     'Course.level' => Course::PUBLIC_LEVEL,
                 ])->limit(4)->all();

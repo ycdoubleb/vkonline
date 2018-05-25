@@ -52,7 +52,7 @@ SiteAssets::register($this);
             <!--热搜-->
             <div class="hot-search">
                 <div class="title">
-                    <span>热搜（本月）</span>
+                    <span>热搜</span>
                 </div>
                 <div class="list">
                     <?php foreach ($hotSearchs as $keyword => $keynum): ?>

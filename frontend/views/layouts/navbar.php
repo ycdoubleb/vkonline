@@ -14,7 +14,7 @@ $leftMenuItems = [];
 $rightMenuItems = [];
 
 NavBar::begin([
-    'brandImage' => '/imgs/site/logo.png',
+    'brandImage' => '/imgs/site/logo.png?rand='. rand(1, 10),
     'brandUrl' => Yii::$app->homeUrl,
     'options' => [
         'class' => 'navbar-vk navbar-fixed-top',

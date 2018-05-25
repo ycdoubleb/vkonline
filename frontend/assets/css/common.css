@@ -169,8 +169,13 @@ a.desc:after {
 }
 /* LOGO样式 */
 .navbar-brand {
+    position: relative;
     height: 80px;
-    padding: 0px;
+    padding: 10px;
+    margin-right: 80px;
+}
+.navbar-brand img {
+    height:100%;
 }
 
 /*****************************************************
