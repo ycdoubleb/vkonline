@@ -286,8 +286,7 @@ class SiteController extends Controller
         if (!$user->validate()) {   //数据验证
             return null;
         }
-//        $user->load($post);
-//        var_dump($post);exit;
+
         $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
         $username = ArrayHelper::getValue($post, 'User.username');  //用户名
         $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
@@ -302,8 +301,7 @@ class SiteController extends Controller
                 throw new NotAcceptableHttpException('无效的邀请码！');
             }
         } else {
-            $officialCus = Customer::find()->select(['id'])->where(['is_official' => 1])->asArray()->one(); //官网ID
-            $customerId = ArrayHelper::getValue($officialCus, 'id');
+            $customerId = '';
         }
         //赋值
         $user->customer_id = $customerId;

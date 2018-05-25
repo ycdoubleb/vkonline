@@ -145,14 +145,13 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at', 'is_official', 'type'], 'integer'],
+            [['created_at', 'updated_at', 'is_official', 'sex'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname'], 'string', 'max' => 50],
             [['phone'], 'string', 'min' => 11, 'max' => 50],
 //            [['password_hash'], 'string', 'max' => 64],
             [['password_reset_token', 'email', 'avatar'], 'string', 'max' => 255],
-            [['sex'], 'integer', 'max' => 1],
             [['status'], 'string', 'max' => 2],
             [['email'], 'email'],
             [['avatar'], 'image'],
@@ -229,9 +228,14 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->id = md5(time() . rand(1, 99999999));
             }
             //设置是否属于官网账号
-            $isOfficial = Customer::findOne(['id' => $this->customer_id]);
-            $this->is_official = $isOfficial->is_official;
-
+            if($this->customer_id){
+                $isOfficial = Customer::findOne(['id' => $this->customer_id]);
+                $this->is_official = $isOfficial->is_official;
+            } else {
+                $this->type = 1;        //散户
+                $this->is_official = 0; //非官网用户
+            }
+            
             //上传头像
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
@@ -250,7 +254,8 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->generateAuthKey();
                 //设置默认头像
                 if (trim($this->avatar) == '' || !isset($this->avatar)){
-                    $this->avatar = '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                    $this->avatar = ($this->sex == 0) ? '/upload/avatars/default.jpg' :
+                            '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
                 if (trim($this->password_hash) == ''){
