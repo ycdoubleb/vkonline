@@ -252,9 +252,10 @@ a.desc:after {
     background-color: #2b2c2c;
 }
 .footer .copy-right-content{
-    padding: 26px 0 16px 0;
+    padding: 10px 0 0px 0;
     color: #646464;
     font-size: 12px;
+    line-height: 60px;
 }
 
 /***************************************************************

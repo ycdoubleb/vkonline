@@ -72,12 +72,12 @@ AppAsset::register($this);
                 <li class="contacts-right">
                     <span class="icon icon-phone"></span>
                     <p class="title">000-00000000</p>
-                    <p class="time">周一至周五 9：30—18：00</p>
+                    <p class="time">周一至周日 9：00—21：00</p>
                 </li>
                 <li class="contacts-right">
                     <span class="icon icon-qq"></span>
                     <p class="title"><?= Html::a('在线QQ客服', 'feedback') ?></p>
-                    <p class="time">周一至周五 9：30—18：00</p>
+                    <p class="time">周一至周日 9：00—21：00</p>
                 </li>
             </ul>
         </div>
@@ -85,7 +85,7 @@ AppAsset::register($this);
     <div class="copy-right-box">
         <div class="container copy-right-content">
             <p class="pull-left">eenet旗下品牌，Copyright © <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?> 版权所有  京ICP备150033??号-1   京公网安备 110105020347??号</p>
-            <p class="pull-right"><?= Yii::powered() ?></p>
+            <p class="pull-right"><img src="/imgs/site/logo_hui.png"/></p>
         </div>
     </div>
 </footer>
