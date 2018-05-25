@@ -120,8 +120,8 @@ ModuleAssets::register($this);
                 <li data-sort="default">
                     <?= Html::a('综合',null,['href' => 'javascript:','onclick'=> new yii\web\JsExpression("searchF({sort:'default'})")]) ?>
                 </li>
-                <li data-sort="created_by">
-                    <?= Html::a('最新',null,['href' => 'javascript:','onclick'=> new yii\web\JsExpression("searchF({sort:'created_by'})")]) ?>
+                <li data-sort="created_at">
+                    <?= Html::a('最新',null,['href' => 'javascript:','onclick'=> new yii\web\JsExpression("searchF({sort:'created_at'})")]) ?>
                 </li>
                 <li data-sort="avg_star">
                     <?= Html::a('口碑',null,['href' => 'javascript:','onclick'=> new yii\web\JsExpression("searchF({sort:'avg_star'})")]) ?>
