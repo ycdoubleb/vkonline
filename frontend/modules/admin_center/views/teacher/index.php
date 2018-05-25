@@ -68,27 +68,34 @@ ModuleAssets::register($this);
     </div>
    
     <div class="list">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach ($dataProvider->allModels as $index => $model):  ?>
-        <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']]), 'target' => '_blank']) ?>
-            <div class="item <?= $index % 4 == 3 ? 'clear-margin' : null ?>">
-                <div class="pic avatars img-circle">
-                    <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%','height' => '96px']) ?>
-                    <?php if($model['is_certificate']): ?>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model):  ?>
+            <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
+                <a href="../teacher/view?id=<?= $model['id'] ?>" target="_blank">
+                    <div class="pic avatars img-circle">
+                        <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%', 'height' => 96]) ?>
+                        <?php if($model['is_certificate']): ?>
                         <i class="fa fa-vimeo"></i>
-                    <?php endif; ?>
-                </div>
-                <div class="cont">
-                    <p><?= $model['name'] ?></p>
-                    <p class="tuip"><?= $model['job_title'] ?></p>
-                </div>
-            </div>
-        <?= Html::endTag('a') ?>
-        <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <div class="text">
+                        <p><?= $model['name'] ?></p>
+                        <p class="tuip"><?= $model['job_title'] ?></p>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+            </li>
+        </ul>
     </div>
     
+    <!--加载-->
+    <div class="loading-box">
+        <span class="loading" style="display: none"></span>
+        <span class="no_more" style="display: none">没有更多了</span>
+    </div>
     <div class="summary">
         <span>共 <?= $totalCount ?> 条记录</span>
     </div>
@@ -98,7 +105,7 @@ ModuleAssets::register($this);
 <?php
 $url = Url::to(array_merge(['index'], $filters));   //链接
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/admin_center/views/teacher/_dome.php')));
+    $this->renderFile('@frontend/modules/admin_center/views/teacher/_list.php')));
 $js = 
 <<<JS
    
@@ -152,7 +159,7 @@ $js =
                             jobTitle: data[i].job_title
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();   
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -169,17 +176,15 @@ $js =
        
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
                 elem.addClass('hover');
-                
             },function(){
                 elem.removeClass('hover');
             });    
         });
     }  
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
