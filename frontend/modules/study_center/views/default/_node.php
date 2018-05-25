@@ -11,7 +11,7 @@ use yii\helpers\Url;
             <!-- 生成节点列表 -->
             <?php foreach($nodes as $node_id => $node): ?>
             <li class="level_1">
-                <div class="head">
+                <div class="head single-clamp">
                     <i class="fa fa-list-ul"></i>
                     <span><?= $node['node_name'] ?></span>
                 </div>
@@ -24,7 +24,7 @@ use yii\helpers\Url;
                             $is_found = $video['video_id'] == $id
                         ?>
                         <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $video['video_id']])]) ?>
-                            <div class="head <?= $is_found ? 'active' : '' ?>">
+                            <div class="head single-clamp <?= $is_found ? 'active' : '' ?>">
                                 <i class="fa <?= $is_found ? 'fa-play-circle' : '' ?>"></i>
                                 <span><?= $video['video_name'] ?></span>
                                 <div class="control">

@@ -5,7 +5,7 @@
     <div class="text keep-right">
         <div class="tuip title single-clamp keep-left">{%name%}</div>
         <div class="tuip speaker">
-            <a href="/teacher/default/view?id={%teacherId%}">
+            <a href="/teacher/default/view?id={%teacherId%}" target="_blank">
                 <div class="avatars img-circle keep-left">
                     <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
                 </div>

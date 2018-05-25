@@ -45,7 +45,7 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', 'Reference'),
                     'format' => 'raw',
                     'value' => !empty($model->ref_id) ? 
-                        Html::a($model->reference->courseNode->course->name . ' >> ' . $model->reference->courseNode->name . ' >> ' .$model->reference->name, ['view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
+                        Html::a($model->reference->courseNode->course->name . ' >> ' . $model->reference->courseNode->name . ' >> ' .$model->reference->name, ['/study_center/default/view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
                 ],
                 [
                     'attribute' => 'node_id',

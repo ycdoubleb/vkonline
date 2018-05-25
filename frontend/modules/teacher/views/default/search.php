@@ -29,27 +29,30 @@ $this->title = "名师堂";
         </div>
         <!--列表-->
         <div class="list">
-            <?php if(count($dataProvider->allModels) <= 0): ?>
-            <h5>没有找到数据。</h5>
-            <?php endif; ?>
-            <?php foreach ($dataProvider->allModels as $index => $model):  ?>
-            <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']])]) ?>
-                <div class="item <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
-                    <div class="pic avatars img-circle">
-                        <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%','height' => '96px']) ?>
-                        <?php if($model['is_certificate']): ?>
-                        <i class="fa fa-vimeo"></i>
-                        <?php endif; ?>
-                    </div>
-                    <div class="cont">
-                        <p><?= $model['name'] ?></p>
-                        <p class="tuip"><?= $model['job_title'] ?></p>
-                    </div>
-                </div>
-            <?= Html::endTag('a') ?>
-            <?php endforeach; ?>
+            <ul>
+                <?php if(count($dataProvider->allModels) <= 0): ?>
+                <h5>没有找到数据。</h5>
+                <?php endif; ?>
+                <?php foreach ($dataProvider->allModels as $index => $model):  ?>
+                <li class="<?= $index % 5 == 4 ? 'clear-margin' : '' ?>">
+                    <a href="../default/view?id=<?= $model['id'] ?>" target="_blank">
+                        <div class="pic avatars img-circle">
+                            <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%', 'height' => 96]) ?>
+                            <?php if($model['is_certificate']): ?>
+                            <i class="fa fa-vimeo"></i>
+                            <?php endif; ?>
+                        </div>
+                        <div class="text">
+                            <p><?= $model['name'] ?></p>
+                            <p class="tuip"><?= $model['job_title'] ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+                </li>
+            </ul>
         </div>
 
+        <!--加载-->
         <div class="loading-box">
             <span class="loading" style="display: none"></span>
             <span class="no_more" style="display: none">没有更多了</span>
@@ -105,7 +108,7 @@ $js =
                             jobTitle: data[i].job_title
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();   
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了

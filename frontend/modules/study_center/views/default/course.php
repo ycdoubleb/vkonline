@@ -50,7 +50,7 @@ ModuleAssets::register($this);
                 </div>
                 <div class="teacher">
                     <div class="tuip">
-                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>">
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
                             <div class="avatars img-circle keep-left">
                                 <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>

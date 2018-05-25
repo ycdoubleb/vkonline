@@ -33,7 +33,7 @@ ModuleAssets::register($this);
                 <div class="text keep-right">
                     <div class="tuip title single-clamp keep-left"><?= $model['name'] ?></div>
                     <div class="tuip speaker">
-                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>">
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
                             <div class="avatars img-circle keep-left">
                                 <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>

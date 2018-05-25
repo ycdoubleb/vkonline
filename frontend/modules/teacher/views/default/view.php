@@ -19,24 +19,26 @@ $this->title = $model->name;
 <div class="container content">
     <div class="teacher-view main">
         <!--基本信息-->
-        <div class="keep-left">
+        <div class="main-left keep-left">
             <div class="list">
-                <div class="item">
-                    <div class="pic avatars img-circle">
-                        <?= Html::img([$model->avatar], ['class' => 'img-circle', 'width' => '100%', 'height' => '128px']) ?>
-                        <?php if($model->is_certificate): ?>
-                        <i class="fa fa-vimeo"></i>
-                        <?php endif; ?>
-                    </div>
-                    <div class="cont">
-                        <p><?= $model->name ?></p>
-                        <p class="tuip"><?= $model->job_title ?></p>
-                    </div>
-                </div>
+                <ul>
+                    <li class="clear-margin">
+                        <div class="pic avatars img-circle">
+                            <?= Html::img([$model->avatar], ['class' => 'img-circle', 'width' => '100%', 'height' => 128]) ?>
+                            <?php if($model->is_certificate): ?>
+                            <i class="fa fa-vimeo"></i>
+                            <?php endif; ?>
+                        </div>
+                        <div class="text">
+                            <p><?= $model->name ?></p>
+                            <p class="tuip"><?= $model->job_title ?></p>
+                        </div>
+                    </li>
+                </ul>    
             </div>
         </div>
         <!--老师详情-->
-        <div class="keep-right">
+        <div class="main-right keep-right">
             <!--面包屑-->
             <div class="crumbs">
                 <span>
@@ -61,56 +63,58 @@ $this->title = $model->name;
             </div>
             <!--老师课程-->
             <div class="list">
+                <ul>
                     <?php if(count($dataProvider->allModels) <= 0): ?>
                     <h5>没有找到数据。</h5>
                     <?php endif; ?>
                     <?php foreach ($dataProvider->allModels as $index => $model): ?>
-                    <div class="item <?= $index % 3 == 2 ? 'clear-margin' : null ?>">
-                        <?= Html::beginTag('a', ['href' => Url::to(['/course/default/view', 'id' => $model['id']])]) ?>
-                            <div class="pic">
+                    <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
+                        <div class="pic">
+                            <a href="/course/default/view?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                                 <?php if(empty($model['cover_img'])): ?>
-                                <div class="title">
-                                    <span><?= $model['name'] ?></span>
-                                </div>
+                                <div class="title"><?= $model['name'] ?></div>
                                 <?php else: ?>
-                                <?= Html::img([$model['cover_img']], ['width' => '100%']) ?>
+                                <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
                                 <?php endif; ?>
-                            </div>
-                            <div class="cont">
-                                <div class="tuip">
-                                    <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
-                                    <span class="tuip-right"><?= DateUtil::intToTime($model['content_time']) ?></span>
-                                </div>
-                                <div class="single-clamp tuip">
-                                    <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
-                                </div>
-                                <div class="tuip">
-                                    <span class="tuip-green"><?= $model['customer_name'] ?></span>
-                                    <span class="tuip-right tuip-green"><?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学</span>
-                                </div>
-                            </div>
-                        <?= Html::endTag('a') ?>
-                        <div class="speaker">
+                            </a>
+                        </div>
+                        <div class="text">
                             <div class="tuip">
-                                <div class="avatar img-circle">
-                                    <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                                </div>
-                                <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                                <span class="avg-star tuip-red tuip-right"><?= $model['avg_star'] ?> 分</span>
+                                <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
+                                <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
+                            </div>
+                            <div class="tuip single-clamp">
+                                <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
+                            </div>
+                            <div class="tuip">
+                                <span class="font-success keep-left"><?= $model['customer_name'] ?></span>
+                                <span class="font-success keep-right">
+                                    <?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学
+                                </span>
                             </div>
                         </div>
-                    </div>
+                        <div class="teacher">
+                            <div class="tuip">
+                                <div class="avatars img-circle keep-left">
+                                    <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                </div>
+                                <span class="keep-left"><?= $model['teacher_name'] ?></span>
+                                <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
+                            </div>
+                        </div>
+                    </li>
                     <?php endforeach; ?>
-                </div>
-
-                <div class="loading-box">
-                    <span class="loading" style="display: none"></span>
-                    <span class="no_more" style="display: none">没有更多了</span>
-                </div>
-
-                <div class="summary">
-                    <span>共 <?= $totalCount ?> 条记录</span>
-                </div>
+                </ul>
+            </div>
+            <!--加载-->
+            <div class="loading-box">
+                <span class="loading" style="display: none"></span>
+                <span class="no_more" style="display: none">没有更多了</span>
+            </div>
+            <!--总结记录-->
+            <div class="summary">
+                <span>共 <b><?= $totalCount ?></b> 条记录</span>
+            </div>
             
         </div>
     </div>
@@ -156,8 +160,8 @@ $js =
                     for(var i in data){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 3 == 2 ? 'clear-margin' : '',
-                            id: data[i].course_id,
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
+                            id: data[i].id,
+                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" heigth="100%" />',
                             name: data[i].name,
                             contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
@@ -168,7 +172,7 @@ $js =
                             avgStar: data[i].avg_star
                         });
                     }
-                    $(".keep-right .list").append(dome);
+                    $(".main-right .list > ul").append(dome);
                     hoverEvent();
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -185,7 +189,7 @@ $js =
         
     //经过、离开事件
     function hoverEvent(){
-        $(".keep-right .list .item").each(function(){
+        $(".main-right .list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
                 elem.addClass('hover');
