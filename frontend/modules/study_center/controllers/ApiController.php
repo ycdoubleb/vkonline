@@ -145,6 +145,7 @@ class ApiController extends Controller  {
         $post = Yii::$app->request->post();
         $course_id = ArrayHelper::getValue($post, 'course_id');
         $video_id = ArrayHelper::getValue($post, 'video_id');
+        $current_time = ArrayHelper::getValue($post, 'current_time');
         $model = VideoProgress::findOne([
             'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
         ]);
@@ -157,7 +158,10 @@ class ApiController extends Controller  {
         $trans = Yii::$app->db->beginTransaction();
         try
         {   
-            $model->last_time = ArrayHelper::getValue($post, 'current_time');
+            $model->last_time = $current_time;
+            if($current_time > $model->finish_time){
+                $model->finish_time = $current_time;
+            }
             if($model->save()){
                 $isFinish = false;
                 //查询课程下的所有视频节点
@@ -210,6 +214,7 @@ class ApiController extends Controller  {
         $post = Yii::$app->request->post();
         $course_id = ArrayHelper::getValue($post, 'course_id');
         $video_id = ArrayHelper::getValue($post, 'video_id');
+        $current_time = ArrayHelper::getValue($post, 'current_time');
         $model = VideoProgress::findOne([
             'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
         ]);
@@ -222,7 +227,7 @@ class ApiController extends Controller  {
         $trans = Yii::$app->db->beginTransaction();
         try
         {   
-            $model->finish_time = ArrayHelper::getValue($post, 'current_time');
+            $model->finish_time = $current_time;
             $model->is_finish = 1;
             $model->end_time = time();
             if($model->save()){

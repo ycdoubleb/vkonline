@@ -44,15 +44,6 @@ SwitchInputAsset::register($this);
                 'adminOptions' => true,
             ],
             [
-                'name' => Yii::t('app', 'Update'),
-                'url' => ['update', 'id' => $model->id],
-                'icon' => null,
-                'options' => ['class' => 'btn btn-primary'],
-                'symbol' => '&nbsp;',
-                'conditions' => !$model->is_publish && $model->created_by === Yii::$app->user->id,
-                'adminOptions' => true,
-            ],
-            [
                 'name' => Yii::t('app', 'Close'),
                 'url' => ['close', 'id' => $model->id],
                 'icon' => null,
@@ -95,6 +86,12 @@ SwitchInputAsset::register($this);
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
+            <div class="btngroup">
+                <?php if(!$model->is_publish && $model->created_by === Yii::$app->user->id){
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
+                        ['class' => 'btn btn-primary']);
+                }?>
+            </div>
         </div>
         <?= DetailView::widget([
             'model' => $model,

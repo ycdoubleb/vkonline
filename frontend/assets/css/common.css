@@ -13,6 +13,7 @@ ui,li {
     list-style: none;
 }
 a { text-decoration: none; color: inherit; }
+html, 
 body {
     height: 100%;
 }
@@ -25,7 +26,7 @@ body {
     background-color: #F2F2F2;
 }
 
-.wrap > .container {
+.wrap div > .container {
     width: 1200px;
     /*padding: 70px 0 20px;*/
 }

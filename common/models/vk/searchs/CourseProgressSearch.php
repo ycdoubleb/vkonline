@@ -97,7 +97,8 @@ class CourseProgressSearch extends CourseProgress
         }
         //添加字段
         self::$query->addSelect(['Course.name', 'Course.cover_img', 'COUNT(CourseProgress.user_id) AS people_num',
-            'CourseProgress.last_video', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
+            'CourseProgress.last_video', 'Teacher.id AS teacher_id',
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
             'CourseNode.name AS node_name', 'Video.name AS video_name', 'VideoProgress.last_time'
         ]);
         //显示数量

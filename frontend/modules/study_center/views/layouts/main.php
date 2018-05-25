@@ -24,7 +24,7 @@ $actionId = Yii::$app->controller->action->id;  //当前actionID
 $menuItems = [
     [
         'label' => '我的任务',
-        'url' => ['my-task'],
+        'url' => ['index'],
         'icons' => null, 
         'options' => ['class' => 'links']
     ],

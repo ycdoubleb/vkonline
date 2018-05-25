@@ -69,7 +69,7 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
         $addArrays = ['Customer.name AS customer_name', 'Course.name AS course_name', 
-            'Video.name', 'Video.img', 'Video.source_duration',
+            'Video.name', 'Video.img', 'Video.source_duration', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
@@ -134,7 +134,7 @@ class VideoFavoriteSearch extends VideoFavorite
         $playQuery->where(['Play.video_id' => $copyFavoriteVideo]);
         $playQuery->groupBy('Play.video_id');
         //查询视频下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
+        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
             ->from(['TagRef' => TagRef::tableName()]);
         $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyFavoriteVideo]);

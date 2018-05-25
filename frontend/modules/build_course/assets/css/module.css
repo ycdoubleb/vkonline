@@ -34,7 +34,6 @@
     float: left;
     width: 100%;
     padding: 20px 10px 0;
-    font-size: 14px;
     color: #999;
 }
 
@@ -327,11 +326,13 @@ body .select2-container--krajee
 }
 
 .list .item .pic .title {
+    display: table-cell;
+    height: 210px;
     font-size: 20px;
     color: #fff;
     font-weight: 700;
     text-align: center;
-    line-height: 210px;
+    vertical-align: middle;
 }
 
 .list .item .pic .duration {
@@ -360,6 +361,7 @@ body .select2-container--krajee
 }
 
 .list .item .tuip-name {
+    display: block;
     font-size: 14px;
     color: #666;
     font-weight: bold;
@@ -383,12 +385,13 @@ body .select2-container--krajee
     width: 25px;
     height: 25px;
     margin: 12.5px 5px;
+    margin-left: 0;
     line-height: 0;
     background-color: #26bfcd;
 }
 
 .list .item .speaker .tuip > a {
-    margin: 8px 0;
+    margin: 7px 0;
     border-radius: 0;
 }
 
@@ -557,7 +560,7 @@ body .select2-container--krajee
 .sortable .head {
     height: 60px;
     padding-right: 15px;
-    padding-left: 30px;
+    padding-left: 35px;
     margin: 0;
     line-height: 60px;
 }
@@ -630,6 +633,13 @@ body .select2-container--krajee
     border: 1px solid #e4e4e4;
 }
 /*******************************************************************************
+ * 我的课程
+ *******************************************************************************/
+.course-index .list .item .tuip-name {
+    display: inline-block;
+    width: 225px;
+}
+/*******************************************************************************
  * 我的视频
  *******************************************************************************/
 .video-index .list .item .pic {
@@ -637,7 +647,7 @@ body .select2-container--krajee
 }
 
 .video-index .list .item .pic > .title {
-    line-height: 157px;
+    height: 157px;
 }
 /*******************************************************************************
  * 我的老师
@@ -665,6 +675,14 @@ body .select2-container--krajee
     color: #ccc;
     margin: 0 -50px;
 }
+
+.teacher-form .result-show {
+    float: left;
+    width: 245px;
+    padding: 3px;
+    color: #ff3300;
+}
+
 /**
  * 公共部分
  */
@@ -734,7 +752,7 @@ body .select2-container--krajee
 }
 
 .video-reference .item.reference > a > .pic > title {
-    line-height: 112px !important;
+    height: 112px !important;
 }
 
 .video-reference .item.reference > .cont {
@@ -742,6 +760,11 @@ body .select2-container--krajee
     padding: 0 5px 0 6px;
     line-height: 40px;
     border-bottom: none;
+}
+
+.video-reference .item.reference .tuip-name {
+    width: 140px;
+    display: inline-block;
 }
 
 .video-reference .item.reference > .cont > a {

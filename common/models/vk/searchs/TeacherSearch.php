@@ -88,7 +88,8 @@ class TeacherSearch extends Teacher
             'Teacher.created_by' => Yii::$app->user->id,
             'is_certificate' => $this->is_certificate,
         ]);
-        
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'name', $this->name]);
         return $this->search($params);
     }
     
@@ -102,6 +103,24 @@ class TeacherSearch extends Teacher
         self::$query->andFilterWhere([
             'Teacher.customer_id' => Yii::$app->user->identity->customer_id,
             'is_certificate' => $this->is_certificate,
+        ]);
+        //模糊查询
+        self::$query->andFilterWhere(['like', 'name', $this->name]);
+        return $this->search($params);
+    }
+    
+    //名师堂同名认证下的搜索
+    public function teacherSearch($params)
+    {
+        $this->name = ArrayHelper::getValue($params, 'name');   //老师名称
+        
+        self::getInstance();
+        $this->load($params);
+           
+        //条件查询
+        self::$query->andFilterWhere([
+            'Teacher.name' => $this->name,
+            'is_certificate' => 1,
         ]);
         
         return $this->search($params);
@@ -119,9 +138,6 @@ class TeacherSearch extends Teacher
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        
-        //模糊查询
-        self::$query->andFilterWhere(['like', 'name', $this->name]);
         //查询总数
         $totalCount = self::$query->count('id');
         //显示数量

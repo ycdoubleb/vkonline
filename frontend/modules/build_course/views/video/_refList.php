@@ -6,7 +6,7 @@
         </div>
     </a>
     <div class="cont">
-        <span class="tuip-name">{%name%}</span>
+        <span class="single-clamp tuip-name" title="{%name%}">{%name%}</span>
         <a class="btn btn-primary btn-sm choice tuip-right" href="{%url%}" onclick="clickChoiceEvent($(this)); return false;">选择</a>
     </div>
 </div>

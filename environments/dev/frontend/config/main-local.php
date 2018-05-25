@@ -16,6 +16,10 @@ $config = [
         'video' => [
             'class' => 'frontend\modules\video\Module',
         ],
+        //名师堂
+        'teacher' => [
+            'class' => 'frontend\modules\teacher\Module',
+        ],
         //学习中心
         'study_center' => [
             'class' => 'frontend\modules\study_center\Module',
@@ -45,6 +49,7 @@ $config = [
         'allowActions' => [
             /* 本地开发模式下可用gii */
             'gii/*',
+            'teacher/*',
         ]
     ],
 ];
