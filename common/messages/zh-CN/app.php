@@ -139,6 +139,8 @@ return [
     'Problem' => '问题',
     'Specific' => '具体',
     'Synopsis' => '简介',
+    'Short Name' => '简称',
+    
   
     //提示消息
     "Can't be empty." => '不能为空。',
