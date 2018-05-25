@@ -13,9 +13,9 @@ use yii\web\View;
     <div class="frame">
         <div class="frame-content">
             <div class="frame-title">
-                <span><?= Yii::t('app', '{Create}{User}',[
+                <span><?= Yii::t('app', '{Create}{Category}',[
                     'Create' => Yii::t('app', 'Create'),
-                    'User' => Yii::t('app', 'User'),
+                    'Category' => Yii::t('app', 'Category'),
                 ]) ?></span>
             </div>
             <div class="content-content">
