@@ -29,7 +29,13 @@ use yii\widgets\ActiveForm;
         ], 
     ]); ?>
 
-    <?= $form->field($model, 'name')->textInput(['placeholder' => '请输入...', 'maxlength' => true]) ?>
+    <?php
+        $btnHtml = Html::a(Yii::t('yii', 'View'), null, ['class' => 'btn btn-default']);
+        $resultsShow = '<div class="result-show hidden"><span></span>&nbsp;&nbsp;' . $btnHtml . '</div>';
+        echo $form->field($model, 'name', [
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>{$resultsShow}\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput(['placeholder' => '请输入...', 'maxlength' => true]) 
+    ?>
     
     <?=$form->field($model, 'sex')->widget(Select2::class,[
         'data' => Teacher::$sexName, 'hideSearch' => true, 'options' => ['prompt'=>'请选择...',]
@@ -73,3 +79,24 @@ use yii\widgets\ActiveForm;
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+$js = 
+<<<JS
+   
+    //失去焦点提交表单
+    $("#teacher-name").blur(function(){
+        $.post("../teacher/search?name=" + $(this).val(), function(rel){
+            if(rel['code'] == '200'){
+                $(".result-show").removeClass("hidden");
+                $(".result-show span").html("发现同名已认证老师&nbsp;" + rel['data'].number + "个");
+                $(".result-show a").attr("href", rel['data'].url);
+            }else{
+                $(".result-show").addClass("hidden");
+            }
+        })
+    });
+        
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

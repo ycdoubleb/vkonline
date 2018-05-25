@@ -224,14 +224,13 @@ class VideoController extends Controller
     {
         $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
         $id = ArrayHelper::getValue($params, 'id');
-        $isNewRecord = ArrayHelper::getValue($params, 'isNewRecord');
-       
+        
         $searchModel = new VideoFavoriteSearch();
         $result = $searchModel->referenceSearch(array_merge($params, ['limit' => 15]));
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['video']),
         ]);
-        
+        //分页查询
         if(Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
             return [
@@ -240,6 +239,7 @@ class VideoController extends Controller
                 'data' => array_values($result['data']['video']),
                 'message' => '请求成功！',
             ];
+        //选择引用的视频
         }else if($id != null){
             Yii::$app->getResponse()->format = 'json';
             return [

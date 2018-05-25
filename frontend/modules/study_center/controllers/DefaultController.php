@@ -7,6 +7,7 @@ use common\models\vk\CourseNode;
 use common\models\vk\PlayStatistics;
 use common\models\vk\searchs\CourseFavoriteSearch;
 use common\models\vk\searchs\CourseProgressSearch;
+use common\models\vk\searchs\CourseTaskSearch;
 use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
@@ -56,7 +57,17 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
-        return $this->redirect(['collect-course']);
+        $searchModel = new CourseTaskSearch();
+        $result = $searchModel->search(Yii::$app->request->queryParams);
+        
+        //传参到布局文件
+        \Yii::$app->view->params = [
+            'searchModel' => $searchModel,
+            'filters' => $result['filter'],
+        ];
+        return $this->render('index', [
+            'totalCount' => $result['total'],
+        ]);
     }
     
      /**

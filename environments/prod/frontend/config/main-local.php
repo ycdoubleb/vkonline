@@ -15,6 +15,10 @@ return [
         'video' => [
             'class' => 'frontend\modules\video\Module',
         ],
+        //名师堂
+        'teacher' => [
+            'class' => 'frontend\modules\teacher\Module',
+        ],
         //学习中心
         'study_center' => [
             'class' => 'frontend\modules\study_center\Module',
@@ -35,5 +39,10 @@ return [
         'other' => [
             'class' => 'frontend\modules\other\Module',
         ],
+    ],
+    'as access' => [
+        'allowActions' => [
+            'teacher/*',
+        ]
     ],
 ];

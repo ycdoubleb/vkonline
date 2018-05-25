@@ -8,9 +8,11 @@ use common\models\vk\TeacherCertificate;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -78,7 +80,7 @@ class TeacherController extends Controller
         ]);
     }
     
-     /**
+    /**
      * 显示一个单一的 Teacher 模型。
      * @param string $id
      * @return mixed [model => 模型, dataProvider => 主讲老师下的所有课程]
@@ -86,6 +88,7 @@ class TeacherController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        
         $dataProvider = new ArrayDataProvider([
             'allModels' => $model->courses,
         ]);
@@ -204,6 +207,40 @@ class TeacherController extends Controller
         ActionUtils::getInstance()->applyCertificate($model);
         
         return $this->redirect(['view', 'id' => $model->id]);
+    }
+    
+    /**
+     * 搜索 是否存在同名的主讲老师认证
+     * 如果存在则返回存在老师的个数
+     * @param string $name
+     * @return mixed
+     */
+    public function actionSearch($name)
+    {
+        Yii::$app->getResponse()->format = 'json';
+        
+        $number = (new Query())->select(['id'])->from(Teacher::tableName())
+            ->where(['name' => $name, 'is_certificate' => 1])->count();
+
+        if ($number > 0) {
+            return [
+                'code'=> 200,
+                'data'=> [
+                    'number' => $number, 
+                    'url' => Url::to(['/teacher/default/search', 'name' => $name])
+                ],
+                'message' => '搜索成功！'
+            ];
+        } else {
+            return [
+                'code'=> 404,
+                'data'=> [
+                    'number' => 0, 
+                    'url' => Url::to(['/teacher/default/search', 'name' => $name])
+                ],
+                'message' => '搜索失败！'
+            ];
+        }
     }
     
     /**

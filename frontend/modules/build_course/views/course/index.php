@@ -109,7 +109,7 @@ ModuleAssets::register($this);
         <?php endif; ?>
         <?php foreach ($dataProvider->allModels as $index => $model): ?>
         <div class="item <?= $index % 3 == 2 ? 'clear-margin' : null ?>">
-            <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']])]) ?>
+            <?php echo Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']])]) ?>
                 <div class="pic">
                     <?php if($model['level'] == Course::INTRANET_LEVEL): ?>
                     <div class="icon tuip-red"><i class="fa fa-lock"></i></div>
@@ -124,10 +124,10 @@ ModuleAssets::register($this);
                 </div>
                 <div class="cont">
                     <div class="tuip">
-                        <span class="tuip-name"><?= $model['name'] ?></span>
+                        <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
                         <span class="tuip-right"><?= DateUtil::intToTime($model['content_time']) ?></span>
                     </div>
-                    <div class="tuip">
+                    <div class="single-clamp tuip">
                         <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
                     </div>
                     <div class="tuip">
@@ -135,13 +135,15 @@ ModuleAssets::register($this);
                         <span class="tuip-right tuip-green"><?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学</span>
                     </div>
                 </div>
-            <?= Html::endTag('a') ?>
+            <?php echo Html::endTag('a') ?>
             <div class="speaker">
                 <div class="tuip">
-                    <div class="avatar img-circle">
-                        <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                    </div>
-                    <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                    <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
+                        <div class="avatar img-circle">
+                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                        </div>
+                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                    <?php echo Html::endTag('a') ?>
                     <span class="avg-star tuip-red tuip-right"><?= $model['avg_star'] ?> 分</span>
                     <?= Html::a(Yii::t('app', 'Preview'), ['/course/default/view', 'id' => $model['id']], [
                         'class' => 'btn btn-info preview tuip-right',
@@ -229,6 +231,7 @@ $js =
                             colorName: data[i].is_publish == 1 ? 'green' : 'red',
                             publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
                             number: data[i].people_num != undefined ? data[i].people_num : 0,
+                            teacherId: data[i].teacher_id,
                             teacherAvatar: data[i].teacher_avatar,
                             teacherName: data[i].teacher_name,
                             avgStar: data[i].avg_star

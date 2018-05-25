@@ -135,8 +135,7 @@ class ActionUtils
                 $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
                 Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
                     ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
-                $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理",
-                    'content' => '无', 'course_id' => $model->id]);
+                $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
             }

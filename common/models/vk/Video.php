@@ -193,10 +193,13 @@ class Video extends ActiveRecord
             $nodes = self::getVideoNode(['node_id' => $this->node_id]);
             ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
             $counode = $nodes == null ? null : reset($nodes);
+            $oldSourceId = $this->getOldAttribute('source_id');
             if(trim($this->source_id) == ''){
-                $this->source_id = $this->getOldAttribute('source_id');
+                $this->source_id = $oldSourceId;
             }
-            $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
+            if($this->source_id != $oldSourceId){
+                $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
+            }
             $upload = UploadedFile::getInstance($this, 'img');
             if ($upload != null) {
                 $string = $upload->name;
@@ -208,22 +211,25 @@ class Video extends ActiveRecord
                 $this->img = '/upload/video/screenshots/' . $this->source_id . '.' . $ext . '?rand=' . rand(0, 1000);
             }else {
                 //设置默认
-                $this->img = FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path);
+                $this->img = $this->source_id != $oldSourceId ? 
+                    FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path) :
+                        $this->getOldAttribute('img');
             }
             //都没做修改的情况下保存旧数据
             if(trim($this->img) == ''){
                 $this->img = $this->getOldAttribute('img');
             }
             //设置顺序
-            if($this->isNewRecord && $counode !== null){
+            if($this->isNewRecord && $counode != null){
                 $this->sort_order = $counode->sort_order + 1;
             }
             //设置源视频属性
-            $this->source_level = $videoInfo['level'];
-            $this->source_wh = $videoInfo['width'] . '×' . $videoInfo['height'];
-            $this->source_bitrate = $videoInfo['bitrate'];
-            $this->source_duration = $videoInfo['duration'];
-                    
+            if(isset($videoInfo)){
+                $this->source_level = $videoInfo['level'];
+                $this->source_wh = $videoInfo['width'] . '×' . $videoInfo['height'];
+                $this->source_bitrate = $videoInfo['bitrate'];
+                $this->source_duration = $videoInfo['duration'];
+            }   
             return true;
         }
         

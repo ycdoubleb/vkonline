@@ -70,7 +70,7 @@ ModuleAssets::register($this);
         <?php ActiveForm::end(); ?>
         
     </div>
-   
+    <!--列表-->
     <div class="list">
         <?php if(count($dataProvider->allModels) <= 0): ?>
         <h5>没有找到数据。</h5>
@@ -107,7 +107,7 @@ ModuleAssets::register($this);
 <?php
 $url = Url::to(array_merge(['index'], $filters));   //链接
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/teacher/_dome.php')));
+    $this->renderFile('@frontend/modules/build_course/views/teacher/_list.php')));
 $js = 
 <<<JS
    

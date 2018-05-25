@@ -98,7 +98,8 @@ class CourseSearch extends Course
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //添加字段
         $addArrays = ['Course.name', 'Course.level', 'Course.cover_img',  'Course.content_time',
-            'Course.is_publish', 'Course.avg_star', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+            'Course.is_publish', 'Course.avg_star', 'Teacher.id AS teacher_id',
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);
@@ -121,6 +122,26 @@ class CourseSearch extends Course
         return $this->backendSearch($params, $categoryId);
     }
 
+    //名师堂 老师下的课程
+    public function teacherCourseSearch($params)
+    {        
+        $this->teacher_id = ArrayHelper::getValue($params, 'id');    //老师id
+        
+        self::getInstance();
+        $this->load($params);
+        //条件查询
+        self::$query->andFilterWhere([
+            'Course.teacher_id' => $this->teacher_id,
+        ]);
+        //添加字段
+        $addArrays = ['Customer.name AS customer_name', 'Course.name',
+            'Course.cover_img',  'Course.content_time', 'Course.avg_star', 
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ];
+      
+        return $this->search($params, $addArrays);
+    }
+    
     /**
      * 使用搜索查询创建数据提供程序实例
      *
@@ -138,11 +159,11 @@ class CourseSearch extends Course
         //查询课程的占用空间
         $courseSize = $this->findCourseSize();
         //查询课程下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
+        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
             ->from(['TagRef' => TagRef::tableName()]);
         $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
-        $tagRefQuery->groupBy('TagRef.object_id');
+        $tagRefQuery->groupBy('TagRef.object_id')->orderBy('TagRef.id');
         //查询参与课程的在学人数
         $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
             ->from(['Progress' => CourseProgress::tableName()]);

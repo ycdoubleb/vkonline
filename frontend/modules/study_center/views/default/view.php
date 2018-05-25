@@ -58,7 +58,7 @@ $this->title = $model['name'];
             </div>
         </div>
         <div class="keep-right">
-            <?= Html::a('<i class="fa fa-envelope-o"></i>反馈', 'javascript:;') ?>
+            <?= Html::a('<i class="fa fa-envelope-o"></i>反馈', ['/other/default/feedback']) ?>
             <?= Html::a('<i class="fa fa-arrow-circle-o-right"></i>下一节', 'javascript:;', ['id' => 'next-section']) ?>
             <?= Html::checkbox('autoplay', ArrayHelper::getValue($params, 'checked') ? true : false); ?>自动播放下一节
         </div>
@@ -151,7 +151,7 @@ $js =
             });
         }else{
             //添加收藏
-            $.get('../api/del-favorite',{course_id: "{$model['course_id']}", video_id: "{$model['id']}"}, function(result){
+            $.get('../api/add-favorite',{course_id: "{$model['course_id']}", video_id: "{$model['id']}"}, function(result){
                 if(result.code == 200){
                     //成功
                     $("#favorite span").html('已收藏');

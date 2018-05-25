@@ -38,14 +38,14 @@ $format = <<< SCRIPT
         //为否显示认证图标
         var isShow = formats[state.id]['is_certificate'] ? '<i class="fa fa-vimeo icon-vimeo"></i>' : '<i class="fa icon-vimeo"></i>';
         var sex = formats[state.id]['sex'] == 1 ? '男' : '女';
-        var links = '../teacher/view?id=' + $.trim(state.id);
+        var links = '/teacher/default/view?id=' + $.trim(state.id);
         //返回结果（html）
         return isShow + 
             '<div class="avatars">' + 
                 '<img class="img-circle" src="' + src + '" width="32" height="32"/>' + 
             '</div>' 
             + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
-            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank">' + 
+            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;">' + 
                 '<i class="fa fa-eye"></i>' + 
             '</a>';
     } 

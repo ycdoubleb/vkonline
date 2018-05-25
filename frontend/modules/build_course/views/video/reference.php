@@ -100,7 +100,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
                 </div>
             <?= Html::endTag('a') ?>
             <div class="cont">
-                <span class="tuip-name"><?= $model['name'] ?></span>
+                <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
                 <?= Html::a(Yii::t('app', 'Choice'), array_merge(['reference'], array_merge($filters, ['id' => $model['video_id']])), [
                     'class' => 'btn btn-primary btn-sm choice tuip-right', 
                     'onclick' => 'clickChoiceEvent($(this)); return false;'
@@ -167,6 +167,7 @@ $js =
                         createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data['videos'].created_at),
                         colorName: data['videos'].is_ref == 0 ? 'green' : 'red',
                         isRef: data['videos'].is_ref == 0 ? '原创' : '引用',
+                        teacherId: data['videos'].teacher_id,
                         teacherAvatar: data['videos'].teacher_avatar,
                         teacherName: data['videos'].teacher_name,
                         playNum: data['videos'].play_num != undefined ? data['videos'].play_num : 0,
@@ -186,7 +187,6 @@ $js =
                         window.uploader.addCompleteFiles(data['videoFiles']);
                         window.uploader.setEnabled(false);
                     },10);
-                    
                 });
             }
         });

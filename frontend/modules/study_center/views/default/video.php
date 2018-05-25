@@ -37,9 +37,9 @@ ModuleAssets::register($this);
                 </div>
                 <div class="cont">
                     <div class="tuip">
-                        <span class="tuip-name"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
+                        <span class="single-clamp tuip-name" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
                     </div>
-                    <div class="tuip">
+                    <div class="single-clamp tuip">
                         <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
                     </div>
                     <div class="tuip">
@@ -49,10 +49,12 @@ ModuleAssets::register($this);
             <?= Html::endTag('a') ?>
             <div class="speaker">
                 <div class="tuip">
-                    <div class="avatar img-circle">
-                        <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                    </div>
-                    <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                    <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
+                        <div class="avatar img-circle">
+                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                        </div>
+                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                    <?php echo Html::endTag('a') ?>
                     <span class="tuip-right"><i class="fa fa-eye"></i>　<?= isset($model['play_num']) ? $model['play_num'] : 0 ?></span>
                 </div>
             </div>
@@ -128,6 +130,7 @@ $js =
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
                             customerName: data[i].customer_name,
+                            teacherId: data[i].teacher_id,
                             teacherAvatar: data[i].teacher_avatar,
                             teacherName: data[i].teacher_name,
                             playNum: data[i].play_num != undefined ? data[i].play_num : 0,

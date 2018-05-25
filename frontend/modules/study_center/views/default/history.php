@@ -31,14 +31,16 @@ ModuleAssets::register($this);
             </div>
             <div class="cont">
                 <div class="tuip">
-                    <span class="tuip-name"><?= $model['name'] ?></span>
+                    <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
                 </div>
                 <div class="speaker">
                     <div class="tuip">
-                        <div class="avatar img-circle">
-                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                        </div>
-                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                        <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
+                            <div class="avatar img-circle">
+                                <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                            </div>
+                            <span class="tuip-left"><?= $model['teacher_name'] ?></span>
+                        <?php echo Html::endTag('a') ?>
                         <span class="tuip-green tuip-right"><?= $model['people_num'] ?> 人在学</span>
                     </div>
                 </div>
@@ -50,7 +52,7 @@ ModuleAssets::register($this);
                         <div class="progress-bar" style="width: <?= $percent ?>%;">
                         </div>
                     </div>
-                    <span class="tuip-green">上次观看至&nbsp;
+                    <span class="single-clamp tuip-green">上次观看至&nbsp;
                         <?= $model['node_name'] . '-' . $model['video_name'] . '&nbsp;' . Yii::$app->formatter->asDuration($model['last_time'], '') ?>
                     </span>
                 </div>
@@ -122,6 +124,7 @@ $js =
                             className: i % 2 == 1 ? 'clear-margin' : '',
                             isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
                             name: data[i].name,
+                            teacherId: data[i].teacher_id,
                             teacherAvatar: data[i].teacher_avatar,
                             teacherName: data[i].teacher_name,
                             number: data[i].people_num,

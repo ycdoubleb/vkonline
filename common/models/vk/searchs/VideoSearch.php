@@ -118,8 +118,10 @@ class VideoSearch extends Video
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 'Video.source_duration',  'Video.created_at',
-            'Video.is_ref', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
+            'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
+            'Teacher.id AS teacher_id',
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         if($sort_name == 'created_at'){
@@ -172,7 +174,7 @@ class VideoSearch extends Video
         $playQuery->where(['Play.video_id' => $copyVideo]);
         $playQuery->groupBy('Play.video_id');
         //查询视频下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` SEPARATOR '、') AS tags"])
+        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
             ->from(['TagRef' => TagRef::tableName()]);
         $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyVideo]);
