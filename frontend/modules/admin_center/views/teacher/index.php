@@ -72,7 +72,7 @@ ModuleAssets::register($this);
         <h5>没有找到数据。</h5>
         <?php endif; ?>
         <?php foreach ($dataProvider->allModels as $index => $model):  ?>
-        <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']])]) ?>
+        <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']]), 'target' => '_blank']) ?>
             <div class="item <?= $index % 4 == 3 ? 'clear-margin' : null ?>">
                 <div class="pic avatars img-circle">
                     <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%','height' => '96px']) ?>

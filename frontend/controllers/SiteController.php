@@ -308,6 +308,8 @@ class SiteController extends Controller
         $user->username = $username;
         $user->phone = $phone;
         $user->nickname = $nickname;
+        $user->avatar = ($user->sex == null) ? '/upload/avatars/default.jpg' :
+                            '/upload/avatars/default/' . ($user->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';;
         $user->setPassword($password_hash);
         $user->generateAuthKey();
         

@@ -145,7 +145,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at', 'is_official', 'sex'], 'integer'],
+            [['created_at', 'updated_at', 'is_official', 'sex', 'type'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname'], 'string', 'max' => 50],
@@ -227,10 +227,11 @@ class User extends ActiveRecord implements IdentityInterface {
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
-            //设置是否属于官网账号
-            if($this->customer_id){
+            //设置是否属于官网账号/企业用户or散户
+            if($this->customer_id != null){
                 $isOfficial = Customer::findOne(['id' => $this->customer_id]);
                 $this->is_official = $isOfficial->is_official;
+                $this->type = 2;        //企业用户
             } else {
                 $this->type = 1;        //散户
                 $this->is_official = 0; //非官网用户
@@ -254,7 +255,7 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->generateAuthKey();
                 //设置默认头像
                 if (trim($this->avatar) == '' || !isset($this->avatar)){
-                    $this->avatar = ($this->sex == 0) ? '/upload/avatars/default.jpg' :
+                    $this->avatar = ($this->sex == null) ? '/upload/avatars/default.jpg' :
                             '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {

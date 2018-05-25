@@ -25,6 +25,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     
+    <?= $form->field($model, 'short_name')->textInput(['maxlength' => true]) ?>
+    
     <div class="col-lg-12 col-md-12" style="padding: 0px">
         <div class="col-lg-3 col-md-3" style="padding: 0px 30px 0 0">
             <?= $form->field($model, 'province')->dropDownList($model->getCityList(0),[
@@ -75,6 +77,8 @@ use yii\widgets\ActiveForm;
             'class' => '',
         ],
     ])->label(Yii::t('app', 'Official'))?>
+    
+    <?= $form->field($model, 'sort_order')->textInput() ?>
 
     <?= $form->field($model, 'logo')->widget(FileInput::class, [
         'options' => [

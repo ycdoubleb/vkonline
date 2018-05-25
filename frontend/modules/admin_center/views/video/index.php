@@ -173,6 +173,7 @@ $this->title = Yii::t('app', '{Video}{List}',[
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),
                                     'data-pjax' => '0',
+                                    'target' => '_blank',
                                 ];
                                 $buttonHtml = [
                                     'name' => '<span class="glyphicon glyphicon-eye-open"></span>',

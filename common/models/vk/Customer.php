@@ -80,10 +80,11 @@ class Customer extends ActiveRecord
         return [
 //            [['id'], 'required'],
             [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon',
-               'status', 'created_at', 'updated_at', 'is_official'], 'integer'],
+               'status', 'created_at', 'updated_at', 'is_official', 'sort_order'], 'integer'],
             [['location'], 'string'],
             [['id', 'created_by'], 'string', 'max' => 32],
             [['name', 'domain', 'logo', 'des', 'address'], 'string', 'max' => 255],
+            [['short_name'], 'string', 'max' => 20],
 //            [['status'], 'string', 'max' => 1],
             [['invite_code'], 'string', 'max' => 6],
             [['short_name'], 'string', 'max' => 50],
@@ -101,6 +102,7 @@ class Customer extends ActiveRecord
             'name' => Yii::t('app', 'Name'),
             'short_name' => Yii::t('app', 'Short Name'),
             'domain' => Yii::t('app', 'Domain'),
+            'sort_order' => Yii::t('app', 'Sort Order'),
             'logo' => Yii::t('app', 'Logo'),
             'status' => Yii::t('app', 'Status'),
             'des' => Yii::t('app', 'Des'),
@@ -178,6 +180,16 @@ class Customer extends ActiveRecord
             //设置创建人
             if(!$this->created_by){
                 $this->created_by = Yii::$app->user->id;
+            }
+            //设置客户简称
+            if(!$this->short_name){
+                $this->short_name = $this->name;
+            }
+            //设置邀请码
+            if(!$this->invite_code){
+                $str='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';  
+                $randStr = str_shuffle($str);       //打乱字符串  
+                $this->invite_code = substr($randStr,0,6); //substr(string,start,length);返回字符串的一部分 
             }
             //拿到经纬度并处理
             $location = ArrayHelper::getValue(Yii::$app->request->post(), 'Customer.location');

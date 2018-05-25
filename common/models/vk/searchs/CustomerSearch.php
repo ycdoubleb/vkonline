@@ -39,9 +39,9 @@ class CustomerSearch extends Customer
     public function rules()
     {
         return [
-            [['id', 'name', 'domain', 'logo', 'status', 'des', 'invite_code', 'location', 'created_by'], 'safe'],
+            [['id', 'name', 'short_name', 'domain', 'logo', 'status', 'des', 'invite_code', 'location', 'created_by'], 'safe'],
             [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon', 'address', 'is_official',
-                'created_at', 'updated_at'], 'integer'],
+                'sort_order', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 

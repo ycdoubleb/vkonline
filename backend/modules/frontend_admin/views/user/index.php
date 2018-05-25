@@ -61,6 +61,27 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ],
                 [
+                    'attribute' => 'type',
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'type',
+                        'data' => User::$typeNames,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'value' => function ($data){
+                        return User::$typeNames[$data['type']];
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
                     'attribute' => 'username',
                     'contentOptions' => [
                         'style' => [
