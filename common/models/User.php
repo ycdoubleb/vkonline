@@ -18,6 +18,7 @@ use yii\web\UploadedFile;
  * @property string $customer_id            所属客户id
  * @property string $username               用户名
  * @property string $nickname               昵称或者真实名称
+ * @property integer $type                  用户类型：1散户 2企业用户
  * @property string $password_hash          密码
  * @property string $password_reset_token   密码重置口令
  * @property int $sex                       姓别：0保密 1男 2女
@@ -32,6 +33,8 @@ use yii\web\UploadedFile;
  * @property string $created_at             创建时间
  * @property string $updated_at             更新时间
  * @property string $password write-only password
+ * 
+ * @property Customer $customer 客户
  */
 class User extends ActiveRecord implements IdentityInterface {
 
@@ -46,6 +49,12 @@ class User extends ActiveRecord implements IdentityInterface {
     const STATUS_STOP = 0;
     //活动账号
     const STATUS_ACTIVE = 10;
+    
+    //自由用户
+    const TYPE_FREE = 1;
+    //团体用户
+    const TYPE_GROUP = 2;
+    
 
     /** 性别 保密 */
     const SEX_SECRECY = 0;
@@ -76,6 +85,15 @@ class User extends ActiveRecord implements IdentityInterface {
     public static $statusIs = [
         self::STATUS_STOP => '停用',
         self::STATUS_ACTIVE => '启用',
+    ];
+    
+    /**
+     * 用户类型map
+     * @var array 
+     */
+    public static $typeNames = [
+        self::TYPE_FREE => '自由用户',
+        self::TYPE_GROUP => '团体用户',
     ];
     
     /**
@@ -127,7 +145,7 @@ class User extends ActiveRecord implements IdentityInterface {
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at', 'is_official'], 'integer'],
+            [['created_at', 'updated_at', 'is_official', 'type'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname'], 'string', 'max' => 50],
@@ -175,6 +193,7 @@ class User extends ActiveRecord implements IdentityInterface {
             'password_hash' => Yii::t('app', 'Password Hash'),
             'password2' => Yii::t('app', 'Password2'),
             'password_reset_token' => Yii::t('app', 'Password Reset Token'),
+            'type' => Yii::t('app', 'Type'),
             'sex' => Yii::t('app', 'Sex'),
             'phone' => Yii::t('app', 'Phone'),
             'email' => Yii::t('app', 'Email'),
@@ -389,5 +408,5 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-    
+   
 }

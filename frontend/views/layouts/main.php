@@ -3,9 +3,6 @@
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
 use kartik\widgets\AlertBlock;
-use yii\bootstrap\Nav;
-use yii\bootstrap\NavBar;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\Breadcrumbs;
@@ -66,10 +63,10 @@ AppAsset::register($this);
             <ul>
                 <li class="contacts-left"><?= Html::a('关于我们', '/other/default/about') ?></li>
                 <li class="contacts-left"><?= Html::a('联系我们', '/other/default/contact') ?></li>
+                <li class="contacts-left"><?= Html::a('意见反馈', '/other/default/feedback') ?></li>
                 <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/?app_id=app-frontend&id=1') ?></li>
             </ul>
             <ul>
-                <li class="contacts-left"><?= Html::a('意见反馈', '/other/default/feedback') ?></li>
             </ul>
             <ul class="contacts-right-box">
                 <li class="contacts-right">

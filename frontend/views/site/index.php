@@ -92,14 +92,13 @@ SiteAssets::register($this);
             <!--入驻伙伴-->
             <div class="partner">
                 <div class="title">
-                    <span>入驻伙伴</span>
+                    <span>入驻品牌</span>
                 </div>
                 <div class="list">
-                    <?php foreach ($customers as $index => $customer): ?>
-                        <div class="customer-item">
-                            <img src="<?= $customer['logo'] ?>"/>
-                            <span class="name single-clamp"><?= $customer['name'] ?></span>
-                        </div>
+                    <?php foreach($customers as $customer): ?>
+                    <div class="customer-item" style="background:url(<?= $customer['logo'] ?>)">
+                        <span class="name single-clamp"><?= $customer['name'] ?></span>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>

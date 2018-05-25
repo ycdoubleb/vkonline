@@ -26,6 +26,7 @@ return [
     'Phone' => "电话",
     'Email' => "邮箱",
     'Contact Mode' => '联系方式',
+    'Type' => '类型',
     
     //公共-日期
     'Date' => '日期',
@@ -139,6 +140,8 @@ return [
     'Problem' => '问题',
     'Specific' => '具体',
     'Synopsis' => '简介',
+    'Short Name' => '简称',
+    
   
     //提示消息
     "Can't be empty." => '不能为空。',

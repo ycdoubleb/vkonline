@@ -4,13 +4,11 @@ namespace frontend\controllers;
 use common\models\Banner;
 use common\models\LoginForm;
 use common\models\User;
-use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\SearchLog;
 use common\models\vk\Video;
-use common\utils\ChoiceUtils;
 use common\utils\DateUtil;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
@@ -24,7 +22,6 @@ use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
-use yii\web\NotFoundHttpException;
 use const YII_ENV_TEST;
 
 /**
@@ -107,9 +104,22 @@ class SiteController extends Controller
                 ->select(['id','name','logo'])
                 ->from(Customer::tableName())
                 ->where(['status' => Customer::STATUS_ACTIVE,'is_official' => 0])
+                ->orderBy('sort_order')
                 ->limit(10)
                 ->all();
         
+        /* 不足5个，补齐 */
+        $len = 5 - count($customers);
+        if ($len > 0) {
+            for ($i = 0; $i < $len; $i++) {
+                $customers[] = [
+                    'id' => null,
+                    'name' => '虚位以待',
+                    'logo' => '/upload/customer/wait.jpg?rand='.Yii::$app->version,
+                ];
+            }
+        }
+
         return $this->render('index', [
             'banners' => $banners,
             'hotSearchs' => ArrayHelper::map($hotSearch, 'keyword', 'count'),

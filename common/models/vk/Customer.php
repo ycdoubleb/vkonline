@@ -17,6 +17,7 @@ use yii\web\UploadedFile;
  *
  * @property string $id
  * @property string $name           名称
+ * @property string $short_name     简称
  * @property string $domain         域名，不带http
  * @property string $logo           logo
  * @property int $status            状态：0停用 1试用 10 正常
@@ -31,6 +32,7 @@ use yii\web\UploadedFile;
  * @property string $twon           镇
  * @property string $address        详细地址
  * @property string $location       位置
+ * @property int $sort_order        排序
  * @property string $created_by     创建人
  * @property int $is_official       是否为官网资源：0否 1是
  * @property string $created_at     创建时间
@@ -84,6 +86,7 @@ class Customer extends ActiveRecord
             [['name', 'domain', 'logo', 'des', 'address'], 'string', 'max' => 255],
 //            [['status'], 'string', 'max' => 1],
             [['invite_code'], 'string', 'max' => 6],
+            [['short_name'], 'string', 'max' => 50],
             [['id'], 'unique'],
         ];
     }
@@ -96,6 +99,7 @@ class Customer extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
+            'short_name' => Yii::t('app', 'Short Name'),
             'domain' => Yii::t('app', 'Domain'),
             'logo' => Yii::t('app', 'Logo'),
             'status' => Yii::t('app', 'Status'),
