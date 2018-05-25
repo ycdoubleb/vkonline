@@ -141,7 +141,6 @@ class Video extends ActiveRecord
             //[['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'source_is_link'], 'integer', 'max' => 1],
             [['source_wh'], 'string', 'max' => 20],
             [['source_bitrate'], 'string', 'max' => 10],
-            [['des'], 'string', 'max' => 500],
             [['img'], 'string', 'max' => 255],
             //[['sort_order'], 'string', 'max' => 2],
             [['id'], 'unique'],
