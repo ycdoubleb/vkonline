@@ -10,6 +10,7 @@ use common\models\vk\Customer;
 use common\models\vk\SearchLog;
 use common\models\vk\Video;
 use common\utils\DateUtil;
+use Detection\MobileDetect;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
@@ -250,6 +251,28 @@ class SiteController extends Controller
             ];
         }
     }
+    
+    /**
+     * 分享浏览入口
+     */
+    public function actionVisit(){
+        //
+        $md =new MobileDetect();
+        $visit_agent = '';
+        foreach ($md->getProperties() as $key => $v) {
+            if (($result = $md->version($key)) != "") {
+                $agent .= "$key $result|";
+            }
+        }
+        
+        $params = Yii::$app->request->queryParams;
+        //内容ID
+        $item_id = ArrayHelper::getValue($params.'item_id');
+        //分享人
+        $share_by = ArrayHelper::getValue($params.'share_by');
+        //用户IP
+        $visit_ip = Yii::$app->request->userIP;
+    }
 
     /**
      * 注册
@@ -263,8 +286,7 @@ class SiteController extends Controller
         if (!$user->validate()) {   //数据验证
             return null;
         }
-//        $user->load($post);
-//        var_dump($post);exit;
+
         $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
         $username = ArrayHelper::getValue($post, 'User.username');  //用户名
         $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
@@ -279,8 +301,7 @@ class SiteController extends Controller
                 throw new NotAcceptableHttpException('无效的邀请码！');
             }
         } else {
-            $officialCus = Customer::find()->select(['id'])->where(['is_official' => 1])->asArray()->one(); //官网ID
-            $customerId = ArrayHelper::getValue($officialCus, 'id');
+            $customerId = '';
         }
         //赋值
         $user->customer_id = $customerId;
