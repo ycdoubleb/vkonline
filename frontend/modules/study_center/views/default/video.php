@@ -15,60 +15,59 @@ ModuleAssets::register($this);
 ?>
 
 <div class="study_center-default-video main">
-    
+    <!--列表-->
     <div class="list">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach ($dataProvider->allModels as $index => $model): ?>
-        <div class="item <?= $index % 4 == 3 ? 'clear-margin' : null ?>">
-            <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['video_id']])]) ?>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model): ?>
+            <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
                 <div class="pic">
-                    <?php if(empty($model['img'])): ?>
-                    <div class="title">
-                        <span><?= $model['name'] ?></span>
-                    </div>
-                    <?php else: ?>
-                    <?= Html::img(['/' . $model['img']], ['width' => '100%']) ?>
-                    <?php endif; ?>
-                    <div class="duration">
-                        <?= DateUtil::intToTime($model['source_duration']) ?>
-                    </div>
+                    <a class="icon" data-courseid="<?= $model['course_id'] ?>" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
+                        <i class="fa fa-times"></i>
+                    </a>
+                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>">
+                        <?php if(empty($model['img'])): ?>
+                        <div class="title"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></div>
+                        <?php else: ?>
+                        <img src="/<?= $model['img'] ?>" width="100%" height="100%" />
+                        <?php endif; ?>
+                    </a>
+                    <div class="duration"><?= DateUtil::intToTime($model['source_duration']) ?></div>
                 </div>
-                <div class="cont">
+                <div class="text">
+                    <div class="tuip title single-clamp">
+                        <?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>
+                    </div>
+                    <div class="tuip single-clamp">
+                        <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
+                    </div>
+                    <div class="tuip font-success"><?= $model['customer_name'] ?></div>
+                </div>
+                <div class="teacher">
                     <div class="tuip">
-                        <span class="single-clamp tuip-name" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></span>
-                    </div>
-                    <div class="single-clamp tuip">
-                        <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
-                    </div>
-                    <div class="tuip">
-                        <span class="tuip-green"><?= $model['customer_name'] ?></span>
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>">
+                            <div class="avatars img-circle keep-left">
+                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                            </div>
+                            <span class="keep-left"><?= $model['teacher_name'] ?></span>
+                        </a>
+                        <span class="keep-right"><i class="fa fa-eye"></i> <?= isset($model['play_num']) ? $model['play_num'] : 0 ?></span>
                     </div>
                 </div>
-            <?= Html::endTag('a') ?>
-            <div class="speaker">
-                <div class="tuip">
-                    <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
-                        <div class="avatar img-circle">
-                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                        </div>
-                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                    <?php echo Html::endTag('a') ?>
-                    <span class="tuip-right"><i class="fa fa-eye"></i>　<?= isset($model['play_num']) ? $model['play_num'] : 0 ?></span>
-                </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
-
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-    
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
 
     
@@ -121,12 +120,13 @@ $js =
                 var data = rel['data'];
                 if(rel['code'] == '200'){
                     for(var i in data){
+                        var video_name = data[i].course_name + '&nbsp;&nbsp' + data[i].name;
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 4 == 3 ? 'clear-margin' : '',
+                            courseId: data[i].course_id,
                             id: data[i].video_id,
-                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
-                            courseName: data[i].course_name,
-                            name: data[i].name,
+                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + video_name + '</div>' : '<img src="/' + data[i].img + '" width="100%" height="100%" />',
+                            name: video_name,
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
                             customerName: data[i].customer_name,
@@ -136,7 +136,7 @@ $js =
                             playNum: data[i].play_num != undefined ? data[i].play_num : 0,
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -153,16 +153,30 @@ $js =
         
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
                 elem.addClass('hover');
-                
+                elem.find(".icon").show();
             },function(){
                 elem.removeClass('hover');
+                elem.find(".icon").hide();
             });    
         });
     }    
+    //移除收藏
+    window.removeItem = function(elem){
+        var courseId = elem.attr("data-courseid");
+        var videoId = elem.attr("data-videoid");
+        var totalCount = $(".summary > span > b").text();
+        $.get('/study_center/api/del-favorite',{course_id: courseId, video_id: videoId},function(result){
+            if(result.code == 200){
+                totalCount = parseInt(totalCount) - 1;
+                elem.parents("li").remove();
+                $(".summary > span > b").html(totalCount);
+            }
+        });
+    }  
 
 JS;
     $this->registerJs($js,  View::POS_READY);

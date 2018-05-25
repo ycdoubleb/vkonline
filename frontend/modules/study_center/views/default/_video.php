@@ -1,30 +1,23 @@
-<div class="item {%className%}">
-    <a href="../video/view?id={%id%}">
-        <div class="pic">
-            {%isExist%}
-            <div class="duration">{%duration%}</div>
-        </div>
-        <div class="cont">
-            <div class="tuip">
-                <span class="single-clamp tuip-name" title="{%courseName%}&nbsp;&nbsp;{%name%}">{%courseName%}&nbsp;&nbsp;{%name%}</span>
-            </div>
-            <div class="single-clamp tuip">
-                <span>{%tags%}</span>
-            </div>
-            <div class="tuip">
-                <span class="tuip-green">{%customerName%}</span>
-            </div>
-        </div>
-    </a>
-    <div class="speaker">
+<li class="{%className%}">
+    <div class="pic">
+        <a class="icon" data-courseid="{%courseId%}" data-videoid="{%id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
+        <a href="/study_center/default/view?id={%id%}" title="{%name%}">{%isExist%}</a>
+        <div class="duration">{%duration%}</div>
+    </div>
+    <div class="text">
+        <div class="tuip title single-clamp">{%name%}</div>
+        <div class="tuip single-clamp">{%tags%}</div>
+        <div class="tuip">{%customerName%}</div>
+    </div>
+    <div class="teacher">
         <div class="tuip">
             <a href="/teacher/default/view?id={%teacherId%}">
-                <div class="avatar img-circle">
-                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
+                <div class="avatars img-circle keep-left">
+                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25" />
                 </div>
-                <span class="tuip-left">{%teacherName%}</span>
+                <span class="keep-left">{%teacherName%}</span>
             </a>
-            <span class="tuip-right"><i class="fa fa-eye"></i>　{%playNum%}</span>
+            <span class="keep-right"><i class="fa fa-eye"></i>　{%playNum%}</span>
         </div>
     </div>
-</div>
+</li>
