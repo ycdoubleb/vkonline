@@ -26,6 +26,7 @@ return [
     'Phone' => "电话",
     'Email' => "邮箱",
     'Contact Mode' => '联系方式',
+    'Type' => '类型',
     
     //公共-日期
     'Date' => '日期',
