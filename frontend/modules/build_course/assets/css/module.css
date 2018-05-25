@@ -34,7 +34,7 @@
     float: left;
     width: 100%;
     padding: 20px 10px 0;
-    font-size: 16px;
+    font-size: 14px;
     color: #999;
 }
 
@@ -51,7 +51,7 @@
 .crumbs {
     width: 100%;
     height: 60px;
-    padding: 0 15px;
+    padding: 0 20px;
     margin-bottom: 15px;
     font-size: 16px;
     color: #666;
@@ -434,7 +434,7 @@ body .select2-container--krajee
 
 .frame .title {
     height: 60px;
-    padding: 0 15px;
+    padding: 0 20px;
     font-size: 16px;
     color: #878787;
     text-align: left;

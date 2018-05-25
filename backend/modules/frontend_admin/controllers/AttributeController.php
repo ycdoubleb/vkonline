@@ -86,7 +86,7 @@ class AttributeController extends Controller
         
         return $this->render('create', [
             'model' => $model,
-            'category' => $this->getCategory($model->category_id),
+            'path' => $this->getCategoryFullPath($model->category_id),
         ]);
     }
 
@@ -107,7 +107,7 @@ class AttributeController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'category' => $this->getCategory($model->category_id),
+            'path' => $this->getCategoryFullPath($model->category_id),
         ]);
     }
 
@@ -155,16 +155,18 @@ class AttributeController extends Controller
     }
     
     /**
-     * 获取分类
-     * @param int $category_id  分类ID
-     * @return array
+     * 获取分类全路径
+     * @param integer $categoryId
+     * @return string
      */
-    private function getCategory($category_id)
+    protected function getCategoryFullPath($categoryId) 
     {
-        $category = Category::find()->select(['id', 'path'])
-                ->andFilterWhere(['id' => $category_id])
-                ->orderBy('sort_order')
-                ->one();
-        return $category;
+        $parentids = array_values(array_filter(explode(',', Category::getCatById($categoryId)->path)));
+        $path = '';
+        foreach ($parentids as $index => $id) {
+            $path .= ($index == 0 ? '' : ' \ ') . Category::getCatById($id)->name;
+        }
+        
+        return $path;
     }
 }

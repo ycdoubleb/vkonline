@@ -52,16 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'path',
                     'label' => Yii::t('app', 'Parent'),
-                    'value' => function ($model) {
-                        $path = explode(',', $model->path);
-                        if(count($path) == 2){
-                            return Category::findOne(['id' => $path['1']])->name;
-                        } elseif (count($path) == 3) {
-                            return Category::findOne(['id' => $path['1']])->name . ' / ' . Category::findOne(['id' => $path['2']])->name;
-                        } else {
-                            return Category::findOne(['id' => $path['1']])->name . ' / ' . Category::findOne(['id' => $path['2']])->name . ' / ' . Category::findOne(['id' => $path['3']])->name;
-                        }
-                    },
+                    'value' => !empty($model->path) ? $path : null,
                 ],
                 [
                     'attribute' => 'is_show',
@@ -92,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <span><?= Yii::t('app', 'Attribute') ?></span>
         </div>
         <?= GridView::widget([
-            'dataProvider' => new ArrayDataProvider(['models' => $model->courseAttribute]),
+            'dataProvider' => $dataProvider,
             'layout' => "{items}\n{summary}\n{pager}",
             'columns' => [
                 [

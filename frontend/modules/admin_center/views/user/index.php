@@ -37,7 +37,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     <?= Html::a(Yii::t('app', '{Create}{User}',[
                         'Create' => Yii::t('app', 'Create'),
                         'User' => Yii::t('app', 'User'),
-                    ]), ['create'], ['class' => 'btn btn-success']) ?>
+                    ]), ['create'], ['class' => 'btn btn-success', 'style' => 'line-height: 25px']) ?>
                 </div>
             </div>
             <?= GridView::widget([

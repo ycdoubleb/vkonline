@@ -31,8 +31,8 @@
     height: auto;
     margin-right: 40px;
     background-color: #fff;
-    -webkit-box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.349019607843137);
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.349019607843137);
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .subnav .title > i {
@@ -46,9 +46,8 @@
 
 .subnav ul > li {
     font-size: 16px;
-    height: 60px; 
-    padding: 20px 35px;
     border-bottom: 1px solid #f2f2f2;
+    cursor: pointer;
 }
 
 .subnav ul > li.remove {
@@ -56,9 +55,13 @@
 }
 
 .subnav ul > li > a.links {
+    width: 100%;
+    height: 60px;
+    padding: 21px 42px;
     color: #999;
     font-style: normal;
     text-align: left;
+    line-height: 60px;
     text-decoration: none;
 }
 
@@ -72,7 +75,7 @@
 .subnav ul > li.active {
     border-bottom: none;
     background-color: #28b28b;
-    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.349019607843137);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .subnav ul > li.active .fa-chevron-right{

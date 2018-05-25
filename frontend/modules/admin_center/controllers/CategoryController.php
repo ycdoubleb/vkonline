@@ -6,6 +6,7 @@ use backend\components\BaseController;
 use common\models\vk\Category;
 use common\models\vk\searchs\CategorySearch;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -65,8 +66,15 @@ class CategoryController extends BaseController
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $model->courseAttribute,
+        ]);
+        
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'dataProvider' => $dataProvider,
+            'path' => $this->getCategoryFullPath($model->id),
         ]);
     }
 
@@ -161,5 +169,21 @@ class CategoryController extends BaseController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 获取分类全路径
+     * @param integer $categoryId
+     * @return string
+     */
+    protected function getCategoryFullPath($categoryId) 
+    {
+        $parentids = array_values(array_filter(explode(',', Category::getCatById($categoryId)->path)));
+        $path = '';
+        foreach ($parentids as $index => $id) {
+            $path .= ($index == 0 ? '' : ' \ ') . Category::getCatById($id)->name;
+        }
+        
+        return $path;
     }
 }

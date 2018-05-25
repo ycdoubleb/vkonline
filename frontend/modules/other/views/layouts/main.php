@@ -1,13 +1,13 @@
 <?php
 
-use frontend\modules\help_center\assets\HelpCenterAssets;
+use frontend\modules\other\assets\OtherAssets;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $content string */
 
-HelpCenterAssets::register($this);
+OtherAssets::register($this);
 
 ?>
 

@@ -45,16 +45,7 @@ use yii\widgets\DetailView;
                     [
                         'attribute' => 'path',
                         'label' => Yii::t('app', 'Parent'),
-                        'value' => function ($model) {
-                            $path = explode(',', $model->path);
-                            if(count($path) == 2){
-                                return Category::findOne(['id' => $path['1']])->name;
-                            } elseif (count($path) == 3) {
-                                return Category::findOne(['id' => $path['1']])->name . ' / ' . Category::findOne(['id' => $path['2']])->name;
-                            } else {
-                                return Category::findOne(['id' => $path['1']])->name . ' / ' . Category::findOne(['id' => $path['2']])->name . ' / ' . Category::findOne(['id' => $path['3']])->name;
-                            }
-                        },
+                        'value' => !empty($model->path) ? $path : null,
                     ],
                     [
                         'attribute' => 'is_show',
@@ -79,18 +70,18 @@ use yii\widgets\DetailView;
             <div class="frame-title">
                 <span><?= Yii::t('app', 'Attribute') ?></span>
                 <div class="framebtn">
-                    <?= Html::a(Yii::t('app', 'Add'), ['attribute/create', 'category_id' => $model->id], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a(Yii::t('app', 'Add'), ['attribute/create', 'category_id' => $model->id],
+                            ['class' => 'btn btn-success', 'style' => 'line-height: 25px']) ?>
                 </div>
             </div>
             <?= GridView::widget([
-                'dataProvider' => new ArrayDataProvider(['models' => $model->courseAttribute]),
+                'dataProvider' => $dataProvider,
                 'layout' => "{items}\n{summary}\n{pager}",
                 'columns' => [
                     [
                         'attribute' => 'name',
                         'label' => Yii::t('app', 'Name'),
                         'headerOptions' => ['style' => 'width:100px'],
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'attribute' => 'type',
@@ -99,7 +90,6 @@ use yii\widgets\DetailView;
                             return CourseAttribute::$type_keys[$model->type];
                         },
                         'headerOptions' => ['style' => 'width:100px'],
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'attribute' => 'input_type',
@@ -108,7 +98,6 @@ use yii\widgets\DetailView;
                             return CourseAttribute::$input_type_keys[$model->input_type];
                         },
                         'headerOptions' => ['style' => 'width:100px'],
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'attribute' => 'index_type',
@@ -117,18 +106,15 @@ use yii\widgets\DetailView;
                             return $model->index_type == 0 ? '否' : '是';
                         },
                         'headerOptions' => ['style' => 'width:80px'],
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'attribute' => 'values',
                         'label' => Yii::t('app', 'Values'),
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'attribute' => 'sort_order',
                         'label' => Yii::t('app', 'Sort Order'),
                         'headerOptions' => ['style' => 'width:60px'],
-                        'contentOptions' => ['style' => 'color:#666666'],
                     ],
                     [
                         'class' => ActionColumn::class,
@@ -140,7 +126,7 @@ use yii\widgets\DetailView;
                                     'aria-label' => Yii::t('yii', 'View'),
                                     'data-pjax' => '0',
                                 ];
-                                return Html::a('<span class="glyphicon glyphicon-eye-open">&nbsp;</span>', ['attribute/view', 'id' => $model->id], $options);
+                                return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', ['attribute/view', 'id' => $model->id], $options).' ';
                             },
                             'update' => function ($url, $model, $key) {
                                 $options = [
@@ -148,7 +134,7 @@ use yii\widgets\DetailView;
                                     'aria-label' => Yii::t('yii', 'Update'),
                                     'data-pjax' => '0',
                                 ];
-                                return Html::a('<span class="glyphicon glyphicon-pencil">&nbsp;</span>', ['attribute/update', 'id' => $model->id], $options);
+                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', ['attribute/update', 'id' => $model->id], $options).' ';
                             },
                             'delete' => function ($url, $model, $key) {
                                 $options = [
@@ -160,11 +146,10 @@ use yii\widgets\DetailView;
                                 return Html::a('<span class="glyphicon glyphicon-trash"></span>', ['attribute/delete', 'id' => $model->id], $options);
                             }
                         ],
-                        'headerOptions' => ['style' => 'width:100px'],
+                        'headerOptions' => ['style' => 'width:80px'],
                         'contentOptions' => [
                             'style' => [
                                 'text-align' => 'center',
-                                'color' => '#666666',
                             ],
                         ],
                     ],

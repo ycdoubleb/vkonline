@@ -1,6 +1,5 @@
 <?php
 
-use common\models\vk\Category;
 use common\models\vk\CourseAttribute;
 use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
@@ -10,15 +9,6 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model CourseAttribute */
 /* @var $form ActiveForm */
-
-$paths = explode(',', $category->path);
-if(count($paths) == 2){
-    $path = Category::findOne(['id' => $paths['1']])->name;
-} elseif (count($paths) == 3) {
-    $path = Category::findOne(['id' => $paths['1']])->name . ' / ' . Category::findOne(['id' => $paths['2']])->name;
-} else {
-    $path = Category::findOne(['id' => $paths['1']])->name . ' / ' . Category::findOne(['id' => $paths['2']])->name . ' / ' . Category::findOne(['id' => $paths['3']])->name;
-}
 
 ?>
 

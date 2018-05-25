@@ -57,6 +57,7 @@ class DefaultController extends Controller
         
         if(!empty(\Yii::$app->user->id)){
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                Yii::$app->getSession()->setFlash('success','反馈成功，我们会尽快处理！');
                 return $this->redirect(['feedback']);
             }
 
