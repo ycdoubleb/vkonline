@@ -32,6 +32,8 @@ use yii\web\UploadedFile;
  * @property string $created_at             创建时间
  * @property string $updated_at             更新时间
  * @property string $password write-only password
+ * 
+ * @property Customer $customer 客户
  */
 class User extends ActiveRecord implements IdentityInterface {
 
@@ -389,5 +391,5 @@ class User extends ActiveRecord implements IdentityInterface {
     public function removePasswordResetToken() {
         $this->password_reset_token = null;
     }
-    
+   
 }
