@@ -27,7 +27,7 @@ ModuleAssets::register($this);
                     <a class="icon" data-courseid="<?= $model['course_id'] ?>" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
                         <i class="fa fa-times"></i>
                     </a>
-                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>">
+                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></div>
                         <?php else: ?>
@@ -70,7 +70,6 @@ ModuleAssets::register($this);
         <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
 
-    
 </div>
 
 <?php

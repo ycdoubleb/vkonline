@@ -25,7 +25,7 @@ ModuleAssets::register($this);
             <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
                 <div class="pic">
                     <a class="icon" data-id="<?= $model['course_id'] ?>" onclick="removeItem($(this));"><i class="fa fa-times"></i></a>
-                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>">
+                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['cover_img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>

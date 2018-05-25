@@ -22,7 +22,7 @@ ModuleAssets::register($this);
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
             <li class="<?= $index % 2 == 1 ? 'clear-margin' : '' ?>">
                 <div class="pic keep-left">
-                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>">
+                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['cover_img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>

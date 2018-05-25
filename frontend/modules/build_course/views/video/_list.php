@@ -1,31 +1,25 @@
-<div class="item {%className%}">
-    <a href="../video/view?id={%id%}">
-        <div class="pic">
-            {%isExist%}
-            <div class="duration">{%duration%}</div>
-        </div>
-        <div class="cont">
-            <div class="tuip">
-                <span class="single-clamp tuip-name" title="{%courseName%}&nbsp;&nbsp;{%name%}">{%courseName%}&nbsp;&nbsp;{%name%}</span>
-            </div>
-            <div class="single-clamp tuip">
-                <span>{%tags%}</span>
-            </div>
-            <div class="tuip">
-                <span>{%createdAt%}</span>
-                <span class="tuip-btn tuip-right tuip-bg-{%colorName%}">{%isRef%}</span>
-            </div>
-        </div>
-    </a>
-    <div class="speaker">
+<li class="{%className%}">
+    <div class="pic">
+        <a href="{%url%}" title="{%name%}" target="_blank">{%isExist%}</a>
+        <div class="duration">{%duration%}</div>
+    </div>
+    <div class="text">
+        <div class="tuip title single-clamp">{%name%}</div>
+        <div class="tuip single-clamp">{%tags%}</div>
         <div class="tuip">
-            <a href="/teacher/default/view?id={%teacherId%}">
-                <div class="avatar img-circle">
-                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
-                </div>
-                <span class="tuip-left">{%teacherName%}</span>
-            </a>
-            <span class="tuip-right"><i class="fa fa-eye"></i>　{%playNum%}</span>
+            <span class="keep-left">{%createdAt%}</span>
+            <span class="btn-tuip keep-right bg-{%colorName%}">{%isRef%}</span>
         </div>
     </div>
-</div>
+    <div class="teacher">
+        <div class="tuip">
+            <a href="/teacher/default/view?id={%teacherId%}" target="_blank">
+                <div class="avatars img-circle keep-left">
+                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25" />
+                </div>
+                <span class="keep-left">{%teacherName%}</span>
+            </a>
+            <span class="keep-right"><i class="fa fa-eye"></i>　{%playNum%}</span>
+        </div>
+    </div>
+</li>

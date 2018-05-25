@@ -1,7 +1,7 @@
 <li class="{%className%}">
     <div class="pic">
         <a class="icon" data-courseid="{%courseId%}" data-videoid="{%id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
-        <a href="/study_center/default/view?id={%id%}" title="{%name%}">{%isExist%}</a>
+        <a href="/study_center/default/view?id={%id%}" title="{%name%}" target="_blank">{%isExist%}</a>
         <div class="duration">{%duration%}</div>
     </div>
     <div class="text">

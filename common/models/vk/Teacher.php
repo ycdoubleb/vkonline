@@ -214,6 +214,7 @@ class Teacher extends ActiveRecord
     {
         self::$teachers = self::find()
             ->where(['created_by' => $created_by, 'level' => $level])
+            ->orWhere(['is_certificate' => 1])
             ->orderBy(['is_certificate' => SORT_DESC])->all();
         $teachers = [];
         foreach (self::$teachers as $id => $teacher) {

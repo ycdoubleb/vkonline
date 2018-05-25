@@ -113,7 +113,7 @@ $js =
                 'video_id': "{$model['id']}", 'current_time': myVideo.currentTime.toFixed(0),
             })
             saveProgress();
-        }, 30000);
+        }, 2000);
     }
     //媒体播放中执行
     myVideo.onplaying = function(){

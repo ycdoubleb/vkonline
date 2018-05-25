@@ -6,8 +6,89 @@
     更新时间 : 2018-5-15, 13:11:00;
 */
 
+/**
+ * 加载
+ */
+.loading-box {
+    width: 100%;
+    padding: 20px;
+    color: #999;
+    text-align: center;
+}
+/**
+ * 总结样式
+ */
+.summary {
+    float: left;
+    width: 100%;
+    padding: 20px 10px 0;
+    color: #999;
+}
+/**
+ * 禁用样式
+ */
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+/**
+ * 左浮动
+ */
+.keep-left {
+   float: left !important;;
+}
+/**
+ * 右浮动
+ */
+.keep-right {
+   float: right !important;;
+}
+/**
+ * 清除外边距
+ */
+.clear-margin {
+    margin: 0 !important;
+}
+/**
+ * 清除内边距
+ */
+.clear-padding {
+    padding: 0 !important;
+}
+/**
+ * 按钮
+ */
+.btn-tuip {
+    display: block;
+    padding: 4px 8px;
+    margin-top: -10px;
+    font-size: 14px;
+    color: #fff;
+}
+/**
+ * 成功
+ */
+.font-success {
+    color: #339966;
+}
+.bg-success {
+    background-color: #339966;
+}
+/**
+ * 危险
+ */
+.font-warning {
+    color: #ff3300;
+    
+}
+.bg-warning {
+    background-color: #ff3300;
+}
+
 /*******************************************************************************
- * 头部演示
+ * 头部样式
  *******************************************************************************/
 .header {
     display: inline-block;
@@ -78,5 +159,73 @@
 }
 
 .subnav ul > li.active > a.links {
-   color: #FC583D;
+   color: #fc583d;
+}
+
+.tool {
+    position: fixed;
+    right: 0;
+    bottom: 245px;
+    z-index: 1022;
+    width: 156px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+@media (min-width: 1920px){
+    .tool {
+        right: 110px;
+    }
+}
+
+.tool .title {
+    display: inline-block;
+    width: 100%;
+    height: 80px;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    line-height: 80px;
+    background-color: #de577b;
+}
+
+.tool ul {
+    padding: 0;
+    margin: 0;
+}
+
+.tool ul > li {
+    border-bottom: 1px solid #d2d2d2;
+    cursor: pointer;
+}
+
+.tool ul > li.remove {
+    border-bottom: none;
+}
+
+.tool ul > li > a.links {
+    display: inline-block;
+    width: 100%;
+    height: 60px;
+    padding: 13px 35px;
+    color: #999;
+    font-style: normal;
+    text-align: center;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.tool .icon {
+    display: inline-block;
+    width: 34px;
+    height: 30px;
+    background-repeat: no-repeat;
+}
+
+.tool .bs-icon {
+    background-image: url('../imgs/bs-tool.png');
+}
+
+.tool .qj-icon {
+    background-image: url('../imgs/qj-tool.png');
 }

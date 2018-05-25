@@ -30,7 +30,7 @@ ModuleAssets::register($this);
         <div class="btngroup">
             <?= Html::a(Yii::t('app', '{Create}{Course}', [
                 'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
-            ]), ['create'], ['class' => 'btn btn-success']) ?>
+            ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
         </div>
     </div>
     <!-- 搜索 -->
@@ -102,66 +102,69 @@ ModuleAssets::register($this);
             </li>
         </ul>
     </div>
-    <!-- 列表 -->
+    <!--列表-->
     <div class="list">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach ($dataProvider->allModels as $index => $model): ?>
-        <div class="item <?= $index % 3 == 2 ? 'clear-margin' : null ?>">
-            <?php echo Html::beginTag('a', ['href' => Url::to(['view', 'id' => $model['id']])]) ?>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model): ?>
+            <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
                 <div class="pic">
                     <?php if($model['level'] == Course::INTRANET_LEVEL): ?>
-                    <div class="icon tuip-red"><i class="fa fa-lock"></i></div>
+                    <div class="icon font-warning"><i class="fa fa-lock"></i></div>
                     <?php endif; ?>
-                    <?php if(empty($model['cover_img'])): ?>
-                    <div class="title">
-                        <span><?= $model['name'] ?></span>
-                    </div>
-                    <?php else: ?>
-                    <?= Html::img([$model['cover_img']], ['width' => '100%']) ?>
-                    <?php endif; ?>
+                    <a href="/course/default/view?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
+                        <?php if(empty($model['cover_img'])): ?>
+                        <div class="title"><?= $model['name'] ?></div>
+                        <?php else: ?>
+                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
+                        <?php endif; ?>
+                    </a>
                 </div>
-                <div class="cont">
+                <div class="text">
                     <div class="tuip">
-                        <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
-                        <span class="tuip-right"><?= DateUtil::intToTime($model['content_time']) ?></span>
+                        <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
+                        <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
                     </div>
-                    <div class="single-clamp tuip">
-                        <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
+                    <div class="tuip single-clamp">
+                        <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
                     </div>
                     <div class="tuip">
-                        <span class="<?= $model['is_publish'] ? 'tuip-green' : 'tuip-red' ?>"><?= $model['is_publish'] ? '已发布' : '未发布' ?></span>
-                        <span class="tuip-right tuip-green"><?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学</span>
+                        <span class="keep-left font-<?= $model['is_publish'] ? 'success' : 'warning' ?>">
+                            <?= $model['is_publish'] ? '已发布' : '未发布' ?>
+                        </span>
+                        <span class="font-success keep-right">
+                            <?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学
+                        </span>
                     </div>
                 </div>
-            <?php echo Html::endTag('a') ?>
-            <div class="speaker">
-                <div class="tuip">
-                    <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
-                        <div class="avatar img-circle">
-                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                        </div>
-                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                    <?php echo Html::endTag('a') ?>
-                    <span class="avg-star tuip-red tuip-right"><?= $model['avg_star'] ?> 分</span>
-                    <?= Html::a(Yii::t('app', 'Preview'), ['/course/default/view', 'id' => $model['id']], [
-                        'class' => 'btn btn-info preview tuip-right',
-                        'target' => '_blank'
-                    ]) ?>
+                <div class="teacher">
+                    <div class="tuip">
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
+                            <div class="avatars img-circle keep-left">
+                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                            </div>
+                            <span class="keep-left"><?= $model['teacher_name'] ?></span>
+                        </a>
+                        <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
+                        <?= Html::a(Yii::t('app', 'Edit'), ['view', 'id' => $model['id']], [
+                            'class' => 'btn btn-info edit keep-right', 'style' => 'display: none;', 'target' => '_blank'
+                        ]) ?>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
-
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-    
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
 </div>
@@ -223,12 +226,12 @@ $js =
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 3 == 2 ? 'clear-margin' : '',
                             id: data[i].id,
-                            isShow: data[i].level == 1 ? '<div class="icon tuip-red"><i class="fa fa-lock"></i></div>' : '',
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
+                            isShow: data[i].level == 1 ? '<div class="icon font-warning"><i class="fa fa-lock"></i></div>' : '',
+                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
                             name: data[i].name,
                             contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
-                            colorName: data[i].is_publish == 1 ? 'green' : 'red',
+                            colorName: data[i].is_publish == 1 ? 'success' : 'warning',
                             publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
                             number: data[i].people_num != undefined ? data[i].people_num : 0,
                             teacherId: data[i].teacher_id,
@@ -237,7 +240,7 @@ $js =
                             avgStar: data[i].avg_star
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();   //鼠标经过、离开事件
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -253,26 +256,16 @@ $js =
     }
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item > a").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
-                elem.parent("div.item").addClass('hover');
-                elem.next(".speaker").find("span.avg-star").css({display: "none"});
-                elem.next(".speaker").find("a.preview").css({display: "block"});
+                elem.addClass('hover');
+                elem.find(".teacher span.avg-star").hide();
+                elem.find(".teacher a.edit").show();
             },function(){
-                elem.parent("div.item").removeClass('hover');
-                elem.next(".speaker").find("span.avg-star").css({display: "block"});
-                elem.next(".speaker").find("a.preview").css({display: "none"});
-            });    
-        });
-        $(".speaker").each(function(){
-            var elem = $(this);
-            elem.hover(function(){
-                elem.find("span.avg-star").css({display: "none"});
-                elem.find("a.preview").css({display: "block"});
-            },function(){
-                elem.find("span.avg-star").css({display: "block"});
-                elem.find("a.preview").css({display: "none"});
+                elem.removeClass('hover');
+                elem.find(".teacher span.avg-star").show();
+                elem.find(".teacher a.edit").hide();
             });    
         });
     }    

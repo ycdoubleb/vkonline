@@ -1,33 +1,29 @@
-<div class="item {%className%}">
-    <a href="../course/view?id={%id%}">
-        <div class="pic">
-            {%isShow%}
-            {%isExist%}
-        </div>
-        <div class="cont">
-            <div class="tuip">
-                <span class="single-clamp tuip-name" title="{%name%}">{%name%}</span>
-                <span class="tuip-right">{%contentTime%}</span>
-            </div>
-            <div class="single-clamp tuip">
-                <span>{%tags%}</span>
-            </div>
-            <div class="tuip">
-                <span class="tuip-{%colorName%}">{%publishStatus%}</span>
-                <span class="tuip-right tuip-green">{%number%} 人在学</span>
-            </div>
-        </div>
-    </a>
-    <div class="speaker">
+<li class="{%className%}">
+    <div class="pic">
+        {%isShow%}
+        <a href="/course/default/view?id={%id%}" title="{%name%}" target="_blank">{%isExist%}</a>
+    </div>
+    <div class="text">
         <div class="tuip">
-            <a href="/teacher/default/view?id={%teacherId%}">
-                <div class="avatar img-circle">
-                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
-                </div>
-                <span class="tuip-left">{%teacherName%}</span>
-            </a>
-            <span class="avg-star tuip-red tuip-right">{%avgStar%} 分</span>
-            <a href="/course/default/view?id={%id%}" class="btn btn-info preview tuip-right" target="_blank">预览</a>
+            <span class="title title-size single-clamp keep-left">{%name%}</span>
+            <span class="keep-right">{%contentTime%}</span>
+        </div>
+        <div class="tuip single-clamp">{%tags%}</div>
+        <div class="tuip">
+            <span class="keep-left font-{%colorName%}">{%publishStatus%}</span>
+            <span class="font-success keep-right">{%number%} 人在学</span>
         </div>
     </div>
-</div>
+    <div class="teacher">
+        <div class="tuip">
+            <a href="/teacher/default/view?id={%teacherId%}" target="_blank">
+                <div class="avatars img-circle keep-left">
+                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25" />
+                </div>
+                <span class="keep-left">{%teacherName%}</span>
+            </a>
+            <span class="avg-star font-warning keep-right">{%avgStar%} 分</span>
+            <a href="../default/view?id={%id%}" class="btn btn-info edit keep-right" style="display: none" target="_blank">编辑</a>
+        </div>
+    </div>
+</li>
