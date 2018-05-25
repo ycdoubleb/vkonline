@@ -273,7 +273,12 @@ a.desc:after {
     background-color: #FC583D; 
     border-color: #FC583D; 
 }
-.btn-highlight:hover, .btn-highlight:active:hover, .btn-highlight:focus, .btn-highlight:active, .btn-highlight:active:focus, .btn-highlight.active  { 
+.btn-highlight:hover, 
+.btn-highlight:active:hover, 
+.btn-highlight:focus, 
+.btn-highlight:active, 
+.btn-highlight:active:focus, 
+.btn-highlight.active  { 
     color: #fff; 
     background-color: #ff725b; 
     border-color: #ff725b; 
@@ -284,7 +289,12 @@ a.desc:after {
     background-color: #5BC0DE; 
     border-color: #5BC0DE; 
 }
-.btn-info:hover,.btn-info:active:hover, .btn-info:focus, .btn-info:active, .btn-info:active:focus, .btn-info.active { 
+.btn-info:hover,
+.btn-info:active:hover, 
+.btn-info:focus, 
+.btn-info:active, 
+.btn-info:active:focus, 
+.btn-info.active { 
     color: #fff; 
     background-color: #7ACDE4; 
     border-color: #7ACDE4; 
@@ -296,7 +306,12 @@ a.desc:after {
     background-color: #28B28B; 
     border-color: #28B28B; 
 }
-.btn-success:hover,.btn-success:active:hover, .btn-success:focus, .btn-success:active, .btn-success:active:focus, .btn-success.active { 
+.btn-success:hover,
+.btn-success:active:hover, 
+.btn-success:focus, 
+.btn-success:active, 
+.btn-success:active:focus, 
+.btn-success.active { 
     color: #fff; 
     background-color: #2CC098; 
     border-color: #2CC098; 

@@ -15,59 +15,62 @@ ModuleAssets::register($this);
 ?>
 
 <div class="study_center-default-course main">
-    
+    <!--列表-->
     <div class="list">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach ($dataProvider->allModels as $index => $model): ?>
-        <div class="item <?= $index % 4 == 3 ? 'clear-margin' : null ?>">
-            <?php echo Html::beginTag('a', ['href' => Url::to(['/course/default/view', 'id' => $model['course_id']])]) ?>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model): ?>
+            <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
                 <div class="pic">
-                    <?php if(empty($model['cover_img'])): ?>
-                    <div class="title">
-                        <span><?= $model['name'] ?></span>
-                    </div>
-                    <?php else: ?>
-                    <?= Html::img([$model['cover_img']], ['width' => '100%']) ?>
-                    <?php endif; ?>
+                    <a class="icon" data-id="<?= $model['course_id'] ?>" onclick="removeItem($(this));"><i class="fa fa-times"></i></a>
+                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>">
+                        <?php if(empty($model['cover_img'])): ?>
+                        <div class="title"><?= $model['name'] ?></div>
+                        <?php else: ?>
+                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
+                        <?php endif; ?>
+                    </a>
                 </div>
-                <div class="cont">
+                <div class="text">
                     <div class="tuip">
-                        <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
-                        <span class="tuip-right"><?= DateUtil::intToTime($model['content_time']) ?></span>
+                        <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
+                        <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
                     </div>
-                    <div class="single-clamp tuip">
-                        <span><?= isset($model['tags']) ? $model['tags'] : 'null' ?></span>
+                    <div class="tuip single-clamp">
+                        <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
                     </div>
                     <div class="tuip">
-                        <span class="tuip-green"><?= $model['customer_name'] ?></span>
-                        <span class="tuip-right tuip-green"><?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学</span>
+                        <span class="font-success keep-left"><?= $model['customer_name'] ?></span>
+                        <span class="font-success keep-right">
+                            <?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学
+                        </span>
                     </div>
                 </div>
-            <?php echo Html::endTag('a') ?>
-            <div class="speaker">
-                <div class="tuip">
-                    <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
-                        <div class="avatar img-circle">
-                            <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
-                        </div>
-                        <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                    <?php echo Html::endTag('a') ?>
-                    <span class="avg-star tuip-red tuip-right"><?= $model['avg_star'] ?> 分</span>
+                <div class="teacher">
+                    <div class="tuip">
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>">
+                            <div class="avatars img-circle keep-left">
+                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                            </div>
+                            <span class="keep-left"><?= $model['teacher_name'] ?></span>
+                        </a>
+                        <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <?php endforeach; ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
-    
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
 </div>
@@ -122,9 +125,9 @@ $js =
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 4 == 3 ? 'clear-margin' : '',
                             id: data[i].course_id,
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
+                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
                             name: data[i].name,
-                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
+                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time, true),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
                             customerName: data[i].customer_name,
                             number: data[i].people_num != undefined ? data[i].people_num : 0,
@@ -134,7 +137,7 @@ $js =
                             avgStar: data[i].avg_star
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -151,17 +154,30 @@ $js =
         
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
                 elem.addClass('hover');
-                
+                elem.find(".icon").show();
             },function(){
                 elem.removeClass('hover');
+                elem.find(".icon").hide();
             });    
         });
     }    
-
+    //移除收藏
+    window.removeItem = function(elem){
+        var courseId = elem.attr("data-id");
+        var totalCount = $(".summary > span > b").text();
+        $.get('/course/api/del-favorite',{course_id: courseId},function(result){
+            if(result.code == 200){
+                totalCount = parseInt(totalCount) - 1;
+                elem.parents("li").remove();
+                $(".summary > span > b").html(totalCount);
+            }
+        });
+    }    
+        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

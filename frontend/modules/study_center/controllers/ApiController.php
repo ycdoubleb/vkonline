@@ -43,7 +43,7 @@ class ApiController extends Controller  {
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'add-favorite' => ['get'],
-                    'remove-favorite' => ['get'],
+                    'del-favorite' => ['get'],
                     'playing' => ['post'],
                     'playend' => ['post'],
                 ],
@@ -112,9 +112,7 @@ class ApiController extends Controller  {
             'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id, 
         ]);
         if ($model == null) {
-            $model = new VideoFavorite([
-                'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id
-            ]);
+            return ['error' => '找不到对应课程！'];
         }
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();

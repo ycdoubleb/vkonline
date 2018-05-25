@@ -68,7 +68,7 @@ class VideoFavoriteSearch extends VideoFavorite
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
-        $addArrays = ['Customer.name AS customer_name', 'Course.name AS course_name', 
+        $addArrays = ['Customer.name AS customer_name', 'Course.id AS course_id', 'Course.name AS course_name', 
             'Video.name', 'Video.img', 'Video.source_duration', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
@@ -123,7 +123,10 @@ class VideoFavoriteSearch extends VideoFavorite
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //必要条件
-        self::$query->andFilterWhere(['Video.is_del' => 0]);
+        self::$query->andFilterWhere([
+            'Favorite.is_del' => 0,
+            'Video.is_del' => 0
+        ]);
         //关联查询
         self::$query->leftJoin(['Video' => Video::tableName()], 'Video.id = Favorite.video_id');
         //复制收藏视频对象

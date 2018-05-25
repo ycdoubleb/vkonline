@@ -14,19 +14,21 @@ ModuleAssets::register($this);
 <div class="study_center-default-index main">
     
     <div class="list">
-        <div class="item"></div>
-        <div class="item clear-margin"></div>
-        <div class="item"></div>
-        <div class="item clear-margin"></div>
+        <ul>
+            <li class></li>
+            <li class="clear-margin"></li>
+            <li class></li>
+            <li class="clear-margin"></li>
+        </ul>
     </div>
-    
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-    
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
 </div>

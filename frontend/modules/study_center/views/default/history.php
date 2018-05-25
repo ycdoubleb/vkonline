@@ -13,62 +13,60 @@ ModuleAssets::register($this);
 
 ?>
 <div class="study_center-default-history main">
-
+    <!--列表-->
     <div class="list">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach($dataProvider->allModels as $index => $model): ?>
-        <div class="item <?= $index % 2 == 1 ? 'clear-margin' : null ?>">
-            <div class="pic">
-                <?php if(empty($model['cover_img'])): ?>
-                <div class="title">
-                    <span><?= $model['name'] ?></span>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model): ?>
+            <li class="<?= $index % 2 == 1 ? 'clear-margin' : '' ?>">
+                <div class="pic keep-left">
+                    <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>">
+                        <?php if(empty($model['cover_img'])): ?>
+                        <div class="title"><?= $model['name'] ?></div>
+                        <?php else: ?>
+                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
+                        <?php endif; ?>
+                    </a>
                 </div>
-                <?php else: ?>
-                <?= Html::img([$model['cover_img']], ['width' => '100%']) ?>
-                <?php endif; ?>
-            </div>
-            <div class="cont">
-                <div class="tuip">
-                    <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
-                </div>
-                <div class="speaker">
-                    <div class="tuip">
-                        <?php echo Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']])]) ?>
-                            <div class="avatar img-circle">
-                                <?= !empty($model['teacher_avatar']) ? Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                <div class="text keep-right">
+                    <div class="tuip title single-clamp keep-left"><?= $model['name'] ?></div>
+                    <div class="tuip speaker">
+                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>">
+                            <div class="avatars img-circle keep-left">
+                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>
-                            <span class="tuip-left"><?= $model['teacher_name'] ?></span>
-                        <?php echo Html::endTag('a') ?>
-                        <span class="tuip-green tuip-right"><?= $model['people_num'] ?> 人在学</span>
+                            <span class="keep-left"><?= $model['teacher_name'] ?></span>
+                        </a>
+                        <span class="font-success keep-right"><?= $model['people_num'] ?> 人在学</span>
                     </div>
-                </div>
-                <div class="tuip single-clamp">
-                    <?php $percent = isset($model['node_num']) && isset($model['finish_num']) ?  
-                            floor(($model['node_num'] / $model['finish_num'] / 100) * 100) : 0 ?>
-                    <span>已完成&nbsp;<?= $percent ?>%</span>
-                    <div class="progress">
-                        <div class="progress-bar" style="width: <?= $percent ?>%;">
+                    <div class="tuip single-clamp">
+                        <?php $percent = isset($model['node_num']) && isset($model['finish_num']) ?  
+                                floor(($model['node_num'] / $model['finish_num'] / 100) * 100) : 0 ?>
+                        <span>已完成 <?= $percent ?>%</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: <?= $percent ?>%;">
+                            </div>
                         </div>
+                        <span class="font-success">上次观看至&nbsp;
+                            <?= $model['node_name'] . '-' . $model['video_name'] . '&nbsp;' . Yii::$app->formatter->asDuration($model['last_time'], '') ?>
+                        </span>
                     </div>
-                    <span class="single-clamp tuip-green">上次观看至&nbsp;
-                        <?= $model['node_name'] . '-' . $model['video_name'] . '&nbsp;' . Yii::$app->formatter->asDuration($model['last_time'], '') ?>
-                    </span>
                 </div>
-            </div>
-            <?= Html::a('继续学习', ['view', 'id' => $model['last_video']], ['class' => 'btn btn-success tuip-right study']) ?>
-        </div>
-        <?php endforeach; ?>        
+                <?= Html::a('继续学习', ['view', 'id' => $model['last_video']], ['class' => 'btn btn-success study keep-right']) ?>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
-    
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-    
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
 </div>
@@ -122,7 +120,8 @@ $js =
                     for(var i in data){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 2 == 1 ? 'clear-margin' : '',
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="' + data[i].cover_img + '" width="100%" />',
+                            courseId: data[i].course_id,
+                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
                             name: data[i].name,
                             teacherId: data[i].teacher_id,
                             teacherAvatar: data[i].teacher_avatar,
@@ -135,7 +134,7 @@ $js =
                             id: data[i].last_video,
                         });
                     }
-                    $(".list").append(dome);
+                    $(".list > ul").append(dome);
                     hoverEvent();
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了

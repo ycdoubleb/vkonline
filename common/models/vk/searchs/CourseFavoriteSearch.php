@@ -69,7 +69,10 @@ class CourseFavoriteSearch extends CourseFavorite
         self::getInstance();
         $this->load($params);
         //条件查询
-        self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
+        self::$query->andFilterWhere([
+            'Favorite.user_id' => Yii::$app->user->id,
+            'Favorite.is_del' => 0
+        ]);
         //关联查询
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = Favorite.course_id');
         //模糊查询
