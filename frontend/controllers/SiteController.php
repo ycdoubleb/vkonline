@@ -10,6 +10,7 @@ use common\models\vk\Customer;
 use common\models\vk\SearchLog;
 use common\models\vk\Video;
 use common\utils\DateUtil;
+use Detection\MobileDetect;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
@@ -249,6 +250,28 @@ class SiteController extends Controller
                 'message' => '<span style="color:#a94442">无效的邀请码</span>'
             ];
         }
+    }
+    
+    /**
+     * 分享浏览入口
+     */
+    public function actionVisit(){
+        //
+        $md =new MobileDetect();
+        $visit_agent = '';
+        foreach ($md->getProperties() as $key => $v) {
+            if (($result = $md->version($key)) != "") {
+                $agent .= "$key $result|";
+            }
+        }
+        
+        $params = Yii::$app->request->queryParams;
+        //内容ID
+        $item_id = ArrayHelper::getValue($params.'item_id');
+        //分享人
+        $share_by = ArrayHelper::getValue($params.'share_by');
+        //用户IP
+        $visit_ip = Yii::$app->request->userIP;
     }
 
     /**
