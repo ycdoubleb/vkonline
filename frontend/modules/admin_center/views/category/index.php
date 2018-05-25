@@ -27,7 +27,8 @@ use yii\web\View;
                     'Admin' => Yii::t('app', 'Admin'),
                 ]) ?></span>
                 <div class="framebtn">
-                    <?= Html::a(Yii::t('app', 'Add'), ['create'], ['class' => 'btn btn-success']) ?>
+                    <?= Html::a(Yii::t('app', 'Add'), ['create'], ['class' => 'btn btn-success',
+                        'style' => 'line-height:22px;', 'target' => '_blank']) ?>
                 </div>
             </div>
             <?= GridView::widget([
@@ -108,6 +109,7 @@ use yii\web\View;
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),
                                     'data-pjax' => '0',
+                                    'target' => '_blank'
                                 ];
                                 $buttonHtml = [
                                     'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
@@ -126,6 +128,7 @@ use yii\web\View;
                                     'title' => Yii::t('app', 'Update'),
                                     'aria-label' => Yii::t('app', 'Update'),
                                     'data-pjax' => '0',
+                                    'target' => '_blank'
                                 ];
                                 $buttonHtml = [
                                     'name' => '<span class="glyphicon glyphicon-pencil"></span>',

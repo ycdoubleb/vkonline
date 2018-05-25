@@ -35,7 +35,7 @@ class UserSearch extends User
         return [
             [['id', 'username', 'nickname', 'password_hash', 'password_reset_token', 'sex', 'phone',
                     'email', 'avatar', 'status', 'des', 'auth_key', 'is_official'], 'safe'],
-            [['customer_id', 'max_store', 'created_at', 'updated_at'], 'integer'],
+            [['customer_id', 'max_store', 'type', 'created_at', 'updated_at'], 'integer'],
         ];
     }
 
@@ -81,6 +81,7 @@ class UserSearch extends User
         //条件查询
         self::$query->andFilterWhere([
             'User.customer_id' => $this->customer_id,
+            'User.type' => $this->type,
             'User.status' => $this->status,
             'max_store' => $this->max_store,
             'created_at' => $this->created_at,

@@ -37,7 +37,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     <?= Html::a(Yii::t('app', '{Create}{User}',[
                         'Create' => Yii::t('app', 'Create'),
                         'User' => Yii::t('app', 'User'),
-                    ]), ['create'], ['class' => 'btn btn-success', 'style' => 'line-height: 25px']) ?>
+                    ]), ['create'], ['class' => 'btn btn-success', 'style' => 'line-height: 25px', 'target' => '_blank']) ?>
                 </div>
             </div>
             <?= GridView::widget([
@@ -180,6 +180,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                                     'title' => Yii::t('app', 'View'),
                                     'aria-label' => Yii::t('app', 'View'),
                                     'data-pjax' => '0',
+                                    'target' => '_blank'
                                 ];
                                 $buttonHtml = [
                                     'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
@@ -199,6 +200,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                                     'title' => Yii::t('app', 'Update'),
                                     'aria-label' => Yii::t('app', 'Update'),
                                     'data-pjax' => '0',
+                                    'target' => '_blank'
                                 ];
                                 $buttonHtml = [
                                     'name' => '<span class="glyphicon glyphicon-pencil"></span>',
