@@ -57,7 +57,7 @@ ModuleAssets::register($this);
         <!-- 搜索条件 -->
         <div class="container filters">
             <div class="filter-row">
-                <label class="filter-label">所属单位 ：</label>
+                <label class="filter-label">品牌 ：</label>
                 <div class="filter-control">
                     <div class="customer-downList">
                         <?= Select2::widget(['name' => 'customer_id', 'data' => $customers, 
@@ -66,7 +66,7 @@ ModuleAssets::register($this);
                             'pluginOptions' => ['allowClear' => true],
                         ]) ?>
                     </div>
-                    <span>本单位</span>
+                    <span></span>
                 </div>
             </div>
             <!-- 分类 -->
@@ -184,7 +184,7 @@ $js =
     //课程item项
     var item_dom = '<div class="course-tile">'
                     +'<div class="pic-box">'
-                        +'<a href="/course/default/view?id={%id%}"><img src="{%cover_img%}"/></a>'
+                        +'<a href="/course/default/view?id={%id%}"><img src="{%cover_img%}" target="_black"/></a>'
                     +'</div>'
                     +'<div class="name-box">'
                         +'<span class="name single-clamp">{%name%}</span>'
@@ -198,7 +198,7 @@ $js =
                         +'<span class="leaning">{%learning_count%}人在学</span>'
                     +'</div>'
                     +'<div class="foot-box">'
-                        +'<a href="#">'
+                        +'<a href="/teacher/default/view?id={%teacher_id%}">'
                             +'<img class="teacher-avatar" src="{%teacher_avatar%}"/>'
                             +'<span class="teacher-name">{%teacher_name%}</span>'
                         +'</a>'

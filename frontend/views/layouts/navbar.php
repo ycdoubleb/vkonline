@@ -77,6 +77,10 @@ $menuItems = [
         'linkOptions' => ['class' => 'logout', 'style' => 'line-height: 50px;'],
         'items' => [
             [
+                'label' => '<span class="nickname">'.(Yii::$app->user->isGuest ? "游客" :Yii::$app->user->identity->nickname ).'</span>',
+                'encode' => false,
+            ],
+            [
                 'label' => '<i class="fa fa-sign-out"></i>' . Yii::t('app', 'Logout'),
                 'url' => ['/site/logout'],
                 'linkOptions' => ['data-method' => 'post', 'class' => 'logout'],

@@ -80,43 +80,41 @@ $this->title = Yii::t('app', "{Add}{Video}",[
     </div>
     <!--列表-->
     <div class="list" style="display: table;">
-        <?php if(count($dataProvider->allModels) <= 0): ?>
-        <h5>没有找到数据。</h5>
-        <?php endif; ?>
-        <?php foreach ($dataProvider->allModels as $index => $model): ?>
-        <div class="item reference <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
-            <?= Html::beginTag('a', ['href' => Url::to(array_merge(['reference'], array_merge($filters, ['id' => $model['video_id']])))]) ?>
+        <ul>
+            <?php if(count($dataProvider->allModels) <= 0): ?>
+            <h5>没有找到数据。</h5>
+            <?php endif; ?>
+            <?php foreach ($dataProvider->allModels as $index => $model): ?>
+            <li class="reference <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
                 <div class="pic">
-                    <?php if(empty($model['img'])): ?>
-                    <div class="title">
-                        <span><?= $model['name'] ?></span>
-                    </div>
-                    <?php else: ?>
-                    <?= Html::img(['/' . $model['img']], ['width' => '100%']) ?>
-                    <?php endif; ?>
-                    <div class="duration">
-                        <?= DateUtil::intToTime($model['source_duration']) ?>
-                    </div>
+                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['name'] ?>" target="_blank">
+                        <?php if(empty($model['img'])): ?>
+                        <div class="title"><?= $model['name'] ?></div>
+                        <?php else: ?>
+                        <?= Html::img(['/' . $model['img']], ['width' => '100%', 'height' => '100%']) ?>
+                        <?php endif; ?>
+                    </a>
+                    <div class="duration"><?= DateUtil::intToTime($model['source_duration']) ?></div>
                 </div>
-            <?= Html::endTag('a') ?>
-            <div class="cont">
-                <span class="single-clamp tuip-name" title="<?= $model['name'] ?>"><?= $model['name'] ?></span>
-                <?= Html::a(Yii::t('app', 'Choice'), array_merge(['reference'], array_merge($filters, ['id' => $model['video_id']])), [
-                    'class' => 'btn btn-primary btn-sm choice tuip-right', 
-                    'onclick' => 'clickChoiceEvent($(this)); return false;'
-                ]) ?>
-            </div>
-        </div>
-        <?php endforeach; ?>
+                <div class="text">
+                    <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
+                    <?= Html::a(Yii::t('app', 'Choice'), array_merge(['reference'], array_merge($filters, ['id' => $model['video_id']])), [
+                        'class' => 'btn btn-primary btn-sm choice keep-right', 
+                        'onclick' => 'clickChoiceEvent($(this)); return false;'
+                    ]) ?>
+                </div>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
-    
+    <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
-    
+    <!--总结记录-->
     <div class="summary">
-        <span>共 <?= $totalCount ?> 条记录</span>
+        <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
 </div>
@@ -151,28 +149,28 @@ $js =
     window.clickChoiceEvent = function(elem){
         var items = $domes;
         var dome = "";
-        var list = $('<div class="list" />');
+        var list = $('<ul />');
         $.get(elem.attr("href"), function(rel){
             if(rel['code'] == '200'){
                 var data = rel['data'];
                 $(".myModal").load("../video/create?node_id=" + data['filters'].node_id, function(){
                     dome = Wskeee.StringUtil.renderDOM(items, {
                         className: 'clear-margin',
-                        id: data['videos'].video_id,
-                        isExist: data['videos'].img == null || data['videos'].img == '' ? '<div class="title"><span>' + data['videos'].name + '</span></div>' : '<img src="/' + data['videos'].img + '" width="100%" />',
+                        url: '/study_center/default/view?id=' + data['videos'].video_id,
+                        isExist: data['videos'].img == null || data['videos'].img == '' ? '<div class="title">' + data['videos'].name + '</div>' : '<img src="/' + data['videos'].img + '" width="100%" height="100%" />',
                         courseName: data['videos'].course_name,
                         name: data['videos'].name,
                         duration: Wskeee.DateUtil.intToTime(data['videos'].source_duration),
                         tags: data['videos'].tags != undefined ? data['videos'].tags : 'null',
                         createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data['videos'].created_at),
-                        colorName: data['videos'].is_ref == 0 ? 'green' : 'red',
+                        colorName: data['videos'].is_ref == 0 ? 'success' : 'warning',
                         isRef: data['videos'].is_ref == 0 ? '原创' : '引用',
                         teacherId: data['videos'].teacher_id,
                         teacherAvatar: data['videos'].teacher_avatar,
                         teacherName: data['videos'].teacher_name,
                         playNum: data['videos'].play_num != undefined ? data['videos'].play_num : 0,
                     });
-                    list.html(dome).appendTo($("#details"));
+                    list.html(dome).appendTo($("#details .list"));
                     $("#video-reelect").removeClass("hidden");
                     $(".field-video-is_ref .form-group .bootstrap-switch-container").addClass("disabled");
                     $("#video-is_ref").bootstrapSwitch('state', true, 'disabled', true);
@@ -227,13 +225,14 @@ $js =
                     for(var i in data){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 5 == 4 ? 'clear-margin' : '',
+                            id: data[i].video_id,
                             url: "../video/reference?node_id=" + rel['filters'].node_id + "&id=" + data[i].video_id,
-                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title"><span>' + data[i].name + '</span></div>' : '<img src="/' + data[i].img + '" width="100%" />',
+                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="/' + data[i].img + '" width="100%" height="100%" />',
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             name: data[i].name,
                         });
                     }
-                    $(".video-reference .list").append(dome);
+                    $(".video-reference .list > ul").append(dome);
                     hoverEvent();
                     if(page > Math.ceil(maxPageNum)){
                         //没有更多了
@@ -250,20 +249,14 @@ $js =
         
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item > a").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
-                elem.next(".cont").find("a.choice").css({display: "block"});
+                elem.addClass('hover');
+                elem.find(".text a.choice").show();
             }, function(){
-                elem.next(".cont").find("a.choice").css({display: "none"});
-            });    
-        });
-        $(".cont").each(function(){
-            var elem = $(this);
-            elem.hover(function(){
-                elem.find("a.choice").css({display: "block"});
-            }, function(){
-                elem.find("a.choice").css({display: "none"});
+                elem.removeClass('hover');
+                elem.find(".text a.choice").hide();
             });    
         });
     }       

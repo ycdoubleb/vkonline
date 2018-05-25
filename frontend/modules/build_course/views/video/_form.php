@@ -102,58 +102,57 @@ $this->registerJs($format, View::POS_HEAD);
         <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-6 col-md-6">
             <div id="details">
-                <?php if($model->is_ref): ?>
                 <div class="list">
-                    <div class="item clear-margin">
-                        <a href="../video/view?id=<?= $model->reference->id ?>">
+                <?php if($model->is_ref): ?>
+                    <ul>
+                        <li class="clear-margin">
                             <div class="pic">
-                                <?php if(empty($model->reference->img)): ?>
-                                <div class="title">
-                                    <span><?= $model->reference->name ?></span>
-                                </div>
-                                <?php else: ?>
-                                <?= Html::img(['/' . $model->reference->img], ['width' => '100%']) ?>
-                                <?php endif; ?>
-                                <div class="duration">
-                                    <?= DateUtil::intToTime($model->reference->source_duration) ?>
-                                </div>
+                                <a href="/study_center/default/view?id=<?= $model->reference->id ?>" target="_blank">
+                                    <?php if(empty($model->reference->img)): ?>
+                                    <div class="title"><?= $model->reference->name ?></div>
+                                    <?php else: ?>
+                                    <?= Html::img(['/' . $model->reference->img], ['width' => '100%']) ?>
+                                    <?php endif; ?>
+                                </a>
+                                <div class="duration"><?= DateUtil::intToTime($model->reference->source_duration) ?></div>
                             </div>
-                            <div class="cont">
+                            <div class="text">
                                 <div class="tuip">
-                                    <span class="tuip-name">
+                                    <span class="title single-clamp">
                                         <?= $model->reference->courseNode->course->name . '&nbsp;&nbsp;' . $model->reference->name ?>
                                     </span>
                                 </div>
-                                <div class="tuip">
+                                <div class="tuip single-clamp">
                                     <span>
                                         <?= count($model->reference->tagRefs) > 0 ?
                                             implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->reference->tagRefs, 'tags'), 'name'))) : 'null' ?>
                                     </span>
                                 </div>
                                 <div class="tuip">
-                                    <span><?= Date('Y-m-d H:i', $model->reference->created_at) ?></span>
-                                    <span class="tuip-btn tuip-right <?= !$model->reference->is_ref ? 'tuip-bg-green' : 'tuip-bg-red' ?>">
+                                    <span class="font-success keep-left"><?= Date('Y-m-d H:i', $model->reference->created_at) ?></span>
+                                    <span class="btn-tuip keep-right bg-<?= !$model->reference->is_ref ? 'success' : 'warning' ?>">
                                         <?= !$model->reference->is_ref ? '原创' : '引用' ?>
                                     </span>
                                 </div>
                             </div>
-                        </a>
-                        <div class="speaker">
-                            <div class="tuip">
-                                <div class="avatar img-circle">
-                                    <?= !empty($model->reference->teacher_id) ? 
-                                        Html::img($model->reference->teacher->avatar, ['class' => 'img-circle', 'width' => 25, 'height' => 25]) : null ?>
+                            <div class="teacher">
+                                <div class="tuip">
+                                    <a href="/teacher/default/view?id=<?= $model->reference->teacher->id ?>" target="_blank">
+                                        <div class="avatars img-circle keep-left">
+                                            <?= Html::img($model->reference->teacher->avatar, ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                        </div>
+                                        <span class="keep-left"><?= $model->reference->teacher->name ?></span>
+                                    </a>
+                                    <span class="keep-right"><i class="fa fa-eye"></i> 
+                                        <?= count($model->reference->playStatistics) > 0 ? 
+                                            array_sum(ArrayHelper::getColumn($model->reference->playStatistics, 'play_count')) : 0 ?>
+                                    </span>
                                 </div>
-                                <span class="tuip-left"><?= $model->reference->teacher->name ?></span>
-                                <span class="tuip-right"><i class="fa fa-eye"></i>&nbsp;
-                                    <?= count($model->reference->playStatistics) > 0 ? 
-                                        array_sum(ArrayHelper::getColumn($model->reference->playStatistics, 'play_count')) : 0 ?>
-                                </span>
                             </div>
-                        </div>
-                    </div>
-                </div>
+                        </li>
+                    </ul>
                 <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>

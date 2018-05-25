@@ -1,6 +1,6 @@
 <li class="{%className%}">
     <div class="pic keep-left">
-        <a href="/course/default/view?id={%courseId%}" title="{%name%}">{%isExist%}</a>
+        <a href="/course/default/view?id={%courseId%}" title="{%name%}" target="_blank">{%isExist%}</a>
     </div>
     <div class="text keep-right">
         <div class="tuip title single-clamp keep-left">{%name%}</div>

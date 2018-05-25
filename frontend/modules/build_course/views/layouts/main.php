@@ -17,6 +17,7 @@ $this->title = Yii::t('app', 'CourseFactory');
 
 <?php
 $menuHtml = '';
+$toolHtml = '';
 $moduleId = Yii::$app->controller->module->id;
 $controllerId = Yii::$app->controller->id;
 $actionId = Yii::$app->controller->action->id;
@@ -138,6 +139,21 @@ $menuItems = [
         ]
     ]
 ];
+//制作工具
+$toolItems = [
+    [
+        'label' => null,
+        'url' => 'CourseMaker.Mconline://open',
+        'icons' => '<i class="icon bs-icon"></i>', 
+        'options' => ['class' => 'links']
+    ],
+    [
+        'label' => null,
+        'url' => null,
+        'icons' => '<i class="icon qj-icon"></i>', 
+        'options' => ['class' => 'links disabled']
+    ],
+];
 
 end($menuItems['admin']);   //数组中的最后一个元素的值
 $lastIndex = key($menuItems['admin']);  //获取数组最后一个的index
@@ -153,6 +169,12 @@ foreach ($menuItems as $index => $items) {
 $resource = implode("", $menuHtml['resource']);
 $contents = implode("", $menuHtml['content']);
 $admin = implode("", $menuHtml['admin']);
+//组装制作工具
+$lastTool = end($toolItems);   //数组中的最后一个元素的值
+foreach ($toolItems as $tool) {
+    $toolHtml .= ($lastTool['icons'] == $tool['icons'] ? '<li class="remove">' : '<li class>') . 
+        Html::a($tool['icons'] . $tool['label'], $tool['url'], $tool['options']) . '</li>';
+}
 
 $html = <<<Html
     <!-- 头部 -->
@@ -177,6 +199,11 @@ $html = <<<Html
             </div>
             <ul>{$admin}</ul>
         </nav>
+        <!--制作工具-->
+        <div class="tool">
+            <div class="title">制作工具</div>
+            <ul>{$toolHtml}</ul>
+        </div>
 Html;
 
     $content = $html . $content . '</div>';

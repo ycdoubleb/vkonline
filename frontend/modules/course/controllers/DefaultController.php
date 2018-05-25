@@ -97,8 +97,13 @@ class DefaultController extends Controller
         
         return $this->render('list',[
             'categoryLevels' => $categoryLevels,     //所有分类，包括顶级分类，子级分类
-            'customers' => ArrayHelper::map(Customer::find()->select(['id','name'])->asArray()->all(), 'id', 'name'),   //所有客户
-            'attrs' => $attrs,  //属性
+            'customers' => ArrayHelper::map(Customer::find()
+                                    ->select(['id', 'name'])
+                                    ->where([
+                                        'status' => Customer::STATUS_ACTIVE,
+                                    ])
+                                    ->orderBy(['sort_order' => SORT_ASC])->asArray()->all(), 'id', 'name'), //所有客户
+                    'attrs' => $attrs,  //属性
             
             'max_count' => $result['max_count'],    //最大数量
             'courses' => [],        //课程

@@ -56,11 +56,11 @@ $this->title = Yii::t('app', 'Course');
                     </div>
                     <div class="node-box">
                         <span class="nodes"><i class="glyphicon glyphicon-th-list"></i>共有 <?= $model['node_count'] ?> 个环节</span>
-                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],true) ?></span>
+                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],":",true) ?></span>
                     </div>
                     <div class="control-box">
                         <?php $lastVideo = $study_progress['last_video'] != null ? $study_progress['last_video'] : $model['first_video']; ?>
-                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastVideo ?>">
+                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastVideo ?>" target="_black">
                             <?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?>
                         </a>
                         
@@ -96,7 +96,7 @@ $this->title = Yii::t('app', 'Course');
         </div>
     </div>
     <!-- 内容导航 -->
-    <div class="content-nav-copy">占位</div>
+    <div class="content-nav-copy" style="height:0px">占位</div>
     <div class="content-nav">
         <div class="container">
             <div class="sort">
@@ -155,7 +155,7 @@ $this->title = Yii::t('app', 'Course');
                     <p style="margin-bottom: 20px;">主讲的其他课程：</p>
                     <ul>
                         <?php foreach($teacher_other_courses as $course): ?>
-                        <a href="/course/default/view?id=<?= $course['id'] ?>">
+                        <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
                             <li>
                                 <img class="course-cover" src="<?= $course['cover_img'] ?>">
                                 <p class="single-clamp course-name"><?= $course['name'] ?></p>
@@ -170,7 +170,7 @@ $this->title = Yii::t('app', 'Course');
                 <div class="panel-body">
                     <ul>
                         <?php foreach($relative_courses as $course): ?>
-                        <a href="/course/default/view?id=<?= $course['id'] ?>">
+                        <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
                             <li>
                                 <img class="course-cover" src="<?= $course['cover_img'] ?>">
                                 <p class="single-clamp course-name"><?= $course['name'] ?></p>
