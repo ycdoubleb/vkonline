@@ -1,6 +1,6 @@
 <?php
 
-use common\models\vk\CustomerAdmin;
+use common\models\User;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\ArrayHelper;
@@ -10,8 +10,10 @@ use yii\web\View;
 
 <?php
 
-$leftMenuItems = [];
-$rightMenuItems = [];
+//是否为团体用户
+$is_group_user = (!Yii::$app->user->isGuest && Yii::$app->user->identity->type == User::TYPE_GROUP);
+//团体名称
+$group_name = $is_group_user ? Yii::$app->user->identity->customer->short_name : '';
 
 NavBar::begin([
     'brandImage' => '/imgs/site/logo.png?rand='. rand(1, 10),
@@ -25,7 +27,10 @@ $menuItems = [
     ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index'], 'visible' => !Yii::$app->user->isGuest],
     ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list'], 'visible' => !Yii::$app->user->isGuest],
     ['label' => Yii::t('app', 'StudyCenter'), 'url' => ['/study_center/default'], 'visible' => !Yii::$app->user->isGuest],
-    ['label' => Yii::t('app', 'CourseFactory'), 'url' => ['/build_course/default'], 'visible' => !Yii::$app->user->isGuest],
+    ['label' => "<div class='customer-box'><span class='short_name'>{$group_name}</span>课工坊</div>", 'url' => ['/build_course/default'], 'encode' => false,
+        /* 团体用户可见 */
+        'visible' => $is_group_user
+    ],
 ];
 
 $moduleId = Yii::$app->controller->module->id;   //模块ID

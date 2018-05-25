@@ -127,6 +127,20 @@ a.desc:after {
 .nav li.active a{
     color: #FC583D;
 }
+/* 客户栏目 */
+.nav li .customer-box{
+    border-bottom: 2px solid #f6bd6f;
+    margin: -6px 0 0;
+}
+/* 客户简称 */
+.nav li .short_name{
+    background-color: #f6bd6f;
+    color: #fff;
+    display: inline-block;
+    padding: 3px 3px 1px 3px;
+    margin-right: 5px;
+}
+
 /* 搜索框 */
 .nav .search-box{
     float: left;
