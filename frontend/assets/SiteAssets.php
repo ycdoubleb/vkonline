@@ -27,8 +27,10 @@ class SiteAssets extends AssetBundle{
     ];
     public $css = [
         'css/site.css',
+        'css/signup.css',
     ];
     public $js = [
-        
+        'js/signup.js',
+        'js/jquery.easing.min.js',
     ];
 }

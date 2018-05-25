@@ -25,9 +25,13 @@ SiteAssets::register($this);
 <div class="site-login">
     <div class="vkonline" style='background-image: url("/imgs/site/site_loginbg.jpg");'>
         <div class="platform container">
-            <div class="logo">
-                <?= Html::img("$customerLogo", ['style' => ['max-width' => '290px', 'max-height' => '140px']]) ?>
-            </div> 
+            <div class="tab-title" style="padding: 0px 20px">
+                <div class="tab-list">
+                    <div class="pas-login active">密码登录</div>
+                    <div class="phone-login">短信登录</div>
+                </div> 
+                <img src="/imgs/site/er.png">
+            </div>
             <div class="frame">
                 <?php $form = ActiveForm::begin(['id' => 'login-form']); ?>
 
@@ -46,6 +50,13 @@ SiteAssets::register($this);
                         'inputOptions' => ['placeholder' => '密码...'],
                         'template' => "<div class=\"col-xs-12\" style=\"padding:0px;\">{input}</div>\n<div class=\"col-xs-10\" style=\"padding: 0px 5px;\">{error}</div>"
                     ])->passwordInput() ?>
+                   
+                    <div class="col-xs-12 button">
+                        <?= Html::submitButton('登录', [
+                            'name' => 'login-button', 
+                            'class' => 'btn btn-primary col-xs-12', 
+                        ]) ?>
+                    </div>
 
                     <?= $form->field($model, 'rememberMe', [
                         'options' => [
@@ -57,19 +68,13 @@ SiteAssets::register($this);
                     ]) ?>
                     
                     <div class="col-xs-6 forget">
-                        <a href="javascrip:;">忘记密码</a>
+                        <a href="javascrip:;">忘记密码</a><span>&nbsp;|&nbsp;</span><a href="signup">注册</a>
                     </div>
-                    
-                    <div class="col-xs-12 button">
-                        <?= Html::submitButton('登录', [
-                            'name' => 'login-button', 
-                            'class' => 'btn btn-primary col-xs-12', 
-                        ]) ?>
-                    </div>
-
+                
                 <?php ActiveForm::end(); ?>
                 <div class="col-xs-12 btn-signup">
-                    <a href="signup">新用户注册</a>
+                    <div class="third-login">第三方账号登录</div>
+                    <img src="/imgs/site/share.png">
                 </div>
             </div>
         </div>
