@@ -3,6 +3,8 @@
 namespace common\models\vk;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%visit_log}}".
@@ -17,14 +19,25 @@ use Yii;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
-class VisitLog extends \yii\db\ActiveRecord
+class VisitLog extends ActiveRecord
 {
+    //课程分享
+    const TYPE_COURSE = 1;
+    //视频分享
+    const TYPE_VIDEO = 2;
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return '{{%visit_log}}';
+    }
+    
+    public function behaviors() {
+        return [
+            TimestampBehavior::class,
+        ];
     }
 
     /**
@@ -33,11 +46,9 @@ class VisitLog extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'required'],
             [['id', 'created_at', 'updated_at'], 'integer'],
             [['item_id', 'share_by'], 'string', 'max' => 32],
             [['visit_ip', 'visit_agent', 'income'], 'string', 'max' => 255],
-            [['is_pc'], 'string', 'max' => 1],
             [['id'], 'unique'],
         ];
     }

@@ -9,6 +9,7 @@ use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\SearchLog;
 use common\models\vk\Video;
+use common\models\vk\VisitLog;
 use common\utils\DateUtil;
 use Detection\MobileDetect;
 use frontend\models\ContactForm;
@@ -23,6 +24,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
+use yii\web\NotFoundHttpException;
 use const YII_ENV_TEST;
 
 /**
@@ -260,20 +262,46 @@ class SiteController extends Controller
     public function actionVisit(){
         //
         $md =new MobileDetect();
+        //客户端信息
         $visit_agent = '';
         foreach ($md->getProperties() as $key => $v) {
             if (($result = $md->version($key)) != "") {
-                $agent .= "$key $result|";
+                $visit_agent .= "$key $result|";
             }
         }
         
         $params = Yii::$app->request->queryParams;
+        //内容类型
+        $item_type = ArrayHelper::getValue($params, 'item_type');
         //内容ID
-        $item_id = ArrayHelper::getValue($params.'item_id');
+        $item_id = ArrayHelper::getValue($params, 'item_id');
         //分享人
-        $share_by = ArrayHelper::getValue($params.'share_by');
+        $share_by = ArrayHelper::getValue($params, 'share_by');
         //用户IP
         $visit_ip = Yii::$app->request->userIP;
+        //访问来源
+        $income = ArrayHelper::getValue($params, 'income');
+
+        $visitLog = new VisitLog([
+            'item_type' => $item_type,
+            'item_id' => $item_id,
+            'share_by' => $share_by,
+            'visit_ip' => $visit_ip,
+            'visit_agent' => $visit_agent,
+            'is_pc' => !$md->isMobile(),
+            'income' => $income,
+        ]);
+        
+        if($visitLog->save()){
+            $paths = [
+                VisitLog::TYPE_COURSE => "/course/default/view?id={$item_id}",
+                VisitLog::TYPE_VIDEO => "/study_center/default/view?id={$item_id}",
+            ];
+            $this->redirect($paths[$item_type]);
+        }else{
+            var_dump($visitLog->getErrorSummary(true));exit;
+            throw new NotFoundHttpException('找不到对应分享！');
+        }
     }
 
     /**
