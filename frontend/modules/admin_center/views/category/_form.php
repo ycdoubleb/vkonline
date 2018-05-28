@@ -2,7 +2,6 @@
 
 use common\models\vk\Category;
 use common\widgets\depdropdown\DepDropdown;
-use kartik\widgets\FileInput;
 use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -12,8 +11,9 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Category */
 /* @var $form ActiveForm */
-//var_dump(array_values(array_filter(
-//                explode(',', Category::getCatById($model->isNewRecord ? $parentModel->id : $model->parent_id)->path))));exit;
+
+$model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
+
 ?>
 
 <div class="category-form">
