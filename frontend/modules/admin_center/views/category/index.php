@@ -27,8 +27,7 @@ use yii\web\View;
                     'Admin' => Yii::t('app', 'Admin'),
                 ]) ?></span>
                 <div class="framebtn">
-                    <?= Html::a(Yii::t('app', 'Add'), ['create'], ['class' => 'btn btn-success',
-                        'style' => 'line-height:22px;', 'target' => '_blank']) ?>
+                    <?php // Html::a(Yii::t('app', 'Add'), ['create'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']) ?>
                 </div>
             </div>
             <?= GridView::widget([
@@ -44,7 +43,7 @@ use yii\web\View;
                         'attribute' => 'name',
                         'header' => Yii::t('app', 'Name'),
                         'headerOptions' => ['style' => 'min-width:200px'],
-                        'contentOptions' => ['style' => 'text-align:left'],
+                        'contentOptions' => ['style' => 'text-align:left; padding-left:20px'],
                     ],
                     [
                         'attribute' => 'mobile_name',
@@ -99,9 +98,30 @@ use yii\web\View;
                     ],
                     [
                         'class' => 'yii\grid\ActionColumn',
-                        'headerOptions' => ['style' => 'width:70px'],
+                        'template' => '{add}{view}{update}{delete}',
+                        'headerOptions' => ['style' => 'width:90px'],
                         'contentOptions' => ['style' => 'text-align:center;color:#666666'],
                         'buttons' => [
+                            'add' => function ($url, $model, $key) {
+                                 $options = [
+                                    'class' => ($model->level > 3 ? 
+                                        'disabled' : ''),
+                                    'style' => 'color:#666666',
+                                    'title' => Yii::t('app', 'Create'),
+                                    'aria-label' => Yii::t('app', 'Create'),
+                                    'data-pjax' => '0',
+                                    'target' => '_blank'
+                                ];
+                                $buttonHtml = [
+                                    'name' => '<span class="glyphicon glyphicon-plus"></span>',
+                                    'url' => ['create', 'id' => $model->id],
+                                    'options' => $options,
+                                    'symbol' => '&nbsp;',
+                                    'conditions' => true,
+                                    'adminOptions' => true,
+                                ];
+                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                            },
                             'view' => function ($url, $model, $key) {
                                  $options = [
                                     'class' => '',

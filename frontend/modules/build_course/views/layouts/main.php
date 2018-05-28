@@ -1,7 +1,7 @@
 <?php
 
+use common\models\vk\CustomerAdmin;
 use frontend\modules\build_course\assets\MainAssets;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -21,6 +21,8 @@ $toolHtml = '';
 $moduleId = Yii::$app->controller->module->id;
 $controllerId = Yii::$app->controller->id;
 $actionId = Yii::$app->controller->action->id;
+//非管理员隐藏按钮
+$hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]) ? '' : 'none';
 /**
  * 子菜单导航
  * $menuItems = [
@@ -108,7 +110,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Survey'),
             'url' => ['/admin_center/default/index'],
             'icons' => null, 
-            'options' => ['class' => 'links']
+            'options' => ['class' => 'links', 'style' => "display:$hidden"]
         ],
         [
             'module' => 'admin_center',
@@ -117,7 +119,7 @@ $menuItems = [
             'label' => Yii::t('app', 'User'),
             'url' => ['/admin_center/user/index'],
             'icons' => null, 
-            'options' => ['class' => 'links']
+            'options' => ['class' => 'links', 'style' => "display:$hidden"]
         ],
         [
             'module' => 'admin_center',
@@ -135,7 +137,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Task'),
             'url' => ['/admin_center/task/index'],
             'icons' => null, 
-            'options' => ['class' => 'links']
+            'options' => ['class' => 'links', 'style' => "display:$hidden"]
         ]
     ]
 ];

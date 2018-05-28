@@ -40,13 +40,13 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     'style' => [
                         'width' => '125px',
                         'text-align' => 'center',
-                        'color' => '#666666',
+                        'color' => '#999999',
                     ],
                 ],
                 'contentOptions' =>[
                     'style' => [
                         'text-align' => 'center',
-                        'color' => '#666666',
+                        'color' => '#999999',
                     ]
                 ],
             ],

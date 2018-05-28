@@ -78,8 +78,8 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
 
-    <div class="form-group btn-addupd" style="padding-left: 95px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <div class="form-group" style="padding-left: 95px;">
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

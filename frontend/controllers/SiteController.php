@@ -210,6 +210,7 @@ class SiteController extends Controller
     {
         $model = new User();
         $model->scenario = User::SCENARIO_CREATE;
+        $params = \Yii::$app->request->queryParams;
 
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $this->signup(Yii::$app->request->post())) {
@@ -221,6 +222,7 @@ class SiteController extends Controller
 
         return $this->render('signup', [
             'model' => $model,
+            'code' => ArrayHelper::getValue($params, 'code'),
         ]);
     }
     

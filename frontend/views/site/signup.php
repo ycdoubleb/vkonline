@@ -38,8 +38,8 @@ SiteAssets::register($this);
 	<fieldset>
             <h2 class="fs-title">邀请码</h2>
             <h3 class="fs-subtitle">若无邀请码则进入下一步操作</h3>
-            <?= $form->field($model, 'customer_id')->textInput(['placeholder' => '邀请码...'])
-                ->label('')?>
+            <?= $form->field($model, 'customer_id')->textInput(['value' => $code,
+                'placeholder' => '邀请码...'])->label('')?>
             <!--客户名或注释信息-->
             <div id="customer"><span></span></div>
             <input type="button" name="next" class="next action-button" value="下一步" />
@@ -79,9 +79,24 @@ SiteAssets::register($this);
 
 $js = <<<JS
        
+    //判断输入框是否有默认值
+    if($("#user-customer_id").val() != ""){
+        var txtVal=$("#user-customer_id").val();     //获取默认值内容
+        $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
+            if (rel['code'] == 200) {
+                $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
+                $("#customer > span").html(rel['data']['name']);
+            }else{
+                $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
+                $("#customer > span").html(rel['message']);
+            }
+        })
+    }
+        
     //输入邀请码后触发
     $('#user-customer_id').blur(function() {
         var txtVal=$("#user-customer_id").val();     //获取输入的内容
+        if(txtVal != ""){
             $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
                 if (rel['code'] == 200) {
                     $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
@@ -91,8 +106,9 @@ $js = <<<JS
                     $("#customer > span").html(rel['message']);
                 }
             })
+        }
     });
-        
+
     //当邀请码输入框内容被更改时
     $("#user-customer_id").bind("input propertychange change",function(event){
         $(".fa").remove();              //移除右侧图标

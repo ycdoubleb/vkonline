@@ -18,19 +18,14 @@ $this->title = Yii::t('app', '{User}{Center}',[
 
 <?php
 $menu = '';
-$actionId = Yii::$app->controller->action->id;  //当前actionID
+$controllerId = Yii::$app->controller->id;  //当前控制器
 //导航
 $menuItems = [
     [
-        'label' => '概况',
+        'controller' => 'default',
+        'label' => Yii::t('app', 'Survey'),
         'url' => ['index', 'id' => Yii::$app->user->id],
-        'icons' => '<i class="fa fa-bar-chart"></i>', 
-        'options' => ['class' => 'links']
-    ],
-    [
-        'label' => Yii::t('app', '{Basic}{Info}', ['Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info')]),
-        'url' => ['info', 'id' => Yii::$app->user->id],
-        'icons' => '<i class="fa fa-file-text"></i>', 
+        'icons' => '', 
         'options' => ['class' => 'links']
     ],
 ];
@@ -38,7 +33,7 @@ $menuItems = [
 end($menuItems);
 $lastIndex = key($menuItems);
 foreach ($menuItems as $index => $item) {
-    $menu .= ($actionId == $item['url'][0] ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
+    $menu .= ($controllerId == $item['controller'] ? '<li class="active">' : ($lastIndex == $index ? '<li class="remove">' : '<li class="">')).
         Html::a($item['icons'].$item['label'], $item['url'], $item['options']).'</li>';
 }
 
@@ -47,15 +42,13 @@ $html = <<<Html
         <img src="/imgs/build_course/images/u5303.png" />
     </header>
     
-    <div class="content">
+    <div class="container content">
         <nav class="subnav">
-            <div class="menu">
-                <div class="title">
-                    <i class="fa fa-list-ul"></i>
-                    <span>导航</span>
-                </div>
-                <ul>{$menu}</ul>
+            <div class="title">
+                <i class="fa fa-list-ul"></i>
+                <span>个人中心</span>
             </div>
+            <ul>{$menu}</ul>
         </nav>
 Html;
 

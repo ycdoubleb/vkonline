@@ -26,18 +26,18 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
         <div class="page-title">用户详情：<?= $model->nickname?>
             <span>
                 <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], [
-                    'class' => 'btn btn-primary ' . (($model->id == Yii::$app->user->id) ? ' ' : 
+                    'class' => 'btn btn-primary btn-flat ' . (($model->id == Yii::$app->user->id) ? ' ' : 
                                 (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
                 ]) ?>
                 <?= ($model->status == 0) ? Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
-                    'class' => 'btn btn-success ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
+                    'class' => 'btn btn-success btn-flat ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
                                 (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
                     'data' => [
                         'confirm' => Yii::t('app', 'Are you sure you want to enable this user?'),
                         'method' => 'post',
                     ],
                 ]) : Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
+                    'class' => 'btn btn-danger btn-flat ' . (($model->id == Yii::$app->user->id) ? 'disabled' : 
                                 (!empty($adminModel) ? ($userLevel->level >= $adminModel->level ? 'disabled' : ' ') : ' ')),
                     'data' => [
                         'confirm' => Yii::t('app', 'Are you sure you want to disable this user?'),

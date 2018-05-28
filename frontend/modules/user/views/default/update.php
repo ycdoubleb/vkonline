@@ -7,32 +7,29 @@ use yii\web\View;
 /* @var $this View */
 /* @var $model User */
 
-
-ModuleAssets::register($this);
-
-//$this->title = Yii::t('app', '{Update}{User}: {nameAttribute}', [
-//    'Update' => Yii::t('app', 'Update'),
-//    'User' => Yii::t('app', 'User'),
-//    'nameAttribute' => $model->id,
-//]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{User}{List}',[
-//    'User' => Yii::t('app', 'User'),
-//    'List' => Yii::t('app', 'List'),
-//]), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
-<div class="user-default-update main">
 
-    <div class="crumbs">
-        <i class="fa fa-pencil"></i>
-        <span><?= Yii::t('app', '{Edit}{Basic}{Info}', [
-            'Edit' => Yii::t('app', 'Edit'), 'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info')
-        ]) ?></span>
+<div class="user-update main">
+    <div class="frame">
+        <div class="frame-content">
+            <div class="frame-title">
+                <span><?= Yii::t('app', '{Edit}{Basic}{Info}', [
+                    'Edit' => Yii::t('app', 'Edit'), 'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info')
+                ]) ?></span>
+            </div>
+            <div class="content-content">
+                <?= $this->render('_form', [
+                    'model' => $model,
+                ]) ?>
+            </div>
+        </div>
     </div>
-    
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
 </div>
+
+<?php
+    $js = <<<JS
+        
+JS;
+    $this->registerJs($js, View::POS_READY);
+    ModuleAssets::register($this);
+?>

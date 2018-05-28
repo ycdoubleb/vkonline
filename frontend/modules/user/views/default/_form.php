@@ -2,7 +2,6 @@
 
 use common\models\User;
 use kartik\widgets\FileInput;
-use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -10,6 +9,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model User */
 /* @var $form ActiveForm */
+
 ?>
 
 <div class="user-form">
@@ -20,8 +20,8 @@ use yii\widgets\ActiveForm;
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
         ],
     ]); ?>
     
@@ -49,7 +49,7 @@ use yii\widgets\ActiveForm;
                 'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
                 'browseLabel' => '选择上传头像...',
                 'initialPreview' => [
-                    Html::img([$model->avatar], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
+                    Html::img([$model->avatar], ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
                 ],
                 'overwriteInitial' => true,
             ],
@@ -57,11 +57,8 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'des')->textarea(['rows' => 6, 'placeholder' => '描述']) ?>
 
-    <div class="form-group">
-        <div class="col-lg-1 col-md-1"></div>
-        <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success']) ?>
-        </div> 
+    <div class="form-group btn-addupd" style="padding-left: 95px;">
+        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

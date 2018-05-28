@@ -12,7 +12,8 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Category */
 /* @var $form ActiveForm */
-//var_dump(Category::getCatById($model->parent_id));exit;
+//var_dump(array_values(array_filter(
+//                explode(',', Category::getCatById($model->isNewRecord ? $parentModel->id : $model->parent_id)->path))));exit;
 ?>
 
 <div class="category-form">
@@ -29,19 +30,23 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
+    <?= $form->field($model, 'parent_id')->widget(DepDropdown::class,[
+        'plugOptions' => [
+            'url' => Url::to('search-children', false),
+            'level' => $model->isNewRecord ? $parentModel->level : ($model->level > 1 ? $model->level - 1 : $model->level),
+        ],
+        'items' => Category::getSameLevelCats($model->isNewRecord ? $parentModel->id : $model->parent_id),
+        'values' => ($model->isNewRecord ? $parentModel->id : $model->parent_id) == 0 ? [] : array_values(array_filter(
+                explode(',', Category::getCatById($model->isNewRecord ? $parentModel->id : $model->parent_id)->path))),
+        'itemInputOptions' => [
+            'disabled' => $model->isNewRecord ? true : ($model->level == 1 ? true : false),
+        ],
+    ]) ?>
+    
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'mobile_name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'parent_id')->widget(DepDropdown::class,[
-        'plugOptions' => [
-            'url' => Url::to('search-children', false),
-            'level' => 2,
-        ],
-        'items' => Category::getSameLevelCats($model->parent_id),
-        'values' => $model->parent_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($model->parent_id)->path))),
-    ]) ?>
-    
     <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
     
     <?= $form->field($model, 'sort_order')->textInput(['maxlength' => true]) ?>
@@ -54,8 +59,8 @@ use yii\widgets\ActiveForm;
         'containerOptions' => ['class' => ' ']
     ]);?>
     
-    <div class="form-group btn-addupd" style="padding-left: 95px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    <div class="form-group" style="padding-left: 95px;">
+        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

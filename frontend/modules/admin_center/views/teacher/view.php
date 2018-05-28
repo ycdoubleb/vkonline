@@ -37,6 +37,7 @@ ModuleAssets::register($this);
         </div>
     </div>
         
+    <!--基本信息-->
     <div class="frame">
         <div class="title">
             <span>
@@ -102,6 +103,7 @@ ModuleAssets::register($this);
         </div>
     </div>
     
+    <!--主讲课程-->
     <div class="frame">
         <div class="title">
             <span>
@@ -127,7 +129,8 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'background-color' => '#f9f9f9',
                         ],
                     ],
                     'contentOptions' =>[
@@ -150,6 +153,7 @@ ModuleAssets::register($this);
                             'width' => '500px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9',
                         ],
                     ],
                     'contentOptions' =>[
@@ -170,6 +174,7 @@ ModuleAssets::register($this);
                             'width' => '125px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9',
                         ],
                     ],
                     'contentOptions' =>[
@@ -190,6 +195,7 @@ ModuleAssets::register($this);
                             'width' => '165px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9',
                         ],
                     ],
                     'contentOptions' =>[
@@ -223,6 +229,7 @@ ModuleAssets::register($this);
                             'width' => '75px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9',
                         ],
                     ],
                     'contentOptions' =>[

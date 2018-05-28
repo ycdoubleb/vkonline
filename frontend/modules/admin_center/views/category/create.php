@@ -21,7 +21,7 @@ use yii\web\View;
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'parents' => $parents,
+                    'parentModel' => $parentModel,
                 ]) ?>
             </div>
         </div>

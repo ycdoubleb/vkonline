@@ -192,7 +192,7 @@ $this->title = Yii::t('app', '{Course}{List}',[
                     $page = !isset($filters['page']) ? 1 : $filters['page'];
                     $pageCount = ceil($totalCount / 20);
                     if($pageCount > 0){
-                        echo '<div class="summary">' . 
+                        echo '<div class="summary" style="padding:20px 10px 0px">' . 
                                 '第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。' .
                             '</div>';
                     }

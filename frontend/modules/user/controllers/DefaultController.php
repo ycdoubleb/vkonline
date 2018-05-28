@@ -4,6 +4,7 @@ namespace frontend\modules\user\controllers;
 
 use common\models\User;
 use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
@@ -108,7 +109,7 @@ class DefaultController extends Controller
         }
        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['info', 'id' => $model->id]);
+            return $this->redirect(['index', 'id' => $model->id]);
         }else{
             return $this->render('update', [
                 'model' => $model,
@@ -139,9 +140,11 @@ class DefaultController extends Controller
     public function getUsedSpace($id)
     {
         $files = $this->findUserFile($id)->all();
+        $courseFiles = $this->findUserCourseFile($id)->asArray()->all();
+        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
         $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
         $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($videoFileIds, $attFileIds));   //合并
+        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
         
         $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
             ->from(['Uploadfile' => Uploadfile::tableName()]);
@@ -169,6 +172,24 @@ class DefaultController extends Controller
         
         $query->groupBy('Video.source_id');
         
+        return $query;
+    }
+    
+    /**
+     * 查找用户课程关联的文件
+     * @param string $id
+     * @return Query
+     */
+    protected function findUserCourseFile($id)
+    {
+        $query = User::find()->select(['Attachment.file_id'])
+            ->from(['User' => User::tableName()]);
+        
+        $query->leftJoin(['Course' => Course::tableName()], '(Course.created_by = User.id)');
+        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
+        
+        $query->andWhere(['User.id' => $id]);      //根据用户ID过滤
+                
         return $query;
     }
     

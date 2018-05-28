@@ -19,9 +19,9 @@ use yii\widgets\DetailView;
     <div class="frame">
         <div class="page-title">分类详情：<?= $model->name?>
             <span>
-                <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat']) ?>
                 <?= count($model->courseAttribute) > 0 ? '' : Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger',
+                    'class' => 'btn btn-danger btn-flat',
                     'data' => [
                         'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                         'method' => 'post',
@@ -71,7 +71,7 @@ use yii\widgets\DetailView;
                 <span><?= Yii::t('app', 'Attribute') ?></span>
                 <div class="framebtn">
                     <?= Html::a(Yii::t('app', 'Add'), ['attribute/create', 'category_id' => $model->id],
-                            ['class' => 'btn btn-success', 'style' => 'line-height: 25px']) ?>
+                            ['class' => 'btn btn-success btn-flat']) ?>
                 </div>
             </div>
             <?= GridView::widget([

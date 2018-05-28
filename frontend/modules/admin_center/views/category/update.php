@@ -26,7 +26,6 @@ $this->title = Yii::t('app', '{Update}{Category}: {nameAttribute}', [
             <div class="content-content">
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'parents' => $parents,
                 ]) ?>
             </div>
         </div>

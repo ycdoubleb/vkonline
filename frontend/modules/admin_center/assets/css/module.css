@@ -62,30 +62,6 @@
     float: right;
 }
 
-.main .frame .frame-title .framebtn a {
-    font-size: 14px;
-    width: 100px;
-    height: 35px;
-    line-height: 33px;
-    background-color: rgba(40, 178, 139, 1);
-    border: 0;
-    border-radius: 0;
-}
-
-.main .frame .frame-title .framebtn #copyBtn {
-    background-color: #5bc0de;
-}
-
-.main .frame .frame-title .framebtn button {
-    font-size: 14px;
-    width: 100px;
-    height: 35px;
-    line-height: 25px;
-    background-color: rgba(40, 178, 139, 1);
-    border: 0;
-    border-radius: 0;
-}
-
 .disabled {
     pointer-events: none;
     cursor: not-allowed;
@@ -114,6 +90,7 @@
 }
 
 .frame-content .table {
+    margin-bottom: 0px;
     table-layout: fixed;
     color: #666;
     border-right: 2px solid rgba(255, 255, 255, 0);
@@ -174,9 +151,10 @@
 }
 
 .main .frame-content .grid-view .summary {
-    padding-left: 10px;
-    padding-bottom: 20px;
-    color: #CCCCCC;
+    padding: 20px;
+    background-color: #ffffff;
+    color: #999999;
+    margin-bottom: 20px;
 }
 
 .main .frame-content .content-content {
@@ -184,16 +162,6 @@
     border-top: 1px solid #f2f2f2;
     padding: 20px;
     margin-bottom: 25px;
-}
-
-.main .frame-content .content-content .btn-addupd .btn {
-    font-size: 14px;
-    width: 100px;
-    height: 35px;
-    line-height: 25px;
-    background-color: rgba(40, 178, 139, 1);
-    border: 0;
-    border-radius: 0;
 }
 
 .main .frame .page-title span {
@@ -229,6 +197,7 @@
 
 .video-index.main .video-bottom .pagination,
 .course-index.main .course-bottom .pagination{
+    padding-left: 10px;
     margin: 15px 0;
 }
 

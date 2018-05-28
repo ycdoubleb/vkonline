@@ -70,7 +70,7 @@ use yii\widgets\DetailView;
                 <div class="framebtn">
                     <?= Html::a(Yii::t('app', 'Add'),
                             ['create-admin', 'id' => $model->id], 
-                            ['id' => 'add-admin','class' => 'btn btn-sm btn-success',
+                            ['id' => 'add-admin','class' => 'btn btn-success btn-flat',
                             'onclick'=>'return showElemModal($(this));'])
                     ?>
                 </div>
@@ -120,12 +120,12 @@ use yii\widgets\DetailView;
                 <div class="framebtn">
                     <?= Html::button(Yii::t('app', '{Produce}{Invite Code}',['Produce' => Yii::t('app', 'Produce'),
                         'Invite Code' => Yii::t('app', 'Invite Code')]),
-                            ['id' => 'createInviteCode', 'class' => 'btn btn-sm btn-success',
+                            ['id' => 'createInviteCode', 'class' => 'btn btn-success btn-flat',
                                 'onclick'=>'return inviteCode($(this));'])
                     ?>
                     <?= Html::button(Yii::t('app', '{Copy}{Invitation Link}',['Copy' => Yii::t('app', 'Copy'),
                         'Invitation Link' => Yii::t('app', 'Invitation Link')]),
-                            ['id' => 'copyBtn', 'class' => 'btn btn-sm btn-primary',
+                            ['id' => 'copyBtn', 'class' => 'btn btn-primary btn-flat',
                                 'onclick'=>'return jsCopy($(this));'])
                     ?>
                 </div>
@@ -162,6 +162,7 @@ use yii\widgets\DetailView;
                         ],
                         'contentOptions' => [
                             'style' => [
+                                'color' => '#999999',
                                 'text-align' => 'center',
                             ],
                         ],

@@ -64,7 +64,7 @@
 }
 .form .form-horizontal .form-group{
     margin-right: 0;
-    margin-left: 0;
+    margin-left: 10px;
 }
 .form .form-group .form-label {
     padding: 10px 0;
@@ -345,7 +345,7 @@ body .select2-container--krajee
     border-left: none;
 }
 .table .detail-th {
-    width: 150px;
+    width: 125px;
     color: #878787;
     font-weight: normal;
     text-align: right !important;
