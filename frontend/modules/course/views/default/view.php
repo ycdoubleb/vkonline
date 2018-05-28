@@ -3,6 +3,7 @@
 use common\models\vk\Category;
 use common\models\vk\CourseFavorite;
 use common\models\vk\PraiseLog;
+use common\models\vk\VisitLog;
 use common\utils\DateUtil;
 use common\widgets\share\ShareAsset;
 use frontend\modules\course\assets\ModuleAssets;
@@ -21,7 +22,7 @@ GrowlAsset::register($this);
 ModuleAssets::register($this);
 $shareAssetsPath = $this->assetManager->getPublishedUrl(ShareAsset::register($this)->sourcePath);
 $moduleAssetsPath = $this->assetManager->getPublishedUrl(ModuleAssets::register($this)->sourcePath);
-$this->title = Yii::t('app', 'Course');
+$this->title = Yii::t('app', $model['name']);
 ?>
 
 
@@ -214,18 +215,15 @@ $this->title = Yii::t('app', 'Course');
         "share": {}
     };
     with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~ ( - new Date() / 36e5)];
-</script>
-<script type="text/javascript">
-    window.onload = function(){
-        $('.avg-star').raty({
-            path : '/imgs/course/images/raty/',
-            width : false,
-            readOnly: true, 
-            score: <?= $model['avg_star'] ?>,
-            starHalf : 'star-half-big.png',
-            starOff  : 'star-off-big.png',
-            starOn   : 'star-on-big.png'
-        });
+    
+    /**
+     * 初始二维码分享
+     * @returns {void}
+     */
+    function initShare(){
+        //添加分享图片到第一位置，以便在微信分享时可以被微信捕捉到作为分享缩略图
+        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= $model['cover_img'] ?>"></div>');
+        //设置二维码容器大小
         $('.share-panel .wx-qrcode').attr({width:150,height:150});
         //初始微信二维码
         $('.share-panel .wx-qrcode').qrcode({
@@ -249,7 +247,11 @@ $this->title = Yii::t('app', 'Course');
             background: null,
 
             // content
-            text: 'http://tt.vkonline.gzedu.net/course/default/view?id=f41544d0cc9f58b81c51bd3562c448ae&cf=wixin',
+            text: "<?= Url::to([
+                '/site/visit','item_id' => $model['id'] , 
+                'icome' => 'weixin' ,
+                'share_by' => Yii::$app->user->id , 
+                'item_type' => VisitLog::TYPE_COURSE], true) ?>",
 
             // corner radius relative to module width: 0.0 .. 0.5
             radius: 0,
@@ -275,10 +277,26 @@ $this->title = Yii::t('app', 'Course');
 
             image: $('#wx-icon')[0]
         });
-        
+    }
+    
+</script>
+<script type="text/javascript">
+    window.onload = function(){
+        $('.avg-star').raty({
+            path : '/imgs/course/images/raty/',
+            width : false,
+            readOnly: true, 
+            score: <?= $model['avg_star'] ?>,
+            starHalf : 'star-half-big.png',
+            starOff  : 'star-off-big.png',
+            starOn   : 'star-on-big.png'
+        });
         /* 侦听滚动事件 */
         $(window).scroll(checkContentNavFix);
         checkContentNavFix();
+        
+        //初始二维码分享
+        initShare();
     }
     
     /*
