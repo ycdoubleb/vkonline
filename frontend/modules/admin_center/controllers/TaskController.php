@@ -2,8 +2,8 @@
 
 namespace frontend\modules\admin_center\controllers;
 
+use frontend\modules\admin_center\components\ActionVerbFilter;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
 
 /* 
@@ -24,7 +24,7 @@ class TaskController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => ActionVerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

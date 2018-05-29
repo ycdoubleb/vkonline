@@ -64,6 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         'label' => Yii::t('app', 'Administrators'),
                         'value' => $customerAdmin,
                     ],
+                    'invite_code',
                     [
                         'attribute' => 'good_id',
                         'value' => !empty($model->good_id) ? $model->good->name : null,
@@ -250,8 +251,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="frame">
         <div class="frame-title">
             <i class="icon fa fa-file-text-o"></i>
-            <span><?= Yii::t('app', '{Operating}{Record}',[
-                'Operating' => Yii::t('app', 'Operating'),
+            <span><?= Yii::t('app', '{Operation}{Record}',[
+                'Operation' => Yii::t('app', 'Operation'),
                 'Record' => Yii::t('app', 'Record'),
             ]) ?></span>
         </div>

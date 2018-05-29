@@ -89,7 +89,7 @@ class CustomerSearch extends Customer
         
         //添加字段
         self::$query->addSelect(['Customer.*', 'Region.name AS province', 'Region2.name AS city', 'Region3.name AS district',
-            'User.nickname AS user_id', 'Good.name AS good_id', 'Good.data', 'AdminUser.nickname AS created_by']);
+            'User.nickname AS user_id', 'invite_code', 'Good.name AS good_id', 'Good.data', 'AdminUser.nickname AS created_by']);
         
         self::$query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Customer.created_by');    //关联查询创建人
         self::$query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()],

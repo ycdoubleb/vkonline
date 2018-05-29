@@ -45,7 +45,7 @@ class UserFeedbackSearch extends UserFeedback
     public function search($params)
     {
         $query = (new Query())->select([
-                    'UserFeedback.id', 'type', 'content', 'is_process', 'User.nickname AS user_name',
+                    'UserFeedback.id', 'UserFeedback.type', 'content', 'is_process', 'User.nickname AS user_name',
                     'Customer.name AS cus_name', 'AdminUser.nickname AS processer'])
                 ->from(['UserFeedback' => UserFeedback::tableName()]);
 

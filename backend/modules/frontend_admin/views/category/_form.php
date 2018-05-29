@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Category */
 /* @var $form ActiveForm */
-//var_dump(Category::getCatById($model->parent_id));exit;
+
 ?>
 
 <div class="category-form">
@@ -22,15 +22,6 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'mobile_name')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'parent_id')->widget(DepDropdown::class,[
-        'plugOptions' => [
-            'url' => Url::to('search-children', false),
-            'level' => 2,
-        ],
-        'items' => Category::getSameLevelCats($model->parent_id),
-        'values' => $model->parent_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($model->parent_id)->path))),
-    ]) ?>
     
     <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
     

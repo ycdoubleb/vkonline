@@ -110,9 +110,12 @@ class CertificateController extends Controller
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $model->verifier_id = Yii::$app->user->id;  //审核人
+            $model->verifier_at = time();               //审核时间
+            $model->is_dispose = 1;                     //是否已经处理
             if($model->save()){
                 $teacherModel = Teacher::findOne($model->teacher_id);   //教师模型
-                $teacherModel->is_certificate = 1;                      //是否认证
+                $teacherModel->is_certificate = ($model->is_pass == 1) ? 1 : 0;   //是否认证
                 $teacherModel->certicicate_at = time();                 //认证时间
                 $teacherModel->save(false, ['is_certificate','certicicate_at']);
             } else {

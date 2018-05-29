@@ -55,7 +55,7 @@ use yii\widgets\ActiveForm;
             ],
             'overwriteInitial' => true,
         ],
-    ])->label('路径（建议尺寸：1200*590）'); ?>
+    ])->label('路径（建议尺寸：1920*400）'); ?>
 
     <?= $form->field($model, 'link')->textInput(['maxlength' => true]) ?>
 
