@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\Teacher;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -16,6 +17,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\web\UploadedFile;
 
 /**
  * CourseController implements the CRUD actions for Course model.
@@ -136,6 +138,20 @@ class CourseController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+    
+    /**
+     * 批量导入课程
+     */
+    public function actionCourseImport(){
+        $upload = UploadedFile::getInstanceByName('import-file');
+        if ($upload != null) {
+            $spreadsheet = IOFactory::load($upload->tempName);
+            $indata = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+            var_dump($indata);exit;
+            var_dump($sheetData = $spreadsheet->getActiveSheet()->getDrawingCollection());
+        }
+        return $this->render('course-upload');
     }
 
     /**

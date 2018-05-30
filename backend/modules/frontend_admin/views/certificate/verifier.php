@@ -37,12 +37,6 @@ $this->title = Yii::t('app', 'Verifier');
                         ],  
                     ], 
                 ]); ?>
-                                
-                <?= Html::activeHiddenInput($model, 'verifier_id', ['value' => Yii::$app->user->id]) ?>
-                
-                <?= Html::activeHiddenInput($model, 'verifier_at', ['value' => time()]) ?>
-                
-                <?= Html::activeHiddenInput($model, 'is_dispose', ['value' => 1]) ?>
                 
                 <?= $form->field($model, 'is_pass')->radioList(TeacherCertificate::$passStatus)
                         ->label(Yii::t('app', 'Name'))?>

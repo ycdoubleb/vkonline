@@ -21,6 +21,7 @@ SiteAssets::register($this);
             'id' => 'msform',
             'class' => 'form-horizontal',
             'enctype' => 'multipart/form-data',
+            'onkeydown' => 'if(event.keyCode==13){return false;}', //去掉form表单的input回车提交事件
         ],
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
@@ -30,9 +31,9 @@ SiteAssets::register($this);
         <!-- progressbar -->
         <ul id="progressbar">
             <li class="active">验证邀请码</li>
-            <li>设置登录名</li>
             <li>设置账号信息</li>
-            <li>注册成功</li>
+            <li>填写联系方式</li>
+            <li>完成注册</li>
         </ul>
 	<!-- fieldsets -->
 	<fieldset>
@@ -45,8 +46,8 @@ SiteAssets::register($this);
             <input type="button" name="next" class="next action-button" value="下一步" />
 	</fieldset>
 	<fieldset>
-            <h2 class="fs-title">登录名</h2>
-            <h3 class="fs-subtitle">设置你的登录名和密码</h3>
+            <h2 class="fs-title">账号信息</h2>
+            <h3 class="fs-subtitle">设置您的用户名和密码</h3>
             <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名...'])
                 ->label('')?>
             <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6,'maxlength' => 20,
@@ -57,18 +58,18 @@ SiteAssets::register($this);
             <input type="button" name="next" id="user-next" class="action-button" value="下一步" />
 	</fieldset>
 	<fieldset>
-            <h2 class="fs-title">账号信息</h2>
-            <h3 class="fs-subtitle">设置你的账号信息</h3>
+            <h2 class="fs-title">联系方式</h2>
+            <h3 class="fs-subtitle">填写您的联系方式</h3>
             <?= $form->field($model, 'nickname')->textInput(['maxlength' => true,
-                'placeholder' => '真实名称...'])->label('') ?>
+                'placeholder' => '真实姓名...'])->label('') ?>
             <?= $form->field($model, 'phone')->textInput(['maxlength' => true,
                 'placeholder' => '手机号...'])->label('') ?>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="button" name="next" id="info-next" class="action-button" value="下一步" />
 	</fieldset>
 	<fieldset>
-            <h2 class="fs-title">注册成功</h2>
-            <h3 class="fs-subtitle">提交信息进入首页</h3>
+            <h2 class="fs-title">完成注册</h2>
+            <h3 class="fs-subtitle">点击“提交”完成注册</h3>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="submit" name="submit" class="submit action-button" value="提交" />
 	</fieldset>

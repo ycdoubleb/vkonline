@@ -94,7 +94,6 @@ class CategoryController extends BaseController
             $model->loadDefaultValues();
             return $this->render('create', [
                 'model' => $model,
-                'parents' => array_merge(['0' => '顶级目录'],Category::getCatsByLevel(1, true)),
             ]);
         }
     }
@@ -117,7 +116,6 @@ class CategoryController extends BaseController
         } else {
             return $this->render('update', [
                 'model' => $model,
-                'parents' => array_merge(['0' => '顶级目录'],ArrayHelper::map(Category::findAll(['level' => 1]), 'id', 'name')),
             ]);
         }
     }
