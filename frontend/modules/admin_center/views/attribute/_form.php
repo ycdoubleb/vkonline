@@ -14,19 +14,33 @@ use yii\widgets\ActiveForm;
 
 <div class="course-attribute-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => [
+            'class' => 'form-horizontal',
+            'enctype' => 'multipart/form-data',
+        ],
+        'fieldConfig' => [
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\" >{input}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
+            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
+                'color' => '#999999', 'padding-left' => '0', 'padding-right' => '10px']],
+        ],
+    ]); ?>
 
-    <?= Html::activeHiddenInput($model, 'category_id') ?>
-    
-    <?= Html::label(Yii::t('app', '{The}{Category}',['The' => Yii::t('app', 'The'),'Category'=> Yii::t('app', 'Category')]),
+    <div class="col-lg-12 col-md-12" style="padding-left: 0px; padding-right: 0px;">
+        <?= Html::label(Yii::t('app', '{The}{Category}',['The' => Yii::t('app', 'The'),'Category'=> Yii::t('app', 'Category')]),
             '', [
-                'style' => 'width:100%;',
+                'class' => 'col-lg-1 col-md-1 control-label',
+                'style' => ['color' => '#999999', 'padding-left' => '0px', 'padding-right' => '22px']
             ])?>
-    <?= Html::input('text', 'input', $path, [
-        'class' => 'form-control',
-        'style' => 'margin-bottom:15px',
-        'readonly' => 'readonly'
-    ])?>
+        <div class="col-lg-11 col-md-11" style="padding-left: 3px; padding-right: 0px;">
+            <?= Html::input('text', 'input', $path, [
+                    'class' => 'form-control',
+                    'style' => 'margin-bottom:25px',
+                    'readonly' => 'readonly'
+                ])?>
+        </div>
+    </div>
     
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
@@ -40,7 +54,8 @@ use yii\widgets\ActiveForm;
         'pluginOptions' => [
             'onText' => Yii::t('app', 'Y'),
             'offText' => Yii::t('app', 'N'),
-        ]
+        ],
+        'containerOptions' => ['class' => ' ']
     ]);
     ?>
 
@@ -49,7 +64,7 @@ use yii\widgets\ActiveForm;
         'placeholder' => '多个候选值以换行分隔',
     ]) ?>
 
-    <div class="form-group">
+    <div class="form-group" style="padding-left: 95px;">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Add') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
     </div>
 

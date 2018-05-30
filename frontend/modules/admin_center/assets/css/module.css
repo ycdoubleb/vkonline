@@ -41,8 +41,23 @@
     line-height: 60px;
     padding-left: 20px;
     font-size: 16px;
-    color: #666666;
+    color: #878787;
     background-color: #ffffff;
+}
+
+/*无第一层标题的情况下*/
+.course-index.main .frame-content .frame-title,
+.video-index.main .frame-content .frame-title,
+.teacher-index.main .frame-content .frame-title,
+.user-index.main .frame-content .frame-title,
+.user-create.main .frame-content .frame-title,
+.user-update.main .frame-content .frame-title,
+.category-index.main .frame-content .frame-title, 
+.category-create.main .frame-content .frame-title,
+.category-update.main .frame-content .frame-title,
+.course-attribute-create.main .frame-content .frame-title,
+.course-attribute-update.main .frame-content .frame-title {
+    color: #666666;
 }
 
 .main .frame-content {
@@ -129,7 +144,7 @@
 
 /***  概况  **/
 .main .admin-num{
-    color: #666666;
+    color: #878787;
 }
 
 /***  用户模块  **/
@@ -168,13 +183,19 @@
     text-align: right;
 }
 
+.user-index.main .frame .grid-view .pagination,
+.category-index.main .frame .grid-view .pagination,
+.category-view.main .frame .grid-view .pagination {
+    padding-left: 20px;
+    margin: -20px 0px 20px;
+}
 /***  课程/视频管理模块  **/
 .video-index.main .table, .course-index.main .table{
     margin-bottom: 0px;
 }
 
 .video-index.main .video-bottom, .course-index.main .course-bottom {
-    padding-top: 15px;
+    /*padding-top: 15px;*/
     padding-left: 10px;
     background-color: #ffffff;
     color: #999999;

@@ -27,7 +27,7 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
             'template' => "{label}\n<div class=\"col-lg-11 col-md-11\" style=\"padding-left:25px\">{input}</div>\n"
                 . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
-                'color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0', 'padding-right' => '0px']],
+                'color' => '#999999', 'padding-left' => '0', 'padding-right' => '0px']],
         ],
     ]); ?>
 

@@ -532,6 +532,10 @@ body .select2-container--krajee
     padding: 3px;
     color: #ff3300;
 }
+.teacher-view.main .frame .grid-view .pagination {
+    padding-left: 20px;
+    margin: 0px 0px 20px;
+}
 /**
  * 公共部分
  */
