@@ -88,17 +88,21 @@ class CategoryController extends BaseController
         $model = new Category();
         $parentId = ArrayHelper::getValue(\Yii::$app->request->queryParams, 'id');
         $parentModel = Category::findOne(['id' => $parentId]);
-        var_dump(Yii::$app->request->post());exit;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->updateParentPath();
-            Category::invalidateCache();
-            return $this->redirect(['view', 'id' => $model->id]);
+
+        if($parentModel->level > 3){
+            throw new NotAcceptableHttpException('分类等级不能大于四级！');
         } else {
-            $model->loadDefaultValues();
-            return $this->render('create', [
-                'model' => $model,
-                'parentModel' => $parentModel,
-            ]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $model->updateParentPath();
+                Category::invalidateCache();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                $model->loadDefaultValues();
+                return $this->render('create', [
+                    'model' => $model,
+                    'parentModel' => $parentModel,
+                ]);
+            }
         }
     }
 
@@ -113,14 +117,18 @@ class CategoryController extends BaseController
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->updateParentPath();
-            Category::invalidateCache();
-            return $this->redirect(['view', 'id' => $model->id]);
+        if($model->parent_id == 0){
+            throw new NotAcceptableHttpException('不能更改顶级分类！');
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            if ($model->load(Yii::$app->request->post()) && $model->save()) {
+                $model->updateParentPath();
+                Category::invalidateCache();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } else {
+                return $this->render('update', [
+                    'model' => $model,
+                ]);
+            }
         }
     }
 
@@ -134,8 +142,10 @@ class CategoryController extends BaseController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        if(count($model->courseAttribute) > 0){
-            throw new NotAcceptableHttpException('含有子分类！不能删除');
+        $sunCategory = Category::findOne(['parent_id' => $model->id]);  //查找是否有子分类
+        
+        if(count($model->courseAttribute) > 0 || $model->parent_id == 0 || !empty($sunCategory)){
+            throw new NotAcceptableHttpException('顶级分类或含有子分类或属性！不能删除');
         } else {
             $model->delete();
             Category::invalidateCache();

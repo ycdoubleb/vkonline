@@ -22,7 +22,7 @@ $moduleId = Yii::$app->controller->module->id;
 $controllerId = Yii::$app->controller->id;
 $actionId = Yii::$app->controller->action->id;
 //非管理员隐藏按钮
-$hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]) ? '' : 'none';
+$hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]);
 /**
  * 子菜单导航
  * $menuItems = [
@@ -33,6 +33,7 @@ $hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]) ? '' : 'non
  *          label => 菜单名,
  *          url => 菜单链接,
  *          icons => 图标,
+ *          condition => 是否隐藏,
  *          options => 菜单配置 
  *      ]
  * ]
@@ -46,6 +47,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Course'),
             'url' => ['/build_course/course/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ],
         [
@@ -55,6 +57,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Video'),
             'url' => ['/build_course/video/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ],
         [
@@ -64,6 +67,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Teacher Resource'),
             'url' => ['/build_course/teacher/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ]
     ],
@@ -77,6 +81,7 @@ $menuItems = [
             ]),
             'url' => ['/admin_center/course/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ],
         [
@@ -88,6 +93,7 @@ $menuItems = [
             ]),
             'url' => ['/admin_center/video/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ],
         [
@@ -99,6 +105,7 @@ $menuItems = [
             ]),
             'url' => ['/admin_center/teacher/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ]
     ],
@@ -110,7 +117,8 @@ $menuItems = [
             'label' => Yii::t('app', 'Survey'),
             'url' => ['/admin_center/default/index'],
             'icons' => null, 
-            'options' => ['class' => 'links', 'style' => "display:$hidden"]
+            'condition' => $hidden,
+            'options' => ['class' => "links"]
         ],
         [
             'module' => 'admin_center',
@@ -119,7 +127,8 @@ $menuItems = [
             'label' => Yii::t('app', 'User'),
             'url' => ['/admin_center/user/index'],
             'icons' => null, 
-            'options' => ['class' => 'links', 'style' => "display:$hidden"]
+            'condition' => $hidden,
+            'options' => ['class' => "links"]
         ],
         [
             'module' => 'admin_center',
@@ -128,6 +137,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Category'),
             'url' => ['/admin_center/category/index'],
             'icons' => null, 
+            'condition' => true,
             'options' => ['class' => 'links']
         ],
         [
@@ -137,7 +147,8 @@ $menuItems = [
             'label' => Yii::t('app', 'Task'),
             'url' => ['/admin_center/task/index'],
             'icons' => null, 
-            'options' => ['class' => 'links', 'style' => "display:$hidden"]
+            'condition' => $hidden,
+            'options' => ['class' => "links"]
         ]
     ]
 ];
@@ -163,8 +174,10 @@ $lastIndex = key($menuItems['admin']);  //获取数组最后一个的index
 foreach ($menuItems as $index => $items) {
     foreach ($items as $key => $value) {
         $is_select = $value['module'] == $moduleId && $value['controller'] == $controllerId;
-        $menuHtml[$index][] = ($is_select ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
-            Html::a($value['icons'] . $value['label'], $value['url'], $value['options']).'</li>';
+        if($value['condition']){
+            $menuHtml[$index][] = ($is_select ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
+                Html::a($value['icons'] . $value['label'], $value['url'], $value['options']).'</li>';
+        }
     }
 }
 

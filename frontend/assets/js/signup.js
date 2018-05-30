@@ -55,7 +55,7 @@ $("#user-next").click(function(){
 $("#info-next").click(function(){
     var user = $("#user-nickname").val();
     if(user === ""){
-        alert("请输入姓名！");
+        alert("请输入真实姓名！");
         return false;
     }
     var phone = $("#user-phone").val();

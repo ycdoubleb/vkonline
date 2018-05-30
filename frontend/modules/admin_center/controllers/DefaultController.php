@@ -11,11 +11,11 @@ use common\models\vk\searchs\CustomerSearch;
 use common\models\vk\Video;
 use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
+use frontend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
@@ -31,7 +31,7 @@ class DefaultController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => ActionVerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

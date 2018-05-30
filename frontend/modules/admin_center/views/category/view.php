@@ -19,9 +19,12 @@ use yii\widgets\DetailView;
     <div class="frame">
         <div class="page-title">分类详情：<?= $model->name?>
             <span>
-                <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat']) ?>
+                <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat '
+                    . ($model->parent_id == 0 ? 'disabled' : ' ')]) ?>
                 <?= count($model->courseAttribute) > 0 ? '' : Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger btn-flat',
+                    'class' => 'btn btn-danger btn-flat '. ($model->parent_id == 0 ? 'disabled' : 
+                        (!empty(Category::findOne(['parent_id' => $model->id])) ? 'disabled' : 
+                            (count($model->courseAttribute) > 0 ?  'disabled' : ''))),
                     'data' => [
                         'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
                         'method' => 'post',

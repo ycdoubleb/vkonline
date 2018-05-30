@@ -2,7 +2,6 @@
 
 use common\models\vk\Category;
 use common\widgets\depdropdown\DepDropdown;
-use kartik\widgets\FileInput;
 use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -12,8 +11,9 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Category */
 /* @var $form ActiveForm */
-//var_dump(array_values(array_filter(
-//                explode(',', Category::getCatById($model->isNewRecord ? $parentModel->id : $model->parent_id)->path))));exit;
+
+$model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
+
 ?>
 
 <div class="category-form">
@@ -24,9 +24,10 @@ use yii\widgets\ActiveForm;
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\" style=\"padding-left:25px\">{input}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
-                'color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0', 'padding-right' => '5px']],
+                'color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0', 'padding-right' => '0px']],
         ],
     ]); ?>
 
@@ -59,7 +60,7 @@ use yii\widgets\ActiveForm;
         'containerOptions' => ['class' => ' ']
     ]);?>
     
-    <div class="form-group" style="padding-left: 95px;">
+    <div class="form-group" style="padding-left: 105px;">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
     </div>
 

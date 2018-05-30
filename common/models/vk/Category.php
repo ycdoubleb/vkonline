@@ -88,6 +88,7 @@ class Category extends ActiveRecord
     public function rules()
     {
         return [
+            [['name'], 'required'],
             [['parent_id', 'level', 'sort_order', 'is_show', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
             [['created_by', 'customer_id'], 'string', 'max' => 32],
@@ -111,7 +112,8 @@ class Category extends ActiveRecord
                 $this->mobile_name = $this->name;
             }
             if ($this->customer_id == "") {
-                $this->customer_id = Yii::$app->user->identity->customer_id;
+                $this->customer_id = isset(Yii::$app->user->identity->customer_id) ?
+                        Yii::$app->user->identity->customer_id : '';
             }
             $file_name = md5(time());
             //图片上传

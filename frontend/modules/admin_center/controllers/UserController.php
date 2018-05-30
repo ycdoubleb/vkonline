@@ -17,11 +17,11 @@ use common\models\vk\VideoAttachment;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
+use frontend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
@@ -38,7 +38,7 @@ class UserController extends BaseController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => ActionVerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],

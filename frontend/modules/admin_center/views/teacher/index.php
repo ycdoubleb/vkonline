@@ -10,7 +10,6 @@ use yii\widgets\ActiveForm;
 
 /* @var $this View */
 
-
 ModuleAssets::register($this);
 
 ?>

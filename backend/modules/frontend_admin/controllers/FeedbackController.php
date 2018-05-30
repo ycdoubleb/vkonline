@@ -9,6 +9,7 @@ use common\models\vk\searchs\UserFeedbackSearch;
 use common\models\vk\UserFeedback;
 use Yii;
 use yii\db\Query;
+use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
@@ -29,6 +30,16 @@ class FeedbackController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+            //access验证是否有登录
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ]
                 ],
             ],
         ];

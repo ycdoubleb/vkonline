@@ -137,8 +137,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
             [
-                'label' => Yii::t('app', '{Operating}{Time}',[
-                    'Operating' => Yii::t('app', 'Operating'),
+                'label' => Yii::t('app', '{Operation}{Time}',[
+                    'Operation' => Yii::t('app', 'Operation'),
                     'Time' => Yii::t('app', 'Time'),
                 ]),
                 'value' => function ($data){
