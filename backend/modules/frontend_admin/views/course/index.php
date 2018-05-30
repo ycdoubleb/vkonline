@@ -28,6 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-md-12 col-xs-12 frame-title">
             <i class="icon fa fa-list-ul"></i>
             <span><?= Yii::t('app', 'List') ?></span>
+            <div style="float:right">
+                <?= Html::a(Yii::t('app', 'Course Import'), ['course-import'],['class' => 'btn btn-default']) ?>
+                <?= Html::a(Yii::t('app', 'Course Node Import'), ['course-node-import'],['class' => 'btn btn-default']) ?>
+            </div>
         </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
