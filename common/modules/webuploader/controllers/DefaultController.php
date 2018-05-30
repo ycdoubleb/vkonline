@@ -4,6 +4,9 @@ namespace common\modules\webuploader\controllers;
 
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
+use common\utils\FfmpegUtil;
+use Imagine\Image\ManipulatorInterface;
+use linslin\yii2\curl\Curl;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\imagine\Image;
@@ -66,6 +69,63 @@ class DefaultController extends Controller {
             }
         };
         return parent::beforeAction($action);
+    }
+    
+    /**
+     * 创建外链地址
+     * 传外链地址，分析得详细数据返回
+     * @param string $path 视频路径
+     */
+    public function actionUploadLink($video_path){
+        Yii::$app->response->format = 'json';
+        $authUrl = "http://eefile.gzedu.com/video/getVideoInfoByUrl.do?formMap.VIDEO_URL={$video_path}";
+        //调用api获取视频详细数据
+        $curl = new Curl();
+        try{
+            $response = simplexml_load_string($curl->get($authUrl));
+            //获取不成功返回失败信息
+            if((string)$response->CODE != 200){
+                return [
+                    'code' => (string)$response->CODE,
+                    'mes' => (string)$response->MESSAGE,
+                ];
+            }
+            //附件数据
+            $dbFile = Uploadfile::findOne(['id' => (string)$response->VIDEO_ID]);
+            if($dbFile == null)
+                $dbFile = new Uploadfile(['id' => (string)$response->VIDEO_ID]);     //视频ID、md5_ID
+            $dbFile->name = (string)$response->VIDEO_NAME;                       //视频名
+            $dbFile->path = $video_path;                                               //视频路径
+            $dbFile->is_link = 1;           //设置为外链
+            $dbFile->del_mark = 0;          //重置删除标志
+            $dbFile->created_by = Yii::$app->user->id;
+            $dbFile->thumb_path = (string)$response->VIDEO_IMG;                  //视频截图
+            $dbFile->size = (string)$response->VIDEO_SIZE;                       //视频大小b         
+            //源文件数据
+            $source = [
+                'source_level' => $this->getVideoLevel(explode('x', (string)$response->VIDEO_RESOLUTION)[1]),     //视频质量等级
+                'source_wh' => (string)$response->VIDEO_RESOLUTION,                 //视频分辨率
+                'source_bitrate' => floatval($response->VIDEO_BIT_RATE)*1000,       //码率
+                'source_duration' => floatval($response->VIDEO_TIME)/1000,          //视频长度
+                'source_is_link' => 1,
+            ];
+            if ($dbFile->save()) {
+                return [
+                    'code' => 200,
+                    'mes' => '',
+                    'data' => [
+                        'dbFile' => $dbFile->toArray(),
+                        'source' => $source,
+                    ]
+                ];
+            }
+        } catch (\Exception $ex) {
+            return [
+                'code' => 500,
+                'mes' => $ex->getMessage(),
+                'data' => $ex->getTraceAsString(),
+            ];
+        }
     }
 
     /**
@@ -294,7 +354,7 @@ class DefaultController extends Controller {
                         $thumbPath = $this->createThumb($uploadPath, 
                             ArrayHelper::getValue($_REQUEST, 'thumbWidth', 128), 
                             ArrayHelper::getValue($_REQUEST, 'thumbHeight', null), 
-                            ArrayHelper::getValue($_REQUEST, 'thumbMode', \Imagine\Image\ManipulatorInterface::THUMBNAIL_OUTBOUND));
+                            ArrayHelper::getValue($_REQUEST, 'thumbMode', ManipulatorInterface::THUMBNAIL_OUTBOUND));
                     } catch (\Exception $ex) {
                         Yii::error('fail make thumb!'.$ex->getMessage());
                     }
@@ -407,7 +467,7 @@ class DefaultController extends Controller {
      * @param type $mode            模式：outbound填满高宽，inset等比缩放
      * @return string   生成缩略图路径
      */
-    private function createThumb($filepath, $width = 128, $height = null, $mode = \Imagine\Image\ManipulatorInterface::THUMBNAIL_OUTBOUND) {
+    private function createThumb($filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND) {
         //需要生成缩略图的文件
         $filter = [
             'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
@@ -433,7 +493,7 @@ class DefaultController extends Controller {
             case 'video':
                 //创建视频缩略图
                 //先截屏视频，再创建缩略图
-                $filepath = \common\utils\FfmpegUtil::createVideoImageByUfileId($fileinfo['filename'], $filepath, $fileinfo['dirname'] . '/thumbs/');
+                $filepath = FfmpegUtil::createVideoImageByUfileId($fileinfo['filename'], $filepath, $fileinfo['dirname'] . '/thumbs/');
             case 'image':
                 //创建图片缩略图
                 Image::thumbnail($filepath, $width, $height, $mode)->save($thumbpath);
@@ -541,6 +601,21 @@ class DefaultController extends Controller {
         $part2 = fread($rh, $fragment);
         fclose($rh);
         return md5($part1 . $part2);
+    }
+    
+    /**
+     * 返回视频质量：1=480P 1=720P 2=1080P
+     * @param integer $height   视频高度
+     * @return integer
+     */
+    private function getVideoLevel($height) {
+        $levels = [480, 720, 1080];
+        foreach ($levels as $index => $level) {
+            if ($height <= $level) {
+                return $index + 1;
+            }
+        }
+        return 3;
     }
 
 }
