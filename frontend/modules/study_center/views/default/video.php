@@ -27,9 +27,9 @@ ModuleAssets::register($this);
                     <a class="icon" data-courseid="<?= $model['course_id'] ?>" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
                         <i class="fa fa-times"></i>
                     </a>
-                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>" target="_blank">
+                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . ' > ' . $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
-                        <div class="title"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></div>
+                        <div class="title"><?= $model['course_name'] . ' > ' . $model['name'] ?></div>
                         <?php else: ?>
                         <img src="/<?= $model['img'] ?>" width="100%" height="100%" />
                         <?php endif; ?>
@@ -38,7 +38,7 @@ ModuleAssets::register($this);
                 </div>
                 <div class="text">
                     <div class="tuip title single-clamp">
-                        <?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>
+                        <?= $model['course_name'] . ' > ' . $model['name'] ?>
                     </div>
                     <div class="tuip single-clamp">
                         <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
@@ -119,7 +119,7 @@ $js =
                 var data = rel['data'];
                 if(rel['code'] == '200'){
                     for(var i in data){
-                        var video_name = data[i].course_name + '&nbsp;&nbsp' + data[i].name;
+                        var video_name = data[i].course_name + ' > ' + data[i].name;
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 4 == 3 ? 'clear-margin' : '',
                             courseId: data[i].course_id,

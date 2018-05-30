@@ -94,6 +94,7 @@
 }
 .list > ul > li .pic .title {
     display: table-cell;
+    width: 280px;
     height: 210px;
     font-size: 20px;
     color: #fff;

@@ -109,7 +109,7 @@ ModuleAssets::register($this);
                 </div>
                 <div class="text">
                     <div class="tuip title single-clamp">
-                        <?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>
+                        <?= $model['course_name'] . ' > ' . $model['name'] ?>
                     </div>
                     <div class="tuip single-clamp">
                         <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
