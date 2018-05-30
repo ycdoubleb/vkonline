@@ -50,7 +50,7 @@
         var time = new Date(unixTime * 1000);
         var strTime = "";
         switch(format){
-            case 'Y-m-d : H:i':
+            case 'Y-m-d H:i':
                 strTime = time.getUTCFullYear() + "-" + (time.getUTCMonth() + 1) + "-" + time.getUTCDate() + " " + time.getUTCHours() + ":" + time.getUTCMinutes();
                 break;
             case 'Y-m-d H:i:s':

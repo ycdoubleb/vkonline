@@ -26,13 +26,12 @@ ModuleAssets::register($this);
         </span>
         <div class="btngroup">
             <?php 
-                if($model->created_by == Yii::$app->user->id){
+                if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
                     if(!$is_applying){
                         echo Html::a(Yii::t('app', '{Proposer}{Authentication}', [
                             'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication')
-                        ]), ['applyr', 'id' => $model->id], ['class' => 'btn btn-success']) . ' ';
+                        ]), ['applyr', 'id' => $model->id], ['class' => 'btn btn-success btn-flat']) . ' ';
                     }
-                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
                 }
             ?>
         </div>
@@ -45,6 +44,11 @@ ModuleAssets::register($this);
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
+            <div class="btngroup">
+                <?php if($model->created_by == Yii::$app->user->id){
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat']);
+                } ?>
+            </div>
         </div>
         <div id="<?= $model->id ?>">
             <?= DetailView::widget([
@@ -128,7 +132,8 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -151,6 +156,7 @@ ModuleAssets::register($this);
                             'width' => '500px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -171,6 +177,7 @@ ModuleAssets::register($this);
                             'width' => '125px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -191,6 +198,7 @@ ModuleAssets::register($this);
                             'width' => '165px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -224,6 +232,7 @@ ModuleAssets::register($this);
                             'width' => '75px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[

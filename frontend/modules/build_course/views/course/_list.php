@@ -23,7 +23,7 @@
                 <span class="keep-left">{%teacherName%}</span>
             </a>
             <span class="avg-star font-warning keep-right">{%avgStar%} 分</span>
-            <a href="../default/view?id={%id%}" class="btn btn-info edit keep-right" style="display: none" target="_blank">编辑</a>
+            <a href="../default/view?id={%id%}" class="btn btn-info btn-flat edit keep-right" style="display: none" target="_blank">编辑</a>
         </div>
     </div>
 </li>

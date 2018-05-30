@@ -225,7 +225,7 @@ class ApiController extends Controller  {
         $trans = Yii::$app->db->beginTransaction();
         try
         {   
-            $model->finish_time = $current_time;
+            $model->finish_time = $model->last_time = $current_time;
             $model->is_finish = 1;
             $model->end_time = time();
             if($model->save()){

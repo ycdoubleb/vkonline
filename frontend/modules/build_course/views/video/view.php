@@ -78,7 +78,7 @@ ModuleAssets::register($this);
                 [
                     'label' => Yii::t('app', 'Des'),
                     'format' => 'raw',
-                    'value' => "<div class=\"detail-des\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des multi-line-clamp\">{$model->des}</div>",
                 ],
                 [
                     'label' => Yii::t('app', 'Tag'),
@@ -145,7 +145,8 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px'
+                            'border-bottom-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -166,6 +167,7 @@ ModuleAssets::register($this);
                             'width' => '500px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -184,6 +186,7 @@ ModuleAssets::register($this);
                             'width' => '125px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -217,6 +220,7 @@ ModuleAssets::register($this);
                             'width' => '75px',
                             'border-bottom-width' => '1px',
                             'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[

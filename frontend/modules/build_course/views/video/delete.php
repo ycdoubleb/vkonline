@@ -47,7 +47,7 @@ $this->title = Yii::t(null, "{Delete}{Video}：{$model->name}", [
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary btn-flat','data-dismiss'=>'modal','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>

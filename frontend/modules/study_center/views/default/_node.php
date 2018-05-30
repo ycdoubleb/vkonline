@@ -1,5 +1,6 @@
 <?php
 
+use common\utils\DateUtil;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -34,7 +35,7 @@ use yii\helpers\Url;
                                         <div class="progress-bar progress-bar-success" style="width: <?= $video_finish_percent ?>%;">
                                         </div>
                                     </div>
-                                    <span><?= $video['duration'] ?></span>
+                                    <span><?= DateUtil::intToTime($video['duration']) ?></span>
                                 </div>
                             </div>
                         <?= Html::endTag('a') ?>

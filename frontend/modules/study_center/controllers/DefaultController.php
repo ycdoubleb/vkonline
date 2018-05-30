@@ -208,7 +208,7 @@ class DefaultController extends Controller
         /* @var $query Query */
         $videoQuery = (new Query())
             ->select(['Course.id AS course_id', 'Course.name AS course_name', 'CourseNode.name AS node_name',
-                'Video.id', 'Video.name', 'Video.img', 'Video.des',
+                'Video.id', 'Video.name', 'Video.img', 'Video.des', 'Video.source_duration as duration',
                 'Uploadfile.path', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
                 'Teacher.des AS teacher_des', 'IF(Progress.is_finish IS NUll, 0, Progress.is_finish) AS is_finish', 
                 'IF(Progress.last_time IS NUll, 0, Progress.last_time) AS last_time', 
@@ -237,23 +237,26 @@ class DefaultController extends Controller
     protected function findNodeDetail($course_id){
         $user_id = Yii::$app->user->id;
         //查询所有环节的学习情况
-        $study_progress = (new Query())->select([
-            'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
-            'Video.id as video_id','Video.name video_name','Video.is_ref','Video.source_duration as duration','Video.sort_order as video_sort_order',
-            'Progress.is_finish','Progress.finish_time','Progress.last_time'
-        ])->from(['Node' => CourseNode::tableName()]);
-        $study_progress->leftJoin(['Video' => Video::tableName()], '(Node.id = Video.node_id AND Video.is_del = 0)');
-        $study_progress->leftJoin(['Progress' => VideoProgress::tableName()], 
-            'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id', 
-            ['course_id' => $course_id,'user_id'=>$user_id]);
-        $study_progress->where(['Node.course_id' => $course_id, 'Node.is_del' => 0]);
-        //先分节点再分视频
-        $study_progress->groupBy('Node.id, Video.id');
-        //先排节点再排视频
-        $study_progress->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC]);
+        $study_progress = (new Query())
+                ->select([
+                    'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
+                    'Video.id as video_id','Video.name video_name','Video.is_ref',
+                    'Video.source_duration as duration','Video.sort_order as video_sort_order',
+                    'Progress.is_finish','Progress.finish_time','Progress.last_time'])
+                ->from(['Node' => CourseNode::tableName()])
+                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id AND Video.is_del = 0')
+                ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
+                        ['course_id' => $course_id,'user_id'=>$user_id])
+                ->where([
+                    'Node.course_id' => $course_id,
+                    'Node.is_del' => 0,
+                ])
+                //先排节点再排视频
+                ->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC])
+                ->all();
         
         $nodes = [];            //节点
-        foreach($study_progress->all() as $progress){
+        foreach($study_progress as $progress){
             //先建节点数据
             if(!isset($nodes[$progress['node_id']])){
                 $nodes[$progress['node_id']] = [
@@ -264,13 +267,13 @@ class DefaultController extends Controller
                 ];
             }
             //添加视频到节点
-            if($progress['video_id'] != null){
-                $nodes[$progress['node_id']]['videos'][] = [
+            if($progress['video_id']!=null){
+                $nodes[$progress['node_id']]['videos'] []= [
                     'node_id' => $progress['node_id'],
                     'video_id' => $progress['video_id'],
                     'video_name' => $progress['video_name'],
                     'is_ref' => $progress['is_ref'],
-                    'duration' => DateUtil::intToTime($progress['duration']),
+                    'duration' => $progress['duration'],
                     'sort_order' => $progress['video_sort_order'],
                     'is_finish' => $progress['is_finish'],
                     'finish_time' => $progress['finish_time'],

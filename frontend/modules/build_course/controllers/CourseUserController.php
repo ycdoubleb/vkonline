@@ -73,7 +73,7 @@ class CourseUserController extends Controller
         $model = new CourseUser(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if($model->course->created_by != Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
         
@@ -103,7 +103,7 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by != Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
        
@@ -131,7 +131,7 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by != Yii::$app->user->id){
+        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
         

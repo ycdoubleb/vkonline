@@ -52,14 +52,16 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
                             ]
                         ]
                     ],
-                ])->label(Yii::t('app', 'DataVisible Range')) ?>
+                ])->label(Yii::t('app', '{Visible}{Range}', [
+                        'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')
+                ])) ?>
                 
                 <?php ActiveForm::end(); ?>
                 
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary btn-flat','data-dismiss'=> '','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>
@@ -68,13 +70,19 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
 </div>
 
 <?php
-
 $js = 
 <<<JS
         
    /** 提交表单 */
     $("#submitsave").click(function(){
-        $('#build-course-form').submit();
+        if($('input:radio[name="Course[level]"]').is(":checked")){
+            $('#build-course-form').submit();
+        }else{
+            $(".field-course-level").addClass("has-error");
+            $(".field-course-level .help-block").html("选择一种发布方式。");
+            return false;
+        }
+        $('.myModal').modal('hide');
     });  
     
 JS;

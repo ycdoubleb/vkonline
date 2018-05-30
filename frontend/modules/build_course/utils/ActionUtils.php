@@ -543,10 +543,7 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save()){
-                
-            }else{
-                var_dump($model->getErrors());exit;
+            if(!$model->save()){
                 throw new Exception($model->getErrors());
             }
             
@@ -570,9 +567,16 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save()){
-                
-            }else{
+            if($model->is_certificate){
+                $model->is_certificate = 0;
+                //新建老师认证申请模型
+                $apply = new TeacherCertificate([
+                    'teacher_id' => $model->id, 'proposer_id' => Yii::$app->user->id
+                ]);
+                $apply->save();
+            }
+            
+            if(!$model->save()){
                 throw new Exception($model->getErrors());
             }
             

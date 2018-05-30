@@ -7,7 +7,7 @@
         <div class="tuip title single-clamp">{%name%}</div>
         <div class="tuip single-clamp">{%tags%}</div>
         <div class="tuip">
-            <span class="keep-left">{%createdAt%}</span>
+            <span class="font-success keep-left">{%createdAt%}</span>
             <span class="btn-tuip keep-right bg-{%colorName%}">{%isRef%}</span>
         </div>
     </div>
