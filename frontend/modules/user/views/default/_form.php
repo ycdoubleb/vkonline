@@ -58,7 +58,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'des')->textarea(['rows' => 6, 'placeholder' => '描述']) ?>
 
     <div class="form-group btn-addupd" style="padding-left: 95px;">
-        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success btn-flat']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

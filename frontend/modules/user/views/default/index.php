@@ -17,14 +17,7 @@ ModuleAssets::register($this);
     
     <div class="frame">
         
-        <div class="page-title"><span>概况</span>
-            <div class="framebtn">
-                <?= Html::a(Yii::t('app', 'Edit'),['update', 'id' => $model->id], 
-                        ['id' => 'add-admin','class' => 'btn btn-sm btn-primary',
-                            'onclick'=>'return showElemModal($(this));'])
-                ?>
-            </div>
-        </div>
+        <div class="page-title"><span>概况</span></div>
         
         <!--基本信息-->
         <div class="frame-content">
@@ -33,6 +26,12 @@ ModuleAssets::register($this);
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
                 ]) ?></span>
+                <div class="framebtn">
+                    <?= Html::a(Yii::t('app', 'Edit'),['update', 'id' => $model->id], 
+                            ['id' => 'add-admin','class' => 'btn btn-flat btn-primary',
+                                'onclick'=>'return showElemModal($(this));'])
+                    ?>
+                </div>
             </div>
             <?= DetailView::widget([
                 'model' => $model,
@@ -57,8 +56,7 @@ ModuleAssets::register($this);
                         'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
                             '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
                                 (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
-                                    '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
-                        ,
+                                    '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）',
                     ],
                     'des:ntext',
                     [
@@ -74,35 +72,37 @@ ModuleAssets::register($this);
         </div>
         
         <!--建设数据-->
-        <div class="frame-content">
-            <div class="frame-title">
-                <span><?= Yii::t('app', '{Build}{Data}',[
-                    'Build' => Yii::t('app', 'Build'),
-                    'Data' => Yii::t('app', 'Data'),
-                ]) ?></span>
+        <?php if($model->type == 2): ?>
+            <!--散户不显示建设数据-->
+            <div class="frame-content">
+                <div class="frame-title">
+                    <span><?= Yii::t('app', '{Build}{Data}',[
+                        'Build' => Yii::t('app', 'Build'),
+                        'Data' => Yii::t('app', 'Data'),
+                    ]) ?></span>
+                </div>
+                <?= DetailView::widget([
+                    'model' => $model,
+                    'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+                    'attributes' => [
+                        [
+                            'label' => Yii::t('app', 'Course'),
+                            'format' => 'raw',
+                            'value' => $userCouVid['course_num'] . ' 门' .
+                                Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/course/index'], [
+                                    'target' => '_blank', 'style' => 'float: right']),
+                        ],
+                        [
+                            'label' => Yii::t('app', 'Video'),
+                            'format' => 'raw',
+                            'value' => $userCouVid['video_num'] . ' 个' .
+                                Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/video/index'], [
+                                    'target' => '_blank', 'style' => 'float: right']),
+                        ],
+                    ],
+                ]) ?>
             </div>
-            <?= DetailView::widget([
-                'model' => $model,
-                'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
-                'attributes' => [
-                    [
-                        'label' => Yii::t('app', 'Course'),
-                        'format' => 'raw',
-                        'value' => $userCouVid['course_num'] . ' 门' .
-                            Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/course/index'], [
-                                'target' => '_blank', 'style' => 'float: right']),
-                    ],
-                    [
-                        'label' => Yii::t('app', 'Video'),
-                        'format' => 'raw',
-                        'value' => $userCouVid['video_num'] . ' 个' .
-                            Html::a('<i class="icon fa fa-eye"></i></span>', ['/build_course/video/index'], [
-                                'target' => '_blank', 'style' => 'float: right']),
-                    ],
-                ],
-            ]) ?>
-        </div>
-        
+        <?php endif;?>
         <!--学习数据-->
         <div class="frame-content">
             <div class="frame-title">
