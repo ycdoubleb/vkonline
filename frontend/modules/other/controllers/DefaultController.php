@@ -21,7 +21,7 @@ class DefaultController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -57,7 +57,7 @@ class DefaultController extends Controller
         
         if(!empty(\Yii::$app->user->id)){
             if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                Yii::$app->getSession()->setFlash('success','反馈成功，我们会尽快处理！');
+                Yii::$app->getSession()->setFlash('success','感谢您的反馈，我们会尽快处理！');
                 return $this->redirect(['feedback']);
             }
 

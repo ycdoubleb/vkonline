@@ -96,7 +96,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id' => 'submitsave', 'class'=>'btn btn-primary', 
+                    'id' => 'submitsave', 'class'=>'btn btn-primary btn-flat', 
                     'data-dismiss' => '', 'aria-label' => 'Close'
                 ]) ?>
             </div>

@@ -57,8 +57,8 @@ $this->title = Yii::t('app', '{Opinion}{Feedback}', [
 
         <?= $form->field($model, 'contact')->textInput(['maxlength' => true])->label(Yii::t('app', 'Contact Mode').'：') ?>
 
-        <div class="form-group" style="padding-left: 95px;">
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success', 'style' => 'width:100px;height:35px']) ?>
+        <div class="form-group" style="padding-left: 92px;">
+            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

@@ -149,7 +149,7 @@ ModuleAssets::register($this);
                         </a>
                         <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
                         <?= Html::a(Yii::t('app', 'Edit'), ['view', 'id' => $model['id']], [
-                            'class' => 'btn btn-info edit keep-right', 'style' => 'display: none;', 'target' => '_blank'
+                            'class' => 'btn btn-info btn-flat edit keep-right', 'style' => 'display: none;', 'target' => '_blank'
                         ]) ?>
                     </div>
                 </div>

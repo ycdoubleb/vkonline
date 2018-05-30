@@ -1,10 +1,13 @@
 <?php
 
 use common\models\vk\Video;
+use common\models\vk\VisitLog;
+use common\widgets\share\ShareAsset;
 use frontend\modules\study_center\assets\PalyAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 
 /* @var $this View */
@@ -13,7 +16,7 @@ use yii\web\View;
 
 PalyAssets::register($this);
 GrowlAsset::register($this);
-
+$shareAssetsPath = $this->assetManager->getPublishedUrl(ShareAsset::register($this)->sourcePath);
 $this->title = $model['name'];
 ?>
 
@@ -32,29 +35,23 @@ $this->title = $model['name'];
     <div class="operation">
         <div class="keep-left">
             <?= Html::a('<i class="fa fa-eye"></i>'. $model['play_num']) ?>
-            <?= Html::a('<i class="fa ' . ($model['is_favorite'] ? 'fa-heart' : 'fa-heart-o') . '"></i><span>' . ($model['is_favorite'] ? '已收藏' : '收藏') . '</span>', 'javascript:;', [
-                'id' => 'favorite', 'onclick' => 'favoriteV()'
+            <?= Html::a('<i class="fa ' . ($model['is_favorite'] ? 'fa-heart' : 'fa-heart-o') . '"></i><span>' . ($model['is_favorite'] ? '已收藏' : '收藏') . '</span>', null, [
+                'id' => 'favorite', 'class' => 'pointer', 'onclick' => 'favoriteV()'
             ]) ?>
-            <?= Html::a('<i class="fa fa-share-alt"></i>', 'javascript:;', ['onclick' => '$(".share-panel").toggle()']) ?>
+            <?= Html::a('<i class="fa fa-share-alt"></i>分享', null, ['class' => 'pointer', 'onclick' => 'shareShow()']) ?>
+            <!-- 分享面板 -->
             <div class="share-panel">
-                <div class="title">分享给朋友</div>
-                <ul>
-                    <li>
-                        <div class="content-box">
-                            <?= Html::img(['/imgs/course/images/ewm.png'], ['class' => 'code']) ?>
-                        </div>
-                        <p>扫码分享</p>
-                    </li>
-                    <li>
-                        <div class="content-box">
-                            <span class="icon icon-wx"></span>
-                            <span class="icon icon-qq"></span>
-                            <span class="icon icon-xl"></span>
-                            <span class="icon icon-link"></span>
-                        </div>
-                        <p>扫码分享</p>
-                    </li>
-                </ul>
+                <div class="panel-body">
+                    <div class="qrcode-box">
+                        <img id="wx-icon" src="<?= $shareAssetsPath ?>/imgs/wx-logo.png" style="display:none;"/>
+                        <canvas class="wx-qrcode"></canvas>
+                    </div>
+                    <div class="bdsharebuttonbox share-icon-box">
+                        <a href="#" class="icon icon-qq" data-cmd="sqq" title="分享到QQ好友"></a>
+                        <a href="#" class="icon icon-qzone" data-cmd="qzone" title="分享到QQ空间"></a>
+                        <a href="#" class="icon icon-xl" data-cmd="tsina" title="分享到新浪微博"></a>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="keep-right">
@@ -93,16 +90,20 @@ foreach ($nodes as $node) {
 }
 
 $videoIs = json_encode($videoIs);
-$currentTime = $model['is_finish'] ? $model['finish_time'] : $model['last_time'];
+$currentTime = !$model['is_finish'] ? $model['last_time'] : 0;
 $js = 
 <<<JS
+    //初始二维码分享
+    initShare();    
+        
     var currentId = "$currentId";
     var videoIds = $videoIs;
     var id = getNextToId(currentId, videoIds);
     $("#next-section").attr("href", "../default/view?id=" + id);
+   
     /*
      * 媒体操作事件
-     */
+     */ 
     var myVideo = document.getElementById('myVideo');
     var timeOut;
     myVideo.currentTime = $currentTime
@@ -131,10 +132,23 @@ $js =
         }, function(){
             if($('input[name="autoplay"]').is(":checked")){
                 window.location.replace("../default/view?id=" + id + '&checked=1');
-            } 
+            }else{
+                myVideo.load();
+            }
         })
-    }   
-        
+    }
+    //如果当前的播放进度大于0则提示
+    if(myVideo.currentTime > 0){
+        $.notify({
+            message: '已为你切换到上次离开的时间点开始播放！'
+        },{
+            type: 'success',
+            animate: {
+                enter: 'animated fadeInRight',
+                exit: 'animated fadeOutRight'
+            }
+        });
+    }    
     /**
      * 收藏操作
      * @returns void
@@ -187,7 +201,102 @@ $js =
             }
         }    
         return nextId;
-    }        
+    }
+        
+    /*
+     * 显示隐藏分享面板
+     * @returns {void}     
+     **/
+    window.shareShow = function(){
+        $('.share-panel').finish();
+        $('.share-panel').fadeIn();
+        $('body').one("mousedown", function(){
+            $('.share-panel').finish();
+            $('.share-panel').fadeOut();
+        });
+    }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
+
+<!-- 分享代码 -->
+<script type="text/javascript">
+    window._bd_share_config = {
+        "common": {
+            "bdSnsKey": {},
+            "bdPopTitle":"<?= $model['name'] ?>",
+            "bdText": "<?= '该分享来自[游学吧]中国领先的教育网站' ?>",
+            "bdMini": "2",
+            "bdMiniList": ["qzone", "tsina", "weixin", "renren", "tqq", "tqf", "tieba", "douban", "sqq", "isohu", "ty"],
+            "bdPic": "<?= Url::to($model['img'], true) ?>",
+            "bdStyle": "1",
+            "bdSize": "32"
+        },
+        "share": {}
+    };
+    with(document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~ ( - new Date() / 36e5)];
+    
+    /**
+     * 初始二维码分享
+     * @returns {void}
+     */
+    function initShare(){
+        //添加分享图片到第一位置，以便在微信分享时可以被微信捕捉到作为分享缩略图
+        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="/<?= $model['img'] ?>"></div>');
+        //设置二维码容器大小
+        $('.share-panel .wx-qrcode').attr({width:150,height:150});
+        //初始微信二维码
+        $('.share-panel .wx-qrcode').qrcode({
+            // render method: 'canvas', 'image' or 'div'
+            render: 'canvas',
+
+            // version range somewhere in 1 .. 40
+            minVersion: 1,
+            maxVersion: 40,
+
+            // error correction level: 'L', 'M', 'Q' or 'H'
+            ecLevel: 'M',
+
+            // size in pixel
+            size: 150,
+
+            // code color or image element
+            fill: '#000',
+
+            // background color or image element, null for transparent background
+            background: null,
+
+            // content
+            text: "<?= Url::to([
+                '/site/visit','item_id' => $model['id'] , 
+                'income' => 'weixin' ,
+                'share_by' => Yii::$app->user->id , 
+                'item_type' => VisitLog::TYPE_COURSE], true) ?>",
+
+            // corner radius relative to module width: 0.0 .. 0.5
+            radius: 0,
+
+            // quiet zone in modules
+            quiet: 0,
+
+            // modes
+            // 0: normal
+            // 1: label strip
+            // 2: label box
+            // 3: image strip
+            // 4: image box
+            mode: 4,
+
+            mSize: 0.145,
+            mPosX: 0.5,
+            mPosY: 0.5,
+
+            label: '',
+            fontname: 'sans',
+            fontcolor: '#fff',
+
+            image: $('#wx-icon')[0]
+        });
+    }
+    
+</script>

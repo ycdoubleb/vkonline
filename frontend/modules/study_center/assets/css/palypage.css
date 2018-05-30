@@ -87,62 +87,13 @@ html, body{
     position: relative;
 }
 
+.main .operation > div.keep-left .pointer {
+    cursor:pointer;
+}
+
 .main .operation .share-panel {
-    position: absolute;
+    right: -115px;
     top: 48px;
-    left: -15px;
-    display: none;
-    width: 300px;
-    height: 212px;
-    background-color: #444444;
-}
-
-.main .operation .share-panel .title {
-    border-bottom: 1px solid #585353;
-    padding: 15px;
-    text-align: left;
-    line-height: 0;
-}
-
-.main .operation .share-panel ul {
-    padding: 0;
-    margin: 0;
-}
-
-.main .operation .share-panel ul li {
-    display: inline-block;
-    margin-right: 20px;
-    width: 115px;
-    text-align: center;
-    height: 128px;
-}
-
-.main .operation .share-panel .content-box {
-    width: 90px;
-    height: 85px;
-    margin-bottom: 20px;
-    display: inline-block
-}
-
-.main .operation .share-panel .icon {
-    background: url(../imgs/share-logo.png) no-repeat;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    float: left;
-}
-
-.main .operation .share-panel .icon-wx {
-    background-position: 0 0;
-}
-.main .operation .share-panel .icon-qq {
-    background-position: -32px 0;
-}
-.main .operation .share-panel .icon-xl {
-    background-position: -64px 0;
-}
-.main .operation .share-panel .icon-link {
-    background-position: -94px 0;
 }
 
 .main .left-box {
@@ -213,7 +164,7 @@ html, body{
 }
 /* 列表项 */
 .node-list .head{
-    border-bottom: 1px solid #777777; 
+    border-bottom: 1px solid #333; 
 }
 
 .node-list .control {
@@ -244,9 +195,9 @@ html, body{
     height: 50px;
     line-height: 50px;
     padding: 0 15px;
-    color: #777777;
+    color: #777;
     text-align: left;
-    border-bottom: 1px dashed #777777;
+    border-bottom: 1px dashed #333;
 }
 
 .node-list .level_2 .head i {
@@ -258,5 +209,6 @@ html, body{
 
 .node-list .level_2 .head.active,
 .node-list .level_2 .head:hover{
+    color: #fff;
     background-color: #181818;
 }

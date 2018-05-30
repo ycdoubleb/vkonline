@@ -68,7 +68,7 @@ class CourseNodeController extends Controller
         $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id) && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -97,7 +97,7 @@ class CourseNodeController extends Controller
     {
         $model = $this->findModel($id);
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id) && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -126,7 +126,7 @@ class CourseNodeController extends Controller
     {
         $model = $this->findModel($id);
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id) && $model->course->is_publish){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         

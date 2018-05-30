@@ -27,13 +27,13 @@ ModuleAssets::register($this);
                 ]) ?>
             </span>
             <div class="btngroup">
-                <?php if($is_hasEditNode){
+                <?php if($is_hasEditNode && !$model->is_publish){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
-                        'class' => 'btn btn-success', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
+                        'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
-                        'class' => 'btn btn-info']) . '&nbsp;';
+                        'class' => 'btn btn-info btn-flat']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导出'), 'javascript:;', [
-                        'class' => 'btn btn-info']);
+                        'class' => 'btn btn-info btn-flat']);
                 } ?>
             </div>
         </div>
@@ -52,7 +52,7 @@ ModuleAssets::register($this);
                     <?= Html::a("<div><i class=\"fa fa-caret-right\"></i></div><span class=\"name\">{$nodes->name}</span>", "#toggle_{$nodes->id}", [
                         'data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
                     <div class="icongroup">
-                        <?php if($is_hasEditNode){
+                        <?php if($is_hasEditNode && !$model->is_publish){
                             echo Html::a('<i class="fa fa-plus"></i>', ['video/create', 'node_id' => $nodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $nodes->id], [
@@ -74,7 +74,7 @@ ModuleAssets::register($this);
                                     <?php 
                                         echo Html::a('<i class="fa fa-eye"></i>', ['video/view','id'=> $video->id], [
                                             'target' => '_blank']) . '&nbsp;';
-                                        if($is_hasEditNode){
+                                        if($is_hasEditNode && !$model->is_publish){
                                             echo Html::a('<i class="fa fa-pencil"></i>', ['video/update','id' => $video->id], [
                                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
                                             echo Html::a('<i class="fa fa-times"></i>',['video/delete', 'id' => $video->id], [

@@ -38,7 +38,7 @@ SwitchInputAsset::register($this);
                 'name' => Yii::t('app', 'Preview'),
                 'url' => ['/course/default/view', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-success', 'target' => '_black'],
+                'options' => ['class' => 'btn btn-success btn-flat', 'target' => '_black'],
                 'symbol' => '&nbsp;',
                 'conditions' => true,
                 'adminOptions' => true,
@@ -47,8 +47,8 @@ SwitchInputAsset::register($this);
                 'name' => Yii::t('app', 'Close'),
                 'url' => ['close', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-danger', 'onclick' => 'showModal($(this));return false;'],
-                'symbol' => '&nbsp;',
+                'options' => ['class' => 'btn btn-danger btn-flat', 'onclick' => 'showModal($(this));return false;'],
+                'symbol' => '',
                 'conditions' => $model->is_publish && $model->created_by === Yii::$app->user->id,
                 'adminOptions' => true,
             ],
@@ -56,8 +56,8 @@ SwitchInputAsset::register($this);
                 'name' => Yii::t('app', 'Publish'),
                 'url' => ['publish', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-info', 'onclick' => !Yii::$app->user->identity->is_official ? 'showModal($(this));return false;' : null],
-                'symbol' => '&nbsp;',
+                'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => !Yii::$app->user->identity->is_official ? 'showModal($(this));return false;' : null],
+                'symbol' => '',
                 'conditions' => !$model->is_publish && $model->created_by === Yii::$app->user->id,
                 'adminOptions' => true,
             ],
@@ -89,7 +89,7 @@ SwitchInputAsset::register($this);
             <div class="btngroup">
                 <?php if(!$model->is_publish && $model->created_by === Yii::$app->user->id){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
-                        ['class' => 'btn btn-primary']);
+                        ['class' => 'btn btn-primary btn-flat']);
                 }?>
             </div>
         </div>
@@ -143,7 +143,7 @@ SwitchInputAsset::register($this);
                         'Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')
                     ]),
                     'format' => 'raw',
-                    'value' => "<div class=\"detail-des\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des multi-line-clamp\">{$model->des}</div>",
                 ],
             ],
         ]) ?>

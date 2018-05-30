@@ -30,7 +30,7 @@ use yii\widgets\ActiveForm;
     ]); ?>
 
     <?php
-        $btnHtml = Html::a(Yii::t('yii', 'View'), null, ['class' => 'btn btn-default']);
+        $btnHtml = Html::a(Yii::t('yii', 'View'), null, ['class' => 'btn btn-default', 'target' => '_blank']);
         $resultsShow = '<div class="result-show hidden"><span></span>&nbsp;&nbsp;' . $btnHtml . '</div>';
         echo $form->field($model, 'name', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>{$resultsShow}\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
@@ -72,7 +72,7 @@ use yii\widgets\ActiveForm;
     <div class="form-group">
         <div class="col-lg-1 col-md-1"></div>
         <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
         </div> 
     </div>
 

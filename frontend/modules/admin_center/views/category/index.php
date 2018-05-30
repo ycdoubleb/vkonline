@@ -3,6 +3,7 @@
 use backend\components\GridViewChangeSelfColumn;
 use backend\widgets\treegrid\TreegridAssets;
 use common\models\vk\Category;
+use common\models\vk\Course;
 use common\models\vk\searchs\CategorySearch;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
@@ -81,8 +82,9 @@ use yii\web\View;
                             return Category::$showStatus[$model->is_publish];
                         },
                         'disabled' => function($model) {
-                            return $model->parent_id == 0 ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
-                                    ? true : (count($model->courseAttribute) > 0 ? true : false));
+                            return $model->parent_id == 0 ? true : (!empty(Course::findOne(['category_id' => $model->id])) 
+                                    ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
+                                        ? true : (count($model->courseAttribute) > 0 ? true : false)));
                         },
                         'headerOptions' => ['style' => 'width:80px'],
                         'contentOptions' => ['style' => 'text-align:center;width:60px'],
@@ -164,8 +166,9 @@ use yii\web\View;
                             'delete' => function ($url, $model, $key){
                                 $options = [
                                     'class' => $model->parent_id == 0 ? 'disabled' : 
-                                        (!empty(Category::findOne(['parent_id' => $model->id])) ? 'disabled' :
-                                            (count($model->courseAttribute) > 0 ? 'disabled' : '')),
+                                        (!empty(Course::findOne(['category_id' => $model->id])) 
+                                            ? 'disabled' : (!empty(Category::findOne(['parent_id' => $model->id])) 
+                                                ? 'disabled' : (count($model->courseAttribute) > 0 ? 'disabled' : ''))),
                                     'style' => 'color:#666666',
                                     'title' => Yii::t('app', 'Delete'),
                                     'aria-label' => Yii::t('app', 'Delete'),

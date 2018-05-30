@@ -125,7 +125,7 @@ $js =
         
     //经过、离开事件
     function hoverEvent(){
-        $(".list .item").each(function(){
+        $(".list > ul > li").each(function(){
             var elem = $(this);
             elem.hover(function(){
                 elem.addClass('hover');

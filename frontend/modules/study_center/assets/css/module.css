@@ -84,6 +84,7 @@
     border-width: 14px;
     border-style: solid;
     display: none;
+    cursor: pointer;
 }
 .list > ul > li .pic .icon > i {
     position: absolute;
@@ -93,6 +94,7 @@
 }
 .list > ul > li .pic .title {
     display: table-cell;
+    width: 280px;
     height: 210px;
     font-size: 20px;
     color: #fff;

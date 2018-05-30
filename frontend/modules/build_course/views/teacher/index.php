@@ -25,7 +25,7 @@ ModuleAssets::register($this);
         <div class="btngroup">
             <?= Html::a(Yii::t('app', '{Create}{Teacher}', [
                 'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]), ['create'], ['class' => 'btn btn-success']) ?>
+            ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
         </div>
     </div>
     <!-- 搜索 -->

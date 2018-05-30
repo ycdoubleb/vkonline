@@ -20,9 +20,9 @@ ModuleAssets::register($this);
         <div class="title">
             <span><?= Yii::t('app', 'Help Man') ?></span>
             <div class="btngroup">
-                <?php if($model->created_by == Yii::$app->user->id){
+                <?php if($model->created_by == Yii::$app->user->id && !$model->is_publish){
                     echo Html::a(Yii::t('app', 'Add'), ['course-user/create', 'course_id' => $model->id], 
-                        ['class' => 'btn btn-success', 'onclick'=>'return showModal($(this));']);
+                        ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));']);
                 }?>
             </div>
         </div>
@@ -94,7 +94,8 @@ ModuleAssets::register($this);
                                     'symbol' => '&nbsp;',
                                     'adminOptions' => true,
                                 ];
-                                if($model->user_id != $model->course->created_by && $model->course->created_by == Yii::$app->user->id){
+                                if($model->user_id != $model->course->created_by 
+                                    && $model->course->created_by == Yii::$app->user->id && !$model->course->is_publish){
                                     return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                                 }
                             },
@@ -113,7 +114,8 @@ ModuleAssets::register($this);
                                     'symbol' => '&nbsp;',
                                     'adminOptions' => true,
                                 ];
-                                if($model->user_id != $model->course->created_by && $model->course->created_by == Yii::$app->user->id){
+                                if($model->user_id != $model->course->created_by 
+                                    && $model->course->created_by == Yii::$app->user->id && !$model->course->is_publish){
                                     return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']) . $buttonHtml['symbol'];
                                 }
                             },       

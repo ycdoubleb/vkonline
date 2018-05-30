@@ -164,21 +164,6 @@
     margin-bottom: 25px;
 }
 
-.main .frame .page-title span {
-    position: relative;
-    float: right;
-    padding-right: 10px;
-    
-}
-
-.main .frame .page-title span a{
-    width: 100px;
-    height: 35px;
-    line-height: 25px;
-    border: 0;
-    border-radius: 0;
-}
-
 .user-view.main .viewdetail-th {
     text-align: right;
 }
