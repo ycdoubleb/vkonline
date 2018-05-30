@@ -30,7 +30,7 @@ use yii\widgets\ActiveForm;
     ]); ?>
 
     <?php
-        $btnHtml = Html::a(Yii::t('yii', 'View'), null, ['class' => 'btn btn-default']);
+        $btnHtml = Html::a(Yii::t('yii', 'View'), null, ['class' => 'btn btn-default', 'target' => '_blank']);
         $resultsShow = '<div class="result-show hidden"><span></span>&nbsp;&nbsp;' . $btnHtml . '</div>';
         echo $form->field($model, 'name', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>{$resultsShow}\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
