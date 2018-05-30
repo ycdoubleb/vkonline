@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  * @property integer $del_mark          即将删除标记：0未标记，1已标记
  * @property integer $is_del            是否已经删除标记：0未删除，1已删除
  * @property integer $is_fixed          是否为永久保存：0否，1是，设置后不会自动删除文件
+ * @property integer $is_link           是否为外链：0否 1是
  * @property string $created_by         上传人
  * @property string $deleted_by         删除人ID
  * @property string $deleted_at         删除时间

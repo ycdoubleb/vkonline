@@ -181,6 +181,8 @@ return [
     'Invitation Link' => '邀请链接',
     'Basic' => '基本',
     'Courses' => '所有课程',
+    'Course Import' => '课程导入',
+    'Course Node Import' => '课程环节导入',
     'Total Capacity' => '总容量',
     'Use' => '使用',
     'The' => '所属',
