@@ -197,8 +197,11 @@ class TeacherController extends Controller
         $model = $this->findModel($id);
         
         if($model->created_by == Yii::$app->user->id){
-            if(($this->findCertificateModel($model->id) !== null)){
+            if(($this->findCertificateModel($model->id) != null)){
                 throw new NotFoundHttpException('该老师正在申请认证中，请勿重复申请。');
+            }
+            if($model->is_certificate){
+                throw new NotFoundHttpException('该老师已经认证，请勿重复申请。');
             }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
@@ -270,7 +273,7 @@ class TeacherController extends Controller
         $model = TeacherCertificate::findOne([
            'teacher_id' => $theacher_id, 'proposer_id' => Yii::$app->user->id, 'is_dispose' => 0,
         ]);
-        if ($model !== null) {
+        if ($model != null) {
             return $model;
         } else {
             return null;

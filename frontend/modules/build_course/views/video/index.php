@@ -98,9 +98,9 @@ ModuleAssets::register($this);
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
             <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
                 <div class="pic">
-                    <a href="../video/view?id=<?= $model['id'] ?>" title="<?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?>" target="_blank">
+                    <a href="../video/view?id=<?= $model['id'] ?>" title="<?= $model['course_name'] . ' > ' . $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
-                        <div class="title"><?= $model['course_name'] . '&nbsp;&nbsp;' . $model['name'] ?></div>
+                        <div class="title"><?= $model['course_name'] . ' > ' . $model['name'] ?></div>
                         <?php else: ?>
                         <img src="/<?= $model['img'] ?>" width="100%" height="100%" />
                         <?php endif; ?>
@@ -209,8 +209,7 @@ $js =
                             className: i % 3 == 2 ? 'clear-margin' : '',
                             url: '../video/view?id=' + data[i].id,
                             isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="/' + data[i].img + '" width="100%" height="100%" />',
-                            courseName: data[i].course_name,
-                            name: data[i].name,
+                            name: data[i].course_name + ' > ' + data[i].name,
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
                             createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data[i].created_at),

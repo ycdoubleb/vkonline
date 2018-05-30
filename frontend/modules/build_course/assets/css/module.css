@@ -29,7 +29,7 @@
 .crumbs {
     width: 100%;
     height: 60px;
-    padding: 0 20px;
+    padding: 0 15px 0 20px;
     margin-bottom: 15px;
     font-size: 16px;
     color: #666;
@@ -143,7 +143,7 @@ body .select2-container--krajee
     height: 54px;
     margin: 30px 0 35px;
     line-height: 54px;
-    border-bottom: 1px solid #999;
+    border-bottom: 1px solid #ccc;
 }
 .sort > ul {
     padding: 0;
@@ -204,11 +204,15 @@ body .select2-container--krajee
     transform: translate3d(0, -2px, 0);
 }
 .list > ul > li a {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
     text-decoration: none;
 }
 .list > ul > li .tuip {
     display: inline-block;
     width: 100%;
+    height: 100%;
     margin-top: 15px;
     font-size: 12px;
     color: #aaa;
@@ -289,8 +293,8 @@ body .select2-container--krajee
     margin-top: 0;
 }
 .list  > ul > li .teacher .tuip > a {
-    margin: 7px 0;
-    border-radius: 0;
+    width: auto;
+    height: auto;
 }
 /*******************************************************************************
  * 详情公共
@@ -312,7 +316,7 @@ body .select2-container--krajee
 }
 .frame .title {
     height: 60px;
-    padding: 0 20px;
+    padding: 0 15px 0 20px;
     font-size: 16px;
     color: #878787;
     text-align: left;
@@ -359,8 +363,8 @@ body .select2-container--krajee
     white-space: inherit !important;;
 }
 .table .detail-des {
-    height: 65px;
-    display:table-cell;
+    height: 63px;
+    /*display:table-cell;*/
     vertical-align:middle; 
 }
 .main .table > thead  > tr > th,
@@ -406,9 +410,8 @@ body .select2-container--krajee
     font-size: 14px;
 }
 .sortable li {
-    margin-left: -18px;
+    padding: 0 20px;
     border-top: 1px solid #f2f2f2;
-    border-bottom: 1px solid #f2f2f2;
 }
 .sortable li:nth-of-type(1) {
     margin-top: -1px;
@@ -418,17 +421,16 @@ body .select2-container--krajee
 }
 .sortable .head {
     height: 60px;
-    padding-right: 15px;
-    padding-left: 35px;
     margin: 0;
     line-height: 60px;
 }
-.sortable .head a {
-    color: #666;;
+.sortable .head  > a {
+    display: inline-block;
+    color: #666;
     text-align: left;
     text-decoration: none;
 }
-.sortable .head a > div {
+.sortable .head > a > div {
     display: inline-block;
     width: 15px;
 }
@@ -436,15 +438,18 @@ body .select2-container--krajee
     display: none;
     float: right;
 }
+.sortable .head .icongroup > a {
+    color: #666;
+}
+
 .sortable .head:hover .icongroup{
     display: block;
 }
 .sortable .nodes {
-    padding-left: 35px;
 }
 .sortable .nodes li {
-    margin-top: 0;
-    margin-bottom: -1px;
+    padding: 0 20px 0 35px;
+    margin: 0 -20px;
 }
 .sortable .nodes .head {
     position: relative;
@@ -475,6 +480,12 @@ body .select2-container--krajee
     cursor:pointer;
 }
 /*******************************************************************************
+ * 我的课程
+ *******************************************************************************/
+.course-index .list .teacher .edit {
+    margin: 7px 0;
+}
+/*******************************************************************************
  * 记录详情
  *******************************************************************************/
 .coutse_actlog-view .modal-body .table-bordered {
@@ -498,8 +509,8 @@ body .select2-container--krajee
 .teacher-index .list > ul > li {
     width: 200px;
     height: 203px;
-    padding: 20px 50px;
     margin-right: 66.5px;
+    text-align: center;
 }
 .teacher-index .list .text {
     margin: 14px 0 0;
@@ -510,7 +521,7 @@ body .select2-container--krajee
 }
 .teacher-index .list .text .tuip {
     width: auto;
-    margin: 0 -50px;
+    margin: 0;
     font-size: 14px;
     color: #ccc;
 }
@@ -530,7 +541,7 @@ body .select2-container--krajee
     width: 100px !important;
     height: 100px !important;
     padding: 2px;
-    margin: 0;
+    margin: 20px 0 0;
     background-color: #f2f2f2 !important;
 }
 .teacher-index .list .avatars > i,
@@ -596,8 +607,9 @@ body .select2-container--krajee
 }
 .video-reference .reference .text a {
     display: none;
+    width: auto;
+    height: auto;
     margin: 5px 0;
-    border-radius: 0;
 }
 
 /*******************************************************************************

@@ -16,9 +16,7 @@ ModuleAssets::register($this);
 $this->title = Yii::t(null, "{Close}{Course}：{$model->name}", [
     'Close' => Yii::t('app', 'Close'), 'Course' => Yii::t('app', 'Course')
 ]);
-//$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Mcbs Courses'), 'url' => ['index']];
-//$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
-//$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="course-close main modal">
 
@@ -49,7 +47,7 @@ $this->title = Yii::t(null, "{Close}{Course}：{$model->name}", [
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary','data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id'=>'submitsave','class'=>'btn btn-primary btn-flat','data-dismiss'=>'modal','aria-label'=>'Close'
                 ]) ?>
             </div>
        </div>

@@ -72,7 +72,7 @@ use yii\widgets\ActiveForm;
     <div class="form-group">
         <div class="col-lg-1 col-md-1"></div>
         <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
         </div> 
     </div>
 
