@@ -19,6 +19,7 @@ use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\FfmpegUtil;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
