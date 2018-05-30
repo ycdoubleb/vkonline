@@ -47,20 +47,10 @@
     min-height: 48px !important;
 }
 
-.main .frame .page-title .framebtn {
+.main .frame .frame-title .framebtn {
     position: relative;
     padding-right: 15px;
     float: right;
-}
-
-.main .frame .page-title .framebtn a {
-    font-size: 14px;
-    width: 100px;
-    height: 35px;
-    line-height: 33px;
-    background-color: #428bca;
-    border: 0;
-    border-radius: 0;
 }
 
 .main .frame-content .content-content {
@@ -68,16 +58,6 @@
     border-top: 1px solid #f2f2f2;
     padding: 20px;
     margin-bottom: 25px;
-}
-
-.main .frame-content .content-content .btn-addupd .btn {
-    font-size: 14px;
-    width: 100px;
-    height: 35px;
-    line-height: 25px;
-    background-color: rgba(40, 178, 139, 1);
-    border: 0;
-    border-radius: 0;
 }
 
 .disabled {

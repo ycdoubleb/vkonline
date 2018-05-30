@@ -15,24 +15,23 @@ $this->title = $model->name;
 <div class="course-attribute-view main">
 
     <div class="frame">
-        <div class="page-title">属性详情：<?= $model->name?>
-            <span>
-                <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger',
-                    'data' => [
-                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                        'method' => 'post',
-                    ],
-                ]) ?>
-            </span>
-        </div>
+        <div class="page-title">属性详情：<?= $model->name?></div>
         <div class="frame-content">
             <div class="frame-title">
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
                 ]) ?></span>
+                <div class="framebtn">
+                    <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat']) ?>
+                    <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+                        'class' => 'btn btn-danger btn-flat',
+                        'data' => [
+                            'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                            'method' => 'post',
+                        ],
+                    ]) ?>
+                </div>
             </div>
             <?= DetailView::widget([
                 'model' => $model,

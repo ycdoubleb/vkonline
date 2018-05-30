@@ -143,9 +143,10 @@ class CategoryController extends BaseController
     {
         $model = $this->findModel($id);
         $sunCategory = Category::findOne(['parent_id' => $model->id]);  //查找是否有子分类
+        $hasCourse = Course::findOne(['category_id' => $model->id]);    //查找是否有属于该分类的课程
         
-        if(count($model->courseAttribute) > 0 || $model->parent_id == 0 || !empty($sunCategory)){
-            throw new NotAcceptableHttpException('顶级分类或含有子分类或属性！不能删除');
+        if($model->parent_id == 0 || !empty($hasCourse) || !empty($sunCategory) || count($model->courseAttribute) > 0){
+            throw new NotAcceptableHttpException('顶级分类或含有课程或子分类或属性！不能删除');
         } else {
             $model->delete();
             Category::invalidateCache();

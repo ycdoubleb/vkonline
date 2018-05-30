@@ -1,9 +1,9 @@
 <?php
 
 use common\models\vk\Category;
+use common\models\vk\Course;
 use common\models\vk\CourseAttribute;
 use frontend\modules\admin_center\assets\ModuleAssets;
-use yii\data\ArrayDataProvider;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -17,27 +17,27 @@ use yii\widgets\DetailView;
 <div class="category-view main">
 
     <div class="frame">
-        <div class="page-title">分类详情：<?= $model->name?>
-            <span>
-                <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat '
-                    . ($model->parent_id == 0 ? 'disabled' : ' ')]) ?>
-                <?= count($model->courseAttribute) > 0 ? '' : Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-                    'class' => 'btn btn-danger btn-flat '. ($model->parent_id == 0 ? 'disabled' : 
-                        (!empty(Category::findOne(['parent_id' => $model->id])) ? 'disabled' : 
-                            (count($model->courseAttribute) > 0 ?  'disabled' : ''))),
-                    'data' => [
-                        'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                        'method' => 'post',
-                    ],
-                ])?>
-            </span>
-        </div>
+        <div class="page-title">分类详情：<?= $model->name?></div>
         <div class="frame-content">
             <div class="frame-title">
                 <span><?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'),
                     'Info' => Yii::t('app', 'Info'),
                 ]) ?></span>
+                <div class="framebtn">
+                    <?= Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat '
+                               . ($model->parent_id == 0 ? 'disabled' : ' ')]) ?>
+                    <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+                        'class' => 'btn btn-danger btn-flat '. ($model->parent_id == 0 ? 'disabled' : 
+                            (!empty(Course::findOne(['category_id' => $model->id])) 
+                                ? 'disabled' : (!empty(Category::findOne(['parent_id' => $model->id]))
+                                    ? 'disabled' : (count($model->courseAttribute) > 0 ?  'disabled' : '')))),
+                        'data' => [
+                            'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                            'method' => 'post',
+                        ],
+                    ])?>
+               </div>
             </div>
             <?= DetailView::widget([
                 'model' => $model,
