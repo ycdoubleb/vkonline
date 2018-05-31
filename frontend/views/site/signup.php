@@ -44,6 +44,14 @@ SiteAssets::register($this);
             <!--客户名或注释信息-->
             <div id="customer"><span></span></div>
             <input type="button" name="next" class="next action-button" value="下一步" />
+            <div class="third" id="third1">
+                <span class="third-login">使用社交账号注册</span>
+                <div class="third-content">
+                    <a href="javascrip:;" class="wechat"></a>
+                    <a href="javascrip:;" class="weibo"></a>
+                    <a href="javascrip:;" class="qq"></a>
+                </div>
+            </div>
 	</fieldset>
 	<fieldset>
             <h2 class="fs-title">账号信息</h2>
@@ -56,6 +64,7 @@ SiteAssets::register($this);
                 'placeholder' => '请确认登录密码...'])->label('') ?>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="button" name="next" id="user-next" class="action-button" value="下一步" />
+            <div class="third" id="third2"></div>
 	</fieldset>
 	<fieldset>
             <h2 class="fs-title">联系方式</h2>
@@ -66,20 +75,28 @@ SiteAssets::register($this);
                 'placeholder' => '手机号...'])->label('') ?>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="button" name="next" id="info-next" class="action-button" value="下一步" />
+            <div class="third" id="third3"></div>
 	</fieldset>
 	<fieldset>
             <h2 class="fs-title">完成注册</h2>
             <h3 class="fs-subtitle">点击“提交”完成注册</h3>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="submit" name="submit" class="submit action-button" value="提交" />
+            <div class="third" id="third4"></div>
 	</fieldset>
     <?php ActiveForm::end();?>
-
+        
+       
 </div>
 <?php
 
 $js = <<<JS
-       
+    //复制第三方登录按钮到每个步骤页面
+    var html = $('#third1').html();
+    $('#third2').append(html);
+    $('#third3').append(html);
+    $('#third4').append(html);
+        
     //判断输入框是否有默认值
     if($("#user-customer_id").val() != ""){
         var txtVal=$("#user-customer_id").val();     //获取默认值内容

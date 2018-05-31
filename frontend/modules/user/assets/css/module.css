@@ -32,8 +32,12 @@
     line-height: 60px;
     padding-left: 20px;
     font-size: 16px;
-    color: #666666;
+    color: #878787;
     background-color: #ffffff;
+}
+
+.user-update.main .frame-content .frame-title {
+    color: #666666;
 }
 
 .main .frame-content {
