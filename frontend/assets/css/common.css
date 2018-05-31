@@ -121,20 +121,20 @@ a.desc:after {
     font-size: 16px;
 }
 .nav li a:hover{
-    color: #FC583D;
+    color: #2aabb6;
     background-color: #f8f8f8; /* 调整hover底色与navbar-vk 底色一样，达到去除底色功能 */
 }
 .nav li.active a{
-    color: #FC583D;
+    color: #2aabb6;
 }
 /* 客户栏目 */
 .nav li .customer-box{
-    border-bottom: 2px solid #f6bd6f;
+    border-bottom: 2px solid #2aabb6;
     margin: -6px 0 0;
 }
 /* 客户简称 */
 .nav li .short_name{
-    background-color: #f6bd6f;
+    background-color: #2aabb6;
     color: #fff;
     display: inline-block;
     padding: 3px 3px 1px 3px;
@@ -194,11 +194,10 @@ a.desc:after {
 .navbar-brand {
     position: relative;
     height: 80px;
-    padding: 10px;
     margin-right: 80px;
 }
 .navbar-brand img {
-    height:100%;
+    padding-top: 5px;
 }
 
 /*****************************************************
