@@ -3,7 +3,6 @@
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\widgets\depdropdown\DepDropdown;
-use common\widgets\tags\TagWidget;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
@@ -163,22 +162,23 @@ $this->registerJs($format, View::POS_HEAD);
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
-            <?= TagWidget::widget([
+            <?=  Select2::widget([
+                'id' => 'tagref-tag_id',
                 'name' => 'TagRef[tag_id]',
                 'data' => $allTags,
                 'value' => !$model->isNewRecord ? $tagsSelected : null, 
-                //'showToggleAll' => false,
+                'showToggleAll' => false,
                 'options' => [
-                    'id' => 'select6',
                     'class' => 'form-control',
+                    'style' => 'height: auto',
                     'multiple' => true,
                     'placeholder' => '请选择至少5个标签...'
                 ],
-//                'pluginOptions' => [
-//                    'tags' => true,
-//                    'allowClear' => false,
-//                    'tokenSeparators' => [','],
-//                ],
+                'pluginOptions' => [
+                    'tags' => true,
+                    'allowClear' => false,
+                    'tokenSeparators' => [','],
+                ],
             ]) ?>
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
