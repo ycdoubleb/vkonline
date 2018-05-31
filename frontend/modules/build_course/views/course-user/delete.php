@@ -1,8 +1,9 @@
 <?php
 
+use common\models\vk\CourseUser;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -10,6 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $model CourseUser */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t(null, "{Delete}{HelpMan}：{$model->user->nickname}", [
     'Delete' => Yii::t('app', 'Delete'),'HelpMan' => Yii::t('app', 'Help Man')
@@ -61,11 +63,16 @@ $js =
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit();return;
-        $.post("../course-user/delete?id=$model->id",$('#build-course-form').serialize(),function(data){
-            if(data['code'] == '200'){
+        $.post("../course-user/delete?id=$model->id",$('#build-course-form').serialize(),function(rel){
+            if(rel['code'] == '200'){
                 $("#help_man").load("../course-user/index?course_id=$model->course_id");
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
+            $.notify({
+                message: rel['message'],
+            },{
+                type: rel['code'] == '200' ? "success " : "danger",
+            });
         });
     }); 
         

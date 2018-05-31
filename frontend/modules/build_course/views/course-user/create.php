@@ -2,9 +2,9 @@
 
 use common\models\vk\CourseUser;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -13,6 +13,7 @@ use yii\widgets\ActiveForm;
 /* @var $model CourseUser */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t('app', '{Add}{helpMan}',[
     'Add' => Yii::t('app', 'Add'), 'helpMan' => Yii::t('app', 'Help Man')
@@ -133,11 +134,16 @@ $js =
             $('.field-courseuser-user_id .help-block').html('协作人员不能为空。');
             return;
         }
-        $.post("../course-user/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(data){
-            if(data['code'] == '200'){
+        $.post("../course-user/create?course_id=$model->course_id",$('#build-course-form').serialize(),function(rel){
+            if(rel['code'] == '200'){
                 $("#help_man").load("../course-user/index?course_id=$model->course_id");
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
+            $.notify({
+                message: rel['message'],
+            },{
+                type: rel['code'] == '200' ? "success " : "danger",
+            });
         });
         $('.myModal').modal('hide');
     });

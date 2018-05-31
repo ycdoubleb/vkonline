@@ -118,7 +118,7 @@ class VideoSearch extends Video
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
+        $addArrays = ['Course.name AS course_name', 'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 
             'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
             'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'

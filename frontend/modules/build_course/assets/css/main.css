@@ -21,7 +21,7 @@
 .summary {
     float: left;
     width: 100%;
-    padding: 20px;
+    padding: 20px 10px 0;
     color: #999;
 }
 /**
@@ -37,13 +37,13 @@
  * 左浮动
  */
 .keep-left {
-   float: left !important;;
+   float: left !important;
 }
 /**
  * 右浮动
  */
 .keep-right {
-   float: right !important;;
+   float: right !important;
 }
 /**
  * 清除外边距
@@ -63,28 +63,28 @@
 .btn-tuip {
     display: block;
     padding: 4px 8px;
-    margin-top: -8px;
-    font-size: 12px;
+    margin-top: -10px;
+    font-size: 14px;
     color: #fff;
 }
 /**
  * 成功
  */
 .font-success {
-    color: #339966;
+    color: #339966 !important;
 }
 .bg-success {
-    background-color: #339966;
+    background-color: #339966 !important;
 }
 /**
  * 危险
  */
 .font-warning {
-    color: #ff3300;
+    color: #ff3300 !important;
     
 }
 .bg-warning {
-    background-color: #ff3300;
+    background-color: #ff3300 !important;
 }
 
 /*******************************************************************************

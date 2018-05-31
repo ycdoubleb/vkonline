@@ -69,7 +69,7 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
         $addArrays = ['Customer.name AS customer_name', 'Course.id AS course_id', 'Course.name AS course_name', 
-            'Video.name', 'Video.img', 'Video.source_duration', 'Teacher.id AS teacher_id',
+            'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 'Video.source_duration', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
@@ -94,7 +94,7 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', 'Video.img', 
+        $addArrays = ['Course.name AS course_name', 'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 
             'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
             'Video.des', 'Video.source_id',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar',

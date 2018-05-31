@@ -23,6 +23,13 @@
     -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
+video {
+    width: 300px;
+    height: 200px;
+    object-fit: fill;
+}
+
 /*******************************************************************************
  * 面包屑
  *******************************************************************************/
@@ -441,6 +448,7 @@ body .select2-container--krajee
 }
 .sortable .head .icongroup > a {
     color: #666;
+    text-decoration: none;
 }
 
 .sortable .head:hover .icongroup{
@@ -531,6 +539,10 @@ body .select2-container--krajee
     width: 245px;
     padding: 3px;
     color: #ff3300;
+}
+.teacher-view.main .frame .grid-view .pagination {
+    padding-left: 20px;
+    margin: 0px 0px 20px;
 }
 /**
  * 公共部分

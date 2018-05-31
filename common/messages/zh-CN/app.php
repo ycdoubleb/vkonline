@@ -71,6 +71,7 @@ return [
     'Node' => '环节',
     'Attachment' => '附件',
     'Catalog' => '目录',
+    'Outside' => '外部',
     
     //公共-操作
     'Add' => '添加',

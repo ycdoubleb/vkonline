@@ -11,7 +11,6 @@ use yii\widgets\DetailView;
 /* @var $this View */
 /* @var $model Teacher */
 
-
 ModuleAssets::register($this);
 
 ?>

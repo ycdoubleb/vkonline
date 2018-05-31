@@ -163,17 +163,21 @@ $this->registerJs($format, View::POS_HEAD);
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
             <?=  Select2::widget([
+                'id' => 'tagref-tag_id',
                 'name' => 'TagRef[tag_id]',
                 'data' => $allTags,
                 'value' => !$model->isNewRecord ? $tagsSelected : null, 
                 'showToggleAll' => false,
                 'options' => [
                     'class' => 'form-control',
+                    'style' => 'height: auto',
                     'multiple' => true,
                     'placeholder' => '请选择至少5个标签...'
                 ],
                 'pluginOptions' => [
                     'tags' => true,
+                    'allowClear' => false,
+                    'tokenSeparators' => [','],
                 ],
             ]) ?>
         </div>

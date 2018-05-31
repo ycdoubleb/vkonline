@@ -5,6 +5,7 @@ use common\models\vk\CourseNode;
 use common\models\vk\Video;
 use common\utils\DateUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -14,6 +15,7 @@ use yii\web\View;
 /* @var $video Video */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 ?>
 
@@ -130,9 +132,12 @@ $js =
             function(rel){
                 if(rel['code'] == '200'){
                     $("#act_log").load("../course-actlog/index?course_id=$model->id");
-                }else{
-                    alert("顺序调整失败");
                 }
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: rel['code'] == '200' ? "success " : "danger",
+                });
             });
         });
     }); 

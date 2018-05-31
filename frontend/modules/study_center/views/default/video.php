@@ -31,7 +31,7 @@ ModuleAssets::register($this);
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['course_name'] . ' > ' . $model['name'] ?></div>
                         <?php else: ?>
-                        <img src="/<?= $model['img'] ?>" width="100%" height="100%" />
+                        <img src="<?= $model['img'] ?>" width="100%" height="100%" />
                         <?php endif; ?>
                     </a>
                     <div class="duration"><?= DateUtil::intToTime($model['source_duration']) ?></div>
@@ -124,7 +124,7 @@ $js =
                             className: i % 4 == 3 ? 'clear-margin' : '',
                             courseId: data[i].course_id,
                             id: data[i].video_id,
-                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + video_name + '</div>' : '<img src="/' + data[i].img + '" width="100%" height="100%" />',
+                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + video_name + '</div>' : '<img src="' + data[i].img + '" width="100%" height="100%" />',
                             name: video_name,
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             tags: data[i].tags != undefined ? data[i].tags : 'null',
