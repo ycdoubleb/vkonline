@@ -31,165 +31,167 @@ use yii\web\View;
                     <?php // Html::a(Yii::t('app', 'Add'), ['create'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']) ?>
                 </div>
             </div>
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'layout' => "{items}\n{summary}\n{pager}",
-                'rowOptions' => function($model, $key, $index, $this){
-                    /* @var $model CategorySearch */
-                    return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
-                },
-                'columns' => [
-                    [
-                        'attribute' => 'name',
-                        'header' => Yii::t('app', 'Name'),
-                        'headerOptions' => ['style' => 'min-width:200px'],
-                        'contentOptions' => ['style' => 'text-align:left; padding-left:20px'],
-                    ],
-                    [
-                        'attribute' => 'mobile_name',
-                        'header' => Yii::t('app', 'Mobile Name'),
-                        'headerOptions' => ['style' => 'width:120px'],
-                        'contentOptions' => ['style' => 'text-align:left'],
-                    ],
-                    [
-                        'attribute' => 'courseAttribute.values',
-                        'header' => Yii::t('app', 'Attribute'),
-                        'value' => function ($model){
-                            return count($model->courseAttribute) > 0 ? 
-                                implode(',', ArrayHelper::getColumn($model->courseAttribute, 'values')) : null;
-                        },
-                        'contentOptions' => ['style' => 'min-width:200px;text-align:left;white-space:unset'],
-                    ],
-                    [
-                        'attribute' => 'is_show',
-                        'header' => Yii::t('app', '{Is}{Show}',[
-                            'Is' => Yii::t('app', 'Is'),
-                            'Show' => Yii::t('app', 'Show'),
-                        ]),
-                        'class' => GridViewChangeSelfColumn::class,
-                        'filter' => Select2::widget([
-                            'model' => $searchModel,
+            <div class="frame-content">
+                <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'filterModel' => $searchModel,
+                    'layout' => "{items}\n{summary}\n{pager}",
+                    'rowOptions' => function($model, $key, $index, $this){
+                        /* @var $model CategorySearch */
+                        return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
+                    },
+                    'columns' => [
+                        [
+                            'attribute' => 'name',
+                            'header' => Yii::t('app', 'Name'),
+                            'headerOptions' => ['style' => 'min-width:200px'],
+                            'contentOptions' => ['style' => 'text-align:left; padding-left:20px'],
+                        ],
+                        [
+                            'attribute' => 'mobile_name',
+                            'header' => Yii::t('app', 'Mobile Name'),
+                            'headerOptions' => ['style' => 'width:120px'],
+                            'contentOptions' => ['style' => 'text-align:left'],
+                        ],
+                        [
+                            'attribute' => 'courseAttribute.values',
+                            'header' => Yii::t('app', 'Attribute'),
+                            'value' => function ($model){
+                                return count($model->courseAttribute) > 0 ? 
+                                    implode(',', ArrayHelper::getColumn($model->courseAttribute, 'values')) : null;
+                            },
+                            'contentOptions' => ['style' => 'min-width:200px;text-align:left;white-space:unset'],
+                        ],
+                        [
                             'attribute' => 'is_show',
-                            'data' => Category::$showStatus,
-                            'hideSearch' => true,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
+                            'header' => Yii::t('app', '{Is}{Show}',[
+                                'Is' => Yii::t('app', 'Is'),
+                                'Show' => Yii::t('app', 'Show'),
+                            ]),
+                            'class' => GridViewChangeSelfColumn::class,
+                            'filter' => Select2::widget([
+                                'model' => $searchModel,
+                                'attribute' => 'is_show',
+                                'data' => Category::$showStatus,
+                                'hideSearch' => true,
+                                'options' => ['placeholder' => Yii::t('app', 'All')],
+                                'pluginOptions' => [
+                                    'allowClear' => true,
+                                ],
+                            ]),
+                            'value' => function ($model){
+                                return Category::$showStatus[$model->is_publish];
+                            },
+                            'disabled' => function($model) {
+                                return $model->parent_id == 0 ? true : (!empty(Course::findOne(['category_id' => $model->id])) 
+                                        ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
+                                            ? true : (count($model->courseAttribute) > 0 ? true : false)));
+                            },
+                            'headerOptions' => ['style' => 'width:80px'],
+                            'contentOptions' => ['style' => 'text-align:center;width:60px'],
+                        ],
+                        [
+                            'attribute' => 'sort_order',
+                            'header' => Yii::t('app', 'Sort Order'),
+                            'headerOptions' => ['style' =>'width:55px'],
+                            'filter' => false,
+                            'class' => GridViewChangeSelfColumn::class,
+                            'plugOptions' => [
+                                'type' => 'input',
                             ],
-                        ]),
-                        'value' => function ($model){
-                            return Category::$showStatus[$model->is_publish];
-                        },
-                        'disabled' => function($model) {
-                            return $model->parent_id == 0 ? true : (!empty(Course::findOne(['category_id' => $model->id])) 
-                                    ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
-                                        ? true : (count($model->courseAttribute) > 0 ? true : false)));
-                        },
-                        'headerOptions' => ['style' => 'width:80px'],
-                        'contentOptions' => ['style' => 'text-align:center;width:60px'],
-                    ],
-                    [
-                        'attribute' => 'sort_order',
-                        'header' => Yii::t('app', 'Sort Order'),
-                        'headerOptions' => ['style' =>'width:55px'],
-                        'filter' => false,
-                        'class' => GridViewChangeSelfColumn::class,
-                        'plugOptions' => [
-                            'type' => 'input',
+                        ],
+                        [
+                            'class' => 'yii\grid\ActionColumn',
+                            'template' => '{add}{view}{update}{delete}',
+                            'headerOptions' => ['style' => 'width:90px'],
+                            'contentOptions' => ['style' => 'text-align:center;color:#666666'],
+                            'buttons' => [
+                                'add' => function ($url, $model, $key) {
+                                     $options = [
+                                        'class' => ($model->level > 3 ? 
+                                            'disabled' : ''),
+                                        'style' => 'color:#666666',
+                                        'title' => Yii::t('app', 'Create'),
+                                        'aria-label' => Yii::t('app', 'Create'),
+                                        'data-pjax' => '0',
+                                        'target' => '_blank'
+                                    ];
+                                    $buttonHtml = [
+                                        'name' => '<span class="glyphicon glyphicon-plus"></span>',
+                                        'url' => ['create', 'id' => $model->id],
+                                        'options' => $options,
+                                        'symbol' => '&nbsp;',
+                                        'conditions' => true,
+                                        'adminOptions' => true,
+                                    ];
+                                    return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                                },
+                                'view' => function ($url, $model, $key) {
+                                     $options = [
+                                        'class' => '',
+                                        'style' => 'color:#666666',
+                                        'title' => Yii::t('app', 'View'),
+                                        'aria-label' => Yii::t('app', 'View'),
+                                        'data-pjax' => '0',
+                                        'target' => '_blank'
+                                    ];
+                                    $buttonHtml = [
+                                        'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
+                                        'url' => ['view', 'id' => $model->id],
+                                        'options' => $options,
+                                        'symbol' => '&nbsp;',
+                                        'conditions' => true,
+                                        'adminOptions' => true,
+                                    ];
+                                    return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                                },
+                                'update' => function ($url, $model, $key) {
+                                     $options = [
+                                        'class' => $model->parent_id == 0 ? 'disabled' : '',
+                                        'style' => 'color:#666666',
+                                        'title' => Yii::t('app', 'Update'),
+                                        'aria-label' => Yii::t('app', 'Update'),
+                                        'data-pjax' => '0',
+                                        'target' => '_blank'
+                                    ];
+                                    $buttonHtml = [
+                                        'name' => '<span class="glyphicon glyphicon-pencil"></span>',
+                                        'url' => ['update', 'id' => $model->id],
+                                        'options' => $options,
+                                        'symbol' => '&nbsp;',
+                                        'conditions' => true,
+                                        'adminOptions' => true,
+                                    ];
+                                    return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
+                                },
+                                'delete' => function ($url, $model, $key){
+                                    $options = [
+                                        'class' => $model->parent_id == 0 ? 'disabled' : 
+                                            (!empty(Course::findOne(['category_id' => $model->id])) 
+                                                ? 'disabled' : (!empty(Category::findOne(['parent_id' => $model->id])) 
+                                                    ? 'disabled' : (count($model->courseAttribute) > 0 ? 'disabled' : ''))),
+                                        'style' => 'color:#666666',
+                                        'title' => Yii::t('app', 'Delete'),
+                                        'aria-label' => Yii::t('app', 'Delete'),
+                                        'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+                                        'data-method' => 'post',
+                                        'data-pjax' => '0',
+                                    ];
+                                    $buttonHtml = [
+                                        'name' => '<span class="glyphicon glyphicon-trash"></span>',
+                                        'url' => ['delete', 'id' => $model->id],
+                                        'options' => $options,
+                                        'symbol' => '&nbsp;',
+                                        'conditions' => true,
+                                        'adminOptions' => true,
+                                    ];
+                                    return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
+                                },
+                            ]
                         ],
                     ],
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'template' => '{add}{view}{update}{delete}',
-                        'headerOptions' => ['style' => 'width:90px'],
-                        'contentOptions' => ['style' => 'text-align:center;color:#666666'],
-                        'buttons' => [
-                            'add' => function ($url, $model, $key) {
-                                 $options = [
-                                    'class' => ($model->level > 3 ? 
-                                        'disabled' : ''),
-                                    'style' => 'color:#666666',
-                                    'title' => Yii::t('app', 'Create'),
-                                    'aria-label' => Yii::t('app', 'Create'),
-                                    'data-pjax' => '0',
-                                    'target' => '_blank'
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="glyphicon glyphicon-plus"></span>',
-                                    'url' => ['create', 'id' => $model->id],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'conditions' => true,
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
-                            },
-                            'view' => function ($url, $model, $key) {
-                                 $options = [
-                                    'class' => '',
-                                    'style' => 'color:#666666',
-                                    'title' => Yii::t('app', 'View'),
-                                    'aria-label' => Yii::t('app', 'View'),
-                                    'data-pjax' => '0',
-                                    'target' => '_blank'
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                    'url' => ['view', 'id' => $model->id],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'conditions' => true,
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
-                            },
-                            'update' => function ($url, $model, $key) {
-                                 $options = [
-                                    'class' => $model->parent_id == 0 ? 'disabled' : '',
-                                    'style' => 'color:#666666',
-                                    'title' => Yii::t('app', 'Update'),
-                                    'aria-label' => Yii::t('app', 'Update'),
-                                    'data-pjax' => '0',
-                                    'target' => '_blank'
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="glyphicon glyphicon-pencil"></span>',
-                                    'url' => ['update', 'id' => $model->id],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'conditions' => true,
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
-                            },
-                            'delete' => function ($url, $model, $key){
-                                $options = [
-                                    'class' => $model->parent_id == 0 ? 'disabled' : 
-                                        (!empty(Course::findOne(['category_id' => $model->id])) 
-                                            ? 'disabled' : (!empty(Category::findOne(['parent_id' => $model->id])) 
-                                                ? 'disabled' : (count($model->courseAttribute) > 0 ? 'disabled' : ''))),
-                                    'style' => 'color:#666666',
-                                    'title' => Yii::t('app', 'Delete'),
-                                    'aria-label' => Yii::t('app', 'Delete'),
-                                    'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                    'data-method' => 'post',
-                                    'data-pjax' => '0',
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="glyphicon glyphicon-trash"></span>',
-                                    'url' => ['delete', 'id' => $model->id],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'conditions' => true,
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
-                            },
-                        ]
-                    ],
-                ],
-            ]); ?>
+                ]); ?>
+            </div>
         </div>
     </div>
 </div>

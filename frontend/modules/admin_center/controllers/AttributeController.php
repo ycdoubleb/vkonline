@@ -80,6 +80,7 @@ class AttributeController extends Controller
     {
         $model = new CourseAttribute(['category_id' => $category_id]);
 
+        $model->category_id = $category_id;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['/admin_center/category/view', 'id' => $model->category_id]);
         }

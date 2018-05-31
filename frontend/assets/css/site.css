@@ -1,7 +1,7 @@
 /************************************登录页样式*********************************/
 .site-login .vkonline {
     width: 100%;
-    min-height: 914px;
+    min-height: 940px;
     background-size: cover;
     background-position: center 0;
     background-repeat: no-repeat;
@@ -96,7 +96,6 @@
     right: 6px;
 }
 
-
 .site-login .vkonline .platform .frame .forget span{
     color: #999999;
 }
@@ -114,6 +113,53 @@
 
 .site-login .vkonline .platform .frame .btn-signup .third-login {
     margin-bottom: 10px;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content {
+    text-align: center;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content a {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat,
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo,
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq {
+    width: 42px;
+    height: 42px;
+    background-color: #dddddd;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat {
+    background-image: url("/imgs/site/wechat.png");
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat:hover {
+    background-color: #58bc46;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo {
+    background-image: url("/imgs/site/weibo.png");
+    margin: 0 20px;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo:hover {
+    background-color: #e90e24;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq {
+    background-image: url("/imgs/site/qq.png");
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq:hover {
+    background-color: #3caae3;
 }
 
 /************************************平台首页************************************/

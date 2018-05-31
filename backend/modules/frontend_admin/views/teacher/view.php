@@ -27,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'Info' => Yii::t('app', 'Info'),
             ]) ?></span>
             <?php
-                $url = Url::to([WEB_ROOT . '/build_course/teacher/view', 'id' => $model->id], 'http');
+                $url = Url::to([WEB_ROOT . '/teacher/default/view', 'id' => $model->id], 'http');
                 echo Html::a(Yii::t('app', 'Famous teacher Hall'), $url, 
                         ['class' => 'btn btn-info', 'target' => '_blank', 'style' => 'float: right'])
             ?>

@@ -15,12 +15,6 @@ $this->title = Yii::t('app', 'Login');
 SiteAssets::register($this);
 
 ?>
-<style type="text/css">
-    body .wrap > .container {
-        width: 100%;
-        padding: 0;
-    }
-</style>
 
 <div class="site-login">
     <div class="vkonline" style='background-image: url("/imgs/site/site_loginbg.jpg");'>
@@ -74,7 +68,11 @@ SiteAssets::register($this);
                 <?php ActiveForm::end(); ?>
                 <div class="col-xs-12 btn-signup">
                     <div class="third-login">第三方账号登录</div>
-                    <img src="/imgs/site/share.png">
+                    <div class="third-content">
+                        <a href="javascrip:;" class="wechat"></a>
+                        <a href="javascrip:;" class="weibo"></a>
+                        <a href="javascrip:;" class="qq"></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,7 +82,9 @@ SiteAssets::register($this);
 $js = <<<JS
    
     /** 滚动到登录框 */
-    $('html,body').animate({scrollTop: ($(".platform").offset().top) - 100}, 200);
+    if(window.innerHeight < 800){
+        $('html,body').animate({scrollTop: ($(".platform").offset().top) - 100}, 200);
+    }
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>

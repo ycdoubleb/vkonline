@@ -162,8 +162,8 @@ class DefaultController extends Controller
         $beginThismonth = mktime(0, 0, 0, date('m'), 1, date('Y'));
         $endThismonth = mktime(23, 59, 59, date('m'), date('t'), date('Y'));
         //获取上个月的起始时间戳和结束时间戳
-        $preYear = date('Y',strtotime('-1 month')); $preMonth = date('m',strtotime('-1 month'));
-        $beginLastMonth = strtotime(date('Y-m-01 00:00:00',strtotime('-1 month')));
+        $preYear = date('Y',strtotime('-1 month')); $preMonth = date('m',strtotime(-date('d').'day'));
+        $beginLastMonth = strtotime(date('Y-m-01 00:00:00',strtotime(-date('d').'day')));
         $endLastMonth = strtotime(date("Y-m-d 23:59:59", strtotime(-date('d').'day')));
         
         //课程数
