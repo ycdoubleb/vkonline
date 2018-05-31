@@ -184,7 +184,7 @@ $js =
     //课程item项
     var item_dom = '<div class="course-tile">'
                     +'<div class="pic-box">'
-                        +'<a href="/course/default/view?id={%id%}"><img src="{%cover_img%}" target="_black"/></a>'
+                        +'<a href="/course/default/view?id={%id%}" target="_blank"><img src="{%cover_img%}"/></a>'
                     +'</div>'
                     +'<div class="name-box">'
                         +'<span class="name single-clamp">{%name%}</span>'

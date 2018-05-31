@@ -117,6 +117,7 @@ class DefaultController extends Controller
      */
     public function actionView($id)
     {
+        $this->layout = '@app/views/layouts/main_no_nav';
         return $this->render('view',$this->findViewDetail($id));
     }
 

@@ -54,7 +54,7 @@ ModuleAssets::register($this);
                         </span>
                     </div>
                 </div>
-                <?= Html::a('继续学习', ['view', 'id' => $model['last_video']], ['class' => 'btn btn-success study keep-right']) ?>
+                <?= Html::a('继续学习', ['view', 'id' => $model['last_video']], ['class' => 'btn btn-success study keep-right' , 'target' => "_blank"]) ?>
             </li>
             <?php endforeach; ?>
         </ul>
