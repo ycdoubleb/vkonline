@@ -79,11 +79,7 @@ class CourseUserController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->createCourseUser($model, Yii::$app->request->post());
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->createCourseUser($model, Yii::$app->request->post());
         }else{
             return $this->renderAjax('create', [
                 'model' => $model,
@@ -109,11 +105,7 @@ class CourseUserController extends Controller
        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->updateCourseUser($model);
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->updateCourseUser($model);
         } else {
             return $this->renderAjax('update', [
                 'model' => $model,
@@ -137,11 +129,7 @@ class CourseUserController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->deleteCourseUser($model);
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->deleteCourseUser($model);
         } else {
             return $this->renderAjax('delete',[
                 'model' => $model

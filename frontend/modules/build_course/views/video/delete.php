@@ -2,8 +2,8 @@
 
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -12,6 +12,7 @@ use yii\widgets\ActiveForm;
 
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t(null, "{Delete}{Video}：{$model->name}", [
     'Delete' => Yii::t('app', 'Delete'), 'Video' => Yii::t('app', 'Video')
@@ -67,6 +68,11 @@ $js =
                 $("#$model->id").remove();
                 $("#act_log").load("../course-actlog/index?course_id={$model->courseNode->course_id}");
             }
+            $.notify({
+                message: rel['message'],
+            },{
+                type: rel['code'] == '200' ? "success " : "danger",
+            });
         });
     });  
         

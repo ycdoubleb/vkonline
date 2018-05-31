@@ -157,7 +157,7 @@ $js =
                     dome = Wskeee.StringUtil.renderDOM(items, {
                         className: 'clear-margin',
                         url: '/study_center/default/view?id=' + data['videos'].video_id,
-                        isExist: data['videos'].img == null || data['videos'].img == '' ? '<div class="title">' + data['videos'].name + '</div>' : '<img src="/' + data['videos'].img + '" width="100%" height="100%" />',
+                        isExist: data['videos'].img == null || data['videos'].img == '' ? '<div class="title">' + data['videos'].name + '</div>' : '<img src="' + data['videos'].img + '" width="100%" height="100%" />',
                         name: data['videos'].course_name + ' > ' + data['videos'].name,
                         duration: Wskeee.DateUtil.intToTime(data['videos'].source_duration),
                         tags: data['videos'].tags != undefined ? data['videos'].tags : 'null',
@@ -226,7 +226,7 @@ $js =
                             className: i % 5 == 4 ? 'clear-margin' : '',
                             id: data[i].video_id,
                             url: "../video/reference?node_id=" + rel['filters'].node_id + "&id=" + data[i].video_id,
-                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="/' + data[i].img + '" width="100%" height="100%" />',
+                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].img + '" width="100%" height="100%" />',
                             duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
                             name: data[i].name,
                         });

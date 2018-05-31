@@ -2,14 +2,15 @@
 
 use common\models\vk\CourseNode;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $model CourseNode */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t(null, "{Edit}{Node}", [
     'Edit' => Yii::t('app', 'Edit'), 'Node' => Yii::t('app', 'Node')
@@ -58,6 +59,11 @@ $js =
                 });
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
+            $.notify({
+                message: rel['message'],
+            },{
+                type: rel['code'] == '200' ? "success " : "danger",
+            });
         });
         $('.myModal').modal('hide');
     });  

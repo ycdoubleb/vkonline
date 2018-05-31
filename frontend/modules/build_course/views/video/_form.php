@@ -219,6 +219,8 @@ $this->registerJs($format, View::POS_HEAD);
                 ],
                 'pluginOptions' => [
                     'tags' => true,
+                    'allowClear' => false,
+                    'tokenSeparators' => [','],
                 ],
             ]) ?>
         </div>
@@ -232,9 +234,40 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    <!--外部链接-->
+    <?php if(Yii::$app->user->identity->is_official && !$model->is_ref): ?>
+        <div class="form-group field-outside_link">
+            <?= Html::label(Yii::t('app', '{Outside}{Link}', [
+                'Outside' => Yii::t('app', 'Outside'), 'Link' => Yii::t('app', 'Link')
+            ]), 'outside_link', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+            <div class="col-lg-6 col-md-6">
+                <?= Html::textInput('outside_link', !$model->isNewRecord && $model->source_is_link ? $model->source->path : null, [
+                    'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
+                ]) ?>
+            </div>
+            <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+        </div>
+        <div class="form-group field-outside_video">
+            <label class="col-lg-1 col-md-1 control-label form-label"></label>
+            <div class="col-lg-6 col-md-6">
+                <?php if(!$model->isNewRecord && $model->source_is_link): ?>
+                <video id="outside_video" src="<?= $model->source->path ?>" poster="<?= $model->img ?>" controls></video>
+                <?php else: ?>
+                <video id="outside_video" src="" poster=""></video>
+                <?php endif; ?>
+            </div>
+        </div>
+        <!--隐藏属性-->
+        <?= Html::activeHiddenInput($model, 'source_level') ?>
+        <?= Html::activeHiddenInput($model, 'source_wh') ?>
+        <?= Html::activeHiddenInput($model, 'source_bitrate') ?>
+        <?= Html::activeHiddenInput($model, 'source_duration') ?>
+        <?= Html::activeHiddenInput($model, 'source_is_link') ?>
+        <?= Html::activeHiddenInput($model, 'source_id[]') ?>
+        <?= Html::activeHiddenInput($model, 'img') ?>
+    <?php endif; ?>
     <!--隐藏属性-->
     <?= Html::activeHiddenInput($model, 'ref_id') ?>
-    
     <?php ActiveForm::end(); ?>
 
 </div>
@@ -335,14 +368,55 @@ $js =
      * @return boolean  
      */
     function isExist(){
-        var len = $('#uploader-container input[name="'+ 'Video[source_id][]'+'"]').length 
+        var len = $('#uploader-container input[name="'+ 'Video[source_id][]'+'"]').length;
         if(len <= 0){
             return false;
         }else{
             return true;
         }
     }
-    
+    //添加外部链接
+    var links = "";
+    $("#outside_link").blur(function(){
+        val = $(this).val();
+        if(val == ''){
+            $("#outside_video").attr({'src': '', 'poster': '', 'controls': false});
+            $("#video-source_level").val("");
+            $("#video-source_wh").val("");
+            $("#video-source_bitrate").val("");
+            $("#video-source_duration").val("");
+            $("#video-source_is_link").val("");
+            $("#video-source_id").val("");
+            $("#video-img").val("");
+            links = "";
+            return;
+        }
+        if(isExist()){
+            $('.field-outside_link').addClass('has-error');
+            $('.field-outside_link .help-block').html('请先删除视频文件，再添加外部链接。');
+            setTimeout(function(){
+                $('.field-outside_link').removeClass('has-error');
+                $('.field-outside_link .help-block').html('');
+            }, 3000);
+            return;
+        }
+        if(links == val && val != ''){
+            return;
+        }
+        links = val;
+        $.get("/webuploader/default/upload-link?video_path=" + val, function(rel){
+            if(rel['code'] == '200'){
+                $("#outside_video").attr({'src': rel['data']['dbFile'].path, 'poster': rel['data']['dbFile'].thumb_path, 'controls': 'controls'});
+                $("#video-source_level").val(rel['data']['source'].source_level);
+                $("#video-source_wh").val(rel['data']['source'].source_wh);
+                $("#video-source_bitrate").val(rel['data']['source'].source_bitrate);
+                $("#video-source_duration").val(rel['data']['source'].source_duration);
+                $("#video-source_is_link").val(rel['data']['source'].source_is_link);
+                $("#video-source_id").val(rel['data']['dbFile'].id);
+                $("#video-img").val(rel['data']['dbFile'].thumb_path);
+            }
+        });
+    });    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

@@ -100,6 +100,7 @@ class VideoController extends Controller
         
         return $this->render('view', [
             'model' => $model,
+            'paths' => $model->getUploadfileByPath(),
             'dataProvider' => $searchModel->relationSearch($id),
         ]);
     }
@@ -127,16 +128,7 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
-            $data = [
-                'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
-                'duration' => DateUtil::intToTime($model->source_duration),
-            ];
-            return [
-                'code'=> $result ? 200 : 404,
-                'data' => $result ? $data : [],
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
         } else {
             return $this->renderAjax('create', [
                 'model' => $model,
@@ -166,21 +158,13 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
-            $data = [
-                'id' => $model->id, 'name' => $model->name,
-                'duration' => DateUtil::intToTime($model->source_duration),
-            ];
-            return [
-                'code'=> $result ? 200 : 404,
-                'data' => $result ? $data : [],
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
         } else {
             return $this->renderAjax('update', [
                 'model' => $model,
                 'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
+                'paths' => $model->getUploadfileByPath(),
                 'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
             ]);
@@ -203,11 +187,7 @@ class VideoController extends Controller
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
-            $result = ActionUtils::getInstance()->deleteVideo($model);
-            return [
-                'code'=> $result ? 200 : 404,
-                'message' => ''
-            ];
+            return ActionUtils::getInstance()->deleteVideo($model);
         } else {
             return $this->renderAjax('delete',[
                 'model' => $model,

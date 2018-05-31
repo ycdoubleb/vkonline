@@ -7,7 +7,7 @@
     <div class="text">
         <div class="tuip title single-clamp">{%name%}</div>
         <div class="tuip single-clamp">{%tags%}</div>
-        <div class="tuip">{%customerName%}</div>
+        <div class="tuip font-success">{%customerName%}</div>
     </div>
     <div class="teacher">
         <div class="tuip">

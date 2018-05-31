@@ -16,8 +16,8 @@ use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\DateUtil;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
@@ -204,12 +204,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -236,12 +242,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }  
     
@@ -265,12 +277,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }   
     
@@ -294,12 +312,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => ['id' => $model->id, 'name' => $model->name],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -330,12 +354,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200 ,
+                'data'=> ['id' => $model->id, 'name' => $model->name,],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404 ,
+                'data'=> [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -360,12 +390,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -399,12 +435,21 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [
+                    'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
+                    'duration' => DateUtil::intToTime($model->source_duration),
+                ],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage(),
+            ];
         }
     }
     
@@ -426,8 +471,8 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            $isEqual = $oldAttr['source_id'] != $model->source_id;
             if($model->save()){
+                $isEqual = $oldAttr['source_id'] != $model->source_id;
                 $courseModel = Course::findOne($model->courseNode->course_id);
                 $courseModel->content_time = $courseModel->content_time + $model->source_duration;
                 $courseModel->update(false, ['content_time']);
@@ -451,12 +496,21 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [
+                    'id' => $model->id, 'name' => $model->name,
+                    'duration' => DateUtil::intToTime($model->source_duration),
+                ],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -484,12 +538,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -522,12 +582,18 @@ class ActionUtils
             }
             
             $trans->commit();  //提交事务
-            return true;
-            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return [
+                'code' => 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return false;
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            return [
+                'code' => 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
         }
     }
     
@@ -801,11 +867,12 @@ class ActionUtils
         $query->from(CourseActLog::tableName());
         $query->leftJoin(['User' => User::tableName()], 'User.id = created_by');
         $query->where(['course_id' => $course_id]);
+        $results = $query->all();
         
         return [
-            'actions' => ArrayHelper::map($query->all(), 'action', 'action'),
-            'titles' => ArrayHelper::map($query->all(), 'title', 'title'),
-            'createdBys' => ArrayHelper::map($query->all(), 'created_by', 'nickname'),
+            'actions' => ArrayHelper::map($results, 'action', 'action'),
+            'titles' => ArrayHelper::map($results, 'title', 'title'),
+            'createdBys' => ArrayHelper::map($results, 'created_by', 'nickname'),
         ];
     }
     

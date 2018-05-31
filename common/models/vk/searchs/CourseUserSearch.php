@@ -60,15 +60,12 @@ class CourseUserSearch extends CourseUser
      
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'course_id' => $this->course_id,
-            'user_id' => $this->user_id,
-            'privilege' => $this->privilege,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
         ]);
-       
+        
         $query->orderBy(['privilege' => SORT_DESC]);
+        
+        $query->with('course', 'user');
         
         return  new ArrayDataProvider([
             'allModels' => $query->all(),

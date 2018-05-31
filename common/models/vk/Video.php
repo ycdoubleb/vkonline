@@ -74,6 +74,12 @@ class Video extends ActiveRecord
     const YES_PUBLISH = 1;
     
     /**
+     * 视频文件路径
+     * @var string 
+     */
+    public $source_path;
+
+    /**
      * 可见范围
      * @var array 
      */
@@ -133,7 +139,7 @@ class Video extends ActiveRecord
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['source_duration'], 'number'], 
-            [['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
+            [['source_level', 'source_is_link', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
                 'is_del', 'is_official',  'sort_order', 'created_at', 'updated_at'], 'integer'],
             //[['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
             [['id', 'node_id', 'teacher_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
@@ -197,7 +203,7 @@ class Video extends ActiveRecord
             if(trim($this->source_id) == ''){
                 $this->source_id = $oldSourceId;
             }
-            if($this->source_id != $oldSourceId){
+            if($this->source_id != $oldSourceId && !$this->source_is_link){
                 $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
             }
             $upload = UploadedFile::getInstance($this, 'img');
@@ -211,9 +217,9 @@ class Video extends ActiveRecord
                 $this->img = '/upload/video/screenshots/' . $this->source_id . '.' . $ext . '?rand=' . rand(0, 1000);
             }else {
                 //设置默认
-                $this->img = $this->source_id != $oldSourceId ? 
-                    FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path) :
-                        $this->getOldAttribute('img');
+                if($this->source_id != $oldSourceId && !$this->source_is_link){
+                    $this->img = FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path);
+                }
             }
             //都没做修改的情况下保存旧数据
             if(trim($this->img) == ''){
@@ -319,7 +325,7 @@ class Video extends ActiveRecord
         $uploadFile->from(['Video' => self::tableName()]);
         $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
         $uploadFile->where(['Uploadfile.id' => $fileId]);
-        $uploadFile->andWhere(['Uploadfile.is_del' => 0]);
+        $uploadFile->andWhere(['Video.source_is_link' => 0, 'Uploadfile.is_del' => 0]);
         
         $hasFile = $uploadFile->one();
         if($hasFile){
@@ -345,6 +351,25 @@ class Video extends ActiveRecord
         return null;
     }
     
+    /**
+     * 获取上传的文件的路径
+     * @return array
+     */
+    public function getUploadfileByPath()
+    {
+        if(!$this->source_is_link){
+            $this->img = '/' . $this->img;
+            $this->source_path = '/' . $this->source->path;
+        }else{
+            $this->source_path = $this->source->path;
+        }
+        
+        return [
+            'source_path' => $this->source_path,
+            'img' => $this->img,
+        ];
+    }
+
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径
