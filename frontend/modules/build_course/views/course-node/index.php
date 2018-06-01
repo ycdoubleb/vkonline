@@ -142,6 +142,9 @@ $js =
         });
     }); 
 
+    
+    //在模态框里Select2不能输入搜索的解决方法
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {}; 
     /** 显示模态框 */
     window.showModal = function(elem){
         $(".myModal").html("");

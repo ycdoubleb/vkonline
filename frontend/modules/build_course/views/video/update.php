@@ -33,7 +33,7 @@ $this->title = Yii::t(null, "{Edit}{Video}", [
                     'model' => $model,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
-                    'allTags' => $allTags,
+                    //'allTags' => $allTags,
                     'tagsSelected' => $tagsSelected,
                 ]) ?>
                 

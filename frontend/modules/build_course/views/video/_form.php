@@ -2,6 +2,7 @@
 
 use common\models\vk\Video;
 use common\utils\DateUtil;
+use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
@@ -14,6 +15,8 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Video */
 /* @var $form ActiveForm */
+
+TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
@@ -63,7 +66,7 @@ $this->registerJs($format, View::POS_HEAD);
             'id' => 'build-course-form', 
             'class'=>'form-horizontal',
             'enctype' => 'multipart/form-data',
-            'onkeydown' => "if(event.keyCode==13) return false;",
+            //'onkeydown' => "if(event.keyCode==13) return false;",
         ],
         'fieldConfig' => [  
             'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",  
@@ -206,22 +209,8 @@ $this->registerJs($format, View::POS_HEAD);
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
-            <?= Select2::widget([
-                'id' => 'tag_id',
-                'name' => 'TagRef[tag_id]',
-                'data' => $allTags,
-                'value' => !$model->isNewRecord ? $tagsSelected : null, 
-                'showToggleAll' => false,
-                'options' => [
-                    'class' => 'form-control',
-                    'multiple' => true,
-                    'placeholder' => '请选择至少5个标签...'
-                ],
-                'pluginOptions' => [
-                    'tags' => true,
-                    'allowClear' => false,
-                    'tokenSeparators' => [','],
-                ],
+            <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
+                'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
             ]) ?>
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>

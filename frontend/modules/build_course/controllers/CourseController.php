@@ -139,7 +139,7 @@ class CourseController extends Controller
                 'allCategory' => Category::getCatsByLevel(1, true),
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
                 'attFiles' => Course::getUploadfileByAttachment(),
-                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
     }
@@ -171,9 +171,9 @@ class CourseController extends Controller
                 'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'attFiles' => Course::getUploadfileByAttachment($model->id),
                 'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),
-                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
                 'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),
-                'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 1)),
+                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 1)),
             ]);
         }
     }
