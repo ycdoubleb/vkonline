@@ -61,7 +61,7 @@ $this->title = Yii::t('app', $model['name']);
                     </div>
                     <div class="control-box">
                         <?php $lastVideo = $study_progress['last_video'] != null ? $study_progress['last_video'] : $model['first_video']; ?>
-                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastVideo ?>" target="_black">
+                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastVideo ?>">
                             <?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?>
                         </a>
                         
