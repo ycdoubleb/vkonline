@@ -134,7 +134,7 @@ class VideoController extends Controller
                 'model' => $model,
                 'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo(),
-                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
             ]);
         }
     }
@@ -165,8 +165,8 @@ class VideoController extends Controller
                 'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
                 'videoFiles' => Video::getUploadfileByVideo($model->source_id),
                 'paths' => $model->getUploadfileByPath(),
-                'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
-                'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
+                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 2)),
             ]);
         }
     }

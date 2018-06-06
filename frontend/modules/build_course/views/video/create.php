@@ -35,7 +35,7 @@ $this->title = Yii::t('app', "{Add}{Video}",[
                     'model' => $model,
                     'allTeacher' => $allTeacher,
                     'videoFiles' => $videoFiles,
-                    'allTags' => $allTags,
+                    //'allTags' => $allTags,
                 ]) ?>
 
             </div>

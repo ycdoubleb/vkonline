@@ -3,6 +3,7 @@
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\widgets\depdropdown\DepDropdown;
+use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
@@ -16,6 +17,8 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Course */
 /* @var $form ActiveForm */
+
+TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
@@ -75,7 +78,7 @@ $this->registerJs($format, View::POS_HEAD);
     <!--课程分类-->
     <?= $form->field($model, 'category_id',[
         'template' => "{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>", 
-    ])->widget(DepDropdown::class,[
+    ])->widget(DepDropdown::class, [
         'plugOptions' => [
             'url' => Url::to('/admin_center/category/search-children', false),
             'level' => 3,
@@ -162,23 +165,8 @@ $this->registerJs($format, View::POS_HEAD);
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
-            <?=  Select2::widget([
-                'id' => 'tagref-tag_id',
-                'name' => 'TagRef[tag_id]',
-                'data' => $allTags,
-                'value' => !$model->isNewRecord ? $tagsSelected : null, 
-                'showToggleAll' => false,
-                'options' => [
-                    'class' => 'form-control',
-                    'style' => 'height: auto',
-                    'multiple' => true,
-                    'placeholder' => '请选择至少5个标签...'
-                ],
-                'pluginOptions' => [
-                    'tags' => true,
-                    'allowClear' => false,
-                    'tokenSeparators' => [','],
-                ],
+            <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
+                'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
             ]) ?>
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
@@ -195,8 +183,7 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
-    
-    <!--描述-->
+    <!--课程简介-->
     <?= $form->field($model, 'content', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea()->label(Yii::t('app', '{Course}{Synopsis}', [
@@ -230,7 +217,7 @@ $js =
         initialFrameHeight: 500,
         maximumWords: 100000,
     });     
-        
+    
     //选择二级分类加载其对应的属性
     $('select[data-name="course-category_id"]').eq(2).change(function(){
         var items = $domes;

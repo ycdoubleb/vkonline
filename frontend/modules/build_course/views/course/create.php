@@ -29,7 +29,7 @@ UeditorAsset::register($this);
         'allCategory' => $allCategory,
         'allTeacher' => $allTeacher,
         'attFiles' => $attFiles,
-        'allTags' => $allTags
+        //'allTags' => $allTags
     ]) ?>
 
 </div>
@@ -40,6 +40,15 @@ $js =
                 
     //提交表单    
     $("#submitsave").click(function(){
+        if($("#course-category_id").val() == 0){
+            $(".field-course-category_id").addClass("has-error");
+            $(".field-course-category_id .help-block").html("课程分类不能为空。");
+            setTimeout(function(){
+                $(".field-course-category_id").removeClass("has-error");
+            $(".field-course-category_id .help-block").html("");
+            }, 3000);
+            return;
+        }
         if(tijiao() == false){
             $(".field-courseattachment-file_id").addClass("has-error");
             $(".field-courseattachment-file_id .help-block").html("文件必须是已上传。");
@@ -47,9 +56,9 @@ $js =
                 $(".field-courseattachment-file_id").removeClass("has-error");
                 $(".field-courseattachment-file_id .help-block").html("");
             }, 3000);
-        }else{
-            $('#build-course-form').submit();
+            return;
         }
+        $('#build-course-form').submit();
     });
         
 JS;

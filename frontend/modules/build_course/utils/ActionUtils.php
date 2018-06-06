@@ -59,7 +59,7 @@ class ActionUtils
         {  
             if($model->save()){
                 $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
                 $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
@@ -93,7 +93,7 @@ class ActionUtils
         {  
             if($model->save()){
                 $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'));
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
                 $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
                     $oldCategory = Category::findOne($oldAttr['category_id']);
@@ -426,7 +426,7 @@ class ActionUtils
                 $courseModel = Course::findOne($model->courseNode->course_id);
                 $courseModel->content_time = $courseModel->content_time + $model->source_duration;
                 $courseModel->update(false, ['content_time']);
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
                 $this->saveCourseActLog(['action' => '增加', 'title' => "视频管理",
                     'content' => "{$model->courseNode->name}>> {$model->name}",  
                     'course_id' => $model->courseNode->course_id,]);
@@ -476,7 +476,7 @@ class ActionUtils
                 $courseModel = Course::findOne($model->courseNode->course_id);
                 $courseModel->content_time = $courseModel->content_time + $model->source_duration;
                 $courseModel->update(false, ['content_time']);
-                $this->saveObjectTags($model->id, ArrayHelper::getValue($post, 'TagRef.tag_id'), 2);
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
                 if(!empty($newAttr) || $isEqual){
                     $oldRef = Video::findOne($oldAttr['ref_id']);
                     $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
@@ -729,9 +729,44 @@ class ActionUtils
     /**
      * 保存对象标签
      * @param string $objectId  对象id
-     * @param array $tagIds     标签id
+     * @param array $tagArrays  标签
      * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
      */
+    private function saveObjectTags($objectId, $tagArrays, $type = 1)
+    {
+        $tagRefs = [];
+        //删除已存在的标签
+        TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
+        if(!empty($tagArrays)){
+            //先查询已经存在的标签
+            $tagResults = Tags::findAll(['name' => $tagArrays]);
+            $tagNames = ArrayHelper::map($tagResults, 'name', 'id');
+            //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
+            foreach ($tagArrays as $tag_name) {
+                if(isset($tagNames[$tag_name])){
+                    $tags = Tags::findOne($tagNames[$tag_name]);
+                    $tag_id = $tags->id;
+                    $tags->ref_count = $tags->ref_count + 1;
+                    $tags->save(true, ['ref_count']);
+                }else{
+                    $tags = new Tags(['name' => $tag_name, 'ref_count' => 1]);
+                    $tags->save();
+                    $tag_id = $tags->id;
+                }
+                $tagRefs[] = [$objectId, $tag_id, $type];
+            }
+        }
+        //添加
+        Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
+            ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
+    }
+    
+    /**
+     * 保存对象标签
+     * @param string $objectId  对象id
+     * @param array $tagIds     标签id
+     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
+     
     private function saveObjectTags($objectId, $tagIds, $type = 1)
     {
         $tagRefs = [];
@@ -740,7 +775,7 @@ class ActionUtils
         if(!empty($tagIds)){
             //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
             foreach ($tagIds as $tag_id) {
-                if(($tags = Tags::findOne($tag_id)) !== null){
+                if(($tags = Tags::findOne($tag_id)) != null){
                     $tags->ref_count = $tags->ref_count + 1;
                     $tags->save(true, ['ref_count']);
                 }else{
@@ -754,7 +789,7 @@ class ActionUtils
         //添加
         Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
             ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
-    }
+    }*/
     
     /**
      * 保存协作人员

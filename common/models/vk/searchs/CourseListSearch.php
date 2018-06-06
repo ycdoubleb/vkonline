@@ -75,7 +75,7 @@ class CourseListSearch {
         }
         //分类过滤
         if ($cat_id != 0) {
-            $query->andFilterWhere(['like', 'Category.path', Category::getCatById($cat_id)->path . "%", false]);
+            $query->andFilterWhere(['or',['like', 'Category.path', Category::getCatById($cat_id)->path . ",%", false],['Category.path' => Category::getCatById($cat_id)->path]]);
         }
 
         //添加属性过滤条件

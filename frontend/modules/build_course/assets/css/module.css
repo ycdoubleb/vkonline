@@ -83,7 +83,7 @@ video {
 }
 .form .form-group .form-control,
 .form .form-group .select2-selection {
-    height: 40px;
+    min-height: 40px;
     padding: 10px 24px 10px 12px;
     border-radius: 0;
     box-shadow: none;
@@ -92,7 +92,6 @@ body .select2-container--krajee
 .select2-search--dropdown .select2-search__field {
     border-radius: 0;
 }
-.form .form-group textarea.form-control,
 .form .form-group .edui-default {
     height: auto
 }
@@ -102,7 +101,7 @@ body .select2-container--krajee
 }
 .form .form-group .select2-selection 
 .select2-selection__arrow {
-    height: 38px;
+    min-height: 38px;
     border-left: none;
 }
 .form .form-group .select2-selection 
