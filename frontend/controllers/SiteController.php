@@ -15,6 +15,7 @@ use Detection\MobileDetect;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
+use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\db\Query;
@@ -32,6 +33,8 @@ use const YII_ENV_TEST;
  */
 class SiteController extends Controller
 {
+    public static $weiboConfig = 'weiboLogin';
+
     /**
      * {@inheritdoc}
      */
@@ -141,9 +144,8 @@ class SiteController extends Controller
             return $this->goHome();
         }
         
-        $url = \Yii::$app->request->hostInfo;       //获取当前域名
-        $hostUrl = trim(strrchr($url, '/'),'/');    //截取最后一个斜杠后面的内容
-        $customerLogo = Customer::find()->select(['logo'])->where(['domain' => $hostUrl])->asArray()->one();
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
@@ -153,7 +155,7 @@ class SiteController extends Controller
 
             return $this->render('login', [
                 'model' => $model,
-                'customerLogo' => ArrayHelper::getValue($customerLogo, 'logo'),
+                'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
             ]);
         }
     }
@@ -202,7 +204,7 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
-
+    
     /**
      * Signs user up.
      *
@@ -213,7 +215,10 @@ class SiteController extends Controller
         $model = new User();
         $model->scenario = User::SCENARIO_CREATE;
         $params = \Yii::$app->request->queryParams;
-
+        
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
+        
         if ($model->load(Yii::$app->request->post())) {
             if ($user = $this->signup(Yii::$app->request->post())) {
                 if (Yii::$app->getUser()->login($user)) {
@@ -225,6 +230,7 @@ class SiteController extends Controller
         return $this->render('signup', [
             'model' => $model,
             'code' => ArrayHelper::getValue($params, 'code'),
+            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
         ]);
     }
     

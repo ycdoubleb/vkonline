@@ -4,6 +4,7 @@ namespace common\models\vk;
 
 use common\models\AdminUser;
 use common\models\Region;
+use common\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -190,6 +191,9 @@ class Customer extends ActiveRecord
                 $str='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';  
                 $randStr = str_shuffle($str);       //打乱字符串  
                 $this->invite_code = substr($randStr,0,6); //substr(string,start,length);返回字符串的一部分 
+            }
+            if(!$this->isNewRecord){
+                User::updateAll(['is_official' => $this->is_official], ['customer_id' => $this->id]);
             }
             //拿到经纬度并处理
             $location = ArrayHelper::getValue(Yii::$app->request->post(), 'Customer.location');
