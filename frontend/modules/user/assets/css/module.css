@@ -40,6 +40,53 @@
     color: #666666;
 }
 
+.main .frame .frame-title .framebtn,
+.main .frame .page-title .framebtn {
+    position: relative;
+    padding-right: 15px;
+    float: right;
+}
+
+.main .frame .page-title .framebtn .wechat,
+.main .frame .page-title .framebtn .weibo,
+.main .frame .page-title .framebtn .qq {
+    width: 28px;
+    height: 28px;
+    margin-top: 15px;
+    margin-right: 14px;
+    display: inline-block;
+    background-color: #ddd;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 14px;
+    border-radius: 50%;
+}
+
+.main .frame .page-title .framebtn .wechat {
+    background-image: url("/imgs/site/wechat.png");
+}
+
+.main .frame .page-title .framebtn .wechat:hover {
+    background-color: #58bc46;
+}
+
+.main .frame .page-title .framebtn .weibo {
+    background-image: url("/imgs/site/weibo.png");
+}
+
+.main .frame .page-title .framebtn .weibo:hover {
+    background-color: #e90e24;
+}
+
+.main .frame .page-title .framebtn .qq {
+    background-image: url("/imgs/site/qq.png");
+    margin-right: 0px;
+}
+
+.main .frame .page-title .framebtn .qq:hover {
+    background-color: #3caae3;
+}
+
 .main .frame-content {
     margin-bottom: 45px;
     -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -49,12 +96,6 @@
 .main .frame-content .table>tr {
     background-color: #ffffff;
     min-height: 48px !important;
-}
-
-.main .frame .frame-title .framebtn {
-    position: relative;
-    padding-right: 15px;
-    float: right;
 }
 
 .main .frame-content .content-content {

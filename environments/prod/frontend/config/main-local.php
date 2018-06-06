@@ -39,6 +39,10 @@ return [
         'other' => [
             'class' => 'frontend\modules\other\Module',
         ],
+        //回调地址
+        'callback' => [
+            'class' => 'frontend\modules\callback\Module',
+        ],
     ],
     'as access' => [
         'allowActions' => [
