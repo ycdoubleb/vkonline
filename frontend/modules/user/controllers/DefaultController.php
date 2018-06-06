@@ -3,6 +3,7 @@
 namespace frontend\modules\user\controllers;
 
 use common\models\User;
+use common\models\UserAuths;
 use common\models\vk\Course;
 use common\models\vk\CourseAttachment;
 use common\models\vk\CourseFavorite;
@@ -13,6 +14,7 @@ use common\models\vk\VideoAttachment;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
+use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -26,6 +28,8 @@ use yii\web\NotFoundHttpException;
  */
 class DefaultController extends Controller
 {
+    public static $weiboConfig = 'weiboLogin';
+    
     /**
      * @inheritdoc
      */
@@ -57,6 +61,8 @@ class DefaultController extends Controller
     public function actionIndex($id)
     {
         $model = $this->findModel($id);
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
         
         if($model->id != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
@@ -72,6 +78,10 @@ class DefaultController extends Controller
             'courseFavorite' => $this->getCourseFavorite($id),     //关注的课程数
             'videoFavorite' => $this->getVideoFavorite($id),       //收藏的视频数
             'courseMessage' => $this->getCourseMessage($id),       //评论数
+            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+            'weiboUser' => UserAuths::findOne(['user_id' => $id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
+            'qqUser' => UserAuths::findOne(['user_id' => $id, 'identity_type' => 'qq']),        //是否已绑定QQ号
+            'wechatUser' => UserAuths::findOne(['user_id' => $id, 'identity_type' => 'wechat']),//是否已绑定微信账号
         ]);
     }
     

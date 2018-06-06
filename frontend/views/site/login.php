@@ -70,8 +70,8 @@ SiteAssets::register($this);
                     <div class="third-login">第三方账号登录</div>
                     <div class="third-content">
                         <a href="javascrip:;" class="wechat"></a>
-                        <a href="javascrip:;" class="weibo"></a>
-                        <a href="javascrip:;" class="qq"></a>
+                        <a href="<?= $weibo_url?>" class="weibo"></a>
+                        <?= Html::a('', '/callback/qq-callback/index', ['class' => 'qq'])?>
                     </div>
                 </div>
             </div>

@@ -66,7 +66,7 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
                     [
                         'attribute' => 'avatar',
                         'format' => 'raw',
-                        'value' => Html::img(WEB_ROOT . $model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']),
+                        'value' => Html::img($model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']),
                     ],
                     'email:email',
                     [

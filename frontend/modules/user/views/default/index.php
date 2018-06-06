@@ -9,15 +9,25 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
-//Yii::$app->formatter->sizeFormatBase = 1000;
-
 ?>
 
 <div class="user-default-index main">
     
     <div class="frame">
         
-        <div class="page-title"><span>概况</span></div>
+        <div class="page-title"><span>概况</span>
+            <div class="framebtn">
+                <?php if($wechatUser == null):?>
+                    <a href="javascrip:;" class="wechat" title="绑定微信号"></a>
+                <?php endif;?>
+                <?php if ($weiboUser == null):?>
+                    <a href="<?= $weibo_url?>" class="weibo" title="绑定微博账号"></a>
+                <?php endif;?>
+                <?php if ($qqUser == null):?>
+                    <?= Html::a('', '/callback/qq-callback/index', ['class' => 'qq', 'title' => '绑定QQ号'])?>
+                <?php endif;?>
+            </div>
+        </div>
         
         <!--基本信息-->
         <div class="frame-content">
@@ -47,7 +57,7 @@ ModuleAssets::register($this);
                     [
                         'attribute' => 'avatar',
                         'format' => 'raw',
-                        'value' => Html::img([$model->avatar], ['class' => 'img-circle', 'width' => 128, 'height' => 128]),
+                        'value' => Html::img($model->avatar, ['class' => 'img-circle', 'width' => 128, 'height' => 128]),
                     ],
                     'email:email',
                     [
