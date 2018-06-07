@@ -46,20 +46,20 @@ ModuleAssets::register($this);
             ], 
         ]); ?>
         
-        
+        <!--所属课程-->
         <?= $form->field($searchModel, 'course_id')->widget(Select2::class, [
             'data' => $courseMap, 'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => ['allowClear' => true],
         ])->label(Yii::t('app', '{The}{Course}：', [
             'The' => Yii::t('app', 'The'), 'Course' => Yii::t('app', 'Course')
         ])) ?>
-        
+        <!--视频名称-->
         <?= $form->field($searchModel, 'name')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true
         ])->label(Yii::t('app', '{Video}{Name}：', [
             'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
-        
+        <!--视频来源-->
         <?= $form->field($searchModel, 'is_ref')->radioList(['' => '全部', 0 => '原创',  1 => '引用'], [
             'value' => ArrayHelper::getValue($filters, 'VideoSearch.is_ref', ''),
             'itemOptions'=>[

@@ -87,7 +87,7 @@ class VideoController extends Controller
     }
     
     /**
-     * 显示一个单一的 Course 模型。
+     * 显示一个单一的 Video 模型。
      * @param string $id
      * @return mixed [
      *      model => 模型, dataProvider => 所有相关课程数据

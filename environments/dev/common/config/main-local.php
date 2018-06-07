@@ -28,5 +28,9 @@ return [
         'ueditor' => [
             'class' => 'common\modules\ueditor\Module',
         ],
+        //日期控制组件
+        'datecontrol' =>  [
+            'class' => '\kartik\datecontrol\Module',
+        ],
     ],
 ];
