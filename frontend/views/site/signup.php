@@ -49,7 +49,7 @@ SiteAssets::register($this);
                 <div class="third-content">
                     <a href="javascrip:;" class="wechat"></a>
                     <a href="<?= $weibo_url?>" class="weibo"></a>
-                    <?= Html::a('', '/callback/qq-callback/index', ['class' => 'qq'])?>
+                    <a href="/callback/qq-callback/index" class="qq"></a>
                 </div>
             </div>
 	</fieldset>

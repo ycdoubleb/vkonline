@@ -40,6 +40,9 @@ class WeiboCallbackController extends Controller
             }
         }
         
+        if(!isset($token)){
+            return $this->redirect('/site/login');
+        }
         if ($token) {
             $_SESSION['token'] = $token;
             setcookie('weibojs_'.$weibo->client_id, http_build_query($token));
@@ -56,17 +59,22 @@ class WeiboCallbackController extends Controller
             Yii::$app->getUser()->login($user);
             return $this->goHome();
         } else {
-            return false;
+            return $this->redirect('/site/login');
         }
     }
     
     /**
-     * 取消授权的回调地址
+     * 授权失败的回调地址
      * @return string
      */
-    public function actionRemove()
+    public function actionFail()
     {
-        return $this->render('remove');
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];   //获取配置信息
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
+        
+        return $this->render('fail', [
+            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+        ]);
     }
 
     /**
