@@ -187,7 +187,7 @@ $js =
                         +'<a href="/course/default/view?id={%id%}" target="_blank"><img src="{%cover_img%}"/></a>'
                     +'</div>'
                     +'<div class="name-box">'
-                        +'<span class="name single-clamp">{%name%}</span>'
+                        +'<span class="name single-clamp" title="{%name%}">{%name%}</span>'
                         +'<span class="content-time">{%content_time%}</span>'
                     +'</div>'
                     +'<div class="tag-box">'

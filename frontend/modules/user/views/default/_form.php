@@ -50,7 +50,7 @@ use yii\widgets\ActiveForm;
                 'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
                 'browseLabel' => '选择上传头像...',
                 'initialPreview' => [
-                    Html::img([$model->avatar], ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
+                    Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
                 ],
                 'overwriteInitial' => true,
             ],

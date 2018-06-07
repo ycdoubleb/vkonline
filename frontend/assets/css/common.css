@@ -236,8 +236,14 @@ a.desc:after {
 .footer .contacts-box .contacts-content li a:hover{
     color: inherit;
 }
+
 .footer .contacts-box .contacts-content .contacts-left{
     margin-bottom: 14px;
+    color: #999999;
+}
+.footer .contacts-box .contacts-content .title{
+    font-size: 16px;
+    color: #fff;
 }
 /* 右边客服 */
 .footer .contacts-box .contacts-content .contacts-right-box{
@@ -246,6 +252,7 @@ a.desc:after {
     margin-right: 0px;
 }
 .footer .contacts-box .contacts-content .contacts-right-box .title{
+    font-size: 14px;
     font-weight: bold;
     margin-left: 40px;
 }

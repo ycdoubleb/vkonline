@@ -48,8 +48,8 @@ SiteAssets::register($this);
                 <span class="third-login">使用社交账号注册</span>
                 <div class="third-content">
                     <a href="javascrip:;" class="wechat"></a>
-                    <a href="javascrip:;" class="weibo"></a>
-                    <a href="javascrip:;" class="qq"></a>
+                    <a href="<?= $weibo_url?>" class="weibo"></a>
+                    <a href="/callback/qq-callback/index" class="qq"></a>
                 </div>
             </div>
 	</fieldset>

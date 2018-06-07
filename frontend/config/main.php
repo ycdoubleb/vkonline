@@ -58,6 +58,7 @@ return [
             'admin_center/*',
             'help_center/*',
             'other/*',
+            'callback/*',
         ]
     ],
     'params' => $params,

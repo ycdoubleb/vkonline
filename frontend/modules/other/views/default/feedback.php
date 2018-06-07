@@ -29,7 +29,7 @@ $this->title = Yii::t('app', '{Opinion}{Feedback}', [
             'fieldConfig' => [
                 'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
                 'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
-                    'color' => '#333333', 'font-weight' => 'normal', 'padding-left' => '2px', 'padding-right' => '5px']],
+                    'color' => '#666666', 'font-weight' => 'normal', 'padding-left' => '2px', 'padding-right' => '5px']],
             ],
         ]); ?>
         
@@ -42,7 +42,7 @@ $this->title = Yii::t('app', '{Opinion}{Feedback}', [
                 'labelOptions'=>[
                     'style'=>[
                         'margin'=>'5px 39px 10px 0',
-                        'color' => '#333333',
+                        'color' => '#666666',
                         'font-weight' => 'normal',
                     ]
                 ]
