@@ -78,7 +78,7 @@ AppAsset::register($this);
             <ul class="contacts-right-box">
                 <li class="contacts-right">
                     <span class="icon icon-phone"></span>
-                    <p class="title">000-00000000</p>
+                    <p class="title">361733529</p>
                     <p class="time">周一至周日 9：00—21：00</p>
                 </li>
                 <li class="contacts-right">

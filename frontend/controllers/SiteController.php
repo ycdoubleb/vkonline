@@ -99,7 +99,7 @@ class SiteController extends Controller
         $hotSearch = (new Query())
                 ->select(['keyword','count(*) as count'])
                 ->from(SearchLog::tableName())
-                ->where(['and',['>=','created_at', strtotime("first day of ".date('Y-m'))],['<','created_at', strtotime(date('Y').'-'.(date('m')+1))]])
+                //->where(['and',['>=','created_at', strtotime("first day of ".date('Y-m'))],['<','created_at', strtotime(date('Y').'-'.(date('m')+1))]])
                 ->groupBy('keyword')
                 ->orderBy(['count' => SORT_DESC])
                 ->limit(20)
