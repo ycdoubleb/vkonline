@@ -327,6 +327,10 @@
     color: #666666;
     font-weight: bold;
 }
+.course-tile .name-box .name{
+    width: 200px;
+    display: inline-block;
+}
 .course-tile .name-box .nodes{
     float: right;
     color: #AAAAAA;

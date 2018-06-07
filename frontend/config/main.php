@@ -50,8 +50,11 @@ return [
             /* 开放课程、学习中心、课工厂栏目权限限制 */
             'user/*',
             'course/*',
+            'video/*',
+            'teacher/*',
             'study_center/*',
             'build_course/*',
+            'res_service/*',
             'admin_center/*',
             'help_center/*',
             'other/*',

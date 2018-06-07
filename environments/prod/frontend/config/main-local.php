@@ -35,6 +35,10 @@ return [
         'help_center' => [
             'class' => 'frontend\modules\help_center\Module',
         ],
+        //资源服务
+        'res_service' => [
+            'class' => 'frontend\modules\res_service\Module',
+        ],
         //其他
         'other' => [
             'class' => 'frontend\modules\other\Module',
@@ -46,7 +50,6 @@ return [
     ],
     'as access' => [
         'allowActions' => [
-            'teacher/*',
         ]
     ],
 ];

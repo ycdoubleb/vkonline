@@ -10,6 +10,8 @@ return [
     'N' => '否',
     'My' => '我的',
     'All' => '全部',
+    'Start' => '开始',
+    'End' => '结束',
     
     //公共- 用户
     'User' => '用户',
@@ -72,6 +74,7 @@ return [
     'Attachment' => '附件',
     'Catalog' => '目录',
     'Outside' => '外部',
+    'Statistics' => '统计',
     
     //公共-操作
     'Add' => '添加',
@@ -105,6 +108,7 @@ return [
     'Play' => '播放',
     'Select' => '选择',
     'Save' => '保存',
+    'Apply' => '申请',
     
     //公共-属性
     'ID' => 'ID',
@@ -143,6 +147,8 @@ return [
     'Specific' => '具体',
     'Synopsis' => '简介',
     'Short Name' => '简称',
+    'Data' => '数据',
+    'Resolution' => '分辨率',
     
   
     //提示消息
@@ -182,6 +188,7 @@ return [
     'Invitation Link' => '邀请链接',
     'Basic' => '基本',
     'Courses' => '所有课程',
+    'Videos' => '所有视频',
     'Course Import' => '课程导入',
     'Course Node Import' => '课程环节导入',
     'Total Capacity' => '总容量',
@@ -246,6 +253,7 @@ return [
     
     //后台
     'Resources' => '资源',
+    'Server' => '服务',
     'Record' => '记录',
     'Propaganda' => '宣传',
     'Banner' => '横幅',
@@ -302,5 +310,19 @@ return [
     'Prompt' => '提示',
     //前台-循环播放
     'Lessons' => '本节',
-    'Target' => '目标'
+    'Target' => '目标',
+    //前台-资源服务
+    'Order Goods' => '订单',
+    'Brand' => '品牌',
+    'Participant Brands' => '参与的品牌',
+    'Number Of Course Brands' => '课程品牌数',
+    'Number Of Applied Course' => '被申请课程数',
+    'Number Of Application  Course' => '已申请课程数',
+    'Course Readings' => '课程报读数',
+    'Course Visits' => '课程访问量',
+    'Number Of Applied Video' => '被申请视频数',
+    'Number Of Application  Video' => '已申请视频数',
+    'Video Visits' => '视频访问量',
+    'Read Number' => '报读数',
+    'Visit Number' => '访问量',
 ];

@@ -40,6 +40,10 @@ $config = [
         'help_center' => [
             'class' => 'frontend\modules\help_center\Module',
         ],
+        //资源服务
+        'res_service' => [
+            'class' => 'frontend\modules\res_service\Module',
+        ],
         //其他
         'other' => [
             'class' => 'frontend\modules\other\Module',
@@ -53,7 +57,6 @@ $config = [
         'allowActions' => [
             /* 本地开发模式下可用gii */
             'gii/*',
-            'teacher/*',
         ]
     ],
 ];
