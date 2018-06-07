@@ -202,8 +202,19 @@
     color: #999999;
 }
 
-.video-index.main .video-bottom .pagination,
+.course-index.main .course-bottom .summary {
+    padding: 20px 15px 10px 20px;
+    margin-bottom: 45px;
+    background-color: #ffffff;
+    color: #999999;
+}
+
 .course-index.main .course-bottom .pagination{
+    padding-left: 20px;
+    margin: -45px 0px 15px 0px;
+}
+
+.video-index.main .video-bottom .pagination {
     padding-left: 10px;
     margin: 15px 0;
 }
