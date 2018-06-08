@@ -1,5 +1,9 @@
 <?php
-//session_start();
+
+namespace frontend\OAuths\qqAPI;
+
+use const CLASS_PATH;
+
 /* PHP SDK
  * @version 2.0.0
  * @author connect@qq.com

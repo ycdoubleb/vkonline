@@ -1,10 +1,16 @@
 <?php
+
+namespace frontend\OAuths\qqAPI\core;
+
+use frontend\OAuths\qqAPI\core\Oauth;
+use yii\base\Object;
+
 /* PHP SDK
  * @version 2.0.0
  * @author connect@qq.com
  * @copyright © 2013, Tencent Corporation. All rights reserved.
  */
-require_once(CLASS_PATH."Oauth.class.php");
+//require_once(CLASS_PATH."Oauth.php");
 
 /*
  * @brief QC类，api外部对象，调用接口全部依赖于此对象

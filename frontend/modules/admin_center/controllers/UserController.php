@@ -158,12 +158,12 @@ class UserController extends BaseController
     {
         $model = $this->findModel($id);
         $userId = Yii::$app->user->id;
-        $adminModel = CustomerAdmin::find()->where(['user_id' => $id])->one();
+        $adminModel = CustomerAdmin::find()->where(['user_id' => $id])->one();      //被删除用户的等级 可能为空
         $userLevel = CustomerAdmin::find()->where(['user_id' => $userId])->one();   //当前用户的管理员等级
         
         if($userId == $model->id){
             throw new NotAcceptableHttpException('不能禁用自己！');
-        } elseif ($userLevel->level >= $adminModel->level) {
+        } elseif ($userLevel->level >= (!empty ($adminModel) ? $adminModel->level : 3)) {
             throw new NotAcceptableHttpException('不能禁用权限比自己高的用户！');
         } else {
             $model->status = User::STATUS_STOP;
