@@ -72,7 +72,7 @@ AppAsset::register($this);
             </ul>
             <ul>
                 <li class="contacts-left title">合作</li>
-                <li class="contacts-left"><?= Html::a('资源合作', '#') ?></li>
+                <li class="contacts-left"><?= Html::a('资源合作', '/res_service/default/') ?></li>
                 <li class="contacts-left"><?= Html::a('平台合作', '#') ?></li>
             </ul>
             <ul class="contacts-right-box">
