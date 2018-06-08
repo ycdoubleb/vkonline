@@ -10,7 +10,6 @@ use yii\base\Object;
  * @author connect@qq.com
  * @copyright © 2013, Tencent Corporation. All rights reserved.
  */
-//require_once(CLASS_PATH."Oauth.php");
 
 /*
  * @brief QC类，api外部对象，调用接口全部依赖于此对象
@@ -30,7 +29,7 @@ class QC extends Oauth{
      */
     public function __construct($access_token = "", $openid = ""){
         parent::__construct();
-
+        
         //如果access_token和openid为空，则从session里去取，适用于demo展示情形
         if($access_token === "" || $openid === ""){
             $this->keysArr = array(

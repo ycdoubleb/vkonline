@@ -86,12 +86,12 @@ class WeiboCallbackController extends Controller
     {
         \Yii::$app->getResponse()->format = 'json';
         $post = Yii::$app->request->post();
-        $username = $post['User']['username'];
-        $password = $post['User']['password_hash'];
+        $username = ArrayHelper::getValue($post, 'User.username');
+        $password = ArrayHelper::getValue($post, 'User.password_hash');
 
         $userModel = User::findOne(['username' => $username]);
         if($userModel != null){
-            if($userModel->password_hash == $userModel->validatePassword($password)){
+            if(Yii::$app->security->validatePassword($password,$userModel->password_hash)){
                 $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
                 //保存微博用户数据
                 $results = $this->bindingWeiboUser($userModel, $user_message, $_SESSION['token']['access_token']);

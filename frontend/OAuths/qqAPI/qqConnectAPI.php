@@ -11,4 +11,4 @@ use const CLASS_PATH;
  */
 
 require_once(dirname(__FILE__)."/comm/config.php");
-require_once(CLASS_PATH."QC.class.php");
+require_once(CLASS_PATH."QC.php");

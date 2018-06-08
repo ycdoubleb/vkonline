@@ -1,11 +1,13 @@
 <?php
 
+use common\models\User;
 use frontend\modules\callback\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
+/* @var $model User */
 
 $this->title = Yii::t('app', '授权');
 

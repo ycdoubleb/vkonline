@@ -8,8 +8,6 @@ namespace frontend\OAuths\qqAPI\core;
  * @copyright © 2013, Tencent Corporation. All rights reserved.
  */
 
-//require_once(CLASS_PATH."ErrorCase.class.php");
-
 /*
  * @brief url封装类，将常用的url请求操作封装在一起
  * */
