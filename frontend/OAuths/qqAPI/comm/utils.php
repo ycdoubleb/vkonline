@@ -1,4 +1,7 @@
 <?php
+
+namespace frontend\OAuths\qqAPI\comm;
+
 /**
  * PHP SDK for QQ登录 OpenAPI
  *
@@ -11,7 +14,7 @@
  * @brief 本文件包含了OAuth认证过程中会用到的公用方法 
  */
 
-require_once("config.php");
+//require_once("config.php");
 
 function do_post($url, $data)
 {

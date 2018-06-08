@@ -1,9 +1,9 @@
 <?php
 
 use frontend\modules\callback\assets\ModuleAssets;
+use frontend\OAuths\qqAPI\core\QC;
 use kartik\growl\GrowlAsset;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 
@@ -16,13 +16,17 @@ GrowlAsset::register($this);
 
 <div class="weibo-callback main">
     <div class="frame">
-        <div class="page-title">授权成功</div>
+        <!--<div class="page-title">授权成功</div>-->
         <div class="frame-content">
         <?php
-            require_once("/../OAuths/qqAPI/qqConnectAPI.php");
+        
             $qc = new QC();
-            echo $qc->qq_callback();
-            echo $qc->get_openid();
+
+            $acs = $qc->qq_callback(); //access_token
+            $oid = new $qc->get_openid();   //openid
+            $qc = new QC($acs,$oid);
+            $user_data = $qc->get_user_info();
+            var_dump($user_data);exit;
         ?>
         </div>
     </div>

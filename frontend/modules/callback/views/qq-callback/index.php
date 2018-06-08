@@ -1,6 +1,12 @@
 <?php
-    require_once("/../OAuths/qqAPI/qqConnectAPI.php");
+
+use frontend\OAuths\qqAPI\core\QC;
+
+?>
+<?php
+    
     $qc = new QC();
     $qc->qq_login();
-    var_dump($qc);
     exit;
+    //var_dump($qc);exit;
+    ?>

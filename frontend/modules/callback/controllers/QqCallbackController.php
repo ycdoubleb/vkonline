@@ -2,6 +2,7 @@
 
 namespace frontend\modules\callback\controllers;
 
+use frontend\OAuths\qqAPI\core\QC;
 use yii\web\Controller;
 
 /**
@@ -24,6 +25,12 @@ class QqCallbackController extends Controller
      */
     public function actionCallback()
     {
+        $qc = new QC();
+
+        $acs = $qc->qq_callback(); //access_token
+        $oid=$qc->get_openid();   //openid
+        $user_data = $qc->get_user_info(); //get_user_info()为获得该用户的信息，
+        
         return $this->render('callback');
     }
 }
