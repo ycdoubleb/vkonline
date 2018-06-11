@@ -100,22 +100,21 @@ class DefaultController extends Controller {
             $dbFile->del_mark = 0;          //重置删除标志
             $dbFile->created_by = Yii::$app->user->id;
             $dbFile->thumb_path = (string)$response->VIDEO_IMG;                  //视频截图
-            $dbFile->size = (string)$response->VIDEO_SIZE;                       //视频大小b         
-            //源文件数据
-            $source = [
-                'source_level' => $this->getVideoLevel(explode('x', (string)$response->VIDEO_RESOLUTION)[1]),     //视频质量等级
-                'source_wh' => (string)$response->VIDEO_RESOLUTION,                 //视频分辨率
-                'source_bitrate' => floatval($response->VIDEO_BIT_RATE)*1000,       //码率
-                'source_duration' => floatval($response->VIDEO_TIME)/1000,          //视频长度
-                'source_is_link' => 1,
-            ];
+            $dbFile->size = (string)$response->VIDEO_SIZE;                       //视频大小b   
+            
+            //1280x720
+            $wh = explode('x',(string)$response->VIDEO_RESOLUTION);
+            $dbFile->level = $this->getVideoLevel($wh[1]);                        //视频质量等级
+            $dbFile->width = (integer)$wh[0];                                     //视频宽
+            $dbFile->height = (integer)$wh[1];                                    //视频高
+            $dbFile->bitrate =floatval($response->VIDEO_BIT_RATE)*1000;           //码率
+            $dbFile->duration = floatval($response->VIDEO_TIME)/1000;            //视频长度
             if ($dbFile->save()) {
                 return [
                     'code' => 200,
                     'mes' => '',
                     'data' => [
                         'dbFile' => $dbFile->toArray(),
-                        'source' => $source,
                     ]
                 ];
             }
@@ -359,10 +358,20 @@ class DefaultController extends Controller {
                         Yii::error('fail make thumb!'.$ex->getMessage());
                     }
                 }
+                /**
+                 * 记录视频 width,height,duration,level,bitrate
+                 */
+                $file_media_info = [];
+                if(in_array(strtolower(pathinfo($uploadPath)['extension']),['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'])){
+                    try{
+                        $file_media_info = FfmpegUtil::getVideoInfoByUfileId($uploadPath);
+                    } catch (\yii\base\Exception $e){};
+                }
+                
                 /*
                  * 写入数据库
                  */
-                $dbFile = new Uploadfile(['id' => $fileMd5]);
+                $dbFile = new Uploadfile(array_merge($file_media_info,['id' => $fileMd5]));
                 $dbFile->name = $fileName;
                 $dbFile->path = $uploadPath;
                 $dbFile->del_mark = 0;          //重置删除标志
@@ -609,13 +618,13 @@ class DefaultController extends Controller {
      * @return integer
      */
     private function getVideoLevel($height) {
-        $levels = [480, 720, 1080];
+        $levels = [0, 480, 720, 1080, 2160, 4320, 8640, 17280];
         foreach ($levels as $index => $level) {
             if ($height <= $level) {
-                return $index + 1;
+                return $index;
             }
         }
-        return 3;
+        return 0;
     }
 
 }
