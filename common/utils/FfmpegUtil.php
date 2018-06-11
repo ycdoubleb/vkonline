@@ -21,7 +21,7 @@ class FfmpegUtil {
     /**
      * 获取视频信息
      * @param string $path      文件路径
-     * @return array {width:宽,height:高,level:等级(1=480P 1=720P 2=1080P),bitrate:码率,duration:长度}
+     * @return array {width:宽,height:高,level:等级(1=480P 2=720P 3=1080P),bitrate:码率,duration:长度}
      */
     static public function getVideoInfoByUfileId($path) {
         $ffprobe = FFProbe::create(Yii::$app->params['ffmpeg']);
@@ -32,26 +32,26 @@ class FfmpegUtil {
             'width' => $stream_info->get('width'),
             'height' => $stream_info->get('height'),
             'level' => self::getVideoLevel($stream_info->get('height')),
-            'bitrate' => $stream_info->get('bit_rate'),
-            'duration' => $stream_info->get('duration'),
         ];
-
+        $format_info = $ffprobe->format($path);
+        $info['bitrate'] = $format_info->get('bit_rate');
+        $info['duration'] = $format_info->get('duration');
         return $info;
     }
 
     /**
-     * 返回视频质量：1=480P 1=720P 2=1080P
+     * 返回视频质量：1=480P 2=720P 3=1080P
      * @param integer $height   视频高度
      * @return integer
      */
     static private function getVideoLevel($height) {
-        $levels = [480, 720, 1080];
+        $levels = [0, 480, 720, 1080, 2160, 4320, 8640, 17280];
         foreach ($levels as $index => $level) {
-            if ($height <= $level) {
-                return $index + 1;
+            if ($height < $level) {
+                return $index-1;
             }
         }
-        return 3;
+        return 0;
     }
     
     /**
