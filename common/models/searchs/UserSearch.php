@@ -96,22 +96,23 @@ class UserSearch extends User
         //课程数
         $courses = $this->getUserCourseNumber();
         //视频数
-        $videos = $this->getUserVideoNodeNumber();
-        $videoSize = $this->findUsedSizeByUser()->asArray()->all();
+//        $videos = $this->getUserVideoNodeNumber();
+        $userSize = $this->findUsedSizeByUser()->asArray()->all();
         //添加字段and 关联查询
         self::$query->addSelect(['User.*', 'CustomerAdmin.level'])->with('customer');
         self::$query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.user_id = User.id');
         //以user_id为索引
         $users = ArrayHelper::index(self::$query->asArray()->all(), 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
-                ArrayHelper::index($videos, 'created_by'), ArrayHelper::index($videoSize, 'created_by'));
+//                ArrayHelper::index($videos, 'created_by'),
+                ArrayHelper::index($userSize, 'created_by'));
         //合并查询后的结果
         foreach ($users as $id => $item) {
             if(isset($results[$id])){
                 $users[$id] += $results[$id];
             }
         }
-
+//        var_dump($users);exit;
         return [
             'filter' => $params,
             'data' => [
@@ -170,63 +171,17 @@ class UserSearch extends User
      */
     public function findUsedSizeByUser()
     {
-        $files = $this->findUserFile()->asArray()->all();
-        $courseFiles = $this->findUserCourseFile()->asArray()->all();
-        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
-        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
-        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
-        
         $query = Uploadfile::find()
                 ->select(['Uploadfile.created_by', 'SUM(Uploadfile.size) AS user_size'])
                 ->from(['Uploadfile' => Uploadfile::tableName()]);
 
         $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.id' => $fileIds]);
         
         $query->groupBy('Uploadfile.created_by');
         
         return $query;
     }
     
-    /**
-     * 查找用户关联的文件
-     * @return Query
-     */
-    protected function findUserFile()
-    {
-        self::getInstance();
-        $query = User::find()->select(['Video.source_id', 'Attachment.file_id'])
-            ->from(['User' => User::tableName()]);
-        
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.created_by = User.id AND Video.is_del = 0 AND Video.is_ref = 0)');
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
-        
-        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
-        
-        $query->groupBy('Video.source_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查找用户课程关联的文件
-     * @return Query
-     */
-    protected function findUserCourseFile()
-    {
-        self::getInstance();
-        $query = User::find()->select(['Attachment.file_id'])
-            ->from(['User' => User::tableName()]);
-        
-        $query->leftJoin(['Course' => Course::tableName()], '(Course.created_by = User.id)');
-        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
-        
-        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
-                
-        return $query;
-    }
-
     /**
      * 获取用户
      * @return Query
