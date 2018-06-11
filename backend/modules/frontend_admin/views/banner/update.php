@@ -17,12 +17,12 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Propaganda}{List}',
 ]), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $this->title, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
 <div class="banner-update">
 
     <?= $this->render('_form', [
         'model' => $model,
-        'customer' => $customer,
     ]) ?>
 
 </div>

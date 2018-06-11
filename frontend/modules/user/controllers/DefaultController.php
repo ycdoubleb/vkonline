@@ -5,21 +5,17 @@ namespace frontend\modules\user\controllers;
 use common\models\User;
 use common\models\UserAuths;
 use common\models\vk\Course;
-use common\models\vk\CourseAttachment;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
 use common\models\vk\VideoFavorite;
-use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -37,13 +33,13 @@ class DefaultController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
             'access' => [
-                'class' => AccessControl::className(),
+                'class' => AccessControl::class,
                 'rules' => [
                     [
                         'allow' => true,
@@ -72,9 +68,7 @@ class DefaultController extends Controller
             'model' => $model,
             'usedSpace' => $this->getUsedSpace($id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($id),             //用户自己创建的课程和视频
-            'studyTime' => $this->getStudyTime($id),               //用户学习时长
             'courseProgress' => $this->getCourseProgress($id),     //已学课程数
-            'videoProgress' => $this->getVideoProgress($id),       //已学视频数
             'courseFavorite' => $this->getCourseFavorite($id),     //关注的课程数
             'videoFavorite' => $this->getVideoFavorite($id),       //收藏的视频数
             'courseMessage' => $this->getCourseMessage($id),       //评论数
@@ -144,63 +138,18 @@ class DefaultController extends Controller
     }
     
     /**
-     * 查询已使用的空间
+     * 查询用户已使用的空间
      * @return array
      */
     public function getUsedSpace($id)
     {
-        $files = $this->findUserFile($id)->all();
-        $courseFiles = $this->findUserCourseFile($id)->asArray()->all();
-        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
-        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
-        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
-        
-        $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
-            ->from(['Uploadfile' => Uploadfile::tableName()]);
-        
-        $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.id' => $fileIds]);
-        
-        return $query->one();
-    }
-    
-    /**
-     * 查找用户关联的文件
-     * @param string $id
-     * @return Query
-     */
-    protected function findUserFile($id)
-    {
-        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
-            ->from(['User' => User::tableName()]);
-        
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.created_by = User.id AND Video.is_del = 0 AND Video.is_ref = 0)');
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
-        
-        $query->andWhere(['User.id' => $id]);
-        
-        $query->groupBy('Video.source_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查找用户课程关联的文件
-     * @param string $id
-     * @return Query
-     */
-    protected function findUserCourseFile($id)
-    {
-        $query = User::find()->select(['Attachment.file_id'])
-            ->from(['User' => User::tableName()]);
-        
-        $query->leftJoin(['Course' => Course::tableName()], '(Course.created_by = User.id)');
-        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
-        
-        $query->andWhere(['User.id' => $id]);      //根据用户ID过滤
-                
-        return $query;
+        $userSize = (new Query())
+                ->select(['SUM(size) AS size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()])
+                ->where(['created_by' => $id, 'is_del' => 0])
+                ->one();
+
+        return $userSize;
     }
     
     /**
@@ -219,22 +168,6 @@ class DefaultController extends Controller
         
         return array_merge($userCou, $userVid);
     }
-
-    /**
-     * 获取用户总学习时长
-     * @param string $user_id   用户ID
-     * @return array
-     */
-    public function getStudyTime($user_id)
-    {
-        $studyTime = (new Query())->select(['SUM(VideoProgress.finish_time) AS study_time'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
-                ->where(['User.id' => $user_id,])
-                ->one();
-
-        return $studyTime;
-    }
     
     /**
      * 获取学习完成的课程
@@ -252,24 +185,6 @@ class DefaultController extends Controller
 
         return $courseProgress;
     }
-    
-    /**
-     * 获取学习完成的视频
-     * @param string $user_id    用户ID
-     * @return array
-     */
-    public function getVideoProgress($user_id)
-    {
-        $videoProgress = (new Query())
-                ->select(['COUNT(VideoProgress.user_id) AS vid_pro_num'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
-                ->where(['VideoProgress.is_finish' => 1,'User.id' => $user_id,])
-                ->one();
-
-        return $videoProgress;
-    }
-
 
     /**
      * 获取关注的课程

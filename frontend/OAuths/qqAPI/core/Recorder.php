@@ -8,7 +8,6 @@ namespace frontend\OAuths\qqAPI\core;
  * @copyright © 2013, Tencent Corporation. All rights reserved.
  */
 
-//require_once(CLASS_PATH."ErrorCase.class.php");
 class Recorder{
     private static $data;
     private $inc;

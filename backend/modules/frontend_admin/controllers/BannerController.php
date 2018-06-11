@@ -7,7 +7,6 @@ use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
 use common\models\User;
-use common\models\vk\Customer;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -28,7 +27,7 @@ class BannerController extends BaseController
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -59,7 +58,6 @@ class BannerController extends BaseController
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             
-            'customer' => $this->getTheCustomer()['theCustomer'],      //所属客户
             'createdBy' => $this->getCreatedBy(),       //所有创建者
         ]);
     }
@@ -84,8 +82,7 @@ class BannerController extends BaseController
      */
     public function actionCreate()
     {
-        $customerId = $this->getTheCustomer()['officialQuery'];     //所属官网ID
-        $model = new Banner(['is_official' => 1, 'customer_id' => key($customerId)]);
+        $model = new Banner();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -93,7 +90,6 @@ class BannerController extends BaseController
 
         return $this->render('create', [
             'model' => $model,
-            'customer' => $customerId,     //所属官网ID
         ]);
     }
 
@@ -108,17 +104,12 @@ class BannerController extends BaseController
     {
         $model = $this->findModel($id);
 
-        if($model->is_official==0){
-            throw new NotAcceptableHttpException('无权限操作！');
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            } else {
-                return $this->render('update', [
-                    'model' => $model,
-                    'customer' => $this->getTheCustomer()['officialQuery'],     //所属官网ID
-                ]);
-            }
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
     }
 
@@ -133,12 +124,9 @@ class BannerController extends BaseController
     {
         $model = $this->findModel($id);
         
-        if($model->is_official==0){
-            throw new NotAcceptableHttpException('无权限操作！');
-        } else {
-            $model->delete();
-            return $this->redirect(['index']);
-        }
+        $model->delete();
+        return $this->redirect(['index']);
+        
     }
 
     /**
@@ -158,35 +146,15 @@ class BannerController extends BaseController
     }
     
     /**
-     * 查找所属客户
-     * @return array
-     */
-    public function getTheCustomer()
-    {
-        $theCustomer = (new Query())
-                ->select(['Customer.id', 'Customer.name'])
-                ->from(['Banner' => Banner::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id');
-        $officialQuery = clone $theCustomer;
-        $officialQuery->andFilterWhere(['Customer.is_official' => 1]);    //只查官网信息
-
-        return [
-            'theCustomer' => ArrayHelper::map($theCustomer->all(), 'id', 'name'),
-            'officialQuery' => ArrayHelper::map($officialQuery->all(), 'id', 'name'),
-        ];
-    }
-    
-    /**
      * 查找所有创建者
      * @return array
      */
     public function getCreatedBy()
     {
         $createdBy = (new Query())
-            ->select(['Banner.created_by AS id', 'IF(User.nickname IS NULL,  AdminUser.nickname, User.nickname) AS name'])
+            ->select(['Banner.created_by AS id', 'AdminUser.nickname AS name'])
             ->from(['Banner' => Banner::tableName()])
-            ->leftJoin(['User' => User::tableName()], 'User.id = Banner.created_by')                //关联查询创建人
-            ->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by') //关联查询创建人(非客户)
+            ->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by') //关联查询创建人
             ->all();
 
         return ArrayHelper::map($createdBy, 'id', 'name');

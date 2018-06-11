@@ -298,13 +298,9 @@ class CustomerSearch extends Customer
      */
     public function findUsedSizeByCustomer()
     {
-        $files = $this->findCustomerFile()->all();
-        $courseFiles = $this->findCustomerCourseFile()->asArray()->all();
-        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
-        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
-        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
-        
+        $users = $this->findCustomerUser()->all();      //查找客户下拥有的用户
+        $userIds = array_filter(ArrayHelper::getColumn($users, 'id'));
+
         $query = (new Query())->select(['Customer.id', 'SUM(Uploadfile.size) AS customer_size'])
             ->from(['Uploadfile' => Uploadfile::tableName()]);
         
@@ -312,44 +308,26 @@ class CustomerSearch extends Customer
         $query->leftJoin(['Customer' => Customer::tableName()],'Customer.id = User.customer_id');
         
         $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.id' => $fileIds]);
+        $query->where(['Uploadfile.created_by' => $userIds]);
         
+        $query->groupBy(['Customer.id']);
+
         return $query->all();
     }
     
     /**
-     * 查找客户关联的文件
+     * 查找客户下拥有的用户
      * @return Query
      */
-    protected function findCustomerFile()
+    protected function findCustomerUser()
     {
-        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
+        $query = (new Query())->select(['User.id'])
             ->from(['Customer' => Customer::tableName()]);
         
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.customer_id = Customer.id AND Video.is_del = 0 AND Video.is_ref = 0)');
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
-
-//        $query->andWhere(['Customer.id' => self::$query]);
-
-        $query->groupBy('Video.source_id');
+        $query->leftJoin(['User' => User::tableName()], 'User.customer_id = Customer.id');
         
-        return $query;
-    }
-    
-    /**
-     * 查找客户课程关联的文件
-     * @return Query
-     */
-    protected function findCustomerCourseFile()
-    {
-        $query = Customer::find()->select(['Attachment.file_id'])
-            ->from(['Customer' => Customer::tableName()]);
+        $query->groupBy('User.id');
         
-        $query->leftJoin(['Course' => Course::tableName()], '(Course.customer_id = Customer.id)');
-        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
-        
-//        $query->andWhere(['User.id' => self::$query]);      //根据用户ID过滤
-                
         return $query;
     }
     

@@ -19,20 +19,13 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('app', '{Propaganda}{List}',
     'List' => Yii::t('app', 'List'),
 ]), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="banner-view customer">
 
     <p>
         <?= Html::a('<i class="fa fa-pencil">&nbsp;</i>' . Yii::t('app', 'Edit'), ['update', 'id' => $model->id], 
-                ['class' => 'btn btn-primary '.($model->is_official==0 ? 'disabled' : ' ')]) ?>
-        <?php
-//        Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-//            'class' => 'btn btn-danger',
-//            'data' => [
-//                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-//                'method' => 'post',
-//            ],
-//        ]) ?>
+                ['class' => 'btn btn-primary']) ?>
     </p>
     <div class="frame">
         <div class="col-md-12 col-xs-12 frame-title">
@@ -46,11 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'model' => $model,
             'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
             'attributes' => [
-                [
-                    'attribute' => 'customer_id',
-                    'format' => 'raw',
-                    'value' => $model->customer->name,
-                ],
                 'title',
                 [
                     'attribute' => 'path',
@@ -79,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'created_by',
                     'format' => 'raw',
-                    'value' => $model->is_official==0 ? $model->user->nickname : $model->adminUser->nickname,
+                    'value' => $model->adminUser->nickname,
                 ],
                 'des:ntext',
                 'created_at:datetime',

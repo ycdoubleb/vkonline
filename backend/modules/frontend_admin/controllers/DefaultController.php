@@ -99,56 +99,13 @@ class DefaultController extends Controller
      */
     public function getUsedSpace()
     {
-        $files = $this->findCustomerFile()->all();
-        $courseFiles = $this->finCourseFile()->all();
-        $courseFileIds = ArrayHelper::getColumn($courseFiles, 'file_id');   //课程附件ID
-        $videoFileIds = ArrayHelper::getColumn($files, 'source_id');        //视频来源ID
-        $attFileIds = ArrayHelper::getColumn($files, 'file_id');            //附件ID
-        $fileIds = array_filter(array_merge($courseFileIds, $videoFileIds, $attFileIds));   //合并
+        $usedSize = (new Query())
+                ->select(['SUM(size) AS size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()])
+                ->where(['is_del' => 0])
+                ->one();
         
-        $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
-            ->from(['Uploadfile' => Uploadfile::tableName()]);
-        
-        $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.id' => $fileIds]);
-        
-        return $query->one();
-    }
-    
-    /**
-     * 查找客户关联的文件
-     * @param string $id
-     * @return Query
-     */
-    protected function findCustomerFile()
-    {
-        
-        $query = (new Query())->select(['Video.source_id', 'Attachment.file_id'])
-            ->from(['Customer' => Customer::tableName()]);
-        
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.customer_id = Customer.id AND Video.is_del = 0 AND Video.is_ref = 0)');
-        $query->leftJoin(['Attachment' => VideoAttachment::tableName()], '(Attachment.video_id = Video.id AND Attachment.is_del = 0)');
-                
-        $query->groupBy('Video.source_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查找课程关联的文件
-     * @return Query
-     */
-    protected function finCourseFile()
-    {
-        $query = (new Query())->select(['Attachment.file_id'])
-            ->from(['Customer' => Customer::tableName()]);
-        
-        $query->leftJoin(['Course' => Course::tableName()], 'Course.customer_id = Customer.id');
-        $query->leftJoin(['Attachment' => CourseAttachment::tableName()], '(Attachment.course_id = Course.id AND Attachment.is_del = 0)');
-        
-//        $query->groupBy('Course.source_id');
-        
-        return $query;
+        return $usedSize;
     }
     
     /**

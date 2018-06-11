@@ -13,12 +13,8 @@ use Symfony\Component\Debug\header;
  * @copyright © 2013, Tencent Corporation. All rights reserved.
  */
 
-//require_once(CLASS_PATH."Recorder.class.php");
-//require_once(CLASS_PATH."URL.class.php");
-//require_once(CLASS_PATH."ErrorCase.class.php");
-
 class Oauth{
-
+    
     const VERSION = "2.0";
     const GET_AUTH_CODE_URL = "https://graph.qq.com/oauth2.0/authorize";
     const GET_ACCESS_TOKEN_URL = "https://graph.qq.com/oauth2.0/token";
@@ -39,7 +35,7 @@ class Oauth{
         $appid = $this->recorder->readInc("appid");
         $callback = $this->recorder->readInc("callback");
         $scope = $this->recorder->readInc("scope");
-
+        
         //-------生成唯一随机串防CSRF攻击
         $state = md5(uniqid(rand(), TRUE));
         $this->recorder->write('state',$state);
@@ -60,7 +56,7 @@ class Oauth{
 
     public function qq_callback(){
         $state = $this->recorder->read("state");
-        $parmasState = \yii\helpers\ArrayHelper::getValue(\Yii::$app->request->queryParams, 'state');
+//        $parmasState = \yii\helpers\ArrayHelper::getValue(\Yii::$app->request->queryParams, 'state');
 //        var_dump(!$state || $_GET['state'] != $state);exit;
         //--------验证state防止CSRF攻击
 //        if(!$state || $_GET['state'] != $state){
@@ -101,7 +97,7 @@ class Oauth{
     }
 
     public function get_openid(){
-
+        
         //-------请求参数列表
         $keysArr = array(
             "access_token" => $this->recorder->read("access_token")
