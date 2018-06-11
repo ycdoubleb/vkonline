@@ -22,7 +22,7 @@ class BannerSearch extends Banner
     {
         return [
             [['id', 'created_at', 'updated_at'], 'integer'],
-            [['customer_id', 'title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'is_official', 'des', 'created_by'], 'safe'],
+            [['title', 'path', 'link', 'target', 'type', 'sort_order', 'is_publish', 'des', 'created_by'], 'safe'],
         ];
     }
 
@@ -43,14 +43,11 @@ class BannerSearch extends Banner
      * @return ActiveDataProvider
      */
     public function search($params)
-    {
-        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
-        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
-        
+    {        
         $query = Banner::find()
-                ->select(['Banner.id', 'Customer.name AS customer_id', 'Banner.title', 'Banner.path', 'Banner.link',
-                    'Banner.target', 'Banner.sort_order', 'Banner.type', 'Banner.is_publish', 'Banner.is_official',
-                    'IF(User.nickname IS NULL,  AdminUser.nickname, User.nickname) AS created_by', 'Banner.created_at'])
+                ->select(['Banner.id', 'Banner.title', 'Banner.path', 'Banner.link','Banner.target', 
+                    'Banner.sort_order', 'Banner.type', 'Banner.is_publish', 'Banner.created_at', 
+                    'AdminUser.nickname AS created_by'])
                 ->from(['Banner' => Banner::tableName()]);
 
         // add conditions that should always apply here
@@ -60,9 +57,7 @@ class BannerSearch extends Banner
             'key' => 'id',
         ]);
 
-        $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Banner.customer_id');//关联查询所属客户
-        $query->leftJoin(['User' => User::tableName()], 'User.id = Banner.created_by');//关联查询创建人
-        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by');//关联查询创建人(非客户)
+        $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = Banner.created_by');//关联查询创建人
         
         $this->load($params);
 
@@ -72,14 +67,8 @@ class BannerSearch extends Banner
             return $dataProvider;
         }
         
-        //模块id为管理中心的情况下
-        if($moduleId == 'admin_center'){
-            $query->andFilterWhere(['Banner.customer_id' => $customerId]);
-        }
-        
         // grid filtering conditions
         $query->andFilterWhere([
-            'Banner.customer_id' => $this->customer_id,
             'Banner.is_publish' => $this->is_publish,
             'Banner.created_by' => $this->created_by,
         ]);

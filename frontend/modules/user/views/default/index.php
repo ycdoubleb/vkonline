@@ -126,19 +126,9 @@ ModuleAssets::register($this);
                 'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
                 'attributes' => [
                     [
-                        'label' => '总学习时长',
-                        'format' => 'raw',
-                        'value' => Yii::$app->formatter->asDuration($studyTime['study_time']),
-                    ],
-                    [
                         'label' => '已学课程',
                         'format' => 'raw',
                         'value' => $courseProgress['cou_pro_num'] . ' 门',
-                    ],
-                    [
-                        'label' => '已学环节',
-                        'format' => 'raw',
-                        'value' => $videoProgress['vid_pro_num'] . ' 个',
                     ],
                     [
                         'label' => '关注课程',

@@ -26,12 +26,6 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'customer_id')->widget(Select2::class, [
-        'data' => $customer,
-        'hideSearch' => true,
-        'disabled' => true,
-    ])?>
-
     <?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'path')->widget(FileInput::class, [

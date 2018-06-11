@@ -39,31 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [
-                    'attribute' => 'customer_id',
-                    'label' => Yii::t('app', '{The}{Customer}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Customer' => Yii::t('app', 'Customer'),
-                    ]),
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'customer_id',
-                        'data' => $customer,
-                        'hideSearch' => false,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
-                    'value' => function ($data){
-                        return !empty($data['customer_id']) ? $data['customer_id'] : null;
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
                     'attribute' => 'title',
                     'label' => Yii::t('app', 'Name'),
                     'contentOptions' => [
@@ -137,10 +112,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'plugOptions' => [
                         'type' => 'input',
                     ],
-                    'disabled' => function($model, $key, $index){
-                        /* @var $model BannerSearch */
-                        return empty($model->is_official);
-                    },
                 ],
                 [
                     'attribute' => 'type',
@@ -236,8 +207,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'buttons' => [
                         'update' => function ($url, $data, $key) {
                              $options = [
-                                'class' => 'btn btn-sm '.(($data['is_official']==0) ? 'disabled' : ' '),
-                                'style' => 'padding:0px; display:unset',
+                                'class' => '',
+                                'style' => '',
                                 'title' => Yii::t('app', 'Update'),
                                 'aria-label' => Yii::t('app', 'Update'),
                                 'data-pjax' => '0',
@@ -254,8 +225,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         },
                         'delete' => function ($url, $data, $key) {
                             $options = [
-                                'class' => 'btn btn-sm '.(($data['is_official']==0) ? 'disabled' : ' '),
-                                'style' => 'padding:0px; display:unset',
+                                'class' => '',
+                                'style' => '',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
