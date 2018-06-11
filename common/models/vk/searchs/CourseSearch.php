@@ -156,19 +156,11 @@ class CourseSearch extends Course
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //复制课程对象
         $copyCourse= clone self::$query;    
-        //查询课程的占用空间
-        $courseSize = $this->findCourseSize();
         //查询课程下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
-            ->from(['TagRef' => TagRef::tableName()]);
-        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
-        $tagRefQuery->groupBy('TagRef.object_id')->orderBy('TagRef.id');
+        $tagRefQuery = TagRef::getTagsByObjectId($copyCourse, 1, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //查询参与课程的在学人数
-        $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
-            ->from(['Progress' => CourseProgress::tableName()]);
-        $studyQuery->where(['Progress.course_id' => $copyCourse]);
-        $studyQuery->groupBy('Progress.course_id');
+        $studyQuery = CourseProgress::getCourseProgressByCourseId($copyCourse);
         //以课程id为分组
         self::$query->groupBy(['Course.id']);
         //查询总数
@@ -191,7 +183,7 @@ class CourseSearch extends Course
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
-               ArrayHelper::merge(ArrayHelper::index($studyResult, 'course_id'), ArrayHelper::index($courseSize, 'course_id')));
+            ArrayHelper::index($studyResult, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {

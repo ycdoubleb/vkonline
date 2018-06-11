@@ -3,61 +3,46 @@
 namespace common\models\vk;
 
 use common\models\User;
-use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\Teacher;
-use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\FfmpegUtil;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
-use yii\web\UploadedFile;
 
 
 /**
  * This is the model class for table "{{%video}}".
  *
  * @property string $id
- * @property string $node_id            环节ID
- * @property string $teacher_id         老师ID
- * @property string $source_id          源视频ID
- * @property string $customer_id        所属客户ID
- * @property string $ref_id             引用ID
- * @property string $name               视频名称
- * @property int $source_level          视频质量：1=480P 1=720P 2=1080P
- * @property string $source_wh          分辨率：1080x720
- * @property string $source_bitrate     视频码率：480kpi
- * @property double $source_duration    时长
- * @property int $source_is_link        是否为外链：0否 1是
- * @property int $content_level         内容评级：初1 中2 高3
- * @property string $des                视频简介
- * @property int $level                 等级：0私有 1内网 2公共
- * @property string $img                图片路径
- * @property int $is_ref                是否为引用：0否 1是
- * @property int $is_recommend          是否推荐：0否 1是
- * @property int $is_publish            是否发布：0否 1是
- * @property string $zan_count          赞数
- * @property string $favorite_count     收藏数
- * @property int $is_del                是否删除：0否 1是
- * @property int $sort_order            排序
- * @property string $created_by         创建人ID
- * @property int $is_official           是否为官网资源：0否 1是
- * @property string $created_at         创建时间
- * @property string $updated_at         更新时间
-
- * @property CourseNode $courseNode 获取环节
+ * @property string $teacher_id 老师ID
+ * @property string $customer_id 所属客户ID
+ * @property string $name 视频名称
+ * @property string $duration 时长
+ * @property int $is_link 是否为外链：0否 1是
+ * @property int $content_level 内容评级：初1 中2 高3
+ * @property string $des 视频简介
+ * @property int $level 等级：0私有 1内网 2公共
+ * @property string $img 图片路径
+ * @property int $is_recommend 是否推荐：0否 1是
+ * @property int $is_publish 是否发布：0否 1是
+ * @property int $is_official 是否为官网资源：0否 1是
+ * @property string $zan_count 赞数
+ * @property string $favorite_count 收藏数
+ * @property int $is_del 是否删除：0否 1是
+ * @property int $sort_order 排序
+ * @property string $created_by 创建人ID
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
+ *
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
- * @property User $teacher 获取老师
- * @property Video $reference 获取引用视频
- * @property Uploadfile $source 获取源视频
- * @property VideoProgress $progress 获取视频播放进度
+ * @property Teacher $teacher 获取老师
  * @property TagRef[] $tagRefs 获取标签
- * @property PlayStatistics[] $playStatistics 获取标签
+ * @property Knowledge[] $knowledges    获取所有知识点
+ * @property VideoFile[] $videoFiles     获取所有视频与实体文件关联表
  */
 class Video extends ActiveRecord
 {
@@ -73,12 +58,6 @@ class Video extends ActiveRecord
     /** 发布状态-已发布 */
     const YES_PUBLISH = 1;
     
-    /**
-     * 视频文件路径
-     * @var string 
-     */
-    public $source_path;
-
     /**
      * 可见范围
      * @var array 
@@ -98,12 +77,6 @@ class Video extends ActiveRecord
         self::YES_PUBLISH => '已发布',
     ];
     
-    /**
-     * 视频
-     * @var Video 
-     */
-    private static $videos;
-
     /**
      * @inheritdoc
      */
@@ -138,18 +111,12 @@ class Video extends ActiveRecord
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
-            [['source_duration'], 'number'], 
-            [['source_level', 'source_is_link', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 
-                'is_del', 'is_official',  'sort_order', 'created_at', 'updated_at'], 'integer'],
-            //[['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
-            [['id', 'node_id', 'teacher_id', 'customer_id', 'ref_id', 'created_by'], 'string', 'max' => 32],
-            [['name'], 'string', 'max' => 50],
-            //[['source_level', 'content_level', 'level', 'is_ref', 'is_recommend', 'is_publish', 'source_is_link'], 'integer', 'max' => 1],
-            [['source_wh'], 'string', 'max' => 20],
-            [['source_bitrate'], 'string', 'max' => 10],
+            [['duration'], 'number'],
+            [['is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['des'], 'string'],
+            [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
+            [['name'], 'string', 'max' => 50],
             [['img'], 'string', 'max' => 255],
-            //[['sort_order'], 'string', 'max' => 2],
             [['id'], 'unique'],
         ];
     }
@@ -161,29 +128,23 @@ class Video extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'node_id' => Yii::t('app', 'Node ID'),
             'teacher_id' => Yii::t('app', 'Teacher ID'),
-            'source_id' => Yii::t('app', 'Source ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
-            'ref_id' => Yii::t('app', 'Ref ID'),
             'name' => Yii::t('app', 'Name'),
-            'source_level' => Yii::t('app', 'Source Level'),
-            'source_wh' => Yii::t('app', 'Source Wh'),
-            'source_bitrate' => Yii::t('app', 'Source Bitrate'),
-            'source_duration' => Yii::t('app', 'Source Duration'), 
-            'source_is_link' => Yii::t('app', 'Source Is Link'),
+            'duration' => Yii::t('app', 'Duration'),
+            'is_link' => Yii::t('app', 'Is Link'),
             'content_level' => Yii::t('app', 'Content Level'),
             'des' => Yii::t('app', 'Des'),
             'level' => Yii::t('app', 'Level'),
             'img' => Yii::t('app', 'Img'),
-            'is_ref' => Yii::t('app', 'Is Ref'),
             'is_recommend' => Yii::t('app', 'Is Recommend'),
             'is_publish' => Yii::t('app', 'Is Publish'),
+            'is_official' => Yii::t('app', 'Is Official'),
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
+            'is_del' => Yii::t('app', 'Is Del'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'created_by' => Yii::t('app', 'Created By'),
-            'is_official' => Yii::t('app', 'Is Official'), 
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
@@ -191,63 +152,14 @@ class Video extends ActiveRecord
     
     public function beforeSave($insert) 
     {
-        if (!$this->id) {
-            $this->id = md5(time() . rand(1, 99999999));
-        }
-        
         if (parent::beforeSave($insert)) {
-            $nodes = self::getVideoNode(['node_id' => $this->node_id]);
-            ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
-            $counode = $nodes == null ? null : reset($nodes);
-            $oldSourceId = $this->getOldAttribute('source_id');
-            if(trim($this->source_id) == ''){
-                $this->source_id = $oldSourceId;
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
             }
-            if($this->source_id != $oldSourceId && !$this->source_is_link){
-                $videoInfo = FfmpegUtil::getVideoInfoByUfileId($this->source->path);
-            }
-            $upload = UploadedFile::getInstance($this, 'img');
-            if ($upload != null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
-                //获取后缀名，默认为 jpg 
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/video/screenshots/'));
-                $upload->saveAs($uploadpath . $this->source_id . '.' . $ext);
-                $this->img = '/upload/video/screenshots/' . $this->source_id . '.' . $ext . '?rand=' . rand(0, 1000);
-            }else {
-                //设置默认
-                if($this->source_id != $oldSourceId && !$this->source_is_link){
-                    $this->img = FfmpegUtil::createVideoImageByUfileId($this->source_id, $this->source->path);
-                }
-            }
-            //都没做修改的情况下保存旧数据
-            if(trim($this->img) == ''){
-                $this->img = $this->getOldAttribute('img');
-            }
-            //设置顺序
-            if($this->isNewRecord && $counode != null){
-                $this->sort_order = $counode->sort_order + 1;
-            }
-            //设置源视频属性
-            if(isset($videoInfo)){
-                $this->source_level = $videoInfo['level'];
-                $this->source_wh = $videoInfo['width'] . '×' . $videoInfo['height'];
-                $this->source_bitrate = $videoInfo['bitrate'];
-                $this->source_duration = $videoInfo['duration'];
-            }   
             return true;
         }
         
         return false;
-    }
-    
-    /**
-     * @return ActiveQuery
-     */
-    public function getCourseNode()
-    {
-        return $this->hasOne(CourseNode::class, ['id' => 'node_id']);
     }
     
     /**
@@ -273,31 +185,7 @@ class Video extends ActiveRecord
     {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
     }
-    
-    /**
-     * @return ActiveQuery
-     */
-    public function getReference()
-    {
-        return $this->hasOne(Video::class, ['id' => 'ref_id']);
-    }
-    
-    /**
-     * @return ActiveQuery
-     */
-    public function getSource()
-    {
-        return $this->hasOne(Uploadfile::class, ['id' => 'source_id']);
-    }
-    
-    /**
-     * @return ActiveQuery
-     */
-    public function getProgress()
-    {
-        return $this->hasOne(VideoProgress::class, ['video_id' => 'id']);
-    }
-    
+        
     /**
      * @return ActiveQuery
      */
@@ -309,11 +197,19 @@ class Video extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getPlayStatistics()
+    public function getKnowledges()
     {
-        return $this->hasMany(PlayStatistics::class, ['video_id' => 'id']);
+        return $this->hasMany(Knowledge::className(), ['video_id' => 'id']);
     }
-        
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getVideoFiles()
+    {
+        return $this->hasMany(VideoFile::className(), ['video_id' => 'id']);
+    }
+            
     /**
      * 获取已上传的视频
      * @return ActiveQuery
@@ -321,7 +217,7 @@ class Video extends ActiveRecord
     public static function getUploadfileByVideo($fileId = null)
     {
         $uploadFile = (new Query());
-        $uploadFile->select(['Video.source_id AS id', 'Video.name AS video_name', 'Uploadfile.name', 'Uploadfile.size']);
+        $uploadFile->select(['Uploadfile.source_id AS id', 'Video.name AS video_name', 'Uploadfile.name', 'Uploadfile.size']);
         $uploadFile->from(['Video' => self::tableName()]);
         $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
         $uploadFile->where(['Uploadfile.id' => $fileId]);
@@ -335,41 +231,6 @@ class Video extends ActiveRecord
         }
     }
     
-    /**
-     * 获取视频节点
-     * @param array $condition  条件
-     * @return Video
-     */
-    public static function getVideoNode($condition) 
-    {
-        //数组合并
-        $condition = array_merge(['is_del' => 0], $condition);
-        self::$videos = self::findAll($condition);
-        if(self::$videos != null){
-            return self::$videos;
-        }
-        return null;
-    }
-    
-    /**
-     * 获取上传的文件的路径
-     * @return array
-     */
-    public function getUploadfileByPath()
-    {
-        if(!$this->source_is_link){
-            $this->img = '/' . $this->img;
-            $this->source_path = '/' . $this->source->path;
-        }else{
-            $this->source_path = $this->source->path;
-        }
-        
-        return [
-            'source_path' => $this->source_path,
-            'img' => $this->img,
-        ];
-    }
-
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径
