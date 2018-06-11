@@ -80,4 +80,30 @@ class CourseProgress extends ActiveRecord
         
         return false;
     }
+    
+    /**
+     * 获取课程下的进度
+     * @param string $courseId  课程id
+     * @param boolean $default  默认返回查询参与课程的在学人数
+     * @return Query
+     */
+    public static function getCourseProgressByCourseId($courseId, $default = true)
+    {
+        //查询课程的进度
+        $progress = self::find()->select(['Progress.course_id'])
+            ->from(['Progress' => CourseProgress::tableName()]);
+        //必要条件查询
+        $progress->where(['Progress.course_id' => $courseId]);
+        //以课程id为分组
+        $progress->groupBy('Progress.course_id');
+        //以id为排序
+        $progress->orderBy('Progress.id');
+        
+        if($default){
+            //查询参与课程的在学人数
+            $progress->addSelect(['COUNT(Progress.user_id) AS people_num']);
+        }
+        
+        return $progress;
+    }
 }

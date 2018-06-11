@@ -64,18 +64,27 @@ class TagRef extends ActiveRecord
     }
     
     /**
-     * 获取所有标签
-     * @param string $objectId
-     * @param integer $type
+     * 获取所有对象的标签
+     * @param string|Query $objectId  对象id
+     * @param integer $type     标签类型：1课程 2视频
      * @param boolen $key_to_value  默认返回键值对模式
-     * @return array|object
+     * @return array|Query
      */
-    public static function getTagsByObjectId($objectId, $type = null, $key_to_value = true)
+    public static function getTagsByObjectId($objectId, $type = 1, $key_to_value = true)
     {
-        $tags = self::find()->where(['is_del' => 0])
-            ->andFilterWhere(['type' => $type, 'object_id' => $objectId])
-            ->with('tags')->all();
+        //查询对象下的标签
+        $tagRef = self::find()->select(['TagRef.object_id'])->from(['TagRef' => TagRef::tableName()]);
+        //关联查询
+        $tagRef->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
+        //必要条件查询
+        $tagRef->where(['TagRef.is_del' => 0]);
+        //条件查询
+        $tagRef->andFilterWhere(['TagRef.object_id' => $objectId, 'type' => $type]);
+        //以对象id为分组
+        $tagRef->groupBy('TagRef.object_id');
+        //以id排序
+        $tagRef->orderBy('TagRef.id');
         
-        return $key_to_value ? ArrayHelper::map($tags, 'tags.id', 'tags.name') : $tags;
+        return $key_to_value ? ArrayHelper::map($tagRef->all(), 'tags.id', 'tags.name') : $tagRef;
     }
 }
