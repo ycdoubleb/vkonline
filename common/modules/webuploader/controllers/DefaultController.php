@@ -503,6 +503,7 @@ class DefaultController extends Controller {
                 //创建视频缩略图
                 //先截屏视频，再创建缩略图
                 $filepath = FfmpegUtil::createVideoImageByUfileId($fileinfo['filename'], $filepath, $fileinfo['dirname'] . '/thumbs/');
+                break;
             case 'image':
                 //创建图片缩略图
                 Image::thumbnail($filepath, $width, $height, $mode)->save($thumbpath);
