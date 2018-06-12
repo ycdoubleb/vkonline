@@ -12,8 +12,6 @@ use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
-use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
@@ -156,19 +154,11 @@ class CourseSearch extends Course
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //复制课程对象
         $copyCourse= clone self::$query;    
-        //查询课程的占用空间
-        $courseSize = $this->findCourseSize();
         //查询课程下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
-            ->from(['TagRef' => TagRef::tableName()]);
-        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
-        $tagRefQuery->groupBy('TagRef.object_id')->orderBy('TagRef.id');
+        $tagRefQuery = TagRef::getTagsByObjectId($copyCourse, 1, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //查询参与课程的在学人数
-        $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
-            ->from(['Progress' => CourseProgress::tableName()]);
-        $studyQuery->where(['Progress.course_id' => $copyCourse]);
-        $studyQuery->groupBy('Progress.course_id');
+        $studyQuery = CourseProgress::getCourseProgressByCourseId($copyCourse);
         //以课程id为分组
         self::$query->groupBy(['Course.id']);
         //查询总数
@@ -190,8 +180,8 @@ class CourseSearch extends Course
         $courseResult = self::$query->asArray()->all();
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'id');
-        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
-               ArrayHelper::merge(ArrayHelper::index($studyResult, 'course_id'), ArrayHelper::index($courseSize, 'course_id')));
+        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'),
+                                        ArrayHelper::index($studyResult, 'course_id'));
 
         //合并查询后的结果
         foreach ($courses as $id => $item) {
@@ -208,7 +198,6 @@ class CourseSearch extends Course
             ],
         ];
     }
-    
     
     /**
      * 
@@ -238,81 +227,6 @@ class CourseSearch extends Course
         $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
         
         $query->groupBy('CourseNode.course_id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查询课程的占用空间
-     * @return array
-     */
-    public static function findCourseSize()
-    {
-        $videoSize = self::findCourseSizeByVideo()->all();      //视频的占用空间
-        $fileSize = self::findCourseSizeByFile()->all();        //附件的占用空间
-        $totalSize = ArrayHelper::merge($videoSize,$fileSize);  //合并
-        $result = [];
-        foreach ($totalSize as $item){
-            $itemId = ArrayHelper::getValue($item, 'course_id');    //取出课程ID
-            $itemSize = ArrayHelper::getValue($item, 'course_size');//取出课程对应的大小
-            $arr = [$itemId => $itemSize];                          //合并为数组
-            foreach ($arr as $k => $val) {
-                //若键值$k(课程ID)相同即把$val(占用大小)相加
-                if(!isset($result[$k])){
-                    $result[$k] = $val;
-                } else {
-                    $result[$k] += $val;
-                }
-            }
-        };
-        
-        $courseSize = [];
-        foreach ($result as $key => $value) {
-            //转换为对应的数组形式
-            $courseSize[] = [
-                'course_id' => $key,
-                'course_size' => $value
-            ];
-        }
-      
-        return $courseSize;
-    }
-
-    /**
-     * 查询课程下的视频占用空间
-     * @return Query
-     */
-    public static function findCourseSizeByVideo()
-    {
-        $query = (new Query())->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS course_size'])
-                ->from(['Uploadfile' => Uploadfile::tableName()]);
-        
-        $query->distinct('Video.source_id');            //过滤相同的视频文件ID
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.source_id = Uploadfile.id AND Video.is_del = 0 AND Uploadfile.is_del = 0)');
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        $query->where(['Video.is_ref' => 0]);
-        
-        $query->groupBy('Video.id');
-        
-        return $query;
-    }
-    
-    /**
-     * 查询课程下的附件占用空间
-     * @return Query
-     */
-    public static function findCourseSizeByFile()
-    {
-        $query = (new Query())->select(['CourseNode.course_id', 'SUM(Uploadfile.size) AS course_size'])
-                ->from(['Uploadfile' => Uploadfile::tableName()]);
-        
-        $query->distinct('VideoAttachment.file_id');                //过滤相同附文件ID
-        $query->leftJoin(['VideoAttachment' => VideoAttachment::tableName()], '(VideoAttachment.file_id = Uploadfile.id AND VideoAttachment.is_del = 0 AND Uploadfile.is_del = 0)');
-        $query->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoAttachment.video_id AND VideoAttachment.is_del = 0)');
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        $query->where(['Video.is_ref' => 0]);
-        
-        $query->groupBy('Video.id');
         
         return $query;
     }

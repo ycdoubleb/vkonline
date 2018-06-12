@@ -30,16 +30,6 @@ class VideoSearch extends Video
      */
     private static $query;
     
-    /**
-     * 课程id
-     * @var string 
-     */
-    public $course_id;
-    /**
-     * 课程名称
-     * @var string 
-     */
-    public $course_name;
     
     /**
      * @inheritdoc
@@ -101,34 +91,26 @@ class VideoSearch extends Video
     public function buildCourseSearch($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        $this->course_id = ArrayHelper::getValue($params, 'VideoSearch.course_id');    //课程id
         
         self::getInstance();
         $this->load($params);
         //条件查询
         self::$query->andFilterWhere([
-            'CourseNode.course_id' => $this->course_id,
+            'Video.teacher_id' => $this->teacher_id,
+            'Video.level' => $this->level,
             'Video.created_by' => \Yii::$app->user->id,
-            'Video.is_ref' => $this->is_ref,
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
-        //关联查询
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 
-            'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
-            'Teacher.id AS teacher_id',
-            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        $addArrays = [
+            'Video.name', 'Video.img', 'Video.duration',  'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
-        if($sort_name == 'created_at'){
-            self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
-        }else{
-            self::$query->orderBy(["CourseNode.{$sort_name}" => SORT_DESC]);
-        }
+        self::$query->orderBy(["Video.{$sort_name}" => SORT_DESC]);
+        
         
         return $this->search($params, $addArrays);
     }
@@ -162,23 +144,9 @@ class VideoSearch extends Video
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
         //复制视频对象
         $copyVideo= clone self::$query;
-        //查询视频的所有附件占用空间大小
-        $attsQuery = VideoAttachment::find()->select(['Attachment.video_id', 'SUM(Uploadfile.size) AS att_size'])
-            ->from(['Attachment' => VideoAttachment::tableName()]);
-        $attsQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Attachment.file_id AND Uploadfile.is_del = 0)');
-        $attsQuery->where(['Attachment.is_del' => 0, 'Attachment.video_id' => $copyVideo]);
-        $attsQuery->groupBy('Attachment.video_id');
-        //查询视频的播放量
-        $playQuery = (new Query())->select(['Play.video_id', 'SUM(Play.play_count) AS play_num'])
-            ->from(['Play' => PlayStatistics::tableName()]);
-        $playQuery->where(['Play.video_id' => $copyVideo]);
-        $playQuery->groupBy('Play.video_id');
         //查询视频下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
-            ->from(['TagRef' => TagRef::tableName()]);
-        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyVideo]);
-        $tagRefQuery->groupBy('TagRef.object_id');
+        $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //以视频id为分组
         self::$query->groupBy(['Video.id']);
         //查询总数
@@ -191,18 +159,13 @@ class VideoSearch extends Video
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
-        //附件占用空间大小结果
-        $attsResult = $attsQuery->asArray()->all();
-        //查询视频量结果
-        $playResult = $playQuery->all();
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
         //查询的视频结果
         $viedoResult = self::$query->asArray()->all();        
         //以video_id为索引
         $videos = ArrayHelper::index($viedoResult, 'id');
-        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
-            ArrayHelper::merge(ArrayHelper::index($attsResult, 'video_id'), ArrayHelper::index($playResult, 'video_id')));
+        $results = ArrayHelper::index($tagRefResult, 'object_id');
         //合并查询后的结果
         foreach ($videos as $id => $item) {
             if(isset($results[$id])){

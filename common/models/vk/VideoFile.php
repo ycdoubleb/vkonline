@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -18,7 +19,8 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
- * @property Video $video
+ * @property Video $video   获取视频
+ * @property Uploadfile $uploadfile 获取上传的实体文件
  */
 class VideoFile extends ActiveRecord
 {
@@ -75,5 +77,13 @@ class VideoFile extends ActiveRecord
     public function getVideo()
     {
         return $this->hasOne(Video::class, ['id' => 'video_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getUploadfile()
+    {
+        return $this->hasOne(Uploadfile::class, ['id' => 'file_id']);
     }
 }
