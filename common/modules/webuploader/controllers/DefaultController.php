@@ -495,7 +495,7 @@ class DefaultController extends Controller {
             //其它文件不创建缩略图，返回''
             return "imgs/upload_filetype_icons/".$this->getExt($fileinfo['extension']).'.png';
         }
-        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg';
+        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg?rand='. rand(0, 1000);
         $this->mkdir($fileinfo['dirname'] . '/thumbs/');
         Image::$thumbnailBackgroundColor = '000';
         switch ($type) {
