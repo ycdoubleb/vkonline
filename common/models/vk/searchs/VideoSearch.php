@@ -6,13 +6,11 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
-use common\models\vk\PlayStatistics;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
-use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
@@ -37,7 +35,7 @@ class VideoSearch extends Video
     public function rules()
     {
         return [
-            [['id', 'node_id', 'teacher_id', 'source_id', 'customer_id', 'ref_id', 'name', 'source_level', 'source_wh',
+            [['id', 'node_id', 'teacher_id', 'customer_id', 'ref_id', 'name', 'source_level', 'source_wh',
                 'source_bitrate', 'content_level', 'des', 'level', 'img', 'is_ref', 'is_recommend', 'is_publish',
                 'is_official', 'sort_order', 'created_by'], 'safe'],
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
@@ -56,7 +54,7 @@ class VideoSearch extends Video
     //后台-视频
     public function backendSearch($params)
     {
-        $this->course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
+//        $this->course_name = ArrayHelper::getValue($params, 'VideoSearch.course_name'); //课程名
         
         self::getInstance();
         $this->load($params);
@@ -70,18 +68,18 @@ class VideoSearch extends Video
         ]);
         
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Course.name', $this->course_name]);
+//        self::$query->andFilterWhere(['like', 'Course.name', $this->course_name]);
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //关联查询
-        self::$query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+        self::$query->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], 'KnowledgeVideo.video_id = Video.id');
+        self::$query->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = KnowledgeVideo.knowledge_id');
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Knowledge.node_id');
         self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
         //添加字段
-        $addArrays = ['Customer.name AS customer_name', 'Course.name AS course_name', 
+        $addArrays = ['Customer.name AS customer_name','Course.name AS course_name', 
             'Video.name', 'Video.is_publish', 'Video.level',  'Video.created_at',
-            'Video.is_ref', 'User.nickname', 'Teacher.name AS teacher_name',
-            'Uploadfile.size'
+            'User.nickname', 'Teacher.name AS teacher_name', 'Video.created_at',
         ];
         
         return $this->search($params, $addArrays); 

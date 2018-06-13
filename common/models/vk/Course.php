@@ -52,6 +52,8 @@ class Course extends ActiveRecord
     /** 可见范围-私有 */
     const PRIVATE_LEVEL = 0;
     
+    /** 发布状态 全部 */
+    const ALL_SATUS = '';
     /** 发布状态-未发布 */
     const NO_PUBLISH = 0;
     /** 发布状态-已发布 */
@@ -72,6 +74,7 @@ class Course extends ActiveRecord
      * @var array 
      */
     public static $publishStatus = [
+        self::ALL_SATUS => '全部',
         self::NO_PUBLISH => '未发布',
         self::YES_PUBLISH => '已发布',
     ];
