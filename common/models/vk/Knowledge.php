@@ -3,7 +3,6 @@
 namespace common\models\vk;
 
 use Yii;
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
@@ -11,27 +10,26 @@ use yii\db\ActiveRecord;
  * This is the model class for table "{{%knowledge}}".
  *
  * @property string $id
- * @property string $node_id    环节ID
+ * @property string $node_id 环节ID
  * @property string $teacher_id 老师ID
- * @property string $video_id   视频ID
- * @property string $name       知识点名称
- * @property string $des        知识点简介
- * @property string $zan_count  赞数
+ * @property int $type 知识点类型：1视频知识点 2其它
+ * @property string $name 知识点名称
+ * @property string $des 知识点简介
+ * @property string $zan_count 赞数
  * @property string $favorite_count 收藏数
- * @property int $is_del        是否删除：0否 1是
- * @property int $sort_order    排序
+ * @property int $is_del 是否删除：0否 1是
+ * @property int $sort_order 排序
  * @property string $created_by 创建人ID
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
- * @property Video $video
  * @property CourseNode $node
  * @property KnowledgeVideo[] $knowledgeVideos
  */
 class Knowledge extends ActiveRecord
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public static function tableName()
     {
@@ -39,36 +37,28 @@ class Knowledge extends ActiveRecord
     }
 
     /**
-     * @inheritdoc
-     */    
-    public function behaviors() 
-    {
-        return [
-            TimestampBehavior::class
-        ];
-    }
-    
-    /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id'], 'required'],
+            //[['id'], 'required'],
+            [['name'], 'required'],
+            [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
+                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ])],
+            [['type', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['des'], 'string'],
-            [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
-            [['id', 'node_id', 'teacher_id', 'video_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'node_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
-            [['is_del'], 'string', 'max' => 1],
-            [['sort_order'], 'string', 'max' => 2],
             [['id'], 'unique'],
-            [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['video_id' => 'id']],
-            [['node_id'], 'exist', 'skipOnError' => true, 'targetClass' => CourseNode::class, 'targetAttribute' => ['node_id' => 'id']],
+            [['node_id'], 'exist', 'skipOnError' => true, 'targetClass' => CourseNode::className(), 'targetAttribute' => ['node_id' => 'id']],
         ];
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function attributeLabels()
     {
@@ -76,7 +66,7 @@ class Knowledge extends ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'node_id' => Yii::t('app', 'Node ID'),
             'teacher_id' => Yii::t('app', 'Teacher ID'),
-            'video_id' => Yii::t('app', 'Video ID'),
+            'type' => Yii::t('app', 'Type'),
             'name' => Yii::t('app', 'Name'),
             'des' => Yii::t('app', 'Des'),
             'zan_count' => Yii::t('app', 'Zan Count'),
@@ -89,20 +79,31 @@ class Knowledge extends ActiveRecord
         ];
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getVideo()
+    public function beforeSave($insert) 
     {
-        return $this->hasOne(Video::class, ['id' => 'video_id']);
+        if (parent::beforeSave($insert)) {
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
+            $knowledges = self::find()->select(['sort_order'])
+                ->where(['node_id' => $this->node_id, 'is_del' => 0])
+                ->orderBy(['sort_order' => SORT_DESC])->one();
+            //设置顺序
+            if($this->isNewRecord && !empty($knowledges)){
+                $this->sort_order = $knowledges->sort_order + 1;
+            }
+            return true;
+        }
+        
+        return false;
     }
-
+    
     /**
      * @return ActiveQuery
      */
     public function getNode()
     {
-        return $this->hasOne(CourseNode::class, ['id' => 'node_id']);
+        return $this->hasOne(CourseNode::className(), ['id' => 'node_id']);
     }
 
     /**
@@ -110,6 +111,6 @@ class Knowledge extends ActiveRecord
      */
     public function getKnowledgeVideos()
     {
-        return $this->hasMany(KnowledgeVideo::class, ['knowledge_id' => 'id']);
+        return $this->hasMany(KnowledgeVideo::className(), ['knowledge_id' => 'id']);
     }
 }

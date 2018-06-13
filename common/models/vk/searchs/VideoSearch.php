@@ -6,12 +6,11 @@ use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
-use common\models\vk\PlayStatistics;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
@@ -189,24 +188,29 @@ class VideoSearch extends Video
      */
     public function  relationSearch($id)
     {
-        self::getInstance();
-        
-        self::$query->addSelect([
-            'Course.id', 'Customer.name AS customer_name', 
-            'Course.name AS course_name', 'User.nickname'
+        //查询知识点视频内容
+        $relation = (new Query())->select([
+            'KnowledgeVideo.knowledge_id', 'Customer.name AS customer_name', 'Course.name AS course_name',
+            'Knowledge.name AS knowledge_name', 'User.nickname', 'Knowledge.created_at'
+        ])->from(['KnowledgeVideo' => KnowledgeVideo::tableName()]);
+        //关联查询
+        $relation->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = KnowledgeVideo.knowledge_id');
+        $relation->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Knowledge.node_id');
+        $relation->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
+        $relation->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
+        $relation->leftJoin(['User' => User::tableName()], 'User.id = Knowledge.created_by');
+        //条件查询
+        $relation->andFilterWhere([
+            'KnowledgeVideo.video_id' => $id,
+            'KnowledgeVideo.is_del' => 0,
         ]);
-        
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
-        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
-        self::$query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
-        
-        self::$query->andFilterWhere([ 'Video.ref_id' => $id]);
-        
-        self::$query->groupBy('Course.id');
+        //以knowledge_id为分组
+        $relation->groupBy('KnowledgeVideo.knowledge_id');
+        //以id排序
+        $relation->orderBy('KnowledgeVideo.id');
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => self::$query->asArray()->all(),
+            'allModels' => $relation->all(),
         ]);
         
         return $dataProvider;

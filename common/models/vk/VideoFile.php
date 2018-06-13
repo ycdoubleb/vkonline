@@ -48,9 +48,8 @@ class VideoFile extends ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'integer'],
+            [['is_source', 'is_del', 'created_at', 'updated_at'], 'integer'],
             [['video_id', 'file_id'], 'string', 'max' => 32],
-            [['is_source', 'is_del'], 'string', 'max' => 1],
             [['video_id'], 'exist', 'skipOnError' => true, 'targetClass' => Video::class, 'targetAttribute' => ['video_id' => 'id']],
         ];
     }

@@ -233,13 +233,6 @@ $js =
         $("#act_log").load(elem.attr("href")); 
         return false;
     }    
-   
-    //显示模态框
-    window.showModal = function(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-        return false;
-    }    
     
     $('#gv1').on('beforeFilter', function(evt){
         evt.result = false;

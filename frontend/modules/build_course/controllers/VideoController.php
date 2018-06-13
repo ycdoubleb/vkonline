@@ -37,7 +37,7 @@ class VideoController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    //'delete' => ['POST'],
+                    'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -54,44 +54,51 @@ class VideoController extends Controller
     
     /**
      * 列出所有 VideoSearch 模型。
-     * @return string [
-     *    filters => 查询过滤的属性, pagers => 分页, dataProvider => 课程数据, courseMap => 属于自己的课程
-     * ]
+     * @return string|json
      */
     public function actionIndex()
     {
         $searchModel = new VideoSearch();
-        $result = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['video']),
+            'allModels' => array_values($results['data']['video']),
         ]);
-        
+        //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['video']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['video']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
-      
+        
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
-            'courseMap' => $this->getCourseByCreatedBy(),
+            'searchModel' => $searchModel,      //搜索模型
+            'dataProvider' => $dataProvider,    //视频数据
+            'filters' => $results['filter'],     //查询过滤的属性
+            'totalCount' => $results['total'],   //总数量
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id),    //自己相关的老师
         ]);
     }
     
     /**
      * 显示一个单一的 Video 模型。
      * @param string $id
-     * @return mixed [
-     *      model => 模型, dataProvider => 所有相关课程数据
-     * ]
+     * @return mixed 
      */
     public function actionView($id)
     {
@@ -99,147 +106,61 @@ class VideoController extends Controller
         $searchModel = new VideoSearch();
         
         return $this->render('view', [
-            'model' => $model,
-            'paths' => $model->getUploadfileByPath(),
-            'dataProvider' => $searchModel->relationSearch($id),
+            'model' => $model,  //video模型
+            'dataProvider' => $searchModel->relationSearch($model->id),    //相关课程数据
         ]);
     }
    
     /**
      * 创建 一个新的 Video 模块
-     * 如果创建成功，返回json数据
-     * @param string $node_id
-     * @return mixed|json [
-     *     model => 模型, allRef => 所有可被引用数据, allTeacher => 所有老师, 
-     *     videoFiles => 已存在的视频文件, attFiles => 已存在的附件文件
-     * ]
+     * 如果创建成功，浏览器将被重定向到“查看”页面。
+     * @return mixed
      */
-    public function actionCreate($node_id)
+    public function actionCreate()
     {
-        $model = new Video(['node_id' => $node_id, 
+        $model = new Video([
             'customer_id' => Yii::$app->user->identity->customer_id, 
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-        }
-        
         if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
+            ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->renderAjax('create', [
-                'model' => $model,
-                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
-                'videoFiles' => Video::getUploadfileByVideo(),
-                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+            return $this->render('create', [
+                'model' => $model,  //模型
+                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+                'videoFiles' => json_encode([]),
             ]);
         }
     }
     
     /**
      * 更新 现有的 Video 模型。
-     * 如果更新成功，返回json数据
+     * 如果更新成功，浏览器将被重定向到“查看”页面。
      * @param string $id
-     * @return mixed|json [
-     *     model => 模型, allRef => 所有可被引用数据, allTeacher => 所有老师, 
-     *     videoFiles => 已存在的视频文件, attFiles => 已存在的附件文件
-     * ]
+     * @return mixed
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
+        if($model->created_by != \Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
+            ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
+            return $this->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->renderAjax('update', [
-                'model' => $model,
-                'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
-                'videoFiles' => Video::getUploadfileByVideo($model->source_id),
-                'paths' => $model->getUploadfileByPath(),
-                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
-                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 2)),
+            return $this->render('update', [
+                'model' => $model,  //模型
+                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
+                'videoFiles' => json_encode(Video::getUploadfileByVideo($model->videoFile->file_id)),    //已存在的视频文件
+                'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             ]);
         }
-    }
-    
-    /**
-     * 删除 现有的 Video 模型。
-     * 如果删除成功，返回json数据
-     * @param string $id
-     * @return mixed [model => 模型]
-     */
-    public function actionDelete($id)
-    {
-        $model = $this->findModel($id);
-        
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->courseNode->course_id)){
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-        }
-        
-        if ($model->load(Yii::$app->request->post())) {
-            Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->deleteVideo($model);
-        } else {
-            return $this->renderAjax('delete',[
-                'model' => $model,
-            ]);
-        }
-    }
-    
-    /**
-     * 引用 自己收藏的视频
-     * 如果是 id 非为空，返回成功的json数据，否则返回收藏的视频
-     * @return json
-     */
-    public function actionReference()
-    {
-        $params = array_merge(Yii::$app->request->queryParams, Yii::$app->request->post());
-        $id = ArrayHelper::getValue($params, 'id');
-        
-        $searchModel = new VideoFavoriteSearch();
-        $result = $searchModel->referenceSearch(array_merge($params, ['limit' => 15]));
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['video']),
-        ]);
-        //分页查询
-        if(Yii::$app->request->isPost) {
-            Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'filters' => $result['filter'],
-                'data' => array_values($result['data']['video']),
-                'message' => '请求成功！',
-            ];
-        //选择引用的视频
-        }else if($id != null){
-            Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'data' => [
-                    'filters' => $result['filter'],
-                    'videos' => $result['data']['video'][$id],
-                    'tagsSelected' => array_keys(TagRef::getTagsByObjectId($id, 2)),
-                    'videoFiles' => Video::getUploadfileByVideo($result['data']['video'][$id]['source_id']),
-                ],
-                'message' => '请求成功！',
-            ];
-        }
-        
-        return $this->renderAjax('reference', [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
-        ]);
     }
     
     /**

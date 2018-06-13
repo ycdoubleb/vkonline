@@ -20,8 +20,8 @@ GrowlAsset::register($this);
 ?>
 
 <div class="course-node-index">
+    
    <div class="frame">
-       
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Course}{Frame}',[
@@ -48,38 +48,37 @@ GrowlAsset::register($this);
                 </div>
             </li>
             <?php endif; ?>
-            <?php foreach ($dataProvider as $index => $nodes): ?>
-            <li id="<?= $nodes->id ?>">
+            <?php foreach ($dataProvider as $courseNodes): ?>
+            <li id="<?= $courseNodes->id ?>">
                 <div class="head">
-                    <?= Html::a("<div><i class=\"fa fa-caret-right\"></i></div><span class=\"name\">{$nodes->name}</span>", "#toggle_{$nodes->id}", [
+                    <?= Html::a("<div><i class=\"fa fa-caret-right\"></i></div><span class=\"name\">{$courseNodes->name}</span>", "#toggle_{$courseNodes->id}", [
                         'data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
                     <div class="icongroup">
                         <?php if($is_hasEditNode && !$model->is_publish){
-                            echo Html::a('<i class="fa fa-plus"></i>', ['video/create', 'node_id' => $nodes->id], [
+                            echo Html::a('<i class="fa fa-plus"></i>', ['knowledge/create', 'node_id' => $courseNodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
-                            echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $nodes->id], [
+                            echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $courseNodes->id], [
                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
-                            echo Html::a('<i class="fa fa-times"></i>',['course-node/delete', 'id' => $nodes->id], [
+                            echo Html::a('<i class="fa fa-times"></i>',['course-node/delete', 'id' => $courseNodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
                         }?>
                     </div>
                 </div>
-                <div id="toggle_<?= $nodes->id ?>" class="collapse nodes" aria-expanded="false">  
+                <div id="toggle_<?= $courseNodes->id ?>" class="collapse knowledges" aria-expanded="false">  
                     <!--子节点-->
-                    <ul id="video" class="sortable list">
-                        <?php foreach ($nodes->videos as $key => $video): ?>
-                        <li id="<?= $video->id ?>">
+                    <ul id="knowledge" class="sortable list">
+                        <?php foreach ($courseNodes->knowledges as $knowledge): ?>
+                        <li id="<?= $knowledge->id ?>">
                             <div class="head">
-                                <?= Html::a("<span class=\"name\">{$video->name}</span><span class=\"duration\">" . DateUtil::intToTime($video->source_duration) . "</span>") ?>
+                                <?= Html::a("<span class=\"name\">{$knowledge->name}</span>") ?>
                                 <div class="icongroup">
                                     <?php 
-                                        echo Html::a('<i class="fa fa-eye"></i>', ['video/view','id'=> $video->id], [
-                                            'target' => '_blank']) . '&nbsp;';
+                                        echo Html::a('<i class="fa fa-eye"></i>', ['/study_center/default/view', 'id'=> $knowledge->id], ['target' => '_blank']) . '&nbsp;';
                                         if($is_hasEditNode && !$model->is_publish){
-                                            echo Html::a('<i class="fa fa-pencil"></i>', ['video/update','id' => $video->id], [
+                                            echo Html::a('<i class="fa fa-pencil"></i>', ['knowledge/update','id' => $knowledge->id], [
                                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
-                                            echo Html::a('<i class="fa fa-times"></i>',['video/delete', 'id' => $video->id], [
+                                            echo Html::a('<i class="fa fa-times"></i>',['knowledge/delete', 'id' => $knowledge->id], [
                                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                                             echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
                                         }
@@ -145,12 +144,6 @@ $js =
     
     //在模态框里Select2不能输入搜索的解决方法
     $.fn.modal.Constructor.prototype.enforceFocus = function () {}; 
-    /** 显示模态框 */
-    window.showModal = function(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-        return false;
-    }   
     //替换图标
     window.replace = function (elem){
         if(elem.attr("aria-expanded") == 'true')

@@ -149,6 +149,7 @@ return [
     'Short Name' => '简称',
     'Data' => '数据',
     'Resolution' => '分辨率',
+    'Knowledge' => '知识点',
     
   
     //提示消息

@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
 ModuleAssets::register($this);
 GrowlAsset::register($this);
 
-$this->title = Yii::t(null, "{Delete}{Node}：{$model->name}", [
+$this->title = Yii::t(null, "{Delete}{Node}", [
     'Delete' => Yii::t('app', 'Delete'), 'Node' => Yii::t('app', 'Node')
 ]);
 

@@ -138,14 +138,8 @@ ModuleAssets::register($this);
 <?php
 $js = 
 <<<JS
-    
-    /** 显示模态框 */
-    window.showModal = function(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-        return false;
-    }    
+   
    
 JS;
-    $this->registerJs($js,  View::POS_READY);
+    //$this->registerJs($js,  View::POS_READY);
 ?>

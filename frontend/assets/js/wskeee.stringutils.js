@@ -110,6 +110,36 @@
         return $value > 9 ? ""+$value :"0"+$value;
     }
     
+    /**
+     * 补全文件路径
+     * @param srting path  路径
+     * @param string|array withStr 指定的字符，默认['http://', 'https://', '/']
+     * @param srting appendStr  补全的字符，默认‘/’
+     * @return srting
+     */
+    StringUtil.completeFilePath = function(path, withStr = '', appendStr = '/'){
+        //如果withStr为空的，默认['http://', 'https://', '/']
+        if(withStr == '' || withStr == null){
+            withStr = ['http://', 'https://', '/'];
+        }
+        //如果withStr不是数组，默认转为数组
+        if(!(withStr instanceof Array)){
+            withStr = [withStr];
+        }
+        //判断指定的字符串是否存在，若不存在则补全
+        var isAppendStr = false;
+        for(var str in withStr){
+            if(path.indexOf(withStr[str]) !== 0){
+                isAppendStr = true;
+            }else{
+                isAppendStr = false;
+                break;
+            }
+        }
+        
+        return isAppendStr ? appendStr + path : path;
+    }
+    
     win.Wskeee = win.Wskeee || {};
     win.Wskeee.StringUtil = StringUtil;
     return StringUtil;

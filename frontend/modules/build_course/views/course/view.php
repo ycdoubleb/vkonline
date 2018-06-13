@@ -179,8 +179,7 @@ SwitchInputAsset::register($this);
 <?php
 $js = 
 <<<JS
-    //加载操作记录列表
-    //$("#act_log").load("../course-actlog/index?course_id=$model->id"); 
+   
     //显示模态框
     window.showModal = function(elem){
         $(".myModal").html("");

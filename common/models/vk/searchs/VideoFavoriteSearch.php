@@ -28,11 +28,11 @@ class VideoFavoriteSearch extends VideoFavorite
     private static $query;
     
     /**
-     * 视频名称
+     * 名称
      * @var string 
      */
     public $name;
-
+    
 
     /**
      * @inheritdoc
@@ -68,7 +68,8 @@ class VideoFavoriteSearch extends VideoFavorite
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
-        $addArrays = ['Customer.name AS customer_name', 'Course.id AS course_id', 'Course.name AS course_name', 
+        $addArrays = [
+            'Customer.name AS customer_name', 'Course.id AS course_id', 'Course.name AS course_name', 
             'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 'Video.source_duration', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
@@ -79,8 +80,8 @@ class VideoFavoriteSearch extends VideoFavorite
         return $this->search($params, $addArrays);
     }
 
-    //在引用视频的情况下
-    public function referenceSearch($params)
+    //在知识点引用我的收藏的情况下
+    public function myCollectSearch($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         $this->name = ArrayHelper::getValue($params, 'VideoFavoriteSearch.name');    //视频名称
@@ -91,12 +92,13 @@ class VideoFavoriteSearch extends VideoFavorite
         //条件查询
         self::$query->andFilterWhere(['Favorite.user_id' => Yii::$app->user->id]);
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
-        
+        self::$query->andFilterWhere(['OR', ['like', 'Video.name', $this->name], ['like', 'Tags.name', $this->name]]);
+        //关联标签
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Favorite.video_id');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //添加字段
-        $addArrays = ['Course.name AS course_name', 'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 
-            'Video.source_duration',  'Video.created_at', 'Video.is_ref', 
-            'Video.des', 'Video.source_id',
+        $addArrays = [
+            'Video.id', 'Video.name', 'Video.img', 'Video.duration',  'Video.created_at',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar',
             'Teacher.name AS teacher_name'
         ];
@@ -122,29 +124,17 @@ class VideoFavoriteSearch extends VideoFavorite
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        //必要条件
-        self::$query->andFilterWhere([
-            'Favorite.is_del' => 0,
-            'Video.is_del' => 0
-        ]);
-        //关联查询
+        //关联视频查询
         self::$query->leftJoin(['Video' => Video::tableName()], 'Video.id = Favorite.video_id');
+        //必要条件
+        self::$query->andFilterWhere(['Favorite.is_del' => 0, 'Video.is_del' => 0]);
         //复制收藏视频对象
         $copyFavoriteVideo= clone self::$query;
-        //查询视频的播放量
-        $playQuery = (new Query())->select(['Play.video_id', 'SUM(Play.play_count) AS play_num'])
-            ->from(['Play' => PlayStatistics::tableName()]);
-        $playQuery->where(['Play.video_id' => $copyFavoriteVideo]);
-        $playQuery->groupBy('Play.video_id');
         //查询视频下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
-            ->from(['TagRef' => TagRef::tableName()]);
-        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyFavoriteVideo]);
-        $tagRefQuery->groupBy('TagRef.object_id');
+        $tagRefQuery = TagRef::getTagsByObjectId($copyFavoriteVideo, 2, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //关联查询
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = Favorite.course_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         //以视频id为分组
         self::$query->groupBy('Favorite.video_id');
@@ -154,16 +144,13 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->addSelect($addArrays);
         //显示数量
         self::$query->offset(($page - 1) * $limit)->limit($limit);
-        //视频播放量结果
-        $playResult = $playQuery->all();
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all();
         //查询收藏视频的结果
         $videoResult = self::$query->asArray()->all();
         //以video_id为索引
         $videos = ArrayHelper::index($videoResult, 'video_id');
-        $results = ArrayHelper::merge(ArrayHelper::index($playResult, 'video_id') ,
-            ArrayHelper::index($tagRefResult, 'object_id'));
+        $results = ArrayHelper::index($tagRefResult, 'object_id');
         //合并查询后的结果
         foreach ($videos as $id => $item) {
             if(isset($results[$id])){

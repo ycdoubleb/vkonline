@@ -23,16 +23,10 @@ use yii\helpers\ArrayHelper;
  * @property string $updated_at 更新时间
  * 
  * @property Course $course 获取课程
- * @property Video $videos 获取课程
+ * @property Knowledge[] $knowledges 获取所有知识点
  */
 class CourseNode extends ActiveRecord
 {
-    /**
-     * 课程环节
-     * @var CourseNode 
-     */
-    private static $nodes;
-
     /**
      * @inheritdoc
      */
@@ -94,29 +88,21 @@ class CourseNode extends ActiveRecord
      */
     public function beforeSave($insert) 
     {
-        if (!$this->id) {
-            $this->id = md5(time() . rand(1, 99999999));
-        }
-        
-        if(parent::beforeSave($insert))
-        {
+        if(parent::beforeSave($insert)){
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
             if($this->isNewRecord){
-                $nodes = self::getCouByNode(['course_id' => $this->course_id]);
+                $nodes = self::getCourseByNodes(['course_id' => $this->course_id]);
                 ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
-                $counode = $nodes == null ? null : reset($nodes);
+                $firstNode = reset($nodes);
                 //设置等级
                 if($this->parent_id == null){
                     $this->level = 1;
-                }else{
-                    $this->level = $counode->level + 1;
                 }
                 //设置顺序
-                if($counode == null){
-                    if($this->parent_id == null){
-                        $this->sort_order = 0;
-                    }
-                }else{
-                    $this->sort_order = $counode->sort_order + 1;
+                if(!empty($firstNode)){
+                    $this->sort_order = $firstNode->sort_order + 1;
                 }
             }
             return true;
@@ -135,24 +121,24 @@ class CourseNode extends ActiveRecord
     /**
      * @return ActiveQuery
      */
-    public function getVideos()
+    public function getKnowledges()
     {
-        return $this->hasMany(Video::class, ['node_id' => 'id'])
-            ->where(['is_del' => 0])
-            ->orderBy(['sort_order' => SORT_ASC]);
+        return $this->hasMany(Knowledge::class, ['node_id' => 'id'])
+            ->where(['is_del' => 0])->orderBy(['sort_order' => SORT_ASC]);
     }
     
     /**
      * 获取父级
-     * @param integer $level    默认返回所有分类
+     * @param integer $level    等级：0顶级 1级~3级
      * @param bool $key_to_value    返回键值对形式
-     * @return array
+     * @return array|Query
      */
-    public static function getCouNodeByLevel($level = 1, $key_to_value = true)
+    public static function getCourseNodeByLevel($level = 1, $key_to_value = true)
     {
-        self::$nodes = self::getCouByNode(['level' => $level]);
+        //查询所有的环节
+        $nodes = self::getCourseByNodes(['level' => $level]);
         $parents = [];
-        foreach (self::$nodes as $id => $parent) {
+        foreach ($nodes as $id => $parent) {
             $parents[] = $parent;
         }
 
@@ -161,30 +147,32 @@ class CourseNode extends ActiveRecord
 
     /**
      * 获取父级路径
-     * @return array
+     * @return array|null
      */
-    public static function getCouNodeByPath($id)
+    public static function getCourseNodeByPath($id)
     {
-        self::$nodes = self::getCouByNode(['parent_id' => $id]);
-        if (self::$nodes != null) {
-            return self::$nodes;
+        //查询课程环节的父级
+        $nodes = self::getCourseByNodes(['parent_id' => $id]);  
+        if ($nodes != null) {
+            return $nodes;
         }
+        
         return null;
     }
     
     /**
-     * 获取课程环节
+     * 获取课程课程下的所有环节
      * @param array $condition  条件
-     * @return CourseNode
+     * @return CourseNode|null
      */
-    public static function getCouByNode($condition) 
+    public static function getCourseByNodes($condition) 
     {
-        //数组合并
-        $condition = array_merge(['is_del' => 0], $condition);
-        self::$nodes = self::findAll($condition);
-        if(self::$nodes != null){
-            return self::$nodes;
+        $condition = array_merge(['is_del' => 0], $condition);  //数组合并
+        $nodes = self::findAll($condition); //查询所有环节
+        if($nodes != null){
+            return $nodes;
         }
+        
         return null;
     }
 }

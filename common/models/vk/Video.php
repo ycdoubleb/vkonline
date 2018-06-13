@@ -4,13 +4,18 @@ namespace common\models\vk;
 
 use common\models\User;
 use common\models\vk\Customer;
+use common\models\vk\Knowledge;
+use common\models\vk\TagRef;
 use common\models\vk\Teacher;
+use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\StringUtil;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\web\UploadedFile;
 
 
 /**
@@ -40,6 +45,7 @@ use yii\db\Query;
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
  * @property Teacher $teacher 获取老师
+ * @property VideoFile $videoFile     获取视频与实体文件关联表
  * @property TagRef[] $tagRefs 获取标签
  * @property Knowledge[] $knowledges    获取所有知识点
  * @property VideoFile[] $videoFiles     获取所有视频与实体文件关联表
@@ -103,12 +109,12 @@ class Video extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
-            [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
-                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
-                "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ])],
+            [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
+                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['duration'], 'number'],
@@ -156,6 +162,21 @@ class Video extends ActiveRecord
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
+            $upload = UploadedFile::getInstance($this, 'img');
+            if ($upload != null) {
+                $string = $upload->name;
+                $array = explode('.', $string);
+                //获取后缀名，默认为 jpg 
+                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
+                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/video/screenshots/'));
+                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
+                $this->img = '/upload/video/screenshots/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
+            }
+            //都没做修改的情况下保存旧数据
+            if(trim($this->img) == ''){
+                $this->img = $this->getOldAttribute('img');
+            }
+            
             return true;
         }
         
@@ -189,6 +210,15 @@ class Video extends ActiveRecord
     /**
      * @return ActiveQuery
      */
+    public function getVideoFile()
+    {
+        return $this->hasOne(VideoFile::className(), ['video_id' => 'id'])
+            ->where(['is_source' => 1, 'is_del' => 0]);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
     public function getTagRefs()
     {
         return $this->hasMany(TagRef::class, ['object_id' => 'id'])->with('tags');
@@ -214,18 +244,24 @@ class Video extends ActiveRecord
      * 获取已上传的视频
      * @return ActiveQuery
      */
-    public static function getUploadfileByVideo($fileId = null)
+    public static function getUploadfileByVideo($fileId)
     {
-        $uploadFile = (new Query());
-        $uploadFile->select(['Uploadfile.source_id AS id', 'Video.name AS video_name', 'Uploadfile.name', 'Uploadfile.size']);
-        $uploadFile->from(['Video' => self::tableName()]);
-        $uploadFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
-        $uploadFile->where(['Uploadfile.id' => $fileId]);
-        $uploadFile->andWhere(['Video.source_is_link' => 0, 'Uploadfile.is_del' => 0]);
-        
-        $hasFile = $uploadFile->one();
-        if($hasFile){
-            return [$hasFile];
+        //查询实体文件
+        $uploadFile = (new Query())->select([
+            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.path', 
+            'Uploadfile.thumb_path', 'Uploadfile.size'
+        ])->from(['Uploadfile' => Uploadfile::tableName()]);
+        //条件查询
+        $uploadFile->where([
+            'Uploadfile.id' => $fileId,
+            'Uploadfile.is_del' => 0
+        ]);
+        $videoFile = $uploadFile->one();
+        if(!empty($videoFile)){
+            //重置path、thumb_path
+            $videoFile['path'] = StringUtil::completeFilePath($videoFile['path']);
+            $videoFile['thumb_path'] = StringUtil::completeFilePath($videoFile['thumb_path']);
+            return [$videoFile];
         }else{
             return [];
         }

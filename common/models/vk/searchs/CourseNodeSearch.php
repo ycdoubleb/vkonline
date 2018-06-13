@@ -42,40 +42,17 @@ class CourseNodeSearch extends CourseNode
      */
     public function search($params)
     {
-        $this->course_id = ArrayHelper::getValue($params, 'course_id');
+        $this->course_id = ArrayHelper::getValue($params, 'course_id');     //课程id
+        //查询环节
         $query = CourseNode::find();
-
-        // add conditions that should always apply here
-
-        /*$dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);*/
-
+       
         $this->load($params);
-        
-        /*if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }*/
-
-        // grid filtering conditions
-        $query->andFilterWhere([
-            'id' => $this->id,
-            'course_id' => $this->course_id,
-            'parent_id' => $this->parent_id,
-            'is_del' => 0,
-            'sort_order' => $this->sort_order,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
-        ]);
-        
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'des', $this->des]);
-        
+        //条件查询
+        $query->andFilterWhere(['course_id' => $this->course_id, 'is_del' => 0,]);
+        //排序
         $query->orderBy(['sort_order' => SORT_ASC]);
-        
-        $query->with('videos');
+        //关联查询
+        $query->with('knowledges');
         
         return $query->all();
     }

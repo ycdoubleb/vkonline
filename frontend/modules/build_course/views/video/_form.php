@@ -1,11 +1,10 @@
 <?php
 
 use common\models\vk\Video;
-use common\utils\DateUtil;
+use common\utils\StringUtil;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\widgets\Select2;
-use kartik\widgets\SwitchInput;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -20,7 +19,7 @@ TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
-foreach ($allTeacher as $teacher) {
+foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
         'avatar' => $teacher->avatar, 
         'is_certificate' => $teacher->is_certificate,
@@ -59,134 +58,40 @@ $this->registerJs($format, View::POS_HEAD);
 
 ?>
 
-<div class="video-form form clear">
+<div class="video-form form set-margin set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
             'id' => 'build-course-form', 
             'class'=>'form-horizontal',
             'enctype' => 'multipart/form-data',
-            //'onkeydown' => "if(event.keyCode==13) return false;",
         ],
         'fieldConfig' => [  
-            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",  
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",  
             'labelOptions' => [
                 'class' => 'col-lg-1 col-md-1 control-label form-label',
             ],  
         ], 
     ]); ?>
-    <!--引用视频-->
-    <?php
-        $reelect = !$model->is_ref ? Html::a('重选', ['reference', 'node_id' => $model->node_id], [
-            'id' => 'video-reelect',
-            'class' => 'btn btn-info hidden',
-            'onclick' => 'reelectEvent($(this)); return false;'
-        ]) : '';
-        $refHiddenInput = $model->is_ref ? Html::activeHiddenInput($model, 'is_ref', ['id' => 'video-is_ref-hidden']) : '';
-        echo $form->field($model, 'is_ref', [
-        'template' => "{label}\n<div class=\"col-lg-2 col-md-2\" style=\"width: 135px;\">{input}{$refHiddenInput}</div>" .
-            "<div class=\"col-lg-1 col-md-1\">{$reelect}</div>\n" . 
-            "<div class=\"col-lg-6 col-md-6\">{error}</div>"
-        ])->widget(SwitchInput::class, [
-            'disabled' => $model->isNewRecord ? false : true,
-            'pluginOptions' => [
-                'onText' => 'Yes',
-                'offText' => 'No',
-            ],
-            'pluginEvents' => [
-                "switchChange.bootstrapSwitch" => "function(event, state) { switchLog(event, state) }",
-            ],
-        ])->label(Yii::t('app', '{Reference}{Video}', [
-            'Reference' => Yii::t('app', 'Reference'), 'Video' => Yii::t('app', 'Video')
-        ]));
-    ?>
-    <!--显示引用视频的详情-->
-    <div class="form-group field-video-details">
-        <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div class="col-lg-6 col-md-6">
-            <div id="details">
-                <div class="list">
-                <?php if($model->is_ref): ?>
-                    <ul>
-                        <li class="clear-margin">
-                            <div class="pic">
-                                <a href="/study_center/default/view?id=<?= $model->reference->id ?>" target="_blank">
-                                    <?php if(empty($model->reference->img)): ?>
-                                    <div class="title"><?= $model->reference->name ?></div>
-                                    <?php else: ?>
-                                    <?= Html::img(['/' . $model->reference->img], ['width' => '100%']) ?>
-                                    <?php endif; ?>
-                                </a>
-                                <div class="duration"><?= DateUtil::intToTime($model->reference->source_duration) ?></div>
-                            </div>
-                            <div class="text">
-                                <div class="tuip">
-                                    <span class="title single-clamp">
-                                        <?= $model->reference->courseNode->course->name . '&nbsp;&nbsp;' . $model->reference->name ?>
-                                    </span>
-                                </div>
-                                <div class="tuip single-clamp">
-                                    <span>
-                                        <?= count($model->reference->tagRefs) > 0 ?
-                                            implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->reference->tagRefs, 'tags'), 'name'))) : 'null' ?>
-                                    </span>
-                                </div>
-                                <div class="tuip">
-                                    <span class="font-success keep-left"><?= Date('Y-m-d H:i', $model->reference->created_at) ?></span>
-                                    <span class="btn-tuip keep-right bg-<?= !$model->reference->is_ref ? 'success' : 'warning' ?>">
-                                        <?= !$model->reference->is_ref ? '原创' : '引用' ?>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="teacher">
-                                <div class="tuip">
-                                    <a href="/teacher/default/view?id=<?= $model->reference->teacher->id ?>" target="_blank">
-                                        <div class="avatars img-circle keep-left">
-                                            <?= Html::img($model->reference->teacher->avatar, ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
-                                        </div>
-                                        <span class="keep-left"><?= $model->reference->teacher->name ?></span>
-                                    </a>
-                                    <span class="keep-right"><i class="fa fa-eye"></i> 
-                                        <?= count($model->reference->playStatistics) > 0 ? 
-                                            array_sum(ArrayHelper::getColumn($model->reference->playStatistics, 'play_count')) : 0 ?>
-                                    </span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--视频名称-->
-    <?= $form->field($model, 'name')->textInput([
-        'placeholder' => '请输入...'
-    ])->label(Yii::t('app', '{Video}{Name}', [
-        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-    ])) ?>
     <!--主讲老师-->
     <?php
-        $refresh = !$model->is_ref ? 
-            Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
+        $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
                 'class' => 'btn btn-primary', 'onclick' => 'refresh($(this)); return false;'
-            ]) : '';
-        $newAdd = !$model->is_ref ? Html::a('新增', ['teacher/create'], [
+            ]);
+        $newAdd = Html::a('新增', ['teacher/create'], [
             'class' => 'btn btn-primary', 'target' => '_blank'
-        ]) : '';
-        $prompt =!$model->is_ref ? Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']) : '';
-        $hiddenInput = Html::activeHiddenInput($model, 'teacher_id', ['id' => 'video-teacher_id-hidden']);
+        ]);
+        $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
         echo  $form->field($model, 'teacher_id', [
-            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{$hiddenInput}{input}</div>"  . 
-                "<div id=\"video-teacher_operate\" class=\"col-lg-4 col-md-4\">" .
-                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                    "<div class=\"col-lg-1 col-md-1\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
+                "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
+                    "<div class=\"keep-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                    "<div class=\"keep-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                    "<div class=\"keep-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
                 "</div>\n" .
-            "<div class=\"col-lg-6 col-md-6\">{error}</div>",
+            "<div class=\"col-lg-7 col-md-7\">{error}</div>",
         ])->widget(Select2::class,[
-            'disabled' => !$model->is_ref ? false : true,
-            'data' => ArrayHelper::map($allTeacher, 'id', 'name'), 
+            'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
             'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => [
                 'templateResult' => new JsExpression('format'),     //设置选项格式
@@ -197,15 +102,13 @@ $this->registerJs($format, View::POS_HEAD);
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
-    <!--视频描述-->
-    <?= $form->field($model, 'des', [
-        'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
-    ])->textarea([
-        'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
-    ])->label(Yii::t('app', '{Video}{Des}', [
-        'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
+    <!--视频名称-->
+    <?= $form->field($model, 'name')->textInput([
+        'placeholder' => '请输入...'
+    ])->label(Yii::t('app', '{Video}{Name}', [
+        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
-    <!--标签-->
+     <!--标签-->
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
@@ -215,8 +118,31 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    <!--视频描述-->
+    <?= $form->field($model, 'des', [
+        'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
+    ])->textarea([
+        'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
+    ])->label(Yii::t('app', '{Video}{Des}', [
+        'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
+    ])) ?>
+    <!--查看权限-->
+    <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
+        'value' => $model->isNewRecord ? 2 : $model->level,
+        'itemOptions'=>[
+            'labelOptions'=>[
+                'style'=>[
+                    'margin'=>'10px 15px 10px 0',
+                    'color' => '#999',
+                    'font-weight' => 'normal',
+                ]
+            ]
+        ],
+    ])->label(Yii::t('app', '{View}{Privilege}：', [
+        'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
+    ])) ?>
     <!--视频文件-->
-    <div class="form-group field-video-source_id">
+    <div class="form-group field-videofile-file_id">
         <?= Html::label(Yii::t('app', '{Video}{File}', [
             'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
         ]), 'video-source_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -224,39 +150,31 @@ $this->registerJs($format, View::POS_HEAD);
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
     <!--外部链接-->
-    <?php if(Yii::$app->user->identity->is_official && !$model->is_ref): ?>
+    <?php if(Yii::$app->user->identity->is_official): ?>
         <div class="form-group field-outside_link">
             <?= Html::label(Yii::t('app', '{Outside}{Link}', [
                 'Outside' => Yii::t('app', 'Outside'), 'Link' => Yii::t('app', 'Link')
             ]), 'outside_link', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-            <div class="col-lg-6 col-md-6">
-                <?= Html::textInput('outside_link', !$model->isNewRecord && $model->source_is_link ? $model->source->path : null, [
-                    'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
-                ]) ?>
+            <div class="col-lg-7 col-md-7">
+                <?php 
+                    $path = !$model->isNewRecord && $model->is_link ? 
+                            StringUtil::completeFilePath($model->videoFile->uploadfile->path) : null;
+                    echo Html::textInput(null, $path, [
+                        'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
+                    ]) 
+                ?>
             </div>
             <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
         </div>
-        <div class="form-group field-outside_video">
-            <label class="col-lg-1 col-md-1 control-label form-label"></label>
-            <div class="col-lg-6 col-md-6">
-                <?php if(!$model->isNewRecord && $model->source_is_link): ?>
-                <video id="outside_video" src="<?= $model->source->path ?>" poster="<?= $model->img ?>" controls></video>
-                <?php else: ?>
-                <video id="outside_video" src="" poster=""></video>
-                <?php endif; ?>
-            </div>
-        </div>
-        <!--隐藏属性-->
-        <?= Html::activeHiddenInput($model, 'source_level') ?>
-        <?= Html::activeHiddenInput($model, 'source_wh') ?>
-        <?= Html::activeHiddenInput($model, 'source_bitrate') ?>
-        <?= Html::activeHiddenInput($model, 'source_duration') ?>
-        <?= Html::activeHiddenInput($model, 'source_is_link') ?>
-        <?= Html::activeHiddenInput($model, 'source_id[]') ?>
-        <?= Html::activeHiddenInput($model, 'img') ?>
     <?php endif; ?>
-    <!--隐藏属性-->
-    <?= Html::activeHiddenInput($model, 'ref_id') ?>
+    
+    <div class="form-group">
+        <?= Html::label(null, null, ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+        <div class="col-lg-11 col-md-11">
+            <?= Html::button(Yii::t('app', 'Submit'), ['id' => 'submitsave', 'class' => 'btn btn-success btn-flat']) ?>
+        </div> 
+    </div>
+    
     <?php ActiveForm::end(); ?>
 
 </div>
@@ -264,27 +182,10 @@ $this->registerJs($format, View::POS_HEAD);
 <?php
 //获取flash上传组件路径
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
-//获取已上传文件
-$videoFiles = json_encode($videoFiles);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
-    
-    //开关事件
-    function switchLog(event, state){
-        if(state == true){
-            $(".myModal .modal-dialog .modal-body").load("../video/reference?node_id=$model->node_id");
-        }else{
-            $(".myModal").load("../video/create?node_id=$model->node_id");
-        }
-    }
-    //重选引用视频事件
-    function reelectEvent(elem){
-        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
-        return false;
-    }
-        
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
         $('#video-teacher_id').html("");
@@ -298,7 +199,7 @@ $js =
             }
         });
     }
-        
+    
     window.uploader;
     //加载文件上传  
     require(['euploader'], function (euploader) {
@@ -315,7 +216,7 @@ $js =
             auto: false,
             //开起分片上传
             chunked: true,
-            name: 'Video[source_id]',
+            name: 'VideoFile[file_id]',
             // 上传容器
             container: '#uploader-container',
             //验证文件总数量, 超出则不允许加入队列
@@ -340,11 +241,19 @@ $js =
         };
         //视频
         window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
+        window.uploader.clearAll();
         window.uploader.addCompleteFiles($videoFiles);
-        if($model->is_ref){
-            window.uploader.setEnabled(false);
-        }
     });
+    //添加外部链接
+    $("#outside_link").blur(function(){
+        $.get("/webuploader/default/upload-link?video_path=" + $(this).val(), function(rel){
+            if(rel['code'] == '200'){
+                window.uploader.clearAll();
+                window.uploader.addCompleteFiles([rel['data']['dbFile']]);
+            }
+        });
+    }); 
+    
     /**
     * 上传文件完成才可以提交
     * @return {uploader.isFinish}
@@ -357,55 +266,13 @@ $js =
      * @return boolean  
      */
     function isExist(){
-        var len = $('#uploader-container input[name="'+ 'Video[source_id][]'+'"]').length;
+        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
         if(len <= 0){
             return false;
         }else{
             return true;
         }
-    }
-    //添加外部链接
-    var links = "";
-    $("#outside_link").blur(function(){
-        val = $(this).val();
-        if(val == ''){
-            $("#outside_video").attr({'src': '', 'poster': '', 'controls': false});
-            $("#video-source_level").val("");
-            $("#video-source_wh").val("");
-            $("#video-source_bitrate").val("");
-            $("#video-source_duration").val("");
-            $("#video-source_is_link").val("");
-            $("#video-source_id").val("");
-            $("#video-img").val("");
-            links = "";
-            return;
-        }
-        if(isExist()){
-            $('.field-outside_link').addClass('has-error');
-            $('.field-outside_link .help-block').html('请先删除视频文件，再添加外部链接。');
-            setTimeout(function(){
-                $('.field-outside_link').removeClass('has-error');
-                $('.field-outside_link .help-block').html('');
-            }, 3000);
-            return;
-        }
-        if(links == val && val != ''){
-            return;
-        }
-        links = val;
-        $.get("/webuploader/default/upload-link?video_path=" + val, function(rel){
-            if(rel['code'] == '200'){
-                $("#outside_video").attr({'src': rel['data']['dbFile'].path, 'poster': rel['data']['dbFile'].thumb_path, 'controls': 'controls'});
-                $("#video-source_level").val(rel['data']['source'].source_level);
-                $("#video-source_wh").val(rel['data']['source'].source_wh);
-                $("#video-source_bitrate").val(rel['data']['source'].source_bitrate);
-                $("#video-source_duration").val(rel['data']['source'].source_duration);
-                $("#video-source_is_link").val(rel['data']['source'].source_is_link);
-                $("#video-source_id").val(rel['data']['dbFile'].id);
-                $("#video-img").val(rel['data']['dbFile'].thumb_path);
-            }
-        });
-    });    
+    }    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

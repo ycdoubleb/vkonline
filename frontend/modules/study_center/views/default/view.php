@@ -2,6 +2,7 @@
 
 use common\models\vk\Video;
 use common\models\vk\VisitLog;
+use common\utils\StringUtil;
 use common\widgets\share\ShareAsset;
 use frontend\modules\study_center\assets\PalyAssets;
 use kartik\growl\GrowlAsset;
@@ -29,7 +30,7 @@ $this->title = $model['name'];
         ]) ?>
     </div>
     <div class="player">
-        <video id="myVideo" src="/<?= $model['path'] ?>" controls autoplay poster="/<?= $model['img'] ?>" width="100%" height="500"></video>
+        <video id="myVideo" src="<?= StringUtil::completeFilePath($model['path']) ?>" controls autoplay poster="<?= StringUtil::completeFilePath($model['img']) ?>" width="100%" height="500"></video>
         <?= $this->render('_node', ['nodes' => $nodes, 'params' => $params]) ?>
     </div>
     <div class="operation">

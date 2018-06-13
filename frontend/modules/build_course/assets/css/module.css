@@ -453,21 +453,21 @@ body .select2-container--krajee
 .sortable .head:hover .icongroup{
     display: block;
 }
-.sortable .nodes {
+.sortable .knowledges {
 }
-.sortable .nodes li {
+.sortable .knowledges li {
     padding: 0 20px 0 35px;
     margin: 0 -20px;
 }
-.sortable .nodes .head {
+.sortable .knowledges .head {
     position: relative;
     height: 50px;
     line-height: 50px;
 }
-.sortable .nodes .head > a {
+.sortable .knowledges .head > a {
     color: #878787;
 }
-.sortable .nodes .duration{
+.sortable .knowledges .duration{
     position: absolute;
     right: 20%;
 }
@@ -567,57 +567,50 @@ body .select2-container--krajee
 /*******************************************************************************
  * 引用视频
  *******************************************************************************/
-.field-video-is_ref .form-group {
-    margin-bottom: 0;
-}
-.video-reference .form-group {
-    margin: 0 !important;
-}
-.video-reference .form-group .form-label {
-    padding: 10px 0; 
-    color: #999; 
-    font-weight: bold; 
-}
-.video-reference .sort {
+.knowledge-reference .sort {
     display: inline-block;
     margin-top: 0;
     margin-right: 15px;
     margin-bottom: 15px;
+    line-height: 0px;
 }
-.video-reference .sort .form {
+.knowledge-reference .sort .form {
     width: 65%;
     margin-top: 5px;
     background-color: transparent;
     box-shadow: none;
 }
-.video-reference .reference {
+.knowledge-reference .sort .form .form-group {
+    margin-left: 0;
+}
+.knowledge-reference .reference {
     position: relative;
     width: 200px;
     margin-right: 25px;
 }
-.video-reference .reference .details {
+.knowledge-reference .reference .details {
     position: absolute;
     top: 0;
     left: 225px;
     z-index: 1026;
 }
-.video-reference .reference .pic {
+.knowledge-reference .reference .pic {
     height: 112px !important;
 }
-.video-reference .reference .pic .title {
+.knowledge-reference .reference .pic .title {
     height: 112px !important;
 }
-.video-reference .reference .text {
+.knowledge-reference .reference .text {
     height: 40px;
     padding: 0 5px 0 6px;
     line-height: 40px;
     border-bottom: none;
 }
-.video-reference .list .reference .title-size {
+.knowledge-reference .list .reference .title-size {
     display: inline-block;
     width: 140px;
 }
-.video-reference .reference .text a {
+.knowledge-reference .reference .text a {
     display: none;
     width: auto;
     height: auto;

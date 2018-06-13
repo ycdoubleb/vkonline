@@ -79,11 +79,11 @@
 /**
  * 危险
  */
-.font-warning {
+.font-danger {
     color: #ff3300 !important;
     
 }
-.bg-warning {
+.bg-danger {
     background-color: #ff3300 !important;
 }
 

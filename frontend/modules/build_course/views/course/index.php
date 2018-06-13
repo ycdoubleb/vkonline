@@ -4,6 +4,7 @@ use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
 use common\utils\DateUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -16,6 +17,7 @@ use yii\widgets\ActiveForm;
 
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 ?>
 
@@ -50,7 +52,7 @@ ModuleAssets::register($this);
                 ],  
             ], 
         ]); ?>
-        
+        <!--状态-->
         <?= $form->field($searchModel, 'is_publish')->radioList(['' => '全部', 1 => '已发布', 0 => '未发布'], [
             'value' => ArrayHelper::getValue($filters, 'CourseSearch.is_publish', ''),
             'itemOptions'=>[
@@ -63,7 +65,7 @@ ModuleAssets::register($this);
                 ]
             ],
         ])->label(Yii::t('app', '{Status}：', ['Status' => Yii::t('app', 'Status')])) ?>
-        
+        <!--查看权限-->
         <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
             'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
             'itemOptions'=>[
@@ -78,7 +80,7 @@ ModuleAssets::register($this);
         ])->label(Yii::t('app', '{View}{Privilege}：', [
             'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
         ])) ?>
-        
+        <!--课程名称-->
         <?= $form->field($searchModel, 'name')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true
         ])->label(Yii::t('app', '{Course}{Name}：', [
@@ -112,7 +114,7 @@ ModuleAssets::register($this);
             <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
                 <div class="pic">
                     <?php if($model['level'] == Course::INTRANET_LEVEL): ?>
-                    <div class="icon font-warning"><i class="fa fa-lock"></i></div>
+                    <div class="icon font-danger"><i class="fa fa-lock"></i></div>
                     <?php endif; ?>
                     <a href="/course/default/view?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['cover_img'])): ?>
@@ -131,7 +133,7 @@ ModuleAssets::register($this);
                         <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
                     </div>
                     <div class="tuip">
-                        <span class="keep-left font-<?= $model['is_publish'] ? 'success' : 'warning' ?>">
+                        <span class="keep-left font-<?= $model['is_publish'] ? 'success' : 'danger' ?>">
                             <?= $model['is_publish'] ? '已发布' : '未发布' ?>
                         </span>
                         <span class="font-success keep-right">
@@ -217,27 +219,29 @@ $js =
             isPageLoading = true;
             $.get("$url", {page: (pageNum + 1)}, function(rel){
                 isPageLoading = false;
-                page = Number(rel['page']);
+                var data = rel['data'];
+                page = Number(data['page']);
                 var items = $domes;
                 var dome = "";
-                var data = rel['data'];
                 if(rel['code'] == '200'){
-                    for(var i in data){
+                    for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 3 == 2 ? 'clear-margin' : '',
-                            id: data[i].id,
-                            isShow: data[i].level == 1 ? '<div class="icon font-warning"><i class="fa fa-lock"></i></div>' : '',
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
-                            name: data[i].name,
-                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
-                            tags: data[i].tags != undefined ? data[i].tags : 'null',
-                            colorName: data[i].is_publish == 1 ? 'success' : 'warning',
-                            publishStatus: data[i].is_publish == 1 ? '已发布' : '未发布',
-                            number: data[i].people_num != undefined ? data[i].people_num : 0,
-                            teacherId: data[i].teacher_id,
-                            teacherAvatar: data[i].teacher_avatar,
-                            teacherName: data[i].teacher_name,
-                            avgStar: data[i].avg_star
+                            id: data['result'][i].id,
+                            isShow: data['result'][i].level == 1 ? '<div class="icon font-danger"><i class="fa fa-lock"></i></div>' : '',
+                            isExist: data['result'][i].cover_img == null || data['result'][i].cover_img == '' ? 
+                                '<div class="title">' + data['result'][i].name + '</div>' : 
+                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].cover_img) + '" width="100%" height="100%" />',
+                            name: data['result'][i].name,
+                            contentTime: Wskeee.DateUtil.intToTime(data['result'][i].content_time),
+                            tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
+                            colorName: data['result'][i].is_publish == 1 ? 'success' : 'danger',
+                            publishStatus: data['result'][i].is_publish == 1 ? '已发布' : '未发布',
+                            number: data['result'][i].people_num != undefined ? data['result'][i].people_num : 0,
+                            teacherId: data['result'][i].teacher_id,
+                            teacherAvatar: data['result'][i].teacher_avatar,
+                            teacherName: data['result'][i].teacher_name,
+                            avgStar: data['result'][i].avg_star
                         });
                     }
                     $(".list > ul").append(dome);
@@ -246,6 +250,12 @@ $js =
                         //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: "danger",
+                    });
                 }
                 //隐藏loading
                 $('.loading').hide();

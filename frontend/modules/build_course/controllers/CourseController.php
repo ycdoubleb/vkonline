@@ -56,43 +56,51 @@ class CourseController extends Controller
     
     /**
      * 列出所有 CourseSearch 模型。
-     * @return string [
-     *    filters => 查询过滤的属性, pagers => 分页, dataProvider => 课程数据
-     * ]
+     * @return string|json
      */
     public function actionIndex()
     {
         $searchModel = new CourseSearch();
-        $result = $searchModel->buildCourseSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
+        $results = $searchModel->buildCourseSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['course']),
+            'allModels' => array_values($results['data']['course']),
         ]);
-                
+       
+        //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['course']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['course']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,      //搜索模型
+            'dataProvider' => $dataProvider,    //课程数据
+            'filters' => $results['filter'],    //查询过滤的属性
+            'totalCount' => $results['total'],  //总数量
         ]);
     }
     
     /**
      * 显示一个单一的 Course 模型。
      * @param string $id
-     * @return mixed [
-     *      model => 模型, courseUser => 所有协作人员数据, courseNodes => 所有课程节点数据
-     * ]
+     * @return mixed 
      */
     public function actionView($id)
     {
@@ -102,24 +110,22 @@ class CourseController extends Controller
         $searchCourseLog = new CourseActLogSearch();
         
         return $this->render('view', [
-            'model' => $model,
-            'courseLogModel' => $searchCourseLog,
-            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]),
-            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]),
-            'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),
-            'courseAttrs' => $this->getCourseAttrByCourseId($model->id),
-            'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id),
-            'path' => $this->getCategoryFullPath($model->category_id),
-            'is_hasEditNode' => ActionUtils::getInstance()->getIsHasEditNodePermission($model->id),
+            'model' => $model,  //模型
+            'courseLogModel' => $searchCourseLog,   //课程操作记录搜索模型
+            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]), //所有协作人员
+            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]), //所有课程节点
+            'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),  //所有课程操作记录
+            'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
+            'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id), //该课程下的所有操作记录
+            'path' => $this->getCategoryFullPath($model->category_id),  //分类全路径
+            'is_hasEditNode' => ActionUtils::getInstance()->getIsHasEditNodePermission($model->id), //是否拥有编辑节点的权限
         ]);
     }
    
     /**
      * 创建 一个新的 Course 模块
      * 如果创建成功，浏览器将被重定向到“查看”页面。
-     * @return mixed [
-     *     model => 模型, allCategory => 所有分类, allTeacher => 所有老师, allTags => 所有标签
-     * ]
+     * @return mixed 
      */
     public function actionCreate()
     {
@@ -135,11 +141,10 @@ class CourseController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
-                'allCategory' => Category::getCatsByLevel(1, true),
-                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),
-                'attFiles' => Course::getUploadfileByAttachment(),
-                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
+                'model' => $model,  //模型
+                'allCategory' => Category::getCatsByLevel(1, true), //所有分类
+                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+                'attFiles' => [],
             ]);
         }
     }
@@ -148,10 +153,7 @@ class CourseController extends Controller
      * 更新 现有的 Course 模型。
      * 如果更新成功，浏览器将被重定向到“查看”页面。
      * @param integer $id
-     * @return mixed [
-     *      model => 模型, allCategory => 所有分类, allTeacher => 所有老师, allTags => 所有标签
-     *      tagsSelected => 已选的标签
-     * ]
+     * @return mixed 
      */
     public function actionUpdate($id)
     {
@@ -166,14 +168,13 @@ class CourseController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
-                'allCategory' => Category::getCatsByLevel(1, true),
-                'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),
-                'attFiles' => Course::getUploadfileByAttachment($model->id),
-                'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),
-                //'allTags' => ArrayHelper::map(Tags::find()->all(), 'id', 'name'),
-                'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),
-                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 1)),
+                'model' => $model,  //模型
+                'allCategory' => Category::getCatsByLevel(1, true), //所有分类
+                'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
+                'attFiles' => Course::getUploadfileByAttachment($model->id),    //已存在的附近
+                'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
+                'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
+                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 1)),  //已选的标签
             ]);
         }
     }
@@ -182,7 +183,7 @@ class CourseController extends Controller
      * 关闭 现有的 Course 模型。
      * 如果关闭成功，浏览器将被重定向到“查看”页面。
      * @param integer $id
-     * @return mixed [model => 模型]
+     * @return mixed
      */
     public function actionClose($id)
     {
@@ -197,7 +198,7 @@ class CourseController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->renderAjax('close', [
-                'model' => $model,
+                'model' => $model,  //模型
             ]);
         }
     }
@@ -206,7 +207,7 @@ class CourseController extends Controller
      * 发布 现有的 Course 模型。
      * 如果发布成功，浏览器将被重定向到“查看”页面。
      * @param integer $id
-     * @return mixed [model => 模型]
+     * @return mixed
      */
     public function actionPublish($id)
     {
@@ -221,7 +222,7 @@ class CourseController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->renderAjax('publish', [
-                'model' => $model,
+                'model' => $model,  //模型
             ]);
         }
     }
@@ -234,21 +235,25 @@ class CourseController extends Controller
     public function actionAttrSearch($cate_id)
     {
         $courseAttrs = $this->getCourseAttributeByCategoryId($cate_id);
-        Yii::$app->getResponse()->format = 'json';
         
-        if(Yii::$app->request->isPost){
-            return [
-                'code'=> 200,
-                'data' => $courseAttrs,
-                'message' => '请求成功！',
-            ];
+        //如果是ajax请求，返回json
+        if(\Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => $courseAttrs,
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
-        
-        return [
-            'code'=> 404,
-            'data' => [],
-            'message' => '请求失败！',
-        ];
     }
 
     /**

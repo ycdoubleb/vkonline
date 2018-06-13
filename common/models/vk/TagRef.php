@@ -85,6 +85,11 @@ class TagRef extends ActiveRecord
         //以id排序
         $tagRef->orderBy('TagRef.id');
         
-        return $key_to_value ? ArrayHelper::map($tagRef->all(), 'tags.id', 'tags.name') : $tagRef;
+        if($key_to_value) {
+            $tagRef->select(['TagRef.tag_id', 'Tags.name']);
+            return ArrayHelper::map($tagRef->asArray()->all(), 'tag_id', 'name');
+        }
+        
+        return $tagRef;
     }
 }

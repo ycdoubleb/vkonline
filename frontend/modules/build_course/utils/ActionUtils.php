@@ -10,18 +10,20 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
+use common\models\vk\Knowledge;
 use common\models\vk\RecentContacts;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
 use common\models\vk\Video;
+use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\DateUtil;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\web\NotFoundHttpException;
 
 
 
@@ -382,7 +384,7 @@ class ActionUtils
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
-                Video::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);
+                Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);
                 $this->saveCourseActLog(['action' => '删除', 'title' => "环节管理", 
                     'content' => "{$model->name}", 'course_id' => $model->course_id]);
             }else{
@@ -412,44 +414,30 @@ class ActionUtils
      */
     public function createVideo($model, $post)
     {
-        if($model->is_ref){
-            $model->source_id = $model->reference->source_id;
-        }else{
-            $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
-        }
-        
+        $uploadFile = $this->findUploadfileModel(ArrayHelper::getValue($post, 'VideoFile.file_id.0'));
+        $model->duration = $uploadFile->duration;
+        $model->img = $uploadFile->thumb_path;
+        $model->is_link = $uploadFile->is_link;
+        $model->is_publish = 1;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $courseModel = Course::findOne($model->courseNode->course_id);
-                $courseModel->content_time = $courseModel->content_time + $model->source_duration;
-                $courseModel->update(false, ['content_time']);
+                $videoFile = new VideoFile([
+                    'video_id' => $model->id, 'is_source' => 1, 'file_id' => $uploadFile->id,
+                ]);
+                $videoFile->save();
                 $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
-                $this->saveCourseActLog(['action' => '增加', 'title' => "视频管理",
-                    'content' => "{$model->courseNode->name}>> {$model->name}",  
-                    'course_id' => $model->courseNode->course_id,]);
             }else{
                 throw new Exception($model->getErrors());
             }
             
             $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [
-                    'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
-                    'duration' => DateUtil::intToTime($model->source_duration),
-                ],
-                'message' => '操作成功！'
-            ];
+            Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage(),
-            ];
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
     }
     
@@ -460,96 +448,28 @@ class ActionUtils
      */
     public function updateVideo($model, $post)
     {
-        $model->source_id = ArrayHelper::getValue($post, 'Video.source_id.0');
-        
-        //获取所有新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取所有旧属性值
-        $oldAttr = $model->getOldAttributes();
-        
+        $uploadFile = $this->findUploadfileModel(ArrayHelper::getValue($post, 'VideoFile.file_id.0'));
+        $model->duration = $uploadFile->duration;
+        $model->img = $uploadFile->thumb_path;
+        $model->is_link = $uploadFile->is_link;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $isEqual = $oldAttr['source_id'] != $model->source_id;
-                $courseModel = Course::findOne($model->courseNode->course_id);
-                $courseModel->content_time = $courseModel->content_time + $model->source_duration;
-                $courseModel->update(false, ['content_time']);
+                $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
+                $videoFile->file_id = $uploadFile->id;
+                $videoFile->save(false, ['file_id']);
                 $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
-                if(!empty($newAttr) || $isEqual){
-                    $oldRef = Video::findOne($oldAttr['ref_id']);
-                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
-                    $oldVideo = Uploadfile::findOne($oldAttr['source_id']);
-                    $oldRefName = !empty($oldRef) ? $oldRef->courseNode->course->name . ' / ' . $oldRef->courseNode->name . ' / ' . $oldRef->name : '空';
-                    $this->saveCourseActLog(['action' => '修改', 'title' => "视频管理", 'course_id' => $model->courseNode->course_id,
-                        'content'=>"调整 【{$model->courseNode->name} >> {$oldAttr['name']}】 以下属性：\n\r".
-                            ($oldAttr['ref_id'] != $model->ref_id ? "引用：【旧】{$oldRefName}>>【新】{$model->courseNode->course->name} / {$model->courseNode->name} / {$model->name},\n\r" : null).
-                            ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                            ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
-                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).
-                            ($isEqual ? "视频：【旧】{$oldVideo->name} >>【新】{$model->source->name}" : null),
-                    ]);
-                }
             }else{
                 throw new Exception($model->getErrors());
             }
             
             $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [
-                    'id' => $model->id, 'name' => $model->name,
-                    'duration' => DateUtil::intToTime($model->source_duration),
-                ],
-                'message' => '操作成功！'
-            ];
+            Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
-        }
-    }
-    
-    /**
-     * 删除视频架操作
-     * @param Video $model
-     * @throws Exception
-     */
-    public function deleteVideo($model)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $model->is_del = 1;
-            if($model->update(true, ['is_del'])){
-                $courseModel = Course::findOne($model->courseNode->course_id);
-                $courseModel->content_time = $courseModel->content_time - $model->source_duration;
-                $courseModel->update(false, ['content_time']);
-                $this->saveCourseActLog(['action' => '删除', 'title' => "视频管理",
-                    'content' => "{$model->courseNode->name} >> {$model->name}",
-                    'course_id' => $model->courseNode->course_id,]);
-            }else{
-                throw new Exception($model->getErrors());
-            }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
     }
     
@@ -683,6 +603,102 @@ class ActionUtils
         }
     }
     
+     /**
+     * 获取该课程下的所有记录
+     * @param string $course_id                             
+     * @return array
+     */
+    public function getCourseActLogs($course_id)
+    {
+        $query = (new Query())->select(['action','title','created_by', 'User.nickname']);
+        $query->from(CourseActLog::tableName());
+        $query->leftJoin(['User' => User::tableName()], 'User.id = created_by');
+        $query->where(['course_id' => $course_id]);
+        $results = $query->all();
+        
+        return [
+            'actions' => ArrayHelper::map($results, 'action', 'action'),
+            'titles' => ArrayHelper::map($results, 'title', 'title'),
+            'createdBys' => ArrayHelper::map($results, 'created_by', 'nickname'),
+        ];
+    }
+    
+    /**
+     * 获取是否拥有编辑权限
+     * @param string $course_id
+     * @return boolean
+     */
+    public function getIsHasEditNodePermission($course_id)
+    {
+        //查询该课程下的所有协作用户
+        $courseUsers = CourseUser::findAll([
+            'course_id' => $course_id, 'privilege' => [CourseUser::EDIT, CourseUser::ALL]
+        ]);
+        //拿到拥有编辑权限的用户
+        $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
+        //如果当前用户存在数组里，则返回true
+        if(in_array(Yii::$app->user->id, $userIds)){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * 保存顺序调整记录
+     * @param string $table 数据表
+     * @param string $course_id 课程id
+     * @param array $oldIndexs  旧顺序
+     * @param array $newIndexs  新顺序
+     * @param string|array|null $id
+     */
+    public function saveSortOrderLog($table, $course_id, $oldIndexs, $newIndexs, $id)
+    {
+        $oleItems = [];
+        $newItems = [];
+        $nodeId = ($model= Knowledge::findOne($id[0])) !== null ? $model->node_id : null;
+        $tableName = [
+            CourseNode::tableName() => CourseNode::getCourseNodeByPath($id[0]),
+            Knowledge::tableName() => CourseNode::getCourseByNodes(['id' => $nodeId]),
+        ];
+        //$parentPath = implode('>>', $tableName["{{%$table}}"]);
+        $parentPath = isset($tableName["{{%$table}}"][0]) ? $tableName["{{%$table}}"][0]->name  : null;
+        $content = $parentPath != null ? "调整：{$parentPath}：\n\r" : null;
+        //获取名称、顺序
+        $query = (new Query())->from("{{%$table}}");
+        $query->where(['id' => $id]);
+        //结果数组
+        $results = ArrayHelper::map($query->all(), 'id', 'name');
+        //组装旧目录
+        foreach ($oldIndexs as $oldkey => $oldvalue) {
+            $oleItems[$oldkey] = $results[$oldkey];
+        }
+        //组装新目录
+        foreach ($newIndexs as $newkey => $newvalue) {
+            $newItems[$newkey] = $results[$newkey];
+        }
+        //保存记录
+        $this->saveCourseActLog(['action' => '修改', 'title' => '顺序调整', 'course_id' => $course_id,
+            'content' => $content."【旧】". implode('、', $oleItems)."\n\r【新】".implode('、', $newItems),
+        ]);
+    }
+    
+    /**
+     * 基于其主键值找到 Uploadfile 模型。
+     * 如果找不到模型，就会抛出404个HTTP异常。
+     * @param string $id
+     * @return Uploadfile
+     * @throws NotFoundHttpException
+     */
+    protected function findUploadfileModel($id)
+    {
+        if (($model = Uploadfile::findOne($id)) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        }
+    }
+
     /**
      * 修改表属性值
      * @param string $id
@@ -760,36 +776,6 @@ class ActionUtils
         Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
             ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
     }
-    
-    /**
-     * 保存对象标签
-     * @param string $objectId  对象id
-     * @param array $tagIds     标签id
-     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
-     
-    private function saveObjectTags($objectId, $tagIds, $type = 1)
-    {
-        $tagRefs = [];
-        //删除已存在的标签
-        TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
-        if(!empty($tagIds)){
-            //循环判断是否已经有存在的标签，如果存在引用次数加1，否者新建一条
-            foreach ($tagIds as $tag_id) {
-                if(($tags = Tags::findOne($tag_id)) != null){
-                    $tags->ref_count = $tags->ref_count + 1;
-                    $tags->save(true, ['ref_count']);
-                }else{
-                    $tags = new Tags(['name' => $tag_id, 'ref_count' => 1]);
-                    $tags->save();
-                    $tag_id = $tags->id;
-                }
-                $tagRefs[] = [$objectId, $tag_id, $type];
-            }
-        }
-        //添加
-        Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
-            ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
-    }*/
     
     /**
      * 保存协作人员
@@ -892,65 +878,6 @@ class ActionUtils
     }
     
     /**
-     * 获取该课程下的所有记录
-     * @param string $course_id                             
-     * @return array
-     */
-    public function getCourseActLogs($course_id)
-    {
-        $query = (new Query())->select(['action','title','created_by', 'User.nickname']);
-        $query->from(CourseActLog::tableName());
-        $query->leftJoin(['User' => User::tableName()], 'User.id = created_by');
-        $query->where(['course_id' => $course_id]);
-        $results = $query->all();
-        
-        return [
-            'actions' => ArrayHelper::map($results, 'action', 'action'),
-            'titles' => ArrayHelper::map($results, 'title', 'title'),
-            'createdBys' => ArrayHelper::map($results, 'created_by', 'nickname'),
-        ];
-    }
-    
-    /**
-     * 保存顺序调整记录
-     * @param string $table 数据表
-     * @param string $course_id 课程id
-     * @param array $oldIndexs  旧顺序
-     * @param array $newIndexs  新顺序
-     * @param string|array|null $id
-     */
-    public function saveSortOrderLog($table, $course_id, $oldIndexs, $newIndexs, $id)
-    {
-        $oleItems = [];
-        $newItems = [];
-        $nodeId = ($model= Video::findOne($id[0])) !== null ? $model->node_id : null;
-        $tableName = [
-            CourseNode::tableName() => CourseNode::getCouNodeByPath($id[0]),
-            Video::tableName() => CourseNode::getCouByNode(['id' => $nodeId]),
-        ];
-        //$parentPath = implode('>>', $tableName["{{%$table}}"]);
-        $parentPath = isset($tableName["{{%$table}}"][0]) ? $tableName["{{%$table}}"][0]->name  : null;
-        $content = $parentPath != null ? "调整：{$parentPath}：\n\r" : null;
-        //获取名称、顺序
-        $query = (new Query())->from("{{%$table}}");
-        $query->where(['id' => $id]);
-        //结果数组
-        $results = ArrayHelper::map($query->all(), 'id', 'name');
-        //组装旧目录
-        foreach ($oldIndexs as $oldkey => $oldvalue) {
-            $oleItems[$oldkey] = $results[$oldkey];
-        }
-        //组装新目录
-        foreach ($newIndexs as $newkey => $newvalue) {
-            $newItems[$newkey] = $results[$newkey];
-        }
-        //保存记录
-        $this->saveCourseActLog(['action' => '修改', 'title' => '顺序调整', 'course_id' => $course_id,
-            'content' => $content."【旧】". implode('、', $oleItems)."\n\r【新】".implode('、', $newItems),
-        ]);
-    }
-    
-    /**
      * 保存课程附件
      * @param string $course_id
      * @param array $files
@@ -972,26 +899,5 @@ class ActionUtils
         //添加
         Yii::$app->db->createCommand()->batchInsert(CourseAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
-    }
-    
-    /**
-     * 获取是否拥有编辑权限
-     * @param string $course_id
-     * @return boolean
-     */
-    public function getIsHasEditNodePermission($course_id)
-    {
-        //查询该课程下的所有协作用户
-        $courseUsers = CourseUser::findAll([
-            'course_id' => $course_id, 'privilege' => [CourseUser::EDIT, CourseUser::ALL]
-        ]);
-        //拿到拥有编辑权限的用户
-        $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
-        //如果当前用户存在数组里，则返回true
-        if(in_array(Yii::$app->user->id, $userIds)){
-            return true;
-        }
-        
-        return false;
     }
 }

@@ -2,6 +2,7 @@
 
 use common\models\vk\Course;
 use common\models\vk\Video;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
@@ -21,7 +22,7 @@ ModuleAssets::register($this);
     <!--面包屑-->
     <div class="crumbs">
         <span>
-            <?= Yii::t('app', "{Video}{Detail}：{$model->courseNode->course->name} / {$model->courseNode->name}", [
+            <?= Yii::t('app', "{Video}{Detail}：{$model->name}", [
                 'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
             ]) ?>
         </span>
@@ -34,25 +35,18 @@ ModuleAssets::register($this);
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
+            <div class="btngroup">
+                <?php if($model->created_by == Yii::$app->user->id){
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
+                        ['class' => 'btn btn-primary btn-flat']);
+                }?>
+            </div>
         </div>
         <?= DetailView::widget([
             'model' => $model,
             'options' => ['class' => 'table table-bordered detail-view'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
-                [
-                    'attribute' => 'ref_id',
-                    'label' => Yii::t('app', 'Reference'),
-                    'format' => 'raw',
-                    'value' => !empty($model->ref_id) ? 
-                        Html::a($model->reference->courseNode->course->name . ' >> ' . $model->reference->courseNode->name . ' >> ' .$model->reference->name, ['/study_center/default/view', 'id' => $model->ref_id], ['target' => '_blank']) : Null,
-                ],
-                [
-                    'attribute' => 'node_id',
-                    'label' => Yii::t('app', '{The}{Course}', ['The' => Yii::t('app', 'The'), 'Course' => Yii::t('app', 'Course')]),
-                    'format' => 'raw',
-                    'value' => !empty($model->node_id) ? $model->courseNode->course->name . ' / ' . $model->courseNode->name : null,
-                ],
                 [
                     'attribute' => 'level',
                     'label' => Yii::t('app', '{Visible}{Range}', [
@@ -101,11 +95,10 @@ ModuleAssets::register($this);
                     'value' => date('Y-m-d H:i', $model->updated_at),
                 ],
                 [
-                    'attribute' => 'source_id',
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
-                    'value' => !empty($model->source_id) ? 
-                        "<video src=\"{$paths['source_path']}\" controls poster=\"{$paths['img']}\"></video>" : null,
+                    'value' => !empty($model->videoFile) ? 
+                        '<video src="' . StringUtil::completeFilePath($model->videoFile->uploadfile->path) . '" controls poster="' . StringUtil::completeFilePath($model->img) . '"></video>' : null,
                 ],
             ],
         ]) ?>
@@ -175,6 +168,28 @@ ModuleAssets::register($this);
                     ],
                 ],
                 [
+                    'label' => Yii::t('app', '{The}{Knowledge}', [
+                        'The' => Yii::t('app', 'The'), 'Knowledge' => Yii::t('app', 'Knowledge')
+                    ]),
+                    'format' => 'raw',
+                    'value'=> function($data){
+                        return $data['knowledge_name'];
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '500px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                ],
+                [
                     'label' => Yii::t('app', 'Created By'),
                     'value'=> function($data){
                         return $data['nickname'];
@@ -194,9 +209,30 @@ ModuleAssets::register($this);
                     ],
                 ],
                 [
+                    'label' => Yii::t('app', '{Relation}{Time}', [
+                        'Relation' => Yii::t('app', 'Relation'), 'Time' => Yii::t('app', 'Time')
+                    ]),
+                    'value'=> function($data){
+                        return date('Y-m-d H:i', $data['created_at']);
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '125px',
+                            'border-bottom-width' => '1px',
+                            'border-left-width' => '1px',
+                            'background-color' => '#f9f9f9'
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'border-left-width' => '1px',
+                        ],
+                    ],
+                ],
+                [
                     'class' => 'yii\grid\ActionColumn',
                     'buttons' => [
-                        'view' => function ($url, $model, $key) {
+                        'view' => function ($url, $data, $key) {
                              $options = [
                                 'title' => Yii::t('yii', 'View'),
                                 'aria-label' => Yii::t('yii', 'View'),
@@ -205,7 +241,7 @@ ModuleAssets::register($this);
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="fa fa-eye"></span>',
-                                'url' => ['/course/default/view', 'id' => $model['id']],
+                                'url' => ['/study_center/default/view', 'id' => $data['knowledge_id']],
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'adminOptions' => true,
