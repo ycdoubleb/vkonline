@@ -212,6 +212,49 @@ class KnowledgeController extends Controller
     }
     
     /**
+     * 引用 品牌内部的视频
+     * 如果是 page 非为空，返回成功的json数据，否则返回自己的视频
+     * @return json
+     */
+    public function actionInsideVideo()
+    {
+        $searchModel = new VideoSearch();
+        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($results['data']['video']),
+        ]);
+        
+        //分页查询
+        if(isset($results['filter']['page'])){
+            Yii::$app->getResponse()->format = 'json';
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['video']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
+        }
+        
+        return $this->renderAjax('reference', [
+            'searchModel' => $searchModel,      //搜索模型
+            'dataProvider' => $dataProvider,    //我收藏的视频数据
+            'filters' => $results['filter'],    //查询过滤的属性
+            'totalCount' => $results['total'],  //总数量
+        ]);
+    }
+    
+    /**
      * Finds the Knowledge model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id

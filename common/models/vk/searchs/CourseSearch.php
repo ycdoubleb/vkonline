@@ -8,8 +8,9 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use Yii;
@@ -222,7 +223,9 @@ class CourseSearch extends Course
             ->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num'])
             ->from(['Video' => Video::tableName()]);
         
-        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
+        $query->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], 'KnowledgeVideo.video_id = Video.id');
+        $query->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = KnowledgeVideo.knowledge_id');
+        $query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0)');
         
         $query->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
         
