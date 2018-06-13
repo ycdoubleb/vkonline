@@ -7,7 +7,6 @@ use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
@@ -56,21 +55,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'allowClear' => true,
                         ],
                     ]),
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                            'white-space' => 'unset',
-                        ],
-                    ],
-                ],
-                [
-                    'attribute' => 'course_name',
-                    'label' => Yii::t('app', '{The}{Course}',[
-                        'The' => Yii::t('app', 'The'),
-                        'Course' => Yii::t('app', 'Course'),
-                    ]),
-                    'filter' => Html::input('text', 'VideoSearch[course_name]', 
-                            ArrayHelper::getValue($filters, 'VideoSearch.course_name'), ['class' => 'form-control']),
                     'contentOptions' => [
                         'style' => [
                             'text-align' => 'center',
@@ -171,40 +155,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => function ($data){
                         return ($data['level'] != null) ?  '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
                                 Course::$levelMap[$data['level']] . '</span>' : null;
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'attribute' => 'is_ref',
-                    'label' => Yii::t('app', 'Source'),
-                    'format' => 'raw',
-                    'filter' => false,
-                    'value' => function ($data) {
-                        return $data['is_ref'] == 1 ? '<span style="color:red">引用</span>' : '<span style="color:green">原创</span>';
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
-                    'attribute' => 'source.size',
-                    'label' => Yii::t('app', '{Occupy}{Space}',[
-                        'Occupy' => Yii::t('app', 'Occupy'),
-                        'Space' => Yii::t('app', 'Space'),
-                    ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'min-width' => '90px',
-                        ],
-                    ],
-                    'value' => function ($data){
-                        return Yii::$app->formatter->asShortSize($data['size'], 1);
                     },
                     'contentOptions' => [
                         'style' => [

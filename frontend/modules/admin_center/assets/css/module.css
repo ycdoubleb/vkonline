@@ -191,11 +191,98 @@
     margin: -20px 0px 20px;
 }
 /***  课程/视频管理模块  **/
+.main .frame .frame-content .show-type .btn-flat.active{
+    color: #ffffff;
+    background-color: #28b28b;
+}
+
+.main .frame .frame-content .show-type .btn-flat{
+    border-color: #28b28b;
+    padding: 3px 18px;
+    margin-right: -5px;
+    font-size: 16px;
+    color: #999999;
+    background-color: #f2f2f2;
+}
+
+.main .frame .course-form .clear-padding {
+    padding: 0 !important;
+    height: 52px;
+}
+
+.course-index.main .frame .course-form.form,
+.video-index.main .frame .course-form.form {
+    width: 100%;
+    display: inline-block;
+    padding: 15px 15px 25px 20px;
+    border-top: 1px solid #f2f2f2;
+    background-color: #ffffff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.course-index.main .frame .course-form .control-label.form-label, 
+.video-index.main .frame .course-form .control-label.form-label {
+    padding-left: 0px;
+    padding-right: 0px;
+    color: #999999;
+}
+
+.video-index.main .frame .hr,
+.course-index.main .frame .hr{
+    margin-left: -2px;
+    margin-right: -2px;
+    height: 30px;
+    border-left: 2px solid #f2f2f2;
+    border-right: 2px solid #f2f2f2;
+}
+
+.video-index.main .frame .frame-content .chart-type, 
+.course-index.main .frame .frame-content .chart-type {
+    width: 100%;
+    height: 54px;
+    margin-bottom: 35px;
+    line-height: 54px;
+    border-bottom: 1px solid #ccc;
+}
+
+.chart-type > ul {
+    padding: 0;
+    margin: 0;
+}
+
+.chart-type > ul > li {
+    float: left;
+    margin-top: -2px;
+    cursor: pointer;
+}
+
+.chart-type > ul > li > a {
+    display: inline-block;
+    width: 100%;
+    height: 54px;
+    padding: 0 20px;
+    color: #666;
+    line-height: 54px;
+    text-decoration: none;
+}
+
+.chart-type > ul > li.active > a, .chart-type > ul > li:hover > a {
+    color: #fc583d;
+}
+.chart-type > ul > li.active, .chart-type > ul > li:hover {
+    border-bottom: 2px solid #FC583D;
+}
+.chart, .pie, .bars{
+    height: 300px;
+}
+
 .video-index.main .table, .course-index.main .table{
     margin-bottom: 0px;
 }
 
 .video-index.main .video-bottom, .course-index.main .course-bottom {
+    min-height: 60px;
     /*padding-top: 15px;*/
     padding-left: 10px;
     background-color: #ffffff;
