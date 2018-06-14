@@ -85,7 +85,7 @@ ModuleAssets::register($this);
                     [
                         'label' => Yii::t('app', 'Des'),
                         'format' => 'raw',
-                        'value' => "<div class=\"detail-des\">{$model->des}</div>",
+                        'value' => "<div class=\"detail-des\">". str_replace(array("\r\n", "\r", "\n"), "<br/>", $model->des) ."</div>",
                     ],
                     [
                         'attribute' => 'created_by',

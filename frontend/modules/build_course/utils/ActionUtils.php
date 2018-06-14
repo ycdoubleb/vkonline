@@ -105,8 +105,7 @@ class ActionUtils
                         'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
                             ($oldAttr['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategory->name}>>【新】{$model->category->name},\n\r" : null).
                             ($oldAttr['name'] !== $model->name ? "课程名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null).
-                            ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
+                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null),
                     ]);
                 }
             }else{
@@ -170,8 +169,7 @@ class ActionUtils
                 $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
                 Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
                     ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
-                $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理",
-                    'content' => '无', 'course_id' => $model->id]);
+                $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -238,7 +236,8 @@ class ActionUtils
         {  
             if($model->save() && $newAttr != null){
                 $this->saveCourseActLog(['action'=>'修改', 'title'=>'协作人员',
-                    'content'=>"调整【".$model->user->nickname."】以下属性：\n\r权限：【旧】".CourseUser::$privilegeMap[$oldPrivilege].">>【新】".CourseUser::$privilegeMap[$model->privilege],
+                    'content'=>"调整【".$model->user->nickname."】以下属性：\n\r权限：【旧】". CourseUser::$privilegeMap[$oldPrivilege] . 
+                        ">>【新】" . CourseUser::$privilegeMap[$model->privilege],
                     'course_id'=>$model->course_id]);
             }else{
                 throw new Exception($model->getErrors());
@@ -346,11 +345,10 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save() && $newAttr != null){
+            if($model->save() && !empty($newAttr)){
                 $this->saveCourseActLog(['action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
                     'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                        ($oldAttr['name'] !== $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
+                        ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null),
                 ]);
             }else{
                 throw new Exception($model->getErrors());
@@ -488,7 +486,7 @@ class ActionUtils
                         'content'=>"调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r".
                             ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
                             ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
-                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).$replaceResult,
+                            $replaceResult,
                     ]);
                 }
             }else{

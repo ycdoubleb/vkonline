@@ -176,11 +176,17 @@ class Video extends ActiveRecord
             if(trim($this->img) == ''){
                 $this->img = $this->getOldAttribute('img');
             }
+            $this->des = htmlentities($this->des);
             
             return true;
         }
         
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = html_entity_decode($this->des);
     }
     
     /**

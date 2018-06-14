@@ -143,7 +143,7 @@ SwitchInputAsset::register($this);
                         'Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')
                     ]),
                     'format' => 'raw',
-                    'value' => "<div class=\"detail-des multi-line-clamp\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des multi-line-clamp\" style=\"height: 63px;display: inline-block\">{$model->des}</div>",
                 ],
             ],
         ]) ?>
