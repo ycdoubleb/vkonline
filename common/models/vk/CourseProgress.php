@@ -12,7 +12,7 @@ use yii\db\ActiveRecord;
  * @property string $id
  * @property string $course_id 课程ID
  * @property string $user_id 用户ID
- * @property string $last_video 上次学习的视频
+ * @property string $last_knowledge 上次学习的视频
  * @property int $is_finish 是否完成：0否 1是
  * @property string $start_time 开始学习时间
  * @property string $end_time 结束学习时间
@@ -46,8 +46,7 @@ class CourseProgress extends ActiveRecord
     {
         return [
             [['is_finish', 'start_time', 'end_time', 'created_at', 'updated_at'], 'integer'],
-            [['course_id', 'user_id', 'last_video'], 'string', 'max' => 32],
-            //[['is_finish'], 'string', 'max' => 1],
+            [['course_id', 'user_id', 'last_knowledge'], 'string', 'max' => 32],
         ];
     }
 
@@ -60,7 +59,7 @@ class CourseProgress extends ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'course_id' => Yii::t('app', 'Course ID'),
             'user_id' => Yii::t('app', 'User ID'),
-            'last_video' => Yii::t('app', 'Last Video'),
+            'last_knowledge' => Yii::t('app', 'Last Knowledge'),
             'is_finish' => Yii::t('app', 'Is Finish'),
             'start_time' => Yii::t('app', 'Start Time'),
             'end_time' => Yii::t('app', 'End Time'),

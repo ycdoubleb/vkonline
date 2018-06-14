@@ -80,16 +80,10 @@ class CourseFavoriteSearch extends CourseFavorite
         //复制课程对象
         $copyCourse= clone self::$query;    
         //查询课程下的标签
-        $tagRefQuery = TagRef::find()->select(['TagRef.object_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"])
-            ->from(['TagRef' => TagRef::tableName()]);
-        $tagRefQuery->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
-        $tagRefQuery->where(['TagRef.is_del' => 0, 'TagRef.object_id' => $copyCourse]);
-        $tagRefQuery->groupBy('TagRef.object_id');
+        $tagRefQuery = TagRef::getTagsByObjectId($copyCourse, 1, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //查询参与课程的在学人数
-        $studyQuery = CourseProgress::find()->select(['Progress.course_id', 'COUNT(Progress.user_id) AS people_num'])
-            ->from(['Progress' => CourseProgress::tableName()]);
-        $studyQuery->where(['Progress.course_id' => $copyCourse]);
-        $studyQuery->groupBy('Progress.course_id');
+        $studyQuery = CourseProgress::getCourseProgressByCourseId($copyCourse);
         //以课程id为分组
         self::$query->groupBy(['Favorite.course_id']);
         //查询总数
@@ -99,7 +93,8 @@ class CourseFavoriteSearch extends CourseFavorite
             self::$query->orderBy(["Favorite.{$sort_name}" => SORT_DESC]);
         }
         //添加字段
-        self::$query->addSelect(['Customer.name AS customer_name', 'Course.name', 'Course.cover_img',  
+        self::$query->addSelect([
+            'Customer.name AS customer_name', 'Course.name', 'Course.cover_img',  
             'Course.content_time', 'Course.avg_star', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ]);

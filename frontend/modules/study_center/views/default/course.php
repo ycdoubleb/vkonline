@@ -1,7 +1,9 @@
 <?php
 
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\study_center\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -11,6 +13,7 @@ use yii\web\View;
 
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 ?>
 
@@ -29,7 +32,7 @@ ModuleAssets::register($this);
                         <?php if(empty($model['cover_img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
-                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
+                        <img src="<?= StringUtil::completeFilePath($model['cover_img']) ?>" width="100%" height="100%" />
                         <?php endif; ?>
                     </a>
                 </div>
@@ -52,7 +55,7 @@ ModuleAssets::register($this);
                     <div class="tuip">
                         <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
                             <div class="avatars img-circle keep-left">
-                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                <?= Html::img(StringUtil::completeFilePath($model['teacher_avatar']), ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>
                             <span class="keep-left"><?= $model['teacher_name'] ?></span>
                         </a>
@@ -116,25 +119,27 @@ $js =
             isPageLoading = true;
             $.get("$url", {page: (pageNum + 1)}, function(rel){
                 isPageLoading = false;
-                page = Number(rel['page']);
+                var data = rel['data'];
+                page = Number(data['page']);
                 var items = $domes;
                 var dome = "";
-                var data = rel['data'];
                 if(rel['code'] == '200'){
-                    for(var i in data){
+                    for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 4 == 3 ? 'clear-margin' : '',
-                            id: data[i].course_id,
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
-                            name: data[i].name,
-                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time, true),
-                            tags: data[i].tags != undefined ? data[i].tags : 'null',
-                            customerName: data[i].customer_name,
-                            number: data[i].people_num != undefined ? data[i].people_num : 0,
-                            teacherId: data[i].teacher_id,
-                            teacherAvatar: data[i].teacher_avatar,
-                            teacherName: data[i].teacher_name,
-                            avgStar: data[i].avg_star
+                            id: data['result'][i].course_id,
+                            isExist: data['result'][i].cover_img == null || data['result'][i].cover_img == '' ? 
+                                '<div class="title">' + data['result'][i].name + '</div>' : 
+                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].cover_img) + '" width="100%" height="100%" />',
+                            name: data['result'][i].name,
+                            contentTime: Wskeee.DateUtil.intToTime(data['result'][i].content_time, true),
+                            tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
+                            customerName: data['result'][i].customer_name,
+                            number: data['result'][i].people_num != undefined ? data['result'][i].people_num : 0,
+                            teacherId: data['result'][i].teacher_id,
+                            teacherAvatar: Wskeee.StringUtil.completeFilePath(data['result'][i].teacher_avatar),
+                            teacherName: data['result'][i].teacher_name,
+                            avgStar: data['result'][i].avg_star
                         });
                     }
                     $(".list > ul").append(dome);
@@ -143,6 +148,12 @@ $js =
                         //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: "danger",
+                    });
                 }
                 //隐藏loading
                 $('.loading').hide();
