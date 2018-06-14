@@ -105,7 +105,8 @@ class ActionUtils
                         'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
                             ($oldAttr['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategory->name}>>【新】{$model->category->name},\n\r" : null).
                             ($oldAttr['name'] !== $model->name ? "课程名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null),
+                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null).
+                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
                     ]);
                 }
             }else{
@@ -348,7 +349,9 @@ class ActionUtils
             if($model->save() && !empty($newAttr)){
                 $this->saveCourseActLog(['action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
                     'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                        ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null),
+                        ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
+                                
                 ]);
             }else{
                 throw new Exception($model->getErrors());
@@ -486,7 +489,7 @@ class ActionUtils
                         'content'=>"调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r".
                             ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
                             ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
-                            $replaceResult,
+                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).$replaceResult,
                     ]);
                 }
             }else{
