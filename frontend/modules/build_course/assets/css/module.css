@@ -18,7 +18,7 @@
 .crumbs,
 .form,
 .list > ul > li,
-.frame {
+.panel {
     background-color: #fff;
     -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -306,22 +306,20 @@ body .select2-container--krajee
 /*******************************************************************************
  * 详情公共
  *******************************************************************************/
-.frame {
+ .panel {
     display: inline-block;
     width: 100%;
     margin: 30px 0 15px;
 }
-.frame.right-frame {
-    float: right;
+.panel.right-panel {
     width: 366px;
     margin-left: 15px;
 }
-.frame.left-frame {
-    float: left;
+.panel.left-panel {
     width: 604px;
     margin-right: 15px;
 }
-.frame .title {
+.panel .title {
     height: 60px;
     padding: 0 15px 0 20px;
     font-size: 16px;
@@ -330,18 +328,18 @@ body .select2-container--krajee
     line-height: 60px;
     border-bottom: 1px solid #f2f2f2;
 }
-.frame .title .btngroup {
+.panel .title .btngroup {
     float: right;
 }
-.frame .title .btngroup > a {
+.panel .title .btngroup > a {
     border-radius: 0;
 }
-.frame .frame-right-height {
+.panel .right-panel-height {
     min-height: 418px;
     max-height: 418px;
     overflow-y: auto;
 }
-.frame .frame-height {
+.panel .panel-height {
     min-height: 580px;
     max-height: 580px;
     overflow-y: auto;

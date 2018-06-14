@@ -28,7 +28,7 @@ ModuleAssets::register($this);
         </span>
     </div>
     
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -104,7 +104,7 @@ ModuleAssets::register($this);
         ]) ?>
     </div>
     
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Relation}{Course}',[

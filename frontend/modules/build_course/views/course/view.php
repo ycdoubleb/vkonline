@@ -79,7 +79,7 @@ SwitchInputAsset::register($this);
         <div class="btngroup"><?= $btngroup ?></div>
     </div>
     <!--基本信息-->
-    <div class="frame left-frame">
+    <div class="panel keep-left left-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[

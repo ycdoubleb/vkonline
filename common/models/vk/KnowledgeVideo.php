@@ -3,6 +3,8 @@
 namespace common\models\vk;
 
 use Yii;
+use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%knowledge_video}}".
@@ -12,9 +14,10 @@ use Yii;
  * @property string $video_id       视频ID
  * @property int $is_del            是否已删除：0否 1是
  *
- * @property Knowledge $knowledge
+ * @property Knowledge $knowledge   获取知识点
+ * @property Video $video       获取视频
  */
-class KnowledgeVideo extends \yii\db\ActiveRecord
+class KnowledgeVideo extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -51,10 +54,18 @@ class KnowledgeVideo extends \yii\db\ActiveRecord
     }
 
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getKnowledge()
     {
-        return $this->hasOne(Knowledge::className(), ['id' => 'knowledge_id']);
+        return $this->hasOne(Knowledge::class, ['id' => 'knowledge_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getVideo()
+    {
+        return $this->hasOne(Video::class, ['id' => 'video_id']);
     }
 }

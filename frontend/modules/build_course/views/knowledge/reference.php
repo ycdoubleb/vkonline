@@ -3,6 +3,7 @@
 use common\models\vk\Video;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -89,7 +90,7 @@ $actionId = Yii::$app->controller->action->id; //当前action
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
             <li class="reference <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
                 <div class="pic">
-                    <a href="#" title="<?= $model['name'] ?>" target="_blank">
+                    <a title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
@@ -100,7 +101,7 @@ $actionId = Yii::$app->controller->action->id; //当前action
                 </div>
                 <div class="text">
                     <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
-                    <?= Html::a(Yii::t('app', 'Choice'), ['choice', 'id' => $model['id']], [
+                    <?= Html::a(Yii::t('app', 'Choice'), ['choice', 'video_id' => $model['id']], [
                         'class' => 'btn btn-primary btn-sm choice keep-right', 
                         'onclick' => 'clickChoiceEvent($(this)); return false;'
                     ]) ?>
@@ -122,12 +123,13 @@ $actionId = Yii::$app->controller->action->id; //当前action
 </div>
 
 <?php
+$level = json_encode(Video::$levelMap);
 $url = Url::to(array_merge([$actionId], $filters));   //链接
 $sort = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
 $refList = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/knowledge/_refList.php')));
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/knowledge/_list.php')));
+    $this->renderFile('@frontend/modules/build_course/views/knowledge/_videoDetails.php')));
 $js = 
 <<<JS
     //排序选中效果
@@ -194,6 +196,12 @@ $js =
                         //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: "danger",
+                    });
                 }
                 //隐藏loading
                 $('.loading').hide();
@@ -216,6 +224,51 @@ $js =
             });    
         });
     }       
+    
+    //单击选择事件
+    window.clickChoiceEvent = function(elem){
+        var dataLevel = $level;
+        var items = $domes;
+        var dome = "";
+        var list = $('<ul />');
+        $.get(elem.attr("href"), function(rel){
+            if(rel['code'] == '200'){
+                var data = rel['data']['result'][0];
+                dome = Wskeee.StringUtil.renderDOM(items, {
+                    className: 'clear-margin',
+                    isExist: data.img == null || data.img == '' ? 
+                        '<div class="title">' + data.name + '</div>' : 
+                            '<img src="' + Wskeee.StringUtil.completeFilePath(data.img) + '" width="100%" height="100%" />',
+                    name: data.name,
+                    duration: Wskeee.DateUtil.intToTime(data.duration),
+                    tags: data.tags != undefined ? data.tags : 'null',
+                    createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data.created_at),
+                    levelName: dataLevel[data.level],
+                    teacherId: data.teacher_id,
+                    teacherAvatar: Wskeee.StringUtil.completeFilePath(data.teacher_avatar),
+                    teacherName: data.teacher_name,
+                });
+                list.html(dome).appendTo($("#video-details .list"));
+                $(".field-reference-video .form-group .bootstrap-switch-container").addClass("disabled");
+                $("#reference-video").bootstrapSwitch('state', true, 'disabled', true);
+                $("#knowledge-teacher_id").val(data.teacher_id).trigger("change");
+                $('input[name="Resource[res_id]"]').val(data.id);
+                $('.field-reference-video').removeClass('has-error');
+                $('.field-reference-video .help-block').html('');
+                $(".field-video-details").removeClass("hidden");
+                $("#reelect").parent("div").removeClass("hidden");
+                $("#reference-video-list").addClass("hidden");
+                $("#knowledge-info").removeClass("hidden");
+            }else{
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: "danger",
+                });
+            }
+        });
+        return false;
+    }    
         
 JS;
     $this->registerJs($js,  View::POS_READY);

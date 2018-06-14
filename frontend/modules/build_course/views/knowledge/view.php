@@ -1,8 +1,8 @@
 <li id="{%id%}">
     <div class="head">
-        <a><span class="name">{%name%}</span><span class="duration">{%duration%}</span></a>
+        <a><span class="name">{%name%}</span></a>
         <div class="icongroup">
-            <a href="../video/view?id={%id%}" target="_blank">
+            <a href="/study_center/default/view?id={%id%}" target="_blank">
                 <i class="fa fa-eye"></i>
             </a>
             <a href="../video/update?id={%id%}" onclick="showModal($(this));return false;">

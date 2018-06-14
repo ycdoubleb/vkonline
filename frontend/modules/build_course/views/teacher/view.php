@@ -37,7 +37,7 @@ ModuleAssets::register($this);
         </div>
     </div>
         
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -107,7 +107,7 @@ ModuleAssets::register($this);
         </div>
     </div>
     
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{mainSpeak}{Course}',[

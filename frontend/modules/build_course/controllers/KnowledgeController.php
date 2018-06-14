@@ -6,11 +6,16 @@ use common\models\vk\Knowledge;
 use common\models\vk\searchs\KnowledgeSearch;
 use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoSearch;
+use common\models\vk\TagRef;
 use common\models\vk\Teacher;
+use common\models\vk\Video;
+use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -28,7 +33,7 @@ class KnowledgeController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['POST'],
+                    //'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -44,85 +49,86 @@ class KnowledgeController extends Controller
     }
 
     /**
-     * Lists all Knowledge models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = new KnowledgeSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Knowledge model.
-     * @param string $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Knowledge model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
+     * 创建 一个新的 Knowledge 模块
+     * 如果创建成功，返回json数据
      * @param string $node_id
      * @return mixed
      */
     public function actionCreate($node_id)
     {
-        $model = new Knowledge(['node_id' => $node_id]);
+        $model = new Knowledge(['node_id' => $node_id, 'created_by' => \Yii::$app->user->id]);
+        $model->loadDefaultValues();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-
-        return $this->renderAjax('create', [
-            'model' => $model,
-            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-        ]);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            return ActionUtils::getInstance()->createKnowledge($model, Yii::$app->request->post());
+        }else{
+            return $this->renderAjax('create', [
+                'model' => $model,  //模型
+                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+            ]);
+        }
     }
 
     /**
-     * Updates an existing Knowledge model.
-     * If update is successful, the browser will be redirected to the 'view' page.
+     * 更新 现有的 Knowledge 模型。
+     * 如果更新成功，返回json数据
      * @param string $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if($model->created_by == \Yii::$app->user->id){
+            if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+                throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-
-        return $this->render('update', [
-            'model' => $model,
-        ]);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            return ActionUtils::getInstance()->updateKnowledge($model, Yii::$app->request->post());
+        } else {
+            return $this->renderAjax('update', [
+                'model' => $model,  //模型
+                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),  //和自己相关的老师
+            ]);
+        }
     }
 
     /**
-     * Deletes an existing Knowledge model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * 删除 现有的 Knowledge 模型。
+     * 如果删除成功，返回json数据
      * @param string $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $model = $this->findModel($id);
 
-        return $this->redirect(['index']);
+        if($model->created_by == \Yii::$app->user->id){
+            if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+                throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            return ActionUtils::getInstance()->deleteKnowledge($model);
+        } else {
+            return $this->renderAjax('delete',[
+                'model' => $model,  //模型
+            ]);
+        }
     }
 
     /**
@@ -255,15 +261,57 @@ class KnowledgeController extends Controller
     }
     
     /**
-     * Finds the Knowledge model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
+     * 选择 引用的资源视频
+     * @param string $video_id
+     * @return json
+     */
+    public function actionChoice($video_id)
+    {
+        $query = (new Query())->select(['Video.id'])->from(['Video' => Video::tableName()]);
+        $query->where(['Video.id' => $video_id]);
+        //复制视频对象
+        $copyVideo= clone $query;
+        //查询视频下的标签
+        $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
+        $query->addSelect([
+            'Video.name', 'Video.img', 'Video.duration',  'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ]);
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
+        $results = ArrayHelper::merge(ArrayHelper::index([$query->one()], 'id'), 
+                ArrayHelper::index($tagRefQuery->asArray()->all(), 'object_id'));
+        if(\Yii::$app->request->isAjax){
+            Yii::$app->getResponse()->format = 'json';
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results), 
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
+        }
+    }
+
+    /**
+     * 基于其主键值找到 Knowledge 模型。
+     * 如果找不到模型，将抛出404个HTTP异常。
      * @param string $id
-     * @return Knowledge the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * @return Knowledge 加载模型
+     * @throws NotFoundHttpException 如果找不到模型
      */
     protected function findModel($id)
     {
-        if (($model = Knowledge::findOne($id)) !== null) {
+        if (($model = Knowledge::findOne(['id' => $id, 'is_del' => 0])) !== null) {
             return $model;
         }
 

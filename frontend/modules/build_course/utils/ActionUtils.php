@@ -11,6 +11,7 @@ use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
 use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeVideo;
 use common\models\vk\RecentContacts;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
@@ -408,6 +409,195 @@ class ActionUtils
     }
     
     /**
+     * 添加知识点操作
+     * @param Knowledge $model
+     * @throws Exception
+     */
+    public function createKnowledge($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->type = Knowledge::TYPE_VIDEO_RESOURCE;
+            if($model->save()){
+                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                    $resource = new KnowledgeVideo([
+                        'knowledge_id' => $model->id, 'video_id' => ArrayHelper::getValue($post, 'Resource.res_id')
+                    ]);
+                }
+                $resource->save();
+                $this->saveCourseActLog([
+                    'action' => '增加', 'title' => "知识点管理",
+                    'content' => "{$model->node->name}>> {$model->name}",  
+                    'course_id' => $model->node->course_id,
+                ]);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => [
+                    'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
+                ],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage(),
+            ];
+        }
+    }
+    
+    /**
+     * 编辑知识点操作
+     * @param Knowledge $model
+     * @throws Exception
+     */
+    public function updateKnowledge($model, $post)
+    {
+        //资源id
+        $resId = ArrayHelper::getValue($post, 'Resource.res_id');
+        //获取所有新属性值
+        $newAttr = $model->getDirtyAttributes();
+        //获取所有旧属性值
+        $oldAttr = $model->getOldAttributes();
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                if(!empty($newAttr)){
+                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']); //查询旧老师信息
+                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
+                        $oldRes = clone $resource;
+                        $resource->video_id = $resId;
+                        $resource->update(false, ['video_id']);
+                        //替换后的结果
+                        $replaceResult = $oldRes->video_id != $resId ? 
+                            "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                    }
+                    $this->saveCourseActLog(['action' => '修改', 'title' => "知识点管理", 'course_id' => $model->node->course_id,
+                        'content'=>"调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r".
+                            ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                            ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
+                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).$replaceResult,
+                    ]);
+                }
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => ['name' => $model->name],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * 删除知识点操作
+     * @param Knowledge $model
+     * @throws Exception
+     */
+    public function deleteKnowledge($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
+                    $resource->is_del = $model->is_del;
+                }
+                $resource->update(false, ['is_del']);
+                $this->saveCourseActLog([
+                    'action' => '删除', 'title' => "知识点管理",
+                    'content' => "{$model->node->name} >> {$model->name}",
+                    'course_id' => $model->node->course_id,]);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * 移动课程框架操作
+     * @param array $post
+     * @param string $course_id
+     * @param integer $number
+     * @return boolean
+     * @throws Exception
+     */
+    public function moveNode($post, $course_id, $number = 0)
+    {
+        $table = ArrayHelper::getValue($post, 'tableName');
+        $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
+        $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
+        $oldItems = json_decode(json_encode($oldIndexs), true);
+        $newItems = json_decode(json_encode($newIndexs), true);
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            foreach ($newItems as $id => $sortOrder){
+                $number += $this->updateTableAttribute($id, $table, $sortOrder);
+            }
+            if($number > 0){
+                $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code' => 200,
+                'data' => [],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code' => 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }
+    
+    /**
      * 添加视频操作
      * @param Video $model
      * @throws Exception
@@ -470,50 +660,6 @@ class ActionUtils
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-    }
-    
-    /**
-     * 移动课程框架操作
-     * @param array $post
-     * @param string $course_id
-     * @param integer $number
-     * @return boolean
-     * @throws Exception
-     */
-    public function moveNode($post, $course_id, $number = 0)
-    {
-        $table = ArrayHelper::getValue($post, 'tableName');
-        $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
-        $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
-        $oldItems = json_decode(json_encode($oldIndexs), true);
-        $newItems = json_decode(json_encode($newIndexs), true);
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            foreach ($newItems as $id => $sortOrder){
-                $number += $this->updateTableAttribute($id, $table, $sortOrder);
-            }
-            if($number > 0){
-                $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
-            }else{
-                throw new Exception($model->getErrors());
-            }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code' => 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            return [
-                'code' => 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
         }
     }
     

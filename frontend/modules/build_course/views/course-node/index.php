@@ -21,7 +21,7 @@ GrowlAsset::register($this);
 
 <div class="course-node-index">
     
-   <div class="frame">
+   <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Course}{Frame}',[
