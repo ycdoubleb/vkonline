@@ -5,12 +5,9 @@ use common\models\vk\searchs\VideoSearch;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
-use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
-use yii\widgets\LinkPager;
+use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $searchModel VideoSearch */
@@ -32,185 +29,84 @@ $this->title = Yii::t('app', '{Video}{List}',[
                     'List' => Yii::t('app', 'List'),
                 ]) ?></span>
             </div>
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'filterModel' => $searchModel,
-                'layout' => "{items}\n{summary}\n{pager}",
-                'summaryOptions' => ['class' => 'hidden'],
-                'pager' => [
-                    'options' => ['class' => 'hidden']
-                ],
-                'columns' => [
-                    [
-                        'attribute' => 'course_name',
-                        'label' => Yii::t('app', '{Course}{Name}',[
-                            'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name'),
-                        ]),
-                        'filter' => Html::input('text', 'VideoSearch[course_name]', 
-                                ArrayHelper::getValue($filters, 'VideoSearch.course_name'), ['class' => 'form-control']),
-                        'headerOptions' => ['style' => 'width:150px'],
-                        'contentOptions' => ['style' => 'white-space:normal'],
+            <div class="course-form form">
+                <?php $form = ActiveForm::begin([
+                    'action' => ['index'],
+                    'method' => 'get',
+                    'options'=>[
+                        'id' => 'course-form',
+                        'class'=>'form-horizontal',
                     ],
-                    [
-                        'attribute' => 'name',
-                        'label' => Yii::t('app', '{Video}{Name}',[
-                            'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
-                        ]),
-                        'headerOptions' => ['style' => 'width:150px'],
-                        'contentOptions' => ['style' => 'white-space:normal'],
-                    ],
-                    [
-                        'attribute' => 'teacher_name',
-                        'label' => Yii::t('app', '{Main Speak}{Teacher}',[
-                            'Main Speak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
-                        ]),
-                        'filter' => Select2::widget([
-                            'model' => $searchModel,
-                            'attribute' => 'teacher_id',
-                            'data' => $teacher,
-                            'hideSearch' => false,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                            ],
-                        ]),
-                        'headerOptions' => ['style' => 'width:65px'],
-                    ],
-                    [
-                        'attribute' => 'nickname',
-                        'label' => Yii::t('app', 'Created By'),
-                        'filter' => Select2::widget([
-                            'model' => $searchModel,
-                            'attribute' => 'created_by',
-                            'data' => $createdBy,
-                            'hideSearch' => false,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                            ],
-                        ]),
-                        'headerOptions' => ['style' => 'width:60px'],
-                    ],
-                    [
-                        'attribute' => 'is_publish',
-                        'label' => Yii::t('app', 'Status'),
-                        'format' => 'raw',
-                        'filter' => Select2::widget([
-                            'model' => $searchModel,
-                            'attribute' => 'is_publish',
-                            'data' => Course::$publishStatus,
-                            'hideSearch' => true,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                            ],
-                        ]),
-                        'value' => function ($data){
-                            return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
-                                        Course::$publishStatus[$data['is_publish']] . '</span>' : null;
-                        },
-                        'headerOptions' => ['style' => 'width:60px'],
-                    ],
-                    [   //可见范围
-                        'attribute' => 'level',
-                        'label' => Yii::t('app', 'Range'),
-                        'format' => 'raw',
-                        'filter' => Select2::widget([
-                            'model' => $searchModel,
-                            'attribute' => 'level',
-                            'data' => Course::$levelMap,
-                            'hideSearch' => true,
-                            'options' => ['placeholder' => Yii::t('app', 'All')],
-                            'pluginOptions' => [
-                                'allowClear' => true,
-                            ],
-                        ]),
-                        'value' => function ($data){
-                            return ($data['level'] != null) ?  '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
-                                    Course::$levelMap[$data['level']] . '</span>' : null;
-                        },
-                        'headerOptions' => ['style' => 'width:60px'],
-                    ],
-                    [
-                        'attribute' => 'is_ref',
-                        'label' => Yii::t('app', 'Source'),
-                        'format' => 'raw',
-                        'filter' => false,
-                        'value' => function ($data) {
-                            return $data['is_ref'] == 1 ? '<span style="color:red">引用</span>' : '<span style="color:green">原创</span>';
-                        },
-                        'headerOptions' => ['style' => 'width:40px'],
-                    ],
-                    [
-                        'attribute' => 'source.size',
-                        'label' => Yii::t('app', '{Occupy}{Space}',[
-                            'Occupy' => Yii::t('app', 'Occupy'),
-                            'Space' => Yii::t('app', 'Space'),
-                        ]),
-                        'headerOptions' => ['style' => 'width:70px'],
-                        'value' => function ($data){
-                            return Yii::$app->formatter->asShortSize($data['size'], 1);
-                        },
-                    ],
-                    [
-                        'label' => Yii::t('app', 'Tag'),
-                        'filter' => true,
-                        'value' => function ($data){
-                            return (isset($data['tags'])) ? $data['tags'] : null;
-                        },
-                        'headerOptions' => ['style' => 'width:110px'],
-                        'contentOptions' => ['style' => 'white-space:normal'],
-                    ],
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'template' => '{view}',
-                        'headerOptions' => ['style' => 'width:30px'],
-                        'buttons' => [
-                            'view' => function ($url, $data, $key) {
-                                 $options = [
-                                    'class' => ($data['is_publish'] == 0 ? 'disabled' : ' '),
-                                    'style' => '',
-                                    'title' => Yii::t('app', 'View'),
-                                    'aria-label' => Yii::t('app', 'View'),
-                                    'data-pjax' => '0',
-                                    'target' => '_blank',
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                    'url' => ['/study_center/default/view', 'id' => $data['id']],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'conditions' => true,
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
-                            },
+                    'fieldConfig' => [  
+                        'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
+                        'labelOptions' => [
+                            'class' => 'col-lg-2 col-md-2 control-label form-label',
+                        ],  
+                    ], 
+                ]); ?>
+                <!--主讲老师-->
+                <div class="col-lg-6 col-md-6 clear-padding">
+                    <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
+                        'data' => $teacher, 'options' => ['placeholder'=>'请选择...',],
+                        'pluginOptions' => ['allowClear' => true],
+                    ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
+                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                    ])) ?>
+                </div>
+                <!--范围-->
+                <div class="col-lg-6 col-md-6 clear-padding">
+                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
+                        'itemOptions'=>[
+                            'labelOptions'=>[
+                                'style'=>[
+                                    'margin'=>'5px 29px 10px 0',
+                                    'color' => '#666666',
+                                    'font-weight' => 'normal',
+                                ]
+                            ]
                         ],
-                    ],
-                ],
-            ]); ?>
+                    ])->label(Yii::t('app', 'Range') . '：') ?>
+                </div>
+                <!--创建者-->
+                <div class="col-lg-6 col-md-6 clear-padding">
+                    <?= $form->field($searchModel, 'created_by')->widget(Select2::class, [
+                        'data' => $createdBy, 'options' => ['placeholder'=>'请选择...',],
+                        'pluginOptions' => ['allowClear' => true],
+                    ])->label(Yii::t('app', 'Created By') . '：') ?>
+                </div>
+                <!--标签-->
+                <div class="col-lg-6 col-md-6 clear-padding">
+                    <?= $form->field($searchModel, 'name')->textInput([
+                        'placeholder' => '请输入...', 'maxlength' => true
+                    ])->label(Yii::t('app', 'Tag').'：') ?>
+                </div>
+                <!--课程名称-->
+                <div class="col-lg-6 col-md-6 clear-padding">
+                    <?= $form->field($searchModel, 'name')->textInput([
+                        'placeholder' => '请输入...', 'maxlength' => true
+                    ])->label(Yii::t('app', '{Course}{Name}：', [
+                        'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
+                    ])) ?>
+                </div>
+                <?php ActiveForm::end(); ?>
+            </div>
             
-            <div class="video-bottom">
-                <?php
-                    $page = !isset($filters['page']) ? 1 : $filters['page'];
-                    $pageCount = ceil($totalCount / 20);
-                    if($pageCount > 0){
-                        echo '<div class="summary" style="padding:20px 10px 0px">' . 
-                                '第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。' .
-                            '</div>';
-                    }
-
-                    echo LinkPager::widget([  
-                        'pagination' => new Pagination([
-                            'totalCount' => $totalCount,  
-                        ]),  
-                    ])?>
+            <div class="hr"></div>
+            
+            <div id="content">
+                <center>加载中...</center>
             </div>
         </div>
     </div>
 </div>
 <?php
-    $js = <<<JS
+
+$content = Url::to(['list']);
+
+$js = <<<JS
+            
+    //加载列表
+    $("#content").load("$content"); 
         
 JS;
     $this->registerJs($js, View::POS_READY);

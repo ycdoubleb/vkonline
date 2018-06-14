@@ -75,6 +75,22 @@ class VideoController extends Controller
         ]);
     }
 
+    public function actionList()
+    {
+        $searchModel = new VideoSearch();
+        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
+        
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['video']),
+            'key' => 'id',
+        ]);
+        
+        return $this->renderAjax('list',[
+            'dataProvider' => $dataProvider,
+            'totalCount' => $result['total'],       //视频总数量
+        ]);
+    }
+    
     /**
      * Finds the Video model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
