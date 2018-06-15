@@ -1,11 +1,11 @@
 <?php
 
 use common\models\vk\Course;
-use common\models\vk\Video;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\data\Pagination;
 use yii\grid\GridView;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -55,7 +55,8 @@ use yii\widgets\LinkPager;
                 </div>
                 <!--范围-->
                 <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'level')->radioList(Video::$levelMap,[
+                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
+                        'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
                         'itemOptions'=>[
                             'labelOptions'=>[
                                 'style'=>[
@@ -76,9 +77,16 @@ use yii\widgets\LinkPager;
                 </div>
                 <!--标签-->
                 <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'id')->textInput([
-                        'placeholder' => '请输入...', 'maxlength' => true
-                    ])->label(Yii::t('app', 'Tag').'：') ?>
+                    <div class="form-group">
+                        <label class="col-lg-2 col-md-2 control-label form-label" for="videosearch-id">标签：</label>
+                        <div class="col-lg-10 col-md-10">
+                            <?= Html::input('text', 'tag', ArrayHelper::getValue($filters, 'tag', ''), [
+                                'placeholder' => '请输入...',
+                                'class' => "form-control" ,
+                                'id' => 'tag'
+                            ])?>
+                        </div>
+                    </div>
                 </div>
                 <!--视频名称-->
                 <div class="col-lg-6 col-md-6 clear-padding">
@@ -123,16 +131,6 @@ use yii\widgets\LinkPager;
                             'label' => Yii::t('app', 'Created By'),
                             'headerOptions' => ['style' => 'width:60px'],
                         ],
-                        [
-                            'attribute' => 'is_publish',
-                            'label' => Yii::t('app', 'Status'),
-                            'format' => 'raw',
-                            'value' => function ($data){
-                                return ($data['is_publish'] != null) ? '<span style="color:' . ($data['is_publish'] == 0 ? '#999999' : ' ') . '">' . 
-                                            Course::$publishStatus[$data['is_publish']] . '</span>' : null;
-                            },
-                            'headerOptions' => ['style' => 'width:60px'],
-                        ],
                         [   //可见范围
                             'attribute' => 'level',
                             'label' => Yii::t('app', 'Range'),
@@ -154,7 +152,7 @@ use yii\widgets\LinkPager;
                         [
                             'label' => Yii::t('app', '引用次数'),
                             'value' => function ($data){
-                                return  null;
+                                return  $data['rel_num'];
                             },
                             'headerOptions' => ['style' => 'width:60px'],
                         ],
@@ -236,6 +234,11 @@ $js = <<<JS
         
     //单击范围选中radio提交表单
     $('input[name="VideoSearch[level]"]').click(function(){
+        $('#video-form').submit();
+    });
+        
+    //标签触发change事件
+    $("#tag").change(function(){
         $('#video-form').submit();
     });
 JS;

@@ -225,7 +225,7 @@ class KnowledgeController extends Controller
     public function actionInsideVideo()
     {
         $searchModel = new VideoSearch();
-        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
+        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]), false);
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($results['data']['video']),
         ]);

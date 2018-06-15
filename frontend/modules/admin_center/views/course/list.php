@@ -117,9 +117,16 @@ $this->title = Yii::t('app', '{Course}{List}',[
                 </div>
                 <!--标签-->
                 <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'id')->textInput([
-                        'placeholder' => '请输入...', 'maxlength' => true
-                    ])->label(Yii::t('app', 'Tag').'：') ?>
+                    <div class="form-group">
+                        <label class="col-lg-2 col-md-2 control-label form-label" for="coursesearch-id">标签：</label>
+                        <div class="col-lg-10 col-md-10">
+                            <?= Html::input('text', 'tag', ArrayHelper::getValue($filters, 'tag', ''), [
+                                'placeholder' => '请输入...',
+                                'class' => "form-control" ,
+                                'id' => 'tag'
+                            ])?>
+                        </div>
+                    </div>
                 </div>
                 <!--课程名称-->
                 <div class="col-lg-6 col-md-6 clear-padding">
@@ -281,9 +288,9 @@ $js = <<<JS
     });
         
     //标签触发change事件
-//    $("#coursesearch-name").change(function(){
-//        $('#course-form').submit();
-//    });
+    $("#tag").change(function(){
+        $('#course-form').submit();
+    });
    
     //单击状态选中radio提交表单
     $('input[name="CourseSearch[is_publish]"]').click(function(){

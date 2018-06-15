@@ -11,6 +11,7 @@ use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use Yii;
@@ -55,6 +56,8 @@ class CourseSearch extends Course
     //后台-课程
     public function backendSearch($params, $categoryId)
     {
+        $tag = ArrayHelper::getValue($params, 'tag');   //标签名称
+       
         self::getInstance();    
         $this->load($params);
        
@@ -70,6 +73,10 @@ class CourseSearch extends Course
         
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
+        self::$query->andFilterWhere(['like', 'Tags.name', $tag]);
+        //关联查询
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Course.id');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
         //添加字段
         $addArrays = ['Customer.name AS customer_name','Category.name AS category_name', 'Course.name', 

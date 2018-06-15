@@ -185,26 +185,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
-                    'attribute' => 'size',
-                    'label' => Yii::t('app', '{Occupy}{Space}',[
-                        'Occupy' => Yii::t('app', 'Occupy'),
-                        'Space' => Yii::t('app', 'Space'),
-                    ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'min-width' => '90px',
-                        ],
-                    ],
-                    'value' => function ($data){
-                        return !empty($data['course_size']) ? Yii::$app->formatter->asShortSize($data['course_size'], 1) : '0';
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
-                [
                     'class' => 'yii\grid\ActionColumn',
                     'template' => '{view}',
                     'buttons' => [
