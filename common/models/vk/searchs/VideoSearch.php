@@ -125,7 +125,7 @@ class VideoSearch extends Video
        
         //条件查询
         self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id,]);
-        self::$query->andFilterWhere(['!=', 'Video.level', Video::PRIVATE_LEVEL]);
+//        self::$query->andFilterWhere(['!=', 'Video.level', Video::PRIVATE_LEVEL]);
         //添加字段
         $addArrays = [
             'Video.duration', 'Video.img'
@@ -245,4 +245,99 @@ class VideoSearch extends Video
         
         return $query;
     }
+    
+    /**
+     * 统计查询
+     * @param array $params
+     * @return array
+     */
+    public static function searchStatistics($params)
+    {
+        $teacher_id = ArrayHelper::getValue($params, 'VideoSearch.teacher_id');
+        $created_by = ArrayHelper::getValue($params, 'VideoSearch.created_by');
+        $level = ArrayHelper::getValue($params, 'VideoSearch.level');  
+        
+        /* @var $query Query */
+        $query = (new Query())->where(['Video.customer_id' => Yii::$app->user->identity->customer_id]);  //该客户下的数据
+        
+        //条件查询
+        $query->andFilterWhere([
+            'Video.teacher_id' => $teacher_id,
+            'Video.created_by' => $created_by,
+            'Video.level' => $level,
+        ]);
+        
+        return [
+            'filter' => $params,
+            'teacher' => self::getStatisticsByTeacher($query),         //按主讲老师统计
+            'created_by' => self::getStatisticsByCreatedBy($query),    //按创建人统计
+            'range' => self::getStatisticsByRange($query),             //按范围统计
+        ];
+    }
+    
+    /**
+     * 根据主讲老师统计
+     * @param Query $sourceQuery
+     * @return array
+     */
+    public static function getStatisticsByTeacher($sourceQuery)
+    {
+        $teacherQuery = clone $sourceQuery;
+        $teacherQuery->select(['Teacher.name AS name', "COUNT(Video.teacher_id) AS value"])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
+                ->groupBy('Teacher.id');
+        
+        return $teacherQuery->all(Yii::$app->db);
+    }
+    
+    /**
+     * 根据创建人统计
+     * @param Query $sourceQuery
+     * @return array
+     */
+    public static function getStatisticsByCreatedBy($sourceQuery)
+    {
+        $createdByQuery = clone $sourceQuery;
+        $createdByQuery->select(['User.nickname AS name', "COUNT(Video.created_by) AS value"])
+                ->from(['Video' => Video::tableName()])
+                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
+                ->groupBy('User.id');
+        
+        return $createdByQuery->all(Yii::$app->db);
+    }
+    
+    /**
+     * 根据范围统计
+     * @param Query $sourceQuery
+     * @return array
+     */
+    public static function getStatisticsByRange($sourceQuery)
+    {
+        $customerQuery = clone $sourceQuery;
+        $privateQuery = clone $sourceQuery;
+        $openQuery = clone $sourceQuery;
+        $customerQuery->select(["COUNT(Video.level) AS value"])
+                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 0]);
+        $privateQuery->select(["COUNT(Video.level) AS value"])
+                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 1]);
+        $openQuery->select(["COUNT(Video.level) AS value"])
+                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 2]);
+        
+        $customer[] = [
+            'name' => '内网',
+            'value' => $customerQuery->one(Yii::$app->db)['value']
+        ];
+        $private[] = [
+            'name' => '私有',
+            'value' => $privateQuery->one(Yii::$app->db)['value']
+        ];
+        $open[] = [
+            'name' => '公开',
+            'value' => $openQuery->one(Yii::$app->db)['value']
+        ];
+        
+        return array_merge($customer, $private, $open);
+    }
+    
 }
