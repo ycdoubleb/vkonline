@@ -237,6 +237,20 @@
     border-right: 2px solid #f2f2f2;
 }
 
+.main .frame .frame-content.chart-content {
+    margin-bottom: 45px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.video-index.main .frame .frame-content #content,
+.course-index.main .frame .frame-content #content{
+    margin-left: -2px;
+    margin-right: -2px;
+    border-left: 2px solid #f2f2f2;
+    border-right: 2px solid #f2f2f2;
+}
+
 .video-index.main .frame .frame-content .chart-type, 
 .course-index.main .frame .frame-content .chart-type {
     width: 100%;

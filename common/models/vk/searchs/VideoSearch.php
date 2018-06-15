@@ -9,9 +9,9 @@ use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
@@ -59,7 +59,7 @@ class VideoSearch extends Video
      * @return type
      */
     public function backendSearch($params, $append = [])
-    {        
+    {  
         self::getInstance();
         $this->load($params);
         //条件查询
@@ -73,17 +73,12 @@ class VideoSearch extends Video
         
         //模糊查询
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
-        //关联查询
-        self::$query->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], 'KnowledgeVideo.video_id = Video.id');
-        self::$query->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = KnowledgeVideo.knowledge_id');
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Knowledge.node_id');
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         
         //添加字段
         $addArrays = [
-            'Customer.name AS customer_name','Course.name AS course_name', 
-            'Video.name', 'Video.is_publish', 'Video.level',  'Video.created_at',
-            'User.nickname', 'Teacher.name AS teacher_name', 'Video.created_at',
+            'Customer.name AS customer_name','Video.name', 'Video.is_publish',
+            'Video.level',  'Video.created_at','User.nickname', 'COUNT(KnowledgeVideo.video_id) AS rel_num',
+            'Teacher.name AS teacher_name', 'Video.created_at',
         ];
         
         return $this->search($params, array_merge($append, $addArrays)); 
@@ -103,7 +98,7 @@ class VideoSearch extends Video
             'Video.created_by' => \Yii::$app->user->id,
         ]);
         //模糊查询
-        self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
+        self::$query->andFilterWhere(['or', ['like', 'Video.name', $this->name], ['like', 'Tags.name', $this->name]]);
         
         //添加字段
         $addArrays = [
@@ -118,14 +113,22 @@ class VideoSearch extends Video
     }
     
     //管理中心模块的情况下
-    public function adminCenterSearch($params)
+    public function adminCenterSearch($params, $is_and = true)
     {
+        $tag = ArrayHelper::getValue($params, 'tag');   //标签名称
+    
         self::getInstance();
         $this->load($params);
        
         //条件查询
         self::$query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id,]);
-//        self::$query->andFilterWhere(['!=', 'Video.level', Video::PRIVATE_LEVEL]);
+        if($is_and){
+            self::$query->andFilterWhere(['and', ['like', 'Video.name', $this->name], 
+                ['like', 'Tags.name', $tag]]);
+        }else{
+            self::$query->andFilterWhere(['or', ['like', 'Video.name', $this->name], 
+                ['like', 'Tags.name', $this->name]]);
+        }
         //添加字段
         $addArrays = [
             'Video.duration', 'Video.img'
@@ -155,6 +158,9 @@ class VideoSearch extends Video
         $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         //以视频id为分组
         self::$query->groupBy(['Video.id']);
+        //关联查询标签
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //查询总数
         $totalCount = self::$query->count('id');
         //添加字段
@@ -165,6 +171,7 @@ class VideoSearch extends Video
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        self::$query->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], '(KnowledgeVideo.id = Video.id AND KnowledgeVideo.is_del = 0)');
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
         //查询的视频结果
@@ -258,7 +265,7 @@ class VideoSearch extends Video
         $level = ArrayHelper::getValue($params, 'VideoSearch.level');  
         
         /* @var $query Query */
-        $query = (new Query())->where(['Video.customer_id' => Yii::$app->user->identity->customer_id]);  //该客户下的数据
+        $query = (new Query())->where(['Video.customer_id' => Yii::$app->user->identity->customer_id, 'Video.is_del' => 0]);  //该客户下的数据
         
         //条件查询
         $query->andFilterWhere([

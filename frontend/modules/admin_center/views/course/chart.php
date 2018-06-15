@@ -29,7 +29,7 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'category');  //统计�
 ?>
 <div class="course-index main">
     <div class="frame">
-        <div class="frame-content">
+        <div class="frame-content chart-content">
             <div class="frame-title">
                 <span><?= Yii::t('app', '{Course}{Statistics}',[
                     'Course' => Yii::t('app', 'Course'),

@@ -1,7 +1,7 @@
 <?php
 
+use common\models\vk\Course;
 use common\models\vk\searchs\VideoSearch;
-use common\models\vk\Video;
 use common\widgets\charts\ChartAsset;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
@@ -25,7 +25,7 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'teacher');  //统计类
 ?>
 <div class="video-index main">
     <div class="frame">
-        <div class="frame-content">
+        <div class="frame-content chart-content">
             <div class="frame-title">
                 <span><?= Yii::t('app', '{Video}{Statistics}',[
                     'Video' => Yii::t('app', 'Video'),
@@ -67,7 +67,7 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'teacher');  //统计类
                 </div>
                 <!--范围-->
                 <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'level')->radioList(Video::$levelMap,[
+                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
                         'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
                         'itemOptions'=>[
                             'labelOptions'=>[

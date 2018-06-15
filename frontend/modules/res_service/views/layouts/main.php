@@ -152,5 +152,5 @@ $html = <<<Html
 Html;
 
     $content = $html . $content . '</div>';
-    echo $this->render('@app/views/layouts/main',['content' => $content]); 
+    echo $this->render('@frontend/views/layouts/main_no_nav',['content' => $content]); 
 ?>
