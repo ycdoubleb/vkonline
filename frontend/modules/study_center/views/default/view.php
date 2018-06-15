@@ -17,8 +17,10 @@ use yii\web\View;
 
 PalyAssets::register($this);
 GrowlAsset::register($this);
+
 $shareAssetsPath = $this->assetManager->getPublishedUrl(ShareAsset::register($this)->sourcePath);
 $this->title = $model['name'];
+
 ?>
 
 <div class="study_center-default-play main">
@@ -64,7 +66,9 @@ $this->title = $model['name'];
     <div class="left-box">
         <div class="panel">
             <div class="panel-head">本节目标</div>
-            <div class="panel-body" style="min-height: 500px;"><?= $model['des'] ?></div>
+            <div class="panel-body" style="min-height: 500px;">
+                <?= str_replace(array("\r\n", "\r", "\n"), "<br/>", $model['des']) ?>
+            </div>
         </div>
     </div>
     <div class="right-box">
@@ -72,7 +76,7 @@ $this->title = $model['name'];
             <div class="panel-head">主讲老师</div>
             <div class="panel-body">
                 <div class="info">
-                    <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
+                    <?= Html::img(StringUtil::completeFilePath($model['avatar']), ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
                     <p class="name"><?= $model['teacher_name'] ?></p>
                     <p class="job-title"><?= $model['teacher_des'] ?></p>
                 </div>
@@ -82,24 +86,23 @@ $this->title = $model['name'];
 </div>
 
 <?php
-$currentId = ArrayHelper::getValue($params, 'id');
-$videoIs = [];
+$currentId = ArrayHelper::getValue($params, 'id');  //当前页面的id
+$knowledgeIds = [];
 foreach ($nodes as $node) {
-    foreach ($node['videos'] as $index => $video) {
-        $videoIs[] = $video['video_id'];
+    foreach ($node['knowledges'] as $index => $knowledge) {
+        $knowledgeIds[] = $knowledge['knowledge_id'];
     }
 }
-
-$videoIs = json_encode($videoIs);
-$currentTime = !$model['is_finish'] ? $model['last_time'] : 0;
+$knowledgeIds  = json_encode($knowledgeIds );
+$data = !empty($model['data']) && !$model['is_finish'] ? (float)$model['data'] : 0; 
 $js = 
 <<<JS
     //初始二维码分享
     initShare();    
         
-    var currentId = "$currentId";
-    var videoIds = $videoIs;
-    var id = getNextToId(currentId, videoIds);
+    var currentId = "$currentId";   //当前页面的id
+    var knowledgeIds = $knowledgeIds;
+    var id = getNextToId(currentId, knowledgeIds);
     $("#next-section").attr("href", "../default/view?id=" + id);
    
     /*
@@ -107,12 +110,15 @@ $js =
      */ 
     var myVideo = document.getElementById('myVideo');
     var timeOut;
-    myVideo.currentTime = $currentTime
+    myVideo.currentTime = $data;
     //定时执行保存媒体播放进度
     window.saveProgress = function(){
         timeOut = setTimeout(function () {
-            $.post("../api/playing",{'course_id': "{$model['course_id']}",
-                'video_id': "{$model['id']}", 'current_time': myVideo.currentTime.toFixed(0),
+            $.post("../api/playing",{
+                'course_id': "{$model['course_id']}",
+                'knowledge_id': "{$model['knowledge_id']}", 
+                'percent': myVideo.currentTime.toFixed(0) / {$model['duration']}, 
+                'data': myVideo.currentTime.toFixed(0),
             })
             saveProgress();
         }, 2000);
@@ -128,8 +134,10 @@ $js =
     //媒体播放结束时执行
     myVideo.onended = function(){
         clearTimeout(timeOut);
-        $.post("../api/playend",{'course_id': "{$model['course_id']}",
-            'video_id': "{$model['id']}",'current_time': myVideo.currentTime.toFixed(0),
+        $.post("../api/playend",{
+            'course_id': "{$model['course_id']}",
+            'knowledge_id': "{$model['knowledge_id']}", 
+            'data': myVideo.currentTime.toFixed(0),
         }, function(){
             if($('input[name="autoplay"]').is(":checked")){
                 window.location.replace("../default/view?id=" + id + '&checked=1');
@@ -157,7 +165,7 @@ $js =
     window.favoriteV =  function(){
         if($("#favorite span").html() == '已收藏'){
             //移除收藏
-            $.get('../api/del-favorite',{course_id: "{$model['course_id']}", video_id: "{$model['id']}"}, function(result){
+            $.get('../api/del-favorite',{video_id: "{$model['video_id']}"}, function(result){
                 if(result.code == 200){
                     //成功
                     $("#favorite span").html('收藏');
@@ -166,7 +174,7 @@ $js =
             });
         }else{
             //添加收藏
-            $.get('../api/add-favorite',{course_id: "{$model['course_id']}", video_id: "{$model['id']}"}, function(result){
+            $.get('../api/add-favorite',{video_id: "{$model['video_id']}"}, function(result){
                 if(result.code == 200){
                     //成功
                     $("#favorite span").html('已收藏');

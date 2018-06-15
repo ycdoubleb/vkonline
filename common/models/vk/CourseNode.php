@@ -105,9 +105,16 @@ class CourseNode extends ActiveRecord
                     $this->sort_order = $firstNode->sort_order + 1;
                 }
             }
+            $this->des = htmlentities($this->des);
+            
             return true;
         }
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = html_entity_decode($this->des);
     }
     
     /**

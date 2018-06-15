@@ -11,16 +11,14 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "{{%video_favorite}}".
  *
- * @property integer $id
- * @property string $course_id 课程ID
+ * @property string $id
  * @property string $video_id 视频ID
  * @property string $user_id 用户ID
  * @property string $group 分组
- * @property integer $is_del 是否删除:0否 1是
+ * @property int $is_del 是否删除：0否 1是
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
- * @property Course $course 获取课程
  * @property Video $video 获取课程
  * @property User $user 获取用户
  */
@@ -50,8 +48,8 @@ class VideoFavorite extends ActiveRecord
     public function rules()
     {
         return [
-            [['created_at', 'updated_at'], 'integer'],
-            [['course_id', 'video_id', 'user_id'], 'string', 'max' => 32],
+            [['is_del', 'created_at', 'updated_at'], 'integer'],
+            [['video_id', 'user_id'], 'string', 'max' => 32],
             [['group'], 'string', 'max' => 50],
         ];
     }
@@ -63,21 +61,13 @@ class VideoFavorite extends ActiveRecord
     {
         return [
             'id' => Yii::t('app', 'ID'),
-            'course_id' => Yii::t('app', 'Course ID'),
             'video_id' => Yii::t('app', 'Video ID'),
             'user_id' => Yii::t('app', 'User ID'),
             'group' => Yii::t('app', 'Group'),
+            'is_del' => Yii::t('app', 'Is Del'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
-    }
-    
-    /**
-     * @return ActiveQuery
-     */
-    public function getCourse()
-    {
-        return $this->hasOne(Course::class, ['id' => 'course_id']);
     }
     
     /**

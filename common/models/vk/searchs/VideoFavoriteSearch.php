@@ -69,9 +69,8 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->andFilterWhere(['like', 'Video.name', $this->name]);
         //添加字段
         $addArrays = [
-            'Customer.name AS customer_name', 'Course.id AS course_id', 'Course.name AS course_name', 
-            'Video.name', "IF(Video.source_is_link, Video.img, CONCAT('/', Video.img)) AS img", 'Video.source_duration', 'Teacher.id AS teacher_id',
-            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+            'Customer.name AS customer_name', 'Video.name', "Video.img", 'Video.duration', 
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         if($sort_name != 'default'){
@@ -99,8 +98,7 @@ class VideoFavoriteSearch extends VideoFavorite
         //添加字段
         $addArrays = [
             'Video.id', 'Video.name', 'Video.img', 'Video.duration',  'Video.created_at',
-            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar',
-            'Teacher.name AS teacher_name'
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         if($sort_name == 'created_at'){

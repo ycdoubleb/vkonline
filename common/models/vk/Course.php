@@ -160,11 +160,10 @@ class Course extends ActiveRecord
     
     public function beforeSave($insert) 
     {
-        if (!$this->id) {
-            $this->id = md5(time() . rand(1, 99999999));
-        }
-        
         if (parent::beforeSave($insert)) {
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
             $upload = UploadedFile::getInstance($this, 'cover_img');
             if ($upload != null) {
                 $string = $upload->name;
@@ -177,24 +176,26 @@ class Course extends ActiveRecord
             }
 
             if ($this->isNewRecord) {
-                //设置默认
-                if (trim($this->cover_img) == ''){
-                    $this->cover_img = '';
-                }
                 //保存自己为协作人
                 $model = new CourseUser(['course_id' => $this->id, 
                     'user_id' => $this->created_by, 'privilege' => CourseUser::ALL
                 ]);
                 $model->save();
-            }else {
-                if (trim($this->cover_img) == ''){
-                    $this->cover_img = $this->getOldAttribute('cover_img');
-                }
             }
+            //都没做修改的情况下保存旧数据
+            if (trim($this->cover_img) == ''){
+                $this->cover_img = $this->getOldAttribute('cover_img');
+            }
+            $this->des = htmlentities($this->des);
             return true;
         }
         
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = html_entity_decode($this->des);
     }
     
     /**

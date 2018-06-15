@@ -1,7 +1,8 @@
 <?php
 
-use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\study_center\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -10,6 +11,7 @@ use yii\web\View;
 /* @var $this View */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 ?>
 <div class="study_center-default-history main">
@@ -26,7 +28,7 @@ ModuleAssets::register($this);
                         <?php if(empty($model['cover_img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
-                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
+                        <img src="<?= StringUtil::completeFilePath($model['cover_img']) ?>" width="100%" height="100%" />
                         <?php endif; ?>
                     </a>
                 </div>
@@ -35,7 +37,7 @@ ModuleAssets::register($this);
                     <div class="tuip speaker">
                         <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
                             <div class="avatars img-circle keep-left">
-                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                <?= Html::img(StringUtil::completeFilePath($model['teacher_avatar']), ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>
                             <span class="keep-left"><?= $model['teacher_name'] ?></span>
                         </a>
@@ -50,11 +52,11 @@ ModuleAssets::register($this);
                             </div>
                         </div>
                         <span class="font-success">上次观看至&nbsp;
-                            <?= $model['node_name'] . '-' . $model['video_name'] . '&nbsp;' . Yii::$app->formatter->asDuration($model['last_time'], '') ?>
+                            <?= $model['node_name'] . '-' . $model['knowledge_name'] . '&nbsp;' . Yii::$app->formatter->asDuration($model['data'], '') ?>
                         </span>
                     </div>
                 </div>
-                <?= Html::a('继续学习', ['view', 'id' => $model['last_video']], ['class' => 'btn btn-success study keep-right' , 'target' => "_blank"]) ?>
+                <?= Html::a('继续学习', ['view', 'id' => $model['last_knowledge']], ['class' => 'btn btn-success study keep-right' , 'target' => "_blank"]) ?>
             </li>
             <?php endforeach; ?>
         </ul>
@@ -112,26 +114,32 @@ $js =
             isPageLoading = true;
             $.get("$url", {page: (pageNum + 1)}, function(rel){
                 isPageLoading = false;
-                page = Number(rel['page']);
+                var data = rel['data'];
+                page = Number(data['page']);
                 var items = $domes;
                 var dome = "";
-                var data = rel['data'];
                 if(rel['code'] == '200'){
-                    for(var i in data){
+                    for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 2 == 1 ? 'clear-margin' : '',
-                            courseId: data[i].course_id,
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" height="100%" />',
-                            name: data[i].name,
-                            teacherId: data[i].teacher_id,
-                            teacherAvatar: data[i].teacher_avatar,
-                            teacherName: data[i].teacher_name,
-                            number: data[i].people_num,
-                            percent: data[i].node_num != undefined && data[i].video_num != undefined ? Math.floor((data[i].node_num / data[i].video_num / 100) * 100) : 0,
-                            nodeName: data[i].node_name,
-                            videoName: data[i].video_name,
-                            lastTime: Wskeee.DateUtil.asDuration(data[i].last_time),
-                            id: data[i].last_video,
+                            courseId: data['result'][i].course_id,
+                            isExist: data['result'][i].cover_img == null || data['result'][i].cover_img == '' ? 
+                                '<div class="title">' + data['result'][i].name + '</div>' : 
+                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].cover_img) + '" width="100%" height="100%" />',
+                            name: data['result'][i].name,
+                            teacherId: data['result'][i].teacher_id,
+                            teacherAvatar: Wskeee.StringUtil.completeFilePath(data['result'][i].teacher_avatar),
+                            teacherName: data['result'][i].teacher_name,
+                            number: data['result'][i].people_num,
+                            percent: data['result'][i].node_num != undefined && data['result'][i].finish_num != undefined ? 
+                                Math.floor((data['result'][i].node_num / data['result'][i].finish_num / 100) * 100) : 0,
+                            nodeName: data['result'][i].node_name != undefined ? 
+                                data['result'][i].node_name : '',
+                            knowledgeName: data['result'][i].knowledge_name != undefined ? 
+                                data['result'][i].knowledge_name : '',
+                            data: data['result'][i].data != undefined ? 
+                                Wskeee.DateUtil.asDuration(data['result'][i].data) : '<span class="not-set">(未设置)</span>',
+                            id: data['result'][i].last_knowledge,
                         });
                     }
                     $(".list > ul").append(dome);
@@ -140,6 +148,12 @@ $js =
                         //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: "danger",
+                    });
                 }
                 //隐藏loading
                 $('.loading').hide();

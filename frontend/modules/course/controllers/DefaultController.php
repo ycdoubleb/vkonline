@@ -13,13 +13,12 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeProgress;
 use common\models\vk\SearchLog;
 use common\models\vk\searchs\CourseListSearch;
 use common\models\vk\Teacher;
-use common\models\vk\Video;
-use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\FfmpegUtil;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -230,25 +229,25 @@ class DefaultController extends Controller
                 ->leftJoin(['Teacher' => Teacher::tableName()],"Course.teacher_id = Teacher.id")
                 ->where(['Course.id' => $id]);
         
-        /* 查找视频环节 */
-        $video_num_query = (new Query())
-                ->select(['Video.id'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['Node' => CourseNode::tableName()], 'Node.id = Video.node_id')
+        /* 查找知识点环节 */
+        $knowledge_num_query = (new Query())
+                ->select(['Knowledge.id'])
+                ->from(['Knowledge' => Knowledge::tableName()])
+                ->leftJoin(['Node' => CourseNode::tableName()], 'Node.id = Knowledge.node_id')
                 ->where([
                     'Node.course_id' => $id,
                     'Node.is_del' => 0,
-                    'Video.is_del' => 0,
-                ])->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC]);
+                    'Knowledge.is_del' => 0,
+                ])->orderBy(['Node.sort_order' => SORT_ASC,'Knowledge.sort_order' => SORT_ASC]);
         
-        $nodes = $video_num_query->column();
-        $course = array_merge($course_query->one(),['node_count' => count($nodes),'first_video' => count($nodes) > 0 ? $nodes[0] : null]);
+        $nodes = $knowledge_num_query->column();
+        $course = array_merge($course_query->one(),['node_count' => count($nodes),'first_knowledge' => count($nodes) > 0 ? $nodes[0] : null]);
         
         /* 查找学习进度 */
         $study_progress_query = (new Query())
-                ->select(['StudyProgress.*','Video.name as video_name'])
+                ->select(['StudyProgress.*','Knowledge.name as knowledge_name'])
                 ->from(['StudyProgress' => CourseProgress::tableName()])
-                ->leftJoin(['Video' => Video::tableName()], 'Video.id = StudyProgress.last_video')
+                ->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = StudyProgress.last_knowledge')
                 ->where([
                     'StudyProgress.course_id' => $id,
                     'StudyProgress.user_id' => $user_id,
@@ -301,22 +300,23 @@ class DefaultController extends Controller
         $study_progress = (new Query())
                 ->select([
                     'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
-                    'Video.id as video_id','Video.name video_name','Video.is_ref','Video.source_duration as duration','Video.sort_order as video_sort_order',
-                    'Progress.is_finish','Progress.finish_time','Progress.last_time'])
-                ->from(['Node' => CourseNode::tableName()])
-                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id AND Video.is_del = 0')
-                ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
+                    'Knowledge.id as knowledge_id','Knowledge.name knowledge_name', 
+                    'Knowledge.sort_order as knowledge_sort_order', '(Progress.percent * 100) AS percent', 
+                    'Progress.is_finish'
+                ])->from(['Node' => CourseNode::tableName()])
+                ->leftJoin(['Knowledge' => Knowledge::tableName()], 'Node.id = Knowledge.node_id AND Knowledge.is_del = 0')
+                ->leftJoin(['Progress' => KnowledgeProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.knowledge_id=Knowledge.id',
                         ['course_id' => $course_id,'user_id'=>$user_id])
                 ->where([
                     'Node.course_id' => $course_id,
                     'Node.is_del' => 0,
                 ])
                 //先排节点再排视频
-                ->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC])
+                ->orderBy(['Node.sort_order' => SORT_ASC,'Knowledge.sort_order' => SORT_ASC])
                 ->all();
         
         $nodes = [];            //节点
-        $video_count = 0;       //视频总数
+        $knowledge_count = 0;   //知识点总数
         $finish_count = 0;      //已完成视频数
         foreach($study_progress as $progress){
             //先建节点数据
@@ -325,32 +325,29 @@ class DefaultController extends Controller
                     'node_id' => $progress['node_id'], 
                     'node_name' => $progress['node_name'],
                     'sort_order' => $progress['node_sort_order'],
-                    'videos' => [],
+                    'knowledges' => [],
                 ];
             }
             //添加视频到节点
-            if($progress['video_id']!=null){
-                $video_count ++;
+            if($progress['knowledge_id']!=null){
+                $knowledge_count ++;
                 if($progress['is_finish'] == 1){
                     $finish_count ++;
                 }
-                $nodes[$progress['node_id']]['videos'] []= [
+                $nodes[$progress['node_id']]['knowledges'] []= [
                     'node_id' => $progress['node_id'],
-                    'video_id' => $progress['video_id'],
-                    'video_name' => $progress['video_name'],
-                    'is_ref' => $progress['is_ref'],
-                    'duration' => $progress['duration'],
-                    'sort_order' => $progress['video_sort_order'],
+                    'knowledge_id' => $progress['knowledge_id'],
+                    'knowledge_name' => $progress['knowledge_name'],
+                    'sort_order' => $progress['knowledge_sort_order'],
                     'is_finish' => $progress['is_finish'],
-                    'finish_time' => $progress['finish_time'],
-                    'last_time' => $progress['last_time'],
+                    'percent' => $progress['percent'],
                 ];
             }
         }
         
-        //var_dump($study_progress,$video_count,$finish_count);exit;
+        //var_dump($study_progress,$knowledge_count,$finish_count);exit;
         return [
-            'video_count' => $video_count,
+            'knowledge_count' => $knowledge_count,
             'finish_count' => $finish_count,
             'nodes' => $nodes,
         ];

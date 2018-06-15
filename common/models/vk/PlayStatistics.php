@@ -54,23 +54,25 @@ class PlayStatistics extends ActiveRecord
     /**
      * 获取对象的播放统计
      * @param string|array $condition   查询条件
-     * @param string $objectId  对象id
+     * @param string $objectIdName  对象id名称
      * @param boolean $default  默认查询播放量
      * @return Query
      */
-    public function getObjectPlayStatistics($condition, $objectId, $default = true)
+    public static function getObjectPlayStatistics($condition, $objectIdName = '', $default = true)
     {
         //查询对象的播放统计
         $play = self::find()->select(['Play.id'])
             ->from(['Play' => PlayStatistics::tableName()]);
         //条件查询
         $play->where($condition);
-        //以objectId为分组
-        $play->groupBy("Play.{$objectId}");
-        
+        //对象id非空的情况下
+        if($objectIdName != ''){
+            $play->groupBy("Play.{$objectIdName}");     //以objectId为分组
+            $play->select(["Play.{$objectIdName}"]);
+        }
+        //默认情况下
         if($default){
-            //查询播放量
-            $play->select(["Play.{$objectId}", 'SUM(Play.play_count) AS play_num']);
+            $play->addSelect(['SUM(Play.play_count) AS play_num']); //查询播放量
         }
         
         return $play;

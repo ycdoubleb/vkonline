@@ -368,8 +368,8 @@ body .select2-container--krajee
     white-space: inherit !important;;
 }
 .table .detail-des {
-    height: 63px;
-    /*display:table-cell;*/
+    min-height: 63px;
+    display:table-cell;
     vertical-align:middle; 
 }
 .main .table > thead  > tr > th,

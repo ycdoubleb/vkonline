@@ -4,9 +4,10 @@ namespace frontend\modules\study_center\controllers;
 
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeProgress;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
-use common\models\vk\VideoProgress;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
@@ -67,19 +68,18 @@ class ApiController extends Controller  {
 
     /**
      * 添加收藏
-     * @param string $course_id    //course_id
      * @param string $video_id    //video_id
      * @return array json
      */
-    public function actionAddFavorite($course_id, $video_id)
+    public function actionAddFavorite($video_id)
     {
         Yii::$app->getResponse()->format = 'json';
         $model = VideoFavorite::findOne([
-            'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id, 
+            'video_id' => $video_id, 'user_id' => Yii::$app->user->id, 
         ]);
         if ($model == null) {
             $model = new VideoFavorite([
-                'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id
+                'video_id' => $video_id, 'user_id' => Yii::$app->user->id
             ]);
         }
         /** 开启事务 */
@@ -101,99 +101,80 @@ class ApiController extends Controller  {
     
     /**
      * 移除收藏
-     * @param string $course_id    //course_id
      * @param string $video_id    //video_id
      * @return json
      */
-    public function actionDelFavorite($course_id, $video_id)
+    public function actionDelFavorite($video_id)
     {
         Yii::$app->getResponse()->format = 'json';
         $model = VideoFavorite::findOne([
-            'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => Yii::$app->user->id, 
+            'video_id' => $video_id, 'user_id' => Yii::$app->user->id, 
         ]);
         if ($model == null) {
-            return ['error' => '找不到对应课程！'];
+            return ['error' => '找不到对应视频。'];
         }
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try {
             $model->is_del = 1;
             if ($model->save()) {
-                $video_model = Video::findOne(['id' => $video_id]);
-                $video_model->favorite_count = $video_model->favorite_count - 1;
-                if ($video_model->favorite_count < 0) {
-                    $video_model->favorite_count = 0;
+                $videoModel = Video::findOne(['id' => $video_id]);
+                $videoModel->favorite_count = $videoModel->favorite_count - 1;
+                if ($videoModel->favorite_count < 0) {
+                    $videoModel->favorite_count = 0;
                 }
-                $video_model->save(true, ['favorite_count']);
+                $videoModel->save(true, ['favorite_count']);
             }
             $trans->commit();  //提交事务
         } catch (Exception $ex) {
             $trans->rollBack(); //回滚事务
             return ['error' => $ex->getMessage()];
         }
-        return ['favorite_count' => $video_model->favorite_count];
+        
+        return ['favorite_count' => $videoModel->favorite_count];
     }
     
     /**
-     * 媒体播放时保存video和course进度
+     * 媒体播放时保存knowledge和course进度
      */
     public function actionPlaying()
     {
         Yii::$app->getResponse()->format = 'json';
         $post = Yii::$app->request->post();
         $course_id = ArrayHelper::getValue($post, 'course_id');
-        $video_id = ArrayHelper::getValue($post, 'video_id');
-        $current_time = ArrayHelper::getValue($post, 'current_time');
-        $model = VideoProgress::findOne([
-            'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
+        $knowledge_id = ArrayHelper::getValue($post, 'knowledge_id');
+        $data = ArrayHelper::getValue($post, 'data');
+        $percent = ArrayHelper::getValue($post, 'percent');
+        $model = KnowledgeProgress::findOne([
+            'course_id' => $course_id, 'knowledge_id' => $knowledge_id, 'user_id' => \Yii::$app->user->id
         ]);
         if($model == null){
-            $model = new VideoProgress([
-                'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
+            $model = new KnowledgeProgress([
+                'course_id' => $course_id, 'knowledge_id' => $knowledge_id, 'user_id' => \Yii::$app->user->id
             ]);
         }
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {   
-            $model->last_time = $current_time;
-            if($current_time > $model->finish_time){
-                $model->finish_time = $current_time;
+            if($percent > $model->percent){
+                $model->percent = $percent;
             }
+            $model->data = $data;
             if($model->save()){
-                $isFinish = false;
-                //查询课程下的所有视频节点
-                $video_query = (new Query())->select(['Video.id'])->from(['Video' => Video::tableName()]);
-                $video_query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
-                $video_query->where(['CourseNode.course_id' => $course_id]);
-                $video_query->andWhere(['Video.is_del' => 0]);
-                //查询课程下的视频节点进度是否已播放完成
-                $video_progress = (new Query())->select([
-                    'IF (VideoProgress.is_finish IS NULL || VideoProgress.is_finish = 0,0,1) AS is_finish'
-                ])->from(['VideoProgress' => VideoProgress::tableName()]);
-                $video_progress->where(['VideoProgress.user_id' => Yii::$app->user->id, 'VideoProgress.video_id' => $video_query]);
-                $results = ArrayHelper::getColumn($video_progress->all(), 'is_finish');
-                //判断数组内容是否为一样的值
-                foreach ($results as $value) {
-                    if($value){
-                        $isFinish = true;
-                    }else{
-                        $isFinish = false;
-                        break;
-                    }
-                }
-                $course_progress = CourseProgress::findOne(['course_id' => $course_id, 'user_id' => \Yii::$app->user->id]);
-                if($course_progress == null){
-                    $course_progress = new CourseProgress([
+                $isFinish = $this->getIsFinishStudyByKnowledge($course_id);
+                $courseProgress = CourseProgress::findOne(['course_id' => $course_id, 'user_id' => \Yii::$app->user->id]);
+                if($courseProgress == null){
+                    $courseProgress = new CourseProgress([
                         'course_id' => $course_id, 'user_id' => \Yii::$app->user->id
                     ]);
                 }
-                $course_progress->last_video = $video_id;
+                $courseProgress->last_knowledge = $knowledge_id;
                 if(!$isFinish){
-                    $course_progress->is_finish = 0;
-                    $course_progress->end_time = 0;
+                    $courseProgress->is_finish = 0;
+                    $courseProgress->end_time = 0;
                 }
-                $course_progress->save();
+                $courseProgress->save();
             }
             
             $trans->commit();  //提交事务
@@ -204,64 +185,40 @@ class ApiController extends Controller  {
     }
     
     /**
-     * 媒体播放结束时保存video和course进度
+     * 媒体播放结束时保存knowledge和course进度
      */
     public function actionPlayend()
     {
         Yii::$app->getResponse()->format = 'json';
         $post = Yii::$app->request->post();
         $course_id = ArrayHelper::getValue($post, 'course_id');
-        $video_id = ArrayHelper::getValue($post, 'video_id');
-        $current_time = ArrayHelper::getValue($post, 'current_time');
-        $model = VideoProgress::findOne([
-            'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
+        $knowledge_id = ArrayHelper::getValue($post, 'knowledge_id');
+        $data = ArrayHelper::getValue($post, 'data');
+        $model = KnowledgeProgress::findOne([
+            'course_id' => $course_id, 'knowledge_id' => $knowledge_id, 'user_id' => \Yii::$app->user->id
         ]);
         if($model == null){
-            $model = new VideoProgress([
-                'course_id' => $course_id, 'video_id' => $video_id, 'user_id' => \Yii::$app->user->id
+            $model = new KnowledgeProgress([
+                'course_id' => $course_id, 'knowledge_id' => $knowledge_id, 'user_id' => \Yii::$app->user->id
             ]);
         }
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {   
-            $model->finish_time = $model->last_time = $current_time;
+            $model->percent = 1;
+            $model->data = $data;
             $model->is_finish = 1;
             $model->end_time = time();
             if($model->save()){
-                $isFinish = false;
-                //查询课程下的所有视频节点
-                $video_query = (new Query())->select(['Video.id'])->from(['Video' => Video::tableName()]);
-                $video_query->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
-                $video_query->where(['CourseNode.course_id' => $course_id]);
-                $video_query->andWhere(['Video.is_del' => 0]);
-                //查询课程下的视频节点进度是否已播放完成
-                $video_progress = (new Query())->select([
-                    'IF (VideoProgress.is_finish IS NULL || VideoProgress.is_finish = 0,0,1) AS is_finish'
-                ])->from(['VideoProgress' => VideoProgress::tableName()]);
-                $video_progress->where(['VideoProgress.user_id' => Yii::$app->user->id, 'VideoProgress.video_id' => $video_query]);;
-                $results = ArrayHelper::getColumn($video_progress->all(), 'is_finish');
-                //判断数组内容是否为一样的值
-                foreach ($results as $value) {
-                    if($value){
-                        $isFinish = true;
-                    }else{
-                        $isFinish = false;
-                        break;
-                    }
-                }
-                $course_progress = CourseProgress::findOne(['course_id' => $course_id, 'user_id' => \Yii::$app->user->id]);
-                if($course_progress == null){
-                    $course_progress = new CourseProgress([
-                        'course_id' => $course_id, 'user_id' => \Yii::$app->user->id
-                    ]);
-                }
-                $course_progress->last_video = $video_id;
+                $isFinish = $this->getIsFinishStudyByKnowledge($course_id);
+                $courseProgress = CourseProgress::findOne(['course_id' => $course_id, 'user_id' => \Yii::$app->user->id]);
+                $courseProgress->last_knowledge = $knowledge_id;
                 if($isFinish){
-                    $course_progress->is_finish = 1;
-                    $course_progress->end_time = time();
+                    $courseProgress->is_finish = 1;
+                    $courseProgress->end_time = time();
                 }
-                $course_progress->save();
+                $courseProgress->save();
             }
             
             $trans->commit();  //提交事务
@@ -269,5 +226,37 @@ class ApiController extends Controller  {
             $trans ->rollBack(); //回滚事务
             return ['error' => $ex->getMessage()];
         }
+    }
+    
+    /**
+     * 获取是否完成了所有知识点的学习
+     * @param string $course_id 
+     * @return boolean
+     */
+    protected function getIsFinishStudyByKnowledge($course_id)
+    {
+        $isFinish = false;
+        //查询课程下的所有视频节点
+        $knowledge = (new Query())->select(['Knowledge.id'])->from(['Knowledge' => Knowledge::tableName()]);
+        $knowledge->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Knowledge.node_id');
+        $knowledge->where(['CourseNode.course_id' => $course_id]);
+        $knowledge->andWhere(['Knowledge.is_del' => 0]);
+        //查询课程下的视频节点进度是否已播放完成
+        $knowledgeProgress = (new Query())->select([
+            'IF (KnowledgeProgress.is_finish IS NULL || KnowledgeProgress.is_finish = 0,0,1) AS is_finish'
+        ])->from(['KnowledgeProgress' => KnowledgeProgress::tableName()]);
+        $knowledgeProgress->where(['KnowledgeProgress.user_id' => Yii::$app->user->id, 'KnowledgeProgress.knowledge_id' => $knowledge]);
+        $results = ArrayHelper::getColumn($knowledgeProgress->all(), 'is_finish');
+        //判断数组内容是否为一样的值
+        foreach ($results as $value) {
+            if($value){
+                $isFinish = true;
+            }else{
+                $isFinish = false;
+                break;
+            }
+        }
+        
+        return $isFinish;
     }
 }

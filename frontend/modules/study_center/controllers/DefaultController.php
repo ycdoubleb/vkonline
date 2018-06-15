@@ -4,6 +4,9 @@ namespace frontend\modules\study_center\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeProgress;
+use common\models\vk\KnowledgeVideo;
 use common\models\vk\PlayStatistics;
 use common\models\vk\searchs\CourseFavoriteSearch;
 use common\models\vk\searchs\CourseProgressSearch;
@@ -12,14 +15,16 @@ use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
+use common\models\vk\VideoFile;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\DateUtil;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 /**
@@ -72,106 +77,139 @@ class DefaultController extends Controller
     
      /**
      * 呈现【参与的课程】的视图。
-     * @return mixed [totalCount => 总数, dataProvider => 学习记录]
+     * @return mixed
      */
     public function actionHistory()
     {
         $searchModel = new CourseProgressSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $results = $searchModel->search(Yii::$app->request->queryParams);
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['course']),
+            'allModels' => array_values($results['data']['course']),
         ]);
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['course']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['course']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         //传参到布局文件
         \Yii::$app->view->params = [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
+            'searchModel' => $searchModel,      //搜索模型
+            'filters' => $results['filter'],    //查询的过滤属性
         ];
         
         return $this->render('history', [
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,    //参与的课程数据
+            'totalCount' => $results['total'],  //总数量
         ]);
     }
     
     /**
      * 呈现【收藏的课程】的视图。
-     * @return mixed [totalCount => 总数, dataProvider => 关注的课程]
+     * @return mixed 
      */
     public function actionCollectCourse()
     {
         $searchModel = new CourseFavoriteSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $results = $searchModel->search(Yii::$app->request->queryParams);
        
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['course']),
+            'allModels' => array_values($results['data']['course']),
         ]);
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['course']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['course']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         //传参到布局文件
         \Yii::$app->view->params = [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
+            'searchModel' => $searchModel,      //搜索模型
+            'filters' => $results['filter'],    //查询的过滤属性
         ];
         
         return $this->render('course', [
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,    //收藏的课程数据
+            'totalCount' => $results['total'],  //总数量
         ]);
     }
     
     /**
      * 呈现【收藏的视频】的视图。
-     * @return mixed [totalCount => 总数, dataProvider => 收藏的视频]
+     * @return mixed 
      */
     public function actionCollectVideo()
     {
         $searchModel = new VideoFavoriteSearch();
-        $result = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        $results = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['video']),
+            'allModels' => array_values($results['data']['video']),
         ]);
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['video']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => array_values($results['data']['video']), 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         //传参到布局文件
         \Yii::$app->view->params = [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
+            'searchModel' => $searchModel,      //搜索模型
+            'filters' => $results['filter'],    //查询的过滤属性
         ];
         
         return $this->render('video', [
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,    //收藏的视频数据
+            'totalCount' => $results['total'],  //总数量
         ]);
     }
     
@@ -186,7 +224,7 @@ class DefaultController extends Controller
     public function actionView($id)
     {
         $this->layout = '@frontend/modules/study_center/views/layouts/paly';
-        $model = $this->findViewDetail($id);
+        $model = $this->findViewVideoDetail($id);
         $this->savePlayModel($model['course_id'], $id);
         $nodes = $this->findNodeDetail($model['course_id']);
         
@@ -199,35 +237,38 @@ class DefaultController extends Controller
     
     /**
      * 查找视频详细信息
-     * @param string $id 课程ID
-     * @return array [Course,StudyProgress];
+     * @param string $id 知识点id
+     * @return array
      */
-    protected function findViewDetail($id){
+    protected function findViewVideoDetail($id){
         
         $user_id = Yii::$app->user->id;
         /* @var $query Query */
         $videoQuery = (new Query())
-            ->select(['Course.id AS course_id', 'Course.name AS course_name', 'CourseNode.name AS node_name',
-                'Video.id', 'Video.name', 'Video.img', 'Video.des', 'Video.source_duration as duration',
+            ->select([
+                'Course.id AS course_id', 'Course.name AS course_name', 'CourseNode.name AS node_name',
+                'Knowledge.id AS knowledge_id', 'Knowledge.name', 'Knowledge.des', 
+                'Video.id AS video_id', 'Video.img', 'Video.duration',
                 'Uploadfile.path', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
-                'Teacher.des AS teacher_des', 'IF(Progress.is_finish IS NUll, 0, Progress.is_finish) AS is_finish', 
-                'IF(Progress.last_time IS NUll, 0, Progress.last_time) AS last_time', 
-                'IF(Progress.finish_time IS NUll, 0, Progress.finish_time) AS finish_time',
+                'Teacher.des AS teacher_des', 'Progress.data', 'Progress.is_finish', 
                 '(Favorite.is_del = 0) as is_favorite'
-            ])->from(['Video' => Video::tableName()]);
-        $videoQuery->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
-        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id');
+            ])->from(['Knowledge' => Knowledge::tableName()]);
+        //关联查询
+        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0)');
         $videoQuery->leftJoin(['Course' => Course::tableName()],"Course.id = CourseNode.course_id");
+        $videoQuery->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Knowledge.teacher_id');
+        $videoQuery->leftJoin(['Progress' => KnowledgeProgress::tableName()], "(Progress.knowledge_id = Knowledge.id AND Progress.user_id= '$user_id')");
+        $videoQuery->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], '(KnowledgeVideo.knowledge_id = Knowledge.id AND KnowledgeVideo.is_del = 0)');
+        $videoQuery->leftJoin(['Video' => Video::tableName()], 'Video.id = KnowledgeVideo.video_id');
+        $videoQuery->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1)');
+        $videoQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id');
         $videoQuery->leftJoin(['Favorite' => VideoFavorite::tableName()],"(Favorite.video_id = Video.id AND Favorite.user_id = '$user_id')");
-        $videoQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.source_id');
-        $videoQuery->leftJoin(['Progress' => VideoProgress::tableName()], "(Progress.video_id = Video.id AND Progress.user_id= '$user_id')");
-        $videoQuery->where(['Video.id' => $id, 'Video.is_del' => 0]);
+        $videoQuery->where(['Knowledge.id' => $id, 'Knowledge.is_del' => 0]);
         
         /* 查找视频播放量 */
-        $playQuery = (new Query())->select(['SUM(Play.play_count) AS play_num'])
-            ->from(['Play' => PlayStatistics::tableName()])->where(['Play.video_id' => $id]);
-        
-        return array_merge($videoQuery->one(), $playQuery->one());
+        $playQuery = PlayStatistics::getObjectPlayStatistics(['knowledge_id' => $id]);
+
+        return ArrayHelper::merge($videoQuery->one(), $playQuery->asArray()->one());
     }
     
     /**
@@ -240,19 +281,18 @@ class DefaultController extends Controller
         $study_progress = (new Query())
                 ->select([
                     'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
-                    'Video.id as video_id','Video.name video_name','Video.is_ref',
-                    'Video.source_duration as duration','Video.sort_order as video_sort_order',
-                    'Progress.is_finish','Progress.finish_time','Progress.last_time'])
-                ->from(['Node' => CourseNode::tableName()])
-                ->leftJoin(['Video' => Video::tableName()], 'Node.id = Video.node_id AND Video.is_del = 0')
-                ->leftJoin(['Progress' => VideoProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.video_id=Video.id',
+                    'Knowledge.id as knowledge_id','Knowledge.name as knowledge_name',
+                    'Knowledge.sort_order as knowledge_sort_order', '(Progress.percent * 100) as percent'
+                ])->from(['Node' => CourseNode::tableName()])
+                ->leftJoin(['Knowledge' => Knowledge::tableName()], 'Node.id = Knowledge.node_id AND Knowledge.is_del = 0')
+                ->leftJoin(['Progress' => KnowledgeProgress::tableName()], 'Progress.course_id=:course_id AND Progress.user_id=:user_id AND Progress.knowledge_id=Knowledge.id',
                         ['course_id' => $course_id,'user_id'=>$user_id])
                 ->where([
                     'Node.course_id' => $course_id,
                     'Node.is_del' => 0,
                 ])
                 //先排节点再排视频
-                ->orderBy(['Node.sort_order' => SORT_ASC,'Video.sort_order' => SORT_ASC])
+                ->orderBy(['Node.sort_order' => SORT_ASC,'Knowledge.sort_order' => SORT_ASC])
                 ->all();
         
         $nodes = [];            //节点
@@ -263,21 +303,17 @@ class DefaultController extends Controller
                     'node_id' => $progress['node_id'], 
                     'node_name' => $progress['node_name'],
                     'sort_order' => $progress['node_sort_order'],
-                    'videos' => [],
+                    'knowledges' => [],
                 ];
             }
             //添加视频到节点
-            if($progress['video_id']!=null){
-                $nodes[$progress['node_id']]['videos'] []= [
+            if($progress['knowledge_id']!=null){
+                $nodes[$progress['node_id']]['knowledges'] []= [
                     'node_id' => $progress['node_id'],
-                    'video_id' => $progress['video_id'],
-                    'video_name' => $progress['video_name'],
-                    'is_ref' => $progress['is_ref'],
-                    'duration' => $progress['duration'],
-                    'sort_order' => $progress['video_sort_order'],
-                    'is_finish' => $progress['is_finish'],
-                    'finish_time' => $progress['finish_time'],
-                    'last_time' => $progress['last_time'],
+                    'knowledge_id' => $progress['knowledge_id'],
+                    'knowledge_name' => $progress['knowledge_name'],
+                    'sort_order' => $progress['knowledge_sort_order'],
+                    'percent' => $progress['percent'],
                 ];
             }
         }
@@ -286,16 +322,16 @@ class DefaultController extends Controller
     }
     
     /**
-     * 基于其year、month、course_id 和 video_id找到 PlayStatistics 模型。
+     * 基于其year、month、course_id 和 knowledge_id 找到 PlayStatistics 模型。
      * 如果当前月存在播放量，则播放量加 1， 否则新建
      * @param string $course_id
-     * @param string $video_id
+     * @param string $knowledge_id
      */
-    protected function savePlayModel($course_id, $video_id)
+    protected function savePlayModel($course_id, $knowledge_id)
     {
         $model = PlayStatistics::findOne([
             'year' => date('Y', time()), 'month' => date('m', time()),
-            'course_id' => $course_id, 'video_id' => $video_id
+            'course_id' => $course_id, 'knowledge_id' => $knowledge_id
         ]);
         if($model !== null){
             $model->play_count = $model->play_count + 1;
@@ -303,7 +339,7 @@ class DefaultController extends Controller
         }else{
             $model = new PlayStatistics([
                 'year' => date('Y', time()), 'month' => date('m', time()),
-                'course_id' => $course_id, 'video_id' => $video_id
+                'course_id' => $course_id, 'knowledge_id' => $knowledge_id
             ]);
             $model->play_count = 1;
             $model->save();

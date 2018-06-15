@@ -72,7 +72,7 @@ ModuleAssets::register($this);
                 [
                     'label' => Yii::t('app', 'Des'),
                     'format' => 'raw',
-                    'value' => "<div class=\"detail-des multi-line-clamp\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des\">". str_replace(array("\r\n", "\r", "\n"), "<br/>", $model->des) ."</div>",
                 ],
                 [
                     'label' => Yii::t('app', 'Tag'),

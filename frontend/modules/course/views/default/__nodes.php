@@ -6,7 +6,7 @@
 use yii\web\View;
 
 /* @var $this View */
-$finish_percent = $video_count == 0 ? 0 : floor($finish_count/$video_count*100);
+$finish_percent = $knowledge_count == 0 ? 0 : floor($finish_count / $knowledge_count * 100);
 
 ?>
 <div class="c-nodes">
@@ -32,21 +32,19 @@ $finish_percent = $video_count == 0 ? 0 : floor($finish_count/$video_count*100);
                     </div>
                     <ul class="list">
                         <!-- 生成视频列表 -->
-                        <?php foreach($node['videos'] as $video): ?>
+                        <?php foreach($node['knowledges'] as $knowledge): ?>
                         <li class="node level_2">
                             <div class="head">
-                                <span><?= $video['video_name'] ?></span>
+                                <span><?= $knowledge['knowledge_name'] ?></span>
                                 <div class="control">
                                     <div class="progress">
-                                        <!-- 每个视频的完成进度 -->
-                                        <?php $video_finish_percent = $video['is_finish'] ? 100 :  floor($video['finish_time']/$video['duration']*100) ?>
-                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $video_finish_percent ?>" 
-                                             aria-valuemin="0" aria-valuemax="100" style="width: <?= $video_finish_percent ?>%;">
+                                        <!-- 每个知识点的完成进度 -->
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?= $knowledge['percent'] ?>" 
+                                             aria-valuemin="0" aria-valuemax="100" style="width: <?= $knowledge['percent'] ?>%;">
                                         </div>
                                     </div>
-                                    <span class="duration"><?= $video['duration'] ?></span>
                                 </div>
-                                <a class="btn btn-highlight btn-flat play" href="/study_center/default/view?id=<?= $video['video_id'] ?>" ><?= $video['finish_time'] > 0 ? '继续学习' : '开始学习' ?></a>
+                                <a class="btn btn-highlight btn-flat play" href="/study_center/default/view?id=<?= $knowledge['knowledge_id'] ?>" ><?= $knowledge['percent'] > 0 ? '继续学习' : '开始学习' ?></a>
                             </div>
                         </li>        
                         <?php endforeach; ?>   
