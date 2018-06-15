@@ -130,7 +130,7 @@ $this->registerJs($format, View::POS_HEAD);
                                     <div class="tuip single-clamp">
                                         <span>
                                             <?= count($model->knowledgeVideo->video->tagRefs) > 0 ?
-                                                implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
+                                                implode(',', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
                                         </span>
                                     </div>
                                     <div class="tuip">
