@@ -132,10 +132,10 @@ class Teacher extends ActiveRecord
     
     public function beforeSave($insert) 
     {
-        if (!$this->id) {
-            $this->id = md5(time() . rand(1, 99999999));
-        }
         if (parent::beforeSave($insert)) {
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
                 $string = $upload->name;
@@ -143,24 +143,25 @@ class Teacher extends ActiveRecord
                 //获取后缀名，默认为 jpg 
                 $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
                 $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
-                $upload->saveAs($uploadpath . md5($this->name) . '.' . $ext);
-                $this->avatar = '/upload/teacher/avatars/' . md5($this->name) . '.' . $ext . '?rand=' . rand(0, 1000);
+                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
+                $this->avatar = '/upload/teacher/avatars/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
+            }else{
+                $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
             }
-
-            if ($this->isNewRecord) {
-                //设置默认头像
-                if (trim($this->avatar) == ''){
-                    $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
-                }    
-            }else {
-                if (trim($this->avatar) == ''){
-                    $this->avatar = $this->getOldAttribute('avatar');
-                }
+            //都没做修改的情况下保存旧数据
+            if (trim($this->avatar) == ''){
+                $this->avatar = $this->getOldAttribute('avatar');
             }
-
+            $this->des = htmlentities($this->des);
+            
             return true;
         }
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = html_entity_decode($this->des);
     }
     
     /**

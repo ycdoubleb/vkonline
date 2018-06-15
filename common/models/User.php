@@ -30,6 +30,8 @@ use yii\web\UploadedFile;
  * @property string $des                    简介
  * @property string $auth_key               认证
  * @property int $is_official 是否为官网资源：0否 1是
+ * @property string $access_token           访问令牌
+ * @property string $access_token_expire_time           访问令牌到期时间
  * @property string $created_at             创建时间
  * @property string $updated_at             更新时间
  * @property string $password write-only password
@@ -307,7 +309,10 @@ class User extends ActiveRecord implements IdentityInterface {
      * {@inheritdoc}
      */
     public static function findIdentityByAccessToken($token, $type = null) {
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        $identity = self::find()
+                ->where(['access_token' => $token , 'status' => self::STATUS_ACTIVE ])
+                ->andWhere(['>=','access_token_expire_time',time()])->one();
+        return $identity;
     }
 
     /**
@@ -399,6 +404,14 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function generateAuthKey() {
         $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+    
+    /**
+     * 生成访问令牌
+     */
+    public function generateAccessToken() {
+        $this->access_token = Yii::$app->security->generateRandomString();
+        $this->access_token_expire_time = time() + Yii::$app->params['user.passwordAccessTokenExpire'];
     }
 
     /**

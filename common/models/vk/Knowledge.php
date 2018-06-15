@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\models\User;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -23,11 +24,20 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
- * @property CourseNode $node
+ * @property User $createdBy 获取创建者
+ * @property CourseNode $node   获取节点
+ * @property Teacher $teacher   获取老师
+ * @property KnowledgeVideo $knowledgeVideo 获取视频资源     
  * @property KnowledgeVideo[] $knowledgeVideos
  */
 class Knowledge extends ActiveRecord
 {
+    /** video资源 */
+    const TYPE_VIDEO_RESOURCE = 1;
+    /** html资源 */
+    const TYPE_HTML_RESOURCE = 2;
+
+
     /**
      * {@inheritdoc}
      */
@@ -92,10 +102,25 @@ class Knowledge extends ActiveRecord
             if($this->isNewRecord && !empty($knowledges)){
                 $this->sort_order = $knowledges->sort_order + 1;
             }
+            $this->des = htmlentities($this->des);
+            
             return true;
         }
         
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = html_entity_decode($this->des);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy()
+    {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
     }
     
     /**
@@ -106,6 +131,22 @@ class Knowledge extends ActiveRecord
         return $this->hasOne(CourseNode::className(), ['id' => 'node_id']);
     }
 
+    /**
+     * @return ActiveQuery
+     */
+    public function getTeacher()
+    {
+        return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getKnowledgeVideo()
+    {
+        return $this->hasOne(KnowledgeVideo::className(), ['knowledge_id' => 'id']);
+    }
+    
     /**
      * @return ActiveQuery
      */

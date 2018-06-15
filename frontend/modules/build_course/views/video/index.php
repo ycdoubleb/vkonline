@@ -214,7 +214,7 @@ $js =
                             duration: Wskeee.DateUtil.intToTime(data['result'][i].duration),
                             tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
                             createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data['result'][i].created_at),
-                            level: dataLevel[data['result'][i].level],
+                            levelName: dataLevel[data['result'][i].level],
                             teacherId: data['result'][i].teacher_id,
                             teacherAvatar: Wskeee.StringUtil.completeFilePath(data['result'][i].teacher_avatar),
                             teacherName: data['result'][i].teacher_name,

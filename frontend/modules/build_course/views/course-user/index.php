@@ -16,7 +16,7 @@ ModuleAssets::register($this);
 
 ?>
 <div class="course-user-index">
-    <div class="frame right-frame">
+    <div class="panel keep-right right-panel">
         <div class="title">
             <span><?= Yii::t('app', 'Help Man') ?></span>
             <div class="btngroup">
@@ -26,7 +26,7 @@ ModuleAssets::register($this);
                 }?>
             </div>
         </div>
-        <div class="frame-right-height">
+        <div class="right-panel-height">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
                 'tableOptions' => ['class' => 'table table-list'],

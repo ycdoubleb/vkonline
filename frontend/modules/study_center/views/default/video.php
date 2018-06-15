@@ -1,7 +1,9 @@
 <?php
 
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\study_center\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -11,6 +13,7 @@ use yii\web\View;
 
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 ?>
 
@@ -24,21 +27,22 @@ ModuleAssets::register($this);
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
             <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
                 <div class="pic">
-                    <a class="icon" data-courseid="<?= $model['course_id'] ?>" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
+                    <a class="icon" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
                         <i class="fa fa-times"></i>
                     </a>
-                    <a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['course_name'] . ' > ' . $model['name'] ?>" target="_blank">
+                    <!--<a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['name'] ?>" target="_blank">-->
+                    <a title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
-                        <div class="title"><?= $model['course_name'] . ' > ' . $model['name'] ?></div>
+                        <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
-                        <img src="<?= $model['img'] ?>" width="100%" height="100%" />
+                        <img src="<?= StringUtil::completeFilePath($model['img']) ?>" width="100%" height="100%" />
                         <?php endif; ?>
                     </a>
-                    <div class="duration"><?= DateUtil::intToTime($model['source_duration']) ?></div>
+                    <div class="duration"><?= DateUtil::intToTime($model['duration']) ?></div>
                 </div>
                 <div class="text">
                     <div class="tuip title single-clamp">
-                        <?= $model['course_name'] . ' > ' . $model['name'] ?>
+                        <?= $model['name'] ?>
                     </div>
                     <div class="tuip single-clamp">
                         <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
@@ -49,11 +53,10 @@ ModuleAssets::register($this);
                     <div class="tuip">
                         <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
                             <div class="avatars img-circle keep-left">
-                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                <?= Html::img(StringUtil::completeFilePath($model['teacher_avatar']), ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
                             </div>
                             <span class="keep-left"><?= $model['teacher_name'] ?></span>
                         </a>
-                        <span class="keep-right"><i class="fa fa-eye"></i> <?= isset($model['play_num']) ? $model['play_num'] : 0 ?></span>
                     </div>
                 </div>
             </li>
@@ -113,26 +116,25 @@ $js =
             isPageLoading = true;
             $.get("$url", {page: (pageNum + 1)}, function(rel){
                 isPageLoading = false;
-                page = Number(rel['page']);
+                var data = rel['data'];
+                page = Number(data['page']);
                 var items = $domes;
                 var dome = "";
-                var data = rel['data'];
                 if(rel['code'] == '200'){
-                    for(var i in data){
-                        var video_name = data[i].course_name + ' > ' + data[i].name;
+                    for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
                             className: i % 4 == 3 ? 'clear-margin' : '',
-                            courseId: data[i].course_id,
-                            id: data[i].video_id,
-                            isExist: data[i].img == null || data[i].img == '' ? '<div class="title">' + video_name + '</div>' : '<img src="' + data[i].img + '" width="100%" height="100%" />',
-                            name: video_name,
-                            duration: Wskeee.DateUtil.intToTime(data[i].source_duration),
-                            tags: data[i].tags != undefined ? data[i].tags : 'null',
-                            customerName: data[i].customer_name,
-                            teacherId: data[i].teacher_id,
-                            teacherAvatar: data[i].teacher_avatar,
-                            teacherName: data[i].teacher_name,
-                            playNum: data[i].play_num != undefined ? data[i].play_num : 0,
+                            id: data['result'][i].video_id,
+                            isExist: data['result'][i].img == null || data['result'][i].img == '' ? 
+                                '<div class="title">' + video_name + '</div>' : 
+                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].img) + '" width="100%" height="100%" />',
+                            name: data['result'][i].name,
+                            duration: Wskeee.DateUtil.intToTime(data['result'][i].duration),
+                            tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
+                            customerName: data['result'][i].customer_name,
+                            teacherId: data['result'][i].teacher_id,
+                            teacherAvatar: Wskeee.StringUtil.completeFilePath(data['result'][i].teacher_avatar),
+                            teacherName: data['result'][i].teacher_name,
                         });
                     }
                     $(".list > ul").append(dome);
@@ -141,6 +143,12 @@ $js =
                         //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: "danger",
+                    });
                 }
                 //隐藏loading
                 $('.loading').hide();
@@ -165,10 +173,9 @@ $js =
     }    
     //移除收藏
     window.removeItem = function(elem){
-        var courseId = elem.attr("data-courseid");
         var videoId = elem.attr("data-videoid");
         var totalCount = $(".summary > span > b").text();
-        $.get('/study_center/api/del-favorite',{course_id: courseId, video_id: videoId},function(result){
+        $.get('/study_center/api/del-favorite',{video_id: videoId},function(result){
             if(result.code == 200){
                 totalCount = parseInt(totalCount) - 1;
                 elem.parents("li").remove();

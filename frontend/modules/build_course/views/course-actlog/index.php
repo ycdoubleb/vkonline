@@ -16,7 +16,7 @@ ModuleAssets::register($this);
 
 ?>
 <div class="course_actlog-index">
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Operation}{Log}', [
@@ -24,7 +24,7 @@ ModuleAssets::register($this);
                 ]) ?>
             </span>
         </div>
-        <div class="frame-height">
+        <div class="panel-height">
             <?= GridView::widget([
                 'id' => 'gv1',
                 'dataProvider' => $dataProvider,

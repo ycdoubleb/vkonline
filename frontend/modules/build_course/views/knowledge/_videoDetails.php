@@ -1,6 +1,6 @@
 <li class="{%className%}">
     <div class="pic">
-        <a href="{%url%}" title="{%name%}" target="_blank">{%isExist%}</a>
+        <a title="{%name%}" target="_blank">{%isExist%}</a>
         <div class="duration">{%duration%}</div>
     </div>
     <div class="text">
@@ -8,7 +8,7 @@
         <div class="tuip single-clamp">{%tags%}</div>
         <div class="tuip">
             <span class="keep-left">{%createdAt%}</span>
-            <span class="keep-right font-danger">{%level%}</span>
+            <span class="keep-right font-danger">{%levelName%}</span>
         </div>
     </div>
     <div class="teacher">

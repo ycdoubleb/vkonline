@@ -1,23 +1,90 @@
 <?php
 
+use common\models\vk\Knowledge;
+use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
+use yii\web\View;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\vk\Knowledge */
+/* @var $this View */
+/* @var $model Knowledge */
 
-$this->title = Yii::t('app', 'Update Knowledge: ' . $model->name, [
-    'nameAttribute' => '' . $model->name,
+ModuleAssets::register($this);
+GrowlAsset::register($this);
+
+$this->title = Yii::t(null, "{Edit}{Knowledge}", [
+    'Edit' => Yii::t('app', 'Edit'), 'Knowledge' => Yii::t('app', 'Knowledge')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Knowledges'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
+
 ?>
-<div class="knowledge-update">
+<div class="knowledge-update main modal">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
+    <div class="modal-dialog modal-lg modal-width" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
+            </div>
+            <div class="modal-body modal-height">
+                
+                <?= $this->render('_form', [
+                    'model' => $model,
+                    'teacherMap' => $teacherMap,
+                ]) ?>
+                
+            </div>
+            <div class="modal-footer">
+                <?= Html::button(Yii::t('app', 'Confirm'), [
+                    'id' => 'submitsave', 'class' => 'btn btn-primary btn-flat', 
+                    'data-dismiss' => '', 'aria-label' => 'Close'
+                ]) ?>
+            </div>
+       </div>
+    </div>
 
 </div>
+
+<?php
+$js = 
+<<<JS
+        
+    // 提交表单
+    $("#submitsave").click(function(){
+        if($('input[name="KnowledgeVideo[video_id]"]').val() == ''){
+            $('.field-reference-video').addClass('has-error');
+            $('.field-reference-video .help-block').html('视频资源不能为空。');
+            return;
+        }
+        if($('#knowledge-name').val() == ''){
+            $('.field-video-name').addClass('has-error');
+            $('.field-video-name .help-block').html('名称不能为空。');
+            return;
+        }
+        if($('#knowledge-teacher_id').val() == ''){
+            $('.field-video-teacher_id').addClass('has-error');
+            $('.field-video-teacher_id .help-block').html('主讲老师不能为空。');
+            return;
+        }
+        $.post("../knowledge/update?id=$model->id", $('#build-course-form').serialize(), function(rel){
+            if(rel['code'] == '200'){
+                $.each(rel['data'],function(key, value){
+                    $("#$model->id").find(' > div.head span.'+ key).html(value);
+                });
+                $("#act_log").load("../course-actlog/index?course_id={$model->node->course_id}");
+            }
+            $.notify({
+                message: rel['message'],
+            },{
+                type: rel['code'] == '200' ? "success " : "danger",
+            });
+        });
+        $('.myModal').modal('hide');
+    });  
+ 
+    
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

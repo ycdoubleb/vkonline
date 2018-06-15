@@ -37,7 +37,7 @@ ModuleAssets::register($this);
         </div>
     </div>
         
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -85,7 +85,7 @@ ModuleAssets::register($this);
                     [
                         'label' => Yii::t('app', 'Des'),
                         'format' => 'raw',
-                        'value' => "<div class=\"detail-des\">{$model->des}</div>",
+                        'value' => "<div class=\"detail-des\">". str_replace(array("\r\n", "\r", "\n"), "<br/>", $model->des) ."</div>",
                     ],
                     [
                         'attribute' => 'created_by',
@@ -107,7 +107,7 @@ ModuleAssets::register($this);
         </div>
     </div>
     
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{mainSpeak}{Course}',[

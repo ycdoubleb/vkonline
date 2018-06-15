@@ -5,9 +5,9 @@ namespace common\models\vk\searchs;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeProgress;
 use common\models\vk\Teacher;
-use common\models\vk\Video;
-use common\models\vk\VideoProgress;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -69,24 +69,22 @@ class CourseProgressSearch extends CourseProgress
         $this->load($params);
         //条件查询
         self::$query->andFilterWhere(['CourseProgress.user_id' => Yii::$app->user->id]);
-        //关联查询
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseProgress.course_id');
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //复制课程对象
         $copyCourse= clone self::$query;
         //查询课程下视频的数量
-        $videoQuery = Video::find()->select(['CourseNode.course_id', 'COUNT(Video.id) AS node_num']);
-        $videoQuery->from(['Video' => Video::tableName()]);
-        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Video.node_id AND CourseNode.is_del = 0');
-        $videoQuery->where(['Video.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
+        $videoQuery = Knowledge::find()->select(['CourseNode.course_id', 'COUNT(Knowledge.id) AS node_num']);
+        $videoQuery->from(['Knowledge' => Knowledge::tableName()]);
+        $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], 'CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0');
+        $videoQuery->where(['Knowledge.is_del' => 0, 'CourseNode.course_id' => $copyCourse]);
         $videoQuery->groupBy('CourseNode.course_id');
         //查询课程下已经完成的视频数量
-        $videoProgress = VideoProgress::find()->select(['VideoProgress.course_id', 'COUNT(VideoProgress.id) AS finish_num']);
-        $videoProgress->from(['VideoProgress' => VideoProgress::tableName()]);
-        $videoProgress->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoProgress.video_id AND Video.is_del = 0)');
-        $videoProgress->where(['VideoProgress.is_finish' => 1, 'VideoProgress.course_id' => $copyCourse]);
-        $videoProgress->groupBy('VideoProgress.course_id');
+        $videoProgress = KnowledgeProgress::find()->select(['KnowledgeProgress.course_id', 'COUNT(KnowledgeProgress.id) AS finish_num']);
+        $videoProgress->from(['KnowledgeProgress' => KnowledgeProgress::tableName()]);
+        $videoProgress->leftJoin(['Knowledge' => Knowledge::tableName()], '(Knowledge.id = KnowledgeProgress.knowledge_id AND Knowledge.is_del = 0)');
+        $videoProgress->where(['KnowledgeProgress.is_finish' => 1, 'KnowledgeProgress.course_id' => $copyCourse]);
+        $videoProgress->groupBy('KnowledgeProgress.course_id');
         //以课程id为分组
         self::$query->groupBy(['CourseProgress.course_id']);
         //查询总数
@@ -95,20 +93,22 @@ class CourseProgressSearch extends CourseProgress
         if($sort_name != 'default'){
             self::$query->orderBy(["CourseProgress.{$sort_name}" => SORT_DESC]);
         }
-        //添加字段
-        self::$query->addSelect(['Course.name', 'Course.cover_img', 'COUNT(CourseProgress.user_id) AS people_num',
-            'CourseProgress.last_video', 'Teacher.id AS teacher_id',
-            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
-            'CourseNode.name AS node_name', 'Video.name AS video_name', 'VideoProgress.last_time'
-        ]);
         //显示数量
         self::$query->offset(($page - 1) * $limit)->limit($limit);
+        //添加字段
+        self::$query->addSelect([
+            'Course.name', 'Course.cover_img', 'COUNT(CourseProgress.user_id) AS people_num',
+            'CourseProgress.last_knowledge', 'Teacher.id AS teacher_id',
+            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
+            'CourseNode.name AS node_name', 'Knowledge.name AS knowledge_name', 'KnowledgeProgress.data'
+        ]);
         //关联查询
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseProgress.course_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
-        self::$query->leftJoin(['Video' => Video::tableName()], '(Video.id = CourseProgress.last_video AND Video.is_del = 0)');
-        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Video.node_id AND CourseNode.is_del = 0)');
-        self::$query->leftJoin(['VideoProgress' => VideoProgress::tableName()],
-            "(VideoProgress.video_id = CourseProgress.last_video AND VideoProgress.user_id ='" . \Yii::$app->user->id . "')"
+        self::$query->leftJoin(['Knowledge' => Knowledge::tableName()], '(Knowledge.id = CourseProgress.last_knowledge AND Knowledge.is_del = 0)');
+        self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0)');
+        self::$query->leftJoin(['KnowledgeProgress' => KnowledgeProgress::tableName()],
+            "(KnowledgeProgress.knowledge_id = CourseProgress.last_knowledge AND KnowledgeProgress.user_id ='" . \Yii::$app->user->id . "')"
         );
         //查询环节视频结果
         $videoResult = $videoQuery->asArray()->all();

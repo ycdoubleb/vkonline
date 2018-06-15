@@ -79,7 +79,7 @@ SwitchInputAsset::register($this);
         <div class="btngroup"><?= $btngroup ?></div>
     </div>
     <!--基本信息-->
-    <div class="frame left-frame">
+    <div class="panel keep-left left-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -143,7 +143,7 @@ SwitchInputAsset::register($this);
                         'Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')
                     ]),
                     'format' => 'raw',
-                    'value' => "<div class=\"detail-des multi-line-clamp\">{$model->des}</div>",
+                    'value' => "<div class=\"detail-des multi-line-clamp\" style=\"height: 63px;display: inline-block\">{$model->des}</div>",
                 ],
             ],
         ]) ?>

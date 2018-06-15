@@ -1,7 +1,8 @@
 <li class="{%className%}">
     <div class="pic">
-        <a class="icon" data-courseid="{%courseId%}" data-videoid="{%id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
-        <a href="/study_center/default/view?id={%id%}" title="{%name%}" target="_blank">{%isExist%}</a>
+        <a class="icon" data-videoid="{%id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
+        <!--<a href="/study_center/default/view?id={%id%}" title="{%name%}" target="_blank">{%isExist%}</a>-->
+        <a title="{%name%}" target="_blank">{%isExist%}</a>
         <div class="duration">{%duration%}</div>
     </div>
     <div class="text">
@@ -17,7 +18,6 @@
                 </div>
                 <span class="keep-left">{%teacherName%}</span>
             </a>
-            <span class="keep-right"><i class="fa fa-eye"></i>　{%playNum%}</span>
         </div>
     </div>
 </li>

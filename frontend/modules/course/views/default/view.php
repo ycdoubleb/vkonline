@@ -5,6 +5,7 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\PraiseLog;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use common\widgets\share\ShareAsset;
 use frontend\modules\course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
@@ -41,7 +42,7 @@ $this->title = Yii::t('app', $model['name']);
             <!-- 课程信息 -->
             <div class="course-info">
                 <div class="preview">
-                    <video poster="<?=$model['cover_img']?>" src=""></video>
+                    <video poster="<?= StringUtil::completeFilePath($model['cover_img']) ?>" src=""></video>
                 </div>
                 <div class="info-box">
                     <div class="name-box">
@@ -60,13 +61,13 @@ $this->title = Yii::t('app', $model['name']);
                         <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],":",true) ?></span>
                     </div>
                     <div class="control-box">
-                        <?php $lastVideo = $study_progress['last_video'] != null ? $study_progress['last_video'] : $model['first_video']; ?>
-                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastVideo ?>">
-                            <?= $study_progress['last_video'] != null ? '继续学习' : '开始学习' ?>
+                        <?php $lastKnowledge = $study_progress['last_knowledge'] != null ? $study_progress['last_knowledge'] : $model['first_knowledge']; ?>
+                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastKnowledge ?>">
+                            <?= $study_progress['last_knowledge'] != null ? '继续学习' : '开始学习' ?>
                         </a>
                         
-                        <?php if($study_progress && $study_progress['last_video']!="" ): ?>
-                        <span class="last_pos single-clamp">上次学到【<?= $study_progress['video_name'] ?>】</span>
+                        <?php if($study_progress && $study_progress['last_knowledge']!="" ): ?>
+                        <span class="last_pos single-clamp">上次学到【<?= $study_progress['knowledge_name'] ?>】</span>
                         <?php endif; ?>
                         
                         <div class="control">

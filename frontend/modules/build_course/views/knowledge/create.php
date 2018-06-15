@@ -56,17 +56,21 @@ $js =
 
     // 提交表单
     $("#submitsave").click(function(){
+        if($('input[name="KnowledgeVideo[video_id]"]').val() == ''){
+            $('.field-reference-video').addClass('has-error');
+            $('.field-reference-video .help-block').html('视频资源不能为空。');
+            return;
+        }
         if($('#knowledge-name').val() == ''){
-            $('.field-video-name').addClass('has-error');
-            $('.field-video-name .help-block').html('视频名称不能为空。');
+            $('.field-knowledge-name').addClass('has-error');
+            $('.field-knowledge-name .help-block').html('名称不能为空。');
             return;
         }
         if($('#knowledge-teacher_id').val() == ''){
-            $('.field-video-teacher_id').addClass('has-error');
-            $('.field-video-teacher_id .help-block').html('主讲老师不能为空。');
+            $('.field-knowledge-teacher_id').addClass('has-error');
+            $('.field-knowledge-teacher_id .help-block').html('主讲老师不能为空。');
             return;
         }
-            
         var items = $domes;    
         $.post("../knowledge/create?node_id=$model->node_id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){

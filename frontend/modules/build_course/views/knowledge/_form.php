@@ -1,8 +1,12 @@
 <?php
 
 use common\models\vk\Knowledge;
+use common\models\vk\Video;
+use common\utils\DateUtil;
+use common\utils\StringUtil;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -78,6 +82,7 @@ $this->registerJs($format, View::POS_HEAD);
                 'id' => 'reference-video',
                 'name' => 'ReferenceVideo',
                 'disabled' => $model->isNewRecord ? false : true,
+                'value' => $model->isNewRecord ? 0 : 1,
                 'pluginOptions' => [
                     'onText' => 'Yes',
                     'offText' => 'No',
@@ -87,9 +92,9 @@ $this->registerJs($format, View::POS_HEAD);
                 ],
             ]) ?>
         </div>
-        <div class="col-lg-1 col-md-1">
-            <?= Html::a('重选', ['reference', 'node_id' => $model->node_id], [
-                'id' => 'reelect', 'class' => 'btn btn-info hidden',
+        <div class="col-lg-1 col-md-1 <?= $model->isNewRecord ? 'hidden' : '' ?>">
+            <?= Html::a('重选', ['my-collect'], [
+                'id' => 'reelect', 'class' => 'btn btn-info',
                 'onclick' => 'reelectEvent($(this)); return false;'
             ]) ?>
         </div>
@@ -97,6 +102,62 @@ $this->registerJs($format, View::POS_HEAD);
     </div>
     <div id="reference-video-list" class="hidden"></div>
     <div id="knowledge-info">
+        <!--视频详细-->
+        <div class="form-group field-video-details <?= $model->isNewRecord ? 'hidden' : '' ?>">
+            <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+            <div class="col-lg-6 col-md-6">
+                <div id="video-details">
+                    <div class="list">
+                    <?php if(!$model->isNewRecord): ?>
+                        <ul>
+                            <li class="clear-margin">
+                                <div class="pic">
+                                    <a  target="_blank">
+                                        <?php if(empty($model->knowledgeVideo->video->img)): ?>
+                                        <div class="title"><?= $model->knowledgeVideo->video->name ?></div>
+                                        <?php else: ?>
+                                        <img src="<?= StringUtil::completeFilePath($model->knowledgeVideo->video->img) ?>" width="100%" height="100%" />
+                                        <?php endif; ?>
+                                    </a>
+                                    <div class="duration"><?= DateUtil::intToTime($model->knowledgeVideo->video->duration) ?></div>
+                                </div>
+                                <div class="text">
+                                    <div class="tuip">
+                                        <span class="title single-clamp">
+                                            <?= $model->knowledgeVideo->video->name ?>
+                                        </span>
+                                    </div>
+                                    <div class="tuip single-clamp">
+                                        <span>
+                                            <?= count($model->knowledgeVideo->video->tagRefs) > 0 ?
+                                                implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
+                                        </span>
+                                    </div>
+                                    <div class="tuip">
+                                        <span class="keep-left"><?= Date('Y-m-d H:i', $model->knowledgeVideo->video->created_at) ?></span>
+                                        <span class="keep-right font-danger">
+                                            <?= Video::$levelMap[$model->knowledgeVideo->video->level] ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="teacher">
+                                    <div class="tuip">
+                                        <a href="/teacher/default/view?id=<?= $model->knowledgeVideo->video->teacher->id ?>" target="_blank">
+                                            <div class="avatars img-circle keep-left">
+                                                <?= Html::img(StringUtil::completeFilePath($model->knowledgeVideo->video->teacher->avatar), [
+                                                    'class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
+                                            </div>
+                                            <span class="keep-left"><?= $model->knowledgeVideo->video->teacher->name ?></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!--视频名称-->
         <?= $form->field($model, 'name')->textInput(['placeholder' => '请输入...']) ?>
         <!--主讲老师-->
@@ -132,6 +193,8 @@ $this->registerJs($format, View::POS_HEAD);
         ])->textarea([
             'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
+        <!--隐藏的属性-->
+        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ? null : $model->knowledgeVideo->video_id) ?>
     </div>
     
     <?php ActiveForm::end(); ?>
@@ -145,6 +208,8 @@ $js =
     //开关事件
     function switchLog(event, state){
         if(state == true){
+            $('.field-reference-video').removeClass('has-error');
+            $('.field-reference-video .help-block').html('');
             $("#knowledge-info").addClass("hidden");
             $("#reference-video-list").removeClass("hidden");
             $("#reference-video-list").load("../knowledge/my-collect");
@@ -155,19 +220,23 @@ $js =
     }
     //重选引用视频事件
     function reelectEvent(elem){
-        $(".myModal .modal-dialog .modal-body").load(elem.attr("href")); 
+        elem.parent("div").addClass("hidden");
+        $("#video-details .list").html("");
+        $("#knowledge-info").addClass("hidden");
+        $("#reference-video-list").removeClass("hidden");
+        $("#reference-video-list").load(elem.attr("href")); 
         return false;
     }
         
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
-        $('#video-teacher_id').html("");
+        $('#knowledge-teacher_id').html("");
         $.get(elem.attr("href"),function(rel){
             if(rel['code'] == '200'){
                 window.formats = rel['data']['format'];
-                $('<option/>').val('').text('请选择...').appendTo($('#video-teacher_id'));
+                $('<option/>').val('').text('请选择...').appendTo($('#knowledge-teacher_id'));
                 $.each(rel['data']['dataMap'], function(id, name){
-                    $('<option>').val(id).text(name).appendTo($('#video-teacher_id'));
+                    $('<option>').val(id).text(name).appendTo($('#knowledge-teacher_id'));
                 });
             }
         });

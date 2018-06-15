@@ -18,24 +18,19 @@ use yii\helpers\Url;
                 </div>
                 <ul class="list">
                     <!-- 生成视频列表 -->
-                    <?php foreach($node['videos'] as $video): ?>
+                    <?php foreach($node['knowledges'] as $knowledge): ?>
                     <li class="level_2">
-                        <?php 
-                            $id = ArrayHelper::getValue($params, 'id');
-                            $is_found = $video['video_id'] == $id
-                        ?>
-                        <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $video['video_id']])]) ?>
-                            <div class="head single-clamp <?= $is_found ? 'active' : '' ?>">
-                                <i class="fa <?= $is_found ? 'fa-play-circle' : '' ?>"></i>
-                                <span><?= $video['video_name'] ?></span>
+                        <?php $id = ArrayHelper::getValue($params, 'id'); ?>
+                        <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $knowledge['knowledge_id']])]) ?>
+                            <div class="head single-clamp <?= $knowledge['knowledge_id'] == $id ? 'active' : '' ?>">
+                                <i class="fa <?= $knowledge['knowledge_id'] == $id ? 'fa-play-circle' : ''  ?>"></i>
+                                <span><?= $knowledge['knowledge_name'] ?></span>
                                 <div class="control">
                                     <div class="progress">
                                         <!-- 每个视频的完成进度 -->
-                                        <?php $video_finish_percent = $video['is_finish'] ? 100 : ($video['duration'] > 0 ? floor($video['finish_time'] / $video['duration'] * 100) : 0) ?>
-                                        <div class="progress-bar progress-bar-success" style="width: <?= $video_finish_percent ?>%;">
+                                        <div class="progress-bar progress-bar-success" style="width: <?= $knowledge['percent'] ?>%;">
                                         </div>
                                     </div>
-                                    <span><?= DateUtil::intToTime($video['duration']) ?></span>
                                 </div>
                             </div>
                         <?= Html::endTag('a') ?>
