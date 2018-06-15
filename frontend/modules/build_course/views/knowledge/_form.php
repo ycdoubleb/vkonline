@@ -108,7 +108,7 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-6 col-md-6">
                 <div id="video-details">
                     <div class="list">
-                    <?php if(!$model->isNewRecord && !empty($model->knowledgeVideo)): ?>
+                    <?php if(!$model->isNewRecord): ?>
                         <ul>
                             <li class="clear-margin">
                                 <div class="pic">
@@ -194,9 +194,7 @@ $this->registerJs($format, View::POS_HEAD);
             'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
         <!--隐藏的属性-->
-        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ?
-            null : ($model->type == Knowledge::TYPE_VIDEO_RESOURCE ? 
-                (!empty($model->knowledgeVideo) ? $model->knowledgeVideo->video_id : null) : null)) ?>
+        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ? null : $model->getKnowledgeResourceToId()) ?>
     </div>
     
     <?php ActiveForm::end(); ?>
