@@ -19,7 +19,7 @@
  *******************************************************************************/
 .list {
     display: inline-block;
-    width: 100%;
+    margin-right: -50px;
     font-size: 0px;
 }
 .list > ul {
