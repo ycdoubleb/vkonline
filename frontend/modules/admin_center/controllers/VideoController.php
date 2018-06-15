@@ -56,41 +56,40 @@ class VideoController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new VideoSearch();
-        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
         $customerId = Yii::$app->user->identity->customer_id;
+        $params = Yii::$app->request->queryParams;
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['video']),
-            'key' => 'id',
-        ]);
-        
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'filters' => $result['filter'],         //过滤条件
-            'totalCount' => $result['total'],       //视频总数量
-            'teacher' => $this->getTeacher($customerId),       //所有主讲老师
-            'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
-        ]);
-    }
-
-    public function actionList()
-    {
         $searchModel = new VideoSearch();
-        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['video']),
-            'key' => 'id',
-        ]);
-        
-        return $this->renderAjax('list',[
-            'dataProvider' => $dataProvider,
-            'totalCount' => $result['total'],       //视频总数量
+        //默认进入列表页
+        if(!isset($params['type']) || $params['type'] == 1){
+            $result = $searchModel->adminCenterSearch($params);
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => array_values($result['data']['video']),
+                'key' => 'id',
+            ]);
+            
+            return $this->render('list', [
+                'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'filters' => $result['filter'],         //过滤条件
+                'totalCount' => $result['total'],       //视频总数量
+                'teachers' => $this->getTeacher($customerId),       //所有主讲老师
+                'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
+            ]);
+        }
+        //查看统计页
+        return $this->render('chart', [
+            'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
+            'searchModel' => $searchModel,
+            'filters' => $params,         //过滤条件
+            'teachers' => $this->getTeacher($customerId),       //所有主讲老师
+            'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
+            'statistics' => $searchModel->searchStatistics($params),//统计数据
         ]);
     }
-    
+  
     /**
      * Finds the Video model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -118,7 +117,7 @@ class VideoController extends Controller
                 ->select(['Video.teacher_id AS id', 'Teacher.name'])
                 ->from(['Video' => Video::tableName()])
                 ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
-                ->where(['Video.customer_id' => $customerId])
+                ->where(['Video.customer_id' => $customerId, 'is_del' => 0])
                 ->all();
         
         return ArrayHelper::map($teacher, 'id', 'name');

@@ -109,7 +109,7 @@ $js =
 <<<JS
    
     //失去焦点提交表单
-    $("#teachersearch-name").blur(function(){
+    $("#teachersearch-name").change(function(){
         $('#build-course-form').submit();
     });
    

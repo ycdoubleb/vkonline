@@ -58,106 +58,36 @@ class CourseController extends Controller
     public function actionIndex()
     {
         $customerId = Yii::$app->user->identity->customer_id;
+        $params = Yii::$app->request->queryParams;
         
         $searchModel = new CourseSearch();
-        $params = Yii::$app->request->queryParams;
-        $result = $searchModel->adminCenterSearch($params);
 
-        return $this->render('index', [
+        //默认进入列表页
+        if(!isset($params['type']) || $params['type'] == 1){
+            $result = $searchModel->adminCenterSearch($params);
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $result['data']['course']
+            ]);
+            
+            return $this->render('list', [
+                'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'totalCount' => $result['total'],       //课程总数量
+                'filters' => $result['filter'],         //过滤条件
+                'teachers' => $this->getTeacher($customerId),       //所有主讲老师
+                'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
+            ]);
+        }
+        //查看统计页
+        return $this->render('chart', [
             'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
             'searchModel' => $searchModel,
-            'params' => $params,
-            'filters' => $result['filter'],         //过滤条件
-            'teacher' => $this->getTeacher($customerId),       //所有主讲老师
-            'createdBy' => $this->getCreatedBy($customerId),   //所有创建者
+            'filters' => $params,         //过滤条件
+            'teachers' => $this->getTeacher($customerId),       //所有主讲老师
+            'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
+            'statistics' => $searchModel->searchStatistics($params),//统计数据
         ]);
-    }
-
-    /**
-     * 数据列表
-     * @return mixed
-     */
-    public function actionList()
-    {
-        $searchModel = new CourseSearch();
-        $params = !isset(Yii::$app->request->queryParams['params']) ? Yii::$app->request->queryParams : Yii::$app->request->queryParams['params'];
-        $result = $searchModel->adminCenterSearch($params);
-       
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $result['data']['course']
-        ]);
-        
-        return $this->renderAjax('list',[
-            'dataProvider' => $dataProvider,
-            'totalCount' => $result['total'],       //课程总数量
-        ]);
-    }
-
-    /**
-     * 统计图
-     * @return mixed
-     */
-    public function actionChart()
-    {
-        $searchModel = new CourseSearch();
-        $params = Yii::$app->request->queryParams['params'];
-//        $params = array_merge(Yii::$app->request->queryParams['params'], ['page' => '', 'limit' => '']); //数据太大 处理超慢
-        $results = $searchModel->adminCenterSearch($params);
-        
-        $datas = $results['data']['course'];
-        foreach ($datas as $data) {
-            $category[] = [
-                'name' => $data['category_name'],
-                'value' => array_count_values(array_column($datas, 'category_name'))[$data['category_name']]
-            ];
-            $teacher[] = [
-                'name' => $data['teacher_name'],
-                'value' => array_count_values(array_column($datas, 'teacher_name'))[$data['teacher_name']]
-            ];
-            $created_by[] = [
-                'name' => $data['nickname'],
-                'value' => array_count_values(array_column($datas, 'nickname'))[$data['nickname']]
-            ];
-            $status[] = [
-                'name' => $data['is_publish'] == 0 ? '未发布' : '已发布',
-                'value' => array_count_values(array_column($datas, 'is_publish'))[$data['is_publish']]
-            ];
-            $range[] = [
-                'name' => $data['level'] == 0 ? '私有' : ($data['level'] == 1 ? '内网' : '公开'),
-                'value' => array_count_values(array_column($datas, 'level'))[$data['level']]
-            ];
-        }
-
-        return $this->renderAjax('chart',[
-            'category' => $this->array_unique_fb($category),        //按课程分类统计
-            'teacher' => $this->array_unique_fb($teacher),          //按主讲老师统计
-            'created_by' => $this->array_unique_fb($created_by),    //按创建人统计
-            'status' => $this->array_unique_fb($status),            //按状态统计
-            'range' => $this->array_unique_fb($range),              //按范围统计
-        ]);
-    }
-    
-    /**
-     * 二维数组去掉重复值
-     * @param array $array2D    二维数组
-     * @return array
-     */
-    public function array_unique_fb($array2D){
-        foreach ($array2D as $array){
-            $array = join(',', $array);  //降维,也可以用implode,将一维数组转换为用逗号连接的字符串
-            $temp[] = $array;
-        }
-        $temp = array_unique($temp);    //去掉重复的字符串,也就是重复的一维数组
-        foreach ($temp as $val){
-            $items = explode(',', $val);//再将拆开的数组重新组装
-            $item = [
-                'name' => $items['0'],
-                'value' => $items['1'],
-            ];
-            $temps[] = $item; 
-        }
-
-        return $temps;
     }
     
     /**

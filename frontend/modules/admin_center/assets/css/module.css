@@ -205,13 +205,13 @@
     background-color: #f2f2f2;
 }
 
-.main .frame .course-form .clear-padding {
+.main .frame .form .clear-padding {
     padding: 0 !important;
     height: 52px;
 }
 
 .course-index.main .frame .course-form.form,
-.video-index.main .frame .course-form.form {
+.video-index.main .frame .video-form.form {
     width: 100%;
     display: inline-block;
     padding: 15px 15px 25px 20px;
@@ -222,7 +222,7 @@
 }
 
 .course-index.main .frame .course-form .control-label.form-label, 
-.video-index.main .frame .course-form .control-label.form-label {
+.video-index.main .frame .video-form .control-label.form-label {
     padding-left: 0px;
     padding-right: 0px;
     color: #999999;

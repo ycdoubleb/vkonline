@@ -52,6 +52,8 @@ use yii\web\UploadedFile;
  */
 class Video extends ActiveRecord
 {
+    /** 可见范围-全部 */
+    const ALL_LEVEL = '';
     /** 可见范围-公开 */
     const PUBLIC_LEVEL = 2;
     /** 可见范围-内网 */
@@ -59,6 +61,8 @@ class Video extends ActiveRecord
     /** 可见范围-私有 */
     const PRIVATE_LEVEL = 0;
     
+    /** 发布状态 全部 */
+    const ALL_SATUS = '';
     /** 发布状态-未发布 */
     const NO_PUBLISH = 0;
     /** 发布状态-已发布 */
@@ -69,6 +73,7 @@ class Video extends ActiveRecord
      * @var array 
      */
     public static $levelMap = [
+        self::ALL_LEVEL => '全部',
         self::PUBLIC_LEVEL => '公开',
         self::INTRANET_LEVEL => '内网',
         self::PRIVATE_LEVEL => '私有',
@@ -79,6 +84,7 @@ class Video extends ActiveRecord
      * @var array 
      */
     public static $publishStatus = [
+        self::ALL_SATUS => '全部',
         self::NO_PUBLISH => '未发布',
         self::YES_PUBLISH => '已发布',
     ];
@@ -98,7 +104,7 @@ class Video extends ActiveRecord
     public function behaviors() 
     {
         return [
-            TimestampBehavior::className()
+            TimestampBehavior::class
         ];
     }
     

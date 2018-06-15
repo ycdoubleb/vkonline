@@ -52,6 +52,10 @@ $config = [
         'callback' => [
             'class' => 'frontend\modules\callback\Module',
         ],
+        //api
+        'api' => [
+            'class' => 'frontend\modules\api\Module',
+        ],
     ],
     'as access' => [
         'allowActions' => [
