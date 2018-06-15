@@ -103,7 +103,9 @@ class DefaultController extends Controller {
             $dbFile->size = (string)$response->VIDEO_SIZE;                       //视频大小b   
             
             //1280x720
-            $wh = explode('x',(string)$response->VIDEO_RESOLUTION);
+            $VIDEO_RESOLUTION = (string)$response->VIDEO_RESOLUTION;
+            if(!strpos('x', $VIDEO_RESOLUTION))$VIDEO_RESOLUTION = "0x0";
+            $wh = explode('x',$VIDEO_RESOLUTION);
             $dbFile->level = $this->getVideoLevel($wh[1]);                        //视频质量等级
             $dbFile->width = (integer)$wh[0];                                     //视频宽
             $dbFile->height = (integer)$wh[1];                                    //视频高
