@@ -95,13 +95,13 @@ class CourseNode extends ActiveRecord
             if($this->isNewRecord){
                 $nodes = self::getCourseByNodes(['course_id' => $this->course_id]);
                 ArrayHelper::multisort($nodes, 'sort_order', SORT_DESC);
-                $firstNode = reset($nodes);
                 //设置等级
                 if($this->parent_id == null){
                     $this->level = 1;
                 }
                 //设置顺序
-                if(!empty($firstNode)){
+                if(!empty($nodes)){
+                    $firstNode = reset($nodes);
                     $this->sort_order = $firstNode->sort_order + 1;
                 }
             }
