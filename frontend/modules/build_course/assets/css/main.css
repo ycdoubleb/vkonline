@@ -19,8 +19,6 @@
  * 总结样式
  */
 .summary {
-    float: left;
-    width: 100%;
     padding: 20px;
     color: #999;
 }
@@ -85,6 +83,11 @@
 }
 .bg-danger {
     background-color: #ff3300 !important;
+}
+
+.see-more {
+    padding: 20px;
+    text-align: center;
 }
 
 /*******************************************************************************

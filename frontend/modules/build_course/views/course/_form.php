@@ -22,7 +22,7 @@ TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
-foreach ($allTeacher as $teacher) {
+foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
         'avatar' => $teacher->avatar, 
         'is_certificate' => $teacher->is_certificate,
@@ -123,12 +123,14 @@ $this->registerJs($format, View::POS_HEAD);
         $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
         echo  $form->field($model, 'teacher_id', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                "<div class=\"col-lg-1 col-md-1\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>\n" .
+                "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
+                    "<div class=\"keep-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                    "<div class=\"keep-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                    "<div class=\"keep-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+                "</div>\n" .
             "<div class=\"col-lg-7 col-md-7\">{error}</div>",
         ])->widget(Select2::class,[
-            'data' => ArrayHelper::map($allTeacher, 'id', 'name'), 
+            'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
             'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => [
                 'templateResult' => new JsExpression('format'),     //设置选项格式

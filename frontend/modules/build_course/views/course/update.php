@@ -23,11 +23,9 @@ UeditorAsset::register($this);
     
     <?= $this->render('_form', [
         'model' => $model,
-        'allCategory' => $allCategory,
-        'allTeacher' => $allTeacher,
+        'teacherMap' => $teacherMap,
         'attFiles' => $attFiles,
         'allAttrs' => $allAttrs,
-        //'allTags' => $allTags,
         'attrsSelected' => $attrsSelected,
         'tagsSelected' => $tagsSelected,
     ]) ?>

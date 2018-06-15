@@ -212,12 +212,10 @@ ModuleAssets::register($this);
             <span>共 <?= $dataProvider->totalCount ?> 条记录</span>
         </div>
 
-        <div class="col-xs-12">
-            <center>
-                <?php if(!isset($filter['page'])){
-                    echo Html::a('查看更多', array_merge (['course-actlog/index'], array_merge ($filter, ['page' => $dataProvider->totalCount])), ['onclick'=>'more($(this));return false;']);
-                }?>
-            </center>
+        <div class="see-more">
+            <?php if(!isset($filter['page'])){
+                echo Html::a('查看更多', array_merge (['course-actlog/index'], array_merge ($filter, ['page' => $dataProvider->totalCount])), ['onclick'=>'more($(this));return false;']);
+            }?>
         </div>
         
     </div>
