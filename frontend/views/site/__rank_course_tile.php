@@ -6,7 +6,7 @@
     </div>
     <div class="name-box">
         <span class="name single-clamp" title="{%name%}">{%name%}</span>
-        <span class="nodes">{%content_time%}</span>
+        <!--<span class="nodes">{%content_time%}</span>-->
     </div>
     <div class="tag-box">
         <span class="tag single-clamp">{%tags%}</span>

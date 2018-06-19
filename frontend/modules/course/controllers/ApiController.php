@@ -248,13 +248,15 @@ class ApiController extends Controller  {
         //限定为已发布课程
         $query->andWhere(['Course.is_publish' => Course::YES_PUBLISH]);
         //限定公开范围
+        $query->andWhere(['Course.level' => Course::PUBLIC_LEVEL]);
+        /*
         if($myCustomer_id!=null){
             //没有指定单位并且已加入某单位时
             $query->andWhere(['or',['Course.level' => Course::PUBLIC_LEVEL],['Course.level' => Course::INTRANET_LEVEL,'Course.customer_id' => $myCustomer_id]]);
         }else{
             //设置只限为公开的课程
             $query->andWhere(['Course.level' => Course::PUBLIC_LEVEL]);
-        }
+        }*/
         //限制数量
         $query->offset(($page - 1) * $size);
         $query->limit($size);
