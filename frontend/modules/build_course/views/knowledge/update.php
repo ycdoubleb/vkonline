@@ -53,7 +53,7 @@ $js =
         
     // 提交表单
     $("#submitsave").click(function(){
-        if($('input[name="KnowledgeVideo[video_id]"]').val() == ''){
+        if($('input[name="Resource[res_id]').val() == ''){
             $('.field-reference-video').addClass('has-error');
             $('.field-reference-video .help-block').html('视频资源不能为空。');
             return;

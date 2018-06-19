@@ -108,7 +108,7 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-6 col-md-6">
                 <div id="video-details">
                     <div class="list">
-                    <?php if(!$model->isNewRecord): ?>
+                    <?php if(!$model->isNewRecord && !empty($model->knowledgeVideo)): ?>
                         <ul>
                             <li class="clear-margin">
                                 <div class="pic">

@@ -163,7 +163,7 @@ class Knowledge extends ActiveRecord
     {
         switch ($this->type){
             case self::TYPE_VIDEO_RESOURCE:
-                $res_id = $this->knowledgeVideo->video_id;
+                $res_id = !empty($this->knowledgeVideo) ? $this->knowledgeVideo->video_id : null;
                 break;
             case self::TYPE_HTML_RESOURCE:
                 $res_id = null;

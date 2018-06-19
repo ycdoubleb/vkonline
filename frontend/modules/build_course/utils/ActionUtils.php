@@ -471,13 +471,18 @@ class ActionUtils
                 $content = '';
                 //如果为视频资源的是否执行
                 if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
-                    $oldRes = clone $resource;
-                    $oldResId = $oldRes->video_id;
-                    $resource->video_id = $resId;
-                    $resource->save(false, ['video_id']);
-                    $content .= $oldResId != $resId ? 
-                        "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
+                    if($resource !== null){
+                        $oldRes = clone $resource;
+                        $oldResId = $oldRes->video_id;
+                        $resource->video_id = $resId;
+                        $resource->save(false, ['video_id']);
+                        $content .= $oldResId != $resId ? 
+                            "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                    }else{
+                        $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
+                        $resource->save();
+                    }
                 }
                 //新属性值非空时执行
                 if(!empty($newAttr)){
@@ -486,7 +491,7 @@ class ActionUtils
                         ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
                         ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null);
                 }
-                if(!empty($newAttr) || $oldResId != $resId){
+                if(!empty($newAttr) || (isset($oldResId) && $oldResId != $resId)){
                     $this->saveCourseActLog([
                         'action' => '修改', 'title' => "知识点管理", 
                         'course_id' => $model->node->course_id, 
