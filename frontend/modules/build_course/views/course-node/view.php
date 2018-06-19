@@ -7,7 +7,7 @@
             <span class="name">{%name%}</span>
         </a>
         <div class="icongroup">
-            <a href="../video/create?node_id={%id%}" onclick="showModal($(this));return false;">
+            <a href="../knowledge/create?node_id={%id%}" onclick="showModal($(this));return false;">
                 <i class="fa fa-plus"></i>
             </a>
             <a href="../course-node/update?id={%id%}" onclick="showModal($(this));return false;">

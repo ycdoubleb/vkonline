@@ -135,9 +135,6 @@ class ActionUtils
             $model->level = 0;
             $model->is_publish = 0;
             if($model->save(true, ['level', 'is_publish'])){
-                $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
-                Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
-                    ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
                 $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
@@ -167,9 +164,6 @@ class ActionUtils
                 $model->level = Course::PUBLIC_LEVEL;
             }
             if($model->save()){
-                $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
-                Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
-                    ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());

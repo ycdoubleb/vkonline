@@ -25,7 +25,7 @@ GrowlAsset::register($this);
             <h5>没有找到数据。</h5>
             <?php endif; ?>
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
-            <li class="<?= $index % 4 == 3 ? 'clear-margin' : '' ?>">
+            <li>
                 <div class="pic">
                     <a class="icon" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
                         <i class="fa fa-times"></i>
@@ -123,7 +123,7 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
-                            className: i % 4 == 3 ? 'clear-margin' : '',
+                            className: '',
                             id: data['result'][i].video_id,
                             isExist: data['result'][i].img == null || data['result'][i].img == '' ? 
                                 '<div class="title">' + video_name + '</div>' : 

@@ -155,7 +155,7 @@ class VideoSearch extends Video
         $copyVideo= clone self::$query;
         //查询视频下的标签
         $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
-        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"]);
         //以视频id为分组
         self::$query->groupBy(['Video.id']);
         //关联查询标签

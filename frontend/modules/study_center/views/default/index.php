@@ -16,9 +16,9 @@ ModuleAssets::register($this);
     <div class="list">
         <ul>
             <li class></li>
-            <li class="clear-margin"></li>
+            <li class=""></li>
             <li class></li>
-            <li class="clear-margin"></li>
+            <li class=""></li>
         </ul>
     </div>
     <!--加载-->
