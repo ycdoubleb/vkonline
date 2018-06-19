@@ -282,9 +282,11 @@ class ApiController extends Controller  {
         $ranks = (new Query())
                 ->select(['PlayStatistics.course_id','SUM(PlayStatistics.play_count) play_count',])
                 ->from(['PlayStatistics' => PlayStatistics::tableName()])
+                ->leftJoin(['Course' =>Course::tableName()],'Course.id = PlayStatistics.course_id')
                 ->where([
                     'year' => $year,
                     'month' => $month,
+                    'Course.is_publish' =>  Course::YES_PUBLISH,
                 ])
                 ->groupBy('PlayStatistics.course_id')
                 ->orderBy(['play_count' => SORT_DESC])
