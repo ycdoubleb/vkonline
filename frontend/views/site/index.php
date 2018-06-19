@@ -26,11 +26,6 @@ SiteAssets::register($this);
                     <img src="/imgs/banner/default.jpg">
                 </div>
             <?php endif; ?>
-            <ol class="carousel-indicators">
-                <?php foreach ($banners as $index => $model): ?>
-                    <li data-slide-to="<?= $index ?>" class="<?= $index == 0 ? 'active' : '' ?>"></li>
-                <?php endforeach; ?>
-            </ol>
             <div class="carousel-inner" role="listbox">
                 <?php foreach ($banners as $index => $model): ?>
                     <div class="item <?= $index == 0 ? 'active' : '' ?>">
@@ -43,7 +38,16 @@ SiteAssets::register($this);
                     </div>
                 <?php endforeach; ?>
             </div>
-
+            <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+              <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+              <span class="sr-only">Next</span>
+            </a>
+            
+            
         </div>
 
     </div>
@@ -180,29 +184,7 @@ $js =
     $('.carousel').carousel({
         interval: 3000
     });
-    slide();
-    //轮播事件     
-    $('.carousel').on('slid.bs.carousel', function () {
-        slide();
-    });     
-    /**
-     * 如果是当前选项并且是视频的话，在播放的时候暂停轮播，播放结束后继续执行轮播
-     */
-    function slide(){
-        $('.carousel .item').each(function(i, e){
-            if(e.className == 'item active' && e.children[0].nodeName === 'VIDEO'){
-                e.children[0].play();
-                e.children[0].onplaying = function(){
-                    $(".carousel").carousel('pause');
-                };
-                e.children[0].onended = function(){
-                    $('.carousel').carousel({
-                        interval: 200
-                    });
-                }
-            }
-        });
-    }
+
 JS;
     $this->registerJs($js,  View::POS_READY); 
 ?> 

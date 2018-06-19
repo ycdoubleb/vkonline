@@ -191,6 +191,12 @@
     height: 100%;
     object-fit: fill;
 }
+.site-index .carousel a {
+    display: none;
+}
+.site-index .carousel:hover a {
+    display: block;
+}
 
 /***************************************************************
 * 页面公共

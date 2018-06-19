@@ -4,6 +4,7 @@ namespace frontend\modules\admin_center\controllers;
 
 use backend\components\BaseController;
 use common\models\vk\Category;
+use common\models\vk\Course;
 use common\models\vk\searchs\CategorySearch;
 use Yii;
 use yii\data\ArrayDataProvider;
