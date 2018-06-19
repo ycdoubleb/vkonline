@@ -108,7 +108,7 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-6 col-md-6">
                 <div id="video-details">
                     <div class="list">
-                    <?php if(!$model->isNewRecord): ?>
+                    <?php if(!$model->isNewRecord && !empty($model->knowledgeVideo)): ?>
                         <ul>
                             <li class="clear-margin">
                                 <div class="pic">
@@ -130,7 +130,7 @@ $this->registerJs($format, View::POS_HEAD);
                                     <div class="tuip single-clamp">
                                         <span>
                                             <?= count($model->knowledgeVideo->video->tagRefs) > 0 ?
-                                                implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
+                                                implode(',', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
                                         </span>
                                     </div>
                                     <div class="tuip">
@@ -194,7 +194,7 @@ $this->registerJs($format, View::POS_HEAD);
             'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
         <!--隐藏的属性-->
-        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ? null : $model->knowledgeVideo->video_id) ?>
+        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ? null : $model->getKnowledgeResourceToId()) ?>
     </div>
     
     <?php ActiveForm::end(); ?>

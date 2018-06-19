@@ -22,7 +22,7 @@ GrowlAsset::register($this);
             <h5>没有找到数据。</h5>
             <?php endif; ?>
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
-            <li class="<?= $index % 2 == 1 ? 'clear-margin' : '' ?>">
+            <li>
                 <div class="pic keep-left">
                     <a href="/course/default/view?id=<?= $model['course_id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['cover_img'])): ?>
@@ -121,7 +121,7 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data['result']){
                         dome += Wskeee.StringUtil.renderDOM(items, {
-                            className: i % 2 == 1 ? 'clear-margin' : '',
+                            className: '',
                             courseId: data['result'][i].course_id,
                             isExist: data['result'][i].cover_img == null || data['result'][i].cover_img == '' ? 
                                 '<div class="title">' + data['result'][i].name + '</div>' : 

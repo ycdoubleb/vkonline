@@ -130,7 +130,7 @@ class VideoFavoriteSearch extends VideoFavorite
         $copyFavoriteVideo= clone self::$query;
         //查询视频下的标签
         $tagRefQuery = TagRef::getTagsByObjectId($copyFavoriteVideo, 2, false);
-        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"]);
         //关联查询
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');

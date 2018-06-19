@@ -128,7 +128,7 @@ $this->registerJs($format, View::POS_HEAD);
     ])) ?>
     <!--查看权限-->
     <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
-        'value' => $model->isNewRecord ? 2 : $model->level,
+        'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
         'itemOptions'=>[
             'labelOptions'=>[
                 'style'=>[

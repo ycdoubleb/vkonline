@@ -135,9 +135,6 @@ class ActionUtils
             $model->level = 0;
             $model->is_publish = 0;
             if($model->save(true, ['level', 'is_publish'])){
-                $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
-                Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
-                    ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
                 $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
@@ -167,9 +164,6 @@ class ActionUtils
                 $model->level = Course::PUBLIC_LEVEL;
             }
             if($model->save()){
-                $nodes = CourseNode::getCouByNode(['course_id' => $model->id]);
-                Video::updateAll(['is_publish' => $model->is_publish, 'level' => $model->level], 
-                    ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
@@ -474,22 +468,34 @@ class ActionUtils
         try
         {  
             if($model->save()){
+                $content = '';
+                //如果为视频资源的是否执行
+                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
+                    if($resource !== null){
+                        $oldRes = clone $resource;
+                        $oldResId = $oldRes->video_id;
+                        $resource->video_id = $resId;
+                        $resource->save(false, ['video_id']);
+                        $content .= $oldResId != $resId ? 
+                            "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                    }else{
+                        $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
+                        $resource->save();
+                    }
+                }
+                //新属性值非空时执行
                 if(!empty($newAttr)){
                     $oldTeacher = Teacher::findOne($oldAttr['teacher_id']); //查询旧老师信息
-                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
-                        $oldRes = clone $resource;
-                        $resource->video_id = $resId;
-                        $resource->update(false, ['video_id']);
-                        //替换后的结果
-                        $replaceResult = $oldRes->video_id != $resId ? 
-                            "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
-                    }
-                    $this->saveCourseActLog(['action' => '修改', 'title' => "知识点管理", 'course_id' => $model->node->course_id,
-                        'content'=>"调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r".
-                            ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                            ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
-                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null).$replaceResult,
+                    $content .= ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
+                        ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
+                        ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null);
+                }
+                if(!empty($newAttr) || (isset($oldResId) && $oldResId != $resId)){
+                    $this->saveCourseActLog([
+                        'action' => '修改', 'title' => "知识点管理", 
+                        'course_id' => $model->node->course_id, 
+                        'content' => "调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r" . $content,
                     ]);
                 }
             }else{

@@ -142,8 +142,7 @@ class CourseController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,  //模型
-                'allCategory' => Category::getCatsByLevel(1, true), //所有分类
-                'allTeacher' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'attFiles' => [],
             ]);
         }
@@ -169,12 +168,11 @@ class CourseController extends Controller
         } else {
             return $this->render('update', [
                 'model' => $model,  //模型
-                'allCategory' => Category::getCatsByLevel(1, true), //所有分类
-                'allTeacher' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
+                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
                 'attFiles' => Course::getUploadfileByAttachment($model->id),    //已存在的附近
                 'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
                 'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
-                'tagsSelected' => array_values(TagRef::getTagsByObjectId($id, 1)),  //已选的标签
+                'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 1)),  //已选的标签
             ]);
         }
     }

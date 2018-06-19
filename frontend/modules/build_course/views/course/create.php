@@ -26,10 +26,8 @@ UeditorAsset::register($this);
     <!-- 表单 -->
     <?= $this->render('_form', [
         'model' => $model,
-        'allCategory' => $allCategory,
-        'allTeacher' => $allTeacher,
+        'teacherMap' => $teacherMap,
         'attFiles' => $attFiles,
-        //'allTags' => $allTags
     ]) ?>
 
 </div>

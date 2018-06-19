@@ -80,15 +80,15 @@ class TagRef extends ActiveRecord
         $tagRef->where(['TagRef.is_del' => 0]);
         //条件查询
         $tagRef->andFilterWhere(['TagRef.object_id' => $objectId, 'type' => $type]);
-        //以对象id为分组
-        $tagRef->groupBy('TagRef.object_id');
         //以id排序
         $tagRef->orderBy('TagRef.id');
-        
+        /** 默认返回键值对模式 */
         if($key_to_value) {
             $tagRef->select(['TagRef.tag_id', 'Tags.name']);
             return ArrayHelper::map($tagRef->asArray()->all(), 'tag_id', 'name');
         }
+        //以对象id为分组
+        $tagRef->groupBy('TagRef.object_id');
         
         return $tagRef;
     }

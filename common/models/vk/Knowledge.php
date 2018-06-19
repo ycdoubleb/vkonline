@@ -154,4 +154,25 @@ class Knowledge extends ActiveRecord
     {
         return $this->hasMany(KnowledgeVideo::className(), ['knowledge_id' => 'id']);
     }
+    
+    /**
+     * 获取知识点资源id
+     * @return string
+     */
+    public function getKnowledgeResourceToId()
+    {
+        switch ($this->type){
+            case self::TYPE_VIDEO_RESOURCE:
+                $res_id = !empty($this->knowledgeVideo) ? $this->knowledgeVideo->video_id : null;
+                break;
+            case self::TYPE_HTML_RESOURCE:
+                $res_id = null;
+                break;
+            default :
+                $res_id = null;
+                break;
+        }
+        
+        return $res_id;
+    }
 }

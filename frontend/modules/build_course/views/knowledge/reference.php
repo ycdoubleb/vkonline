@@ -251,7 +251,15 @@ $js =
                 list.html(dome).appendTo($("#video-details .list"));
                 $(".field-reference-video .form-group .bootstrap-switch-container").addClass("disabled");
                 $("#reference-video").bootstrapSwitch('state', true, 'disabled', true);
-                $("#knowledge-teacher_id").val(data.teacher_id).trigger("change");
+                if($("#knowledge-name").val() == ''){
+                    $("#knowledge-name").val(data.name);
+                }
+                if($("#knowledge-teacher_id").val() == ''){
+                    $("#knowledge-teacher_id").val(data.teacher_id).trigger("change");
+                }
+                if($("#knowledge-des").val() == '无'){
+                    $("#knowledge-des").val(data.des);
+                }
                 $('input[name="Resource[res_id]"]').val(data.id);
                 $('.field-reference-video').removeClass('has-error');
                 $('.field-reference-video .help-block').html('');

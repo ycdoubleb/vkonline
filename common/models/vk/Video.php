@@ -230,7 +230,8 @@ class Video extends ActiveRecord
      */
     public function getTagRefs()
     {
-        return $this->hasMany(TagRef::class, ['object_id' => 'id'])->with('tags');
+        return $this->hasMany(TagRef::class, ['object_id' => 'id'])
+            ->where(['is_del' => 0])->with('tags');
     }
     
     /**

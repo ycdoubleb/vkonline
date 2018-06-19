@@ -164,7 +164,7 @@ class CourseSearch extends Course
         $copyCourse= clone self::$query;    
         //查询课程下的标签
         $tagRefQuery = TagRef::getTagsByObjectId($copyCourse, 1, false);
-        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"]);
         //查询参与课程的在学人数
         $studyQuery = CourseProgress::getCourseProgressByCourseId($copyCourse);
         //以课程id为分组
