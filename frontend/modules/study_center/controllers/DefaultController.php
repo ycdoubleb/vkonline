@@ -249,7 +249,7 @@ class DefaultController extends Controller
                 'Course.id AS course_id', 'Course.name AS course_name', 'CourseNode.name AS node_name',
                 'Knowledge.id AS knowledge_id', 'Knowledge.name', 'Knowledge.des', 
                 'Video.id AS video_id', 'Video.img', 'Video.duration',
-                'Uploadfile.path', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
+                'Uploadfile.path', 'Teacher.id AS teacher_id', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
                 'Teacher.des AS teacher_des', 'Progress.data', 'Progress.is_finish', 
                 '(Favorite.is_del = 0) as is_favorite'
             ])->from(['Knowledge' => Knowledge::tableName()]);

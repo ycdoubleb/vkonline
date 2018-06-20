@@ -1,6 +1,9 @@
 <li id="{%id%}">
     <div class="head">
-        <a><span class="name">{%name%}</span></a>
+        <a>
+            <span class="name">{%name%}</span>
+            <span class="data">{%data%}</span>
+        </a>
         <div class="icongroup">
             <a href="/study_center/default/view?id={%id%}" target="_blank">
                 <i class="fa fa-eye"></i>

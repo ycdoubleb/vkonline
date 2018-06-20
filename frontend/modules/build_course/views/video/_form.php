@@ -250,6 +250,16 @@ $js =
             if(rel['code'] == '200'){
                 window.uploader.clearAll();
                 window.uploader.addCompleteFiles([rel['data']['dbFile']]);
+            }else{
+                $.notify({
+                    message: rel['mes']
+                },{
+                    type: 'warning',
+                    animate: {
+                        enter: 'animated fadeInRight',
+                        exit: 'animated fadeOutRight'
+                    }
+                });
             }
         });
     }); 

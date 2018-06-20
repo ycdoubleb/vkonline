@@ -83,7 +83,11 @@ class CourseProgressSearch extends CourseProgress
         $videoProgress = KnowledgeProgress::find()->select(['KnowledgeProgress.course_id', 'COUNT(KnowledgeProgress.id) AS finish_num']);
         $videoProgress->from(['KnowledgeProgress' => KnowledgeProgress::tableName()]);
         $videoProgress->leftJoin(['Knowledge' => Knowledge::tableName()], '(Knowledge.id = KnowledgeProgress.knowledge_id AND Knowledge.is_del = 0)');
-        $videoProgress->where(['KnowledgeProgress.is_finish' => 1, 'KnowledgeProgress.course_id' => $copyCourse]);
+        $videoProgress->where([
+            'KnowledgeProgress.is_finish' => 1, 
+            'KnowledgeProgress.course_id' => $copyCourse,
+            'KnowledgeProgress.user_id' => Yii::$app->user->id
+        ]);
         $videoProgress->groupBy('KnowledgeProgress.course_id');
         //以课程id为分组
         self::$query->groupBy(['CourseProgress.course_id']);
@@ -97,7 +101,7 @@ class CourseProgressSearch extends CourseProgress
         self::$query->offset(($page - 1) * $limit)->limit($limit);
         //添加字段
         self::$query->addSelect([
-            'Course.name', 'Course.cover_img', 'COUNT(CourseProgress.user_id) AS people_num',
+            'Course.name', 'Course.cover_img', 'Course.learning_count AS people_num',
             'CourseProgress.last_knowledge', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
             'CourseNode.name AS node_name', 'Knowledge.name AS knowledge_name', 'KnowledgeProgress.data'

@@ -127,7 +127,7 @@ GrowlAsset::register($this);
                 <div class="text">
                     <div class="tuip">
                         <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
-                        <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
+                        <!--<span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>-->
                     </div>
                     <div class="tuip single-clamp">
                         <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
@@ -233,7 +233,7 @@ $js =
                                 '<div class="title">' + data['result'][i].name + '</div>' : 
                                 '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].cover_img) + '" width="100%" height="100%" />',
                             name: data['result'][i].name,
-                            contentTime: Wskeee.DateUtil.intToTime(data['result'][i].content_time),
+                            contentTime: '', //Wskeee.DateUtil.intToTime(data['result'][i].content_time),
                             tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
                             colorName: data['result'][i].is_publish == 1 ? 'success' : 'danger',
                             publishStatus: data['result'][i].is_publish == 1 ? '已发布' : '未发布',

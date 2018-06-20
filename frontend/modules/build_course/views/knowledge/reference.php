@@ -261,6 +261,7 @@ $js =
                     $("#knowledge-des").val(data.des);
                 }
                 $('input[name="Resource[res_id]"]').val(data.id);
+                $('input[name="Resource[data]"]').val(data.duration);
                 $('.field-reference-video').removeClass('has-error');
                 $('.field-reference-video .help-block').html('');
                 $(".field-video-details").removeClass("hidden");

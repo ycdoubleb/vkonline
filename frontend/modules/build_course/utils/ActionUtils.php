@@ -410,18 +410,26 @@ class ActionUtils
      */
     public function createKnowledge($model, $post)
     {
+        //资源id
+        $resId = ArrayHelper::getValue($post, 'Resource.res_id');
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $model->type = Knowledge::TYPE_VIDEO_RESOURCE;
+            if(!empty($resId)){
+                $model->has_resource = 1;
+                $model->data = ArrayHelper::getValue($post, 'Resource.data');
+            }
             if($model->save()){
-                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                    $resource = new KnowledgeVideo([
-                        'knowledge_id' => $model->id, 'video_id' => ArrayHelper::getValue($post, 'Resource.res_id')
-                    ]);
+                if($model->has_resource){
+                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                        $resource = new KnowledgeVideo([
+                            'knowledge_id' => $model->id, 'video_id' => $resId
+                        ]);
+                    }
+                    $resource->save();
                 }
-                $resource->save();
                 $this->saveCourseActLog([
                     'action' => '增加', 'title' => "知识点管理",
                     'content' => "{$model->node->name}>> {$model->name}",  
@@ -436,6 +444,7 @@ class ActionUtils
                 'code'=> 200,
                 'data' => [
                     'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
+                    'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
                 ],
                 'message' => '操作成功！'
             ];
@@ -467,21 +476,27 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            if(!empty($resId)){
+                $model->has_resource = 1;
+                $model->data = ArrayHelper::getValue($post, 'Resource.data');
+            }
             if($model->save()){
                 $content = '';
-                //如果为视频资源的是否执行
-                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
-                    if($resource !== null){
-                        $oldRes = clone $resource;
-                        $oldResId = $oldRes->video_id;
-                        $resource->video_id = $resId;
-                        $resource->save(false, ['video_id']);
-                        $content .= $oldResId != $resId ? 
-                            "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
-                    }else{
-                        $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
-                        $resource->save();
+                if($model->has_resource){
+                    //如果为视频资源的是否执行
+                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
+                        if($resource !== null){
+                            $oldRes = clone $resource;
+                            $oldResId = $oldRes->video_id;
+                            $resource->video_id = $resId;
+                            $resource->save(false, ['video_id']);
+                            $content .= $oldResId != $resId ? 
+                                "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                        }else{
+                            $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
+                            $resource->save();
+                        }
                     }
                 }
                 //新属性值非空时执行
@@ -505,7 +520,7 @@ class ActionUtils
             $trans->commit();  //提交事务
             return [
                 'code'=> 200,
-                'data' => ['name' => $model->name],
+                'data' => ['name' => $model->name, 'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')],
                 'message' => '操作成功！'
             ];
         }catch (Exception $ex) {
@@ -531,11 +546,13 @@ class ActionUtils
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
-                if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                    $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
-                    $resource->is_del = $model->is_del;
+                if($model->has_resource){
+                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
+                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
+                        $resource->is_del = $model->is_del;
+                    }
+                    $resource->update(false, ['is_del']);
                 }
-                $resource->update(false, ['is_del']);
                 $this->saveCourseActLog([
                     'action' => '删除', 'title' => "知识点管理",
                     'content' => "{$model->node->name} >> {$model->name}",
@@ -1038,6 +1055,9 @@ class ActionUtils
     private function saveCourseAttachment($course_id, $files)
     {
         $atts = [];
+        //删除
+        Yii::$app->db->createCommand()->delete(CourseAttachment::tableName(), 
+            ['course_id' => $course_id])->execute();
         if($files != null){
             foreach ($files as $id) {
                 $atts[] = [
@@ -1045,9 +1065,6 @@ class ActionUtils
                     'created_at' => time(), 'updated_at' => time()
                 ];
             }
-            //删除
-            Yii::$app->db->createCommand()->delete(CourseAttachment::tableName(), 
-                ['course_id' => $course_id])->execute();
         }
         //添加
         Yii::$app->db->createCommand()->batchInsert(CourseAttachment::tableName(),
