@@ -27,6 +27,11 @@ class UploadResponse {
      */
     const CODE_COMMON_MISS_PARAM = '10001';
     /**
+     * 保存DB出错
+     */
+    const CODE_COMMON_SAVE_DB_FAIL = '10002';
+    
+    /**
      * 未知错误
      */
     const CODE_COMMON_UNKNOWN = '10099';
@@ -91,11 +96,21 @@ class UploadResponse {
      */
     const CODE_DIR_NOT_FOUND = '20201';
     
+    /****************************
+     * 上传外部联接
+     ****************************/
+    /**
+     * 获取数据失败
+     */
+    const CODE_LINK_GET_DATA_FAIL = '20301';
+    
+    
     
     static $codeMap = [
         //公共
         self::CODE_COMMON_OK => 'OK',
         self::CODE_COMMON_MISS_PARAM => '缺少参数：{param}',
+        self::CODE_COMMON_SAVE_DB_FAIL => '保存DB出错！',
         self::CODE_COMMON_UNKNOWN => '未知错误！',
         //文件
         self::CODE_FILE_EXIT => '文件已存在！',
@@ -111,6 +126,9 @@ class UploadResponse {
         self::CODE_CHUNK_NOT_FOUND => '分片不存在：{chunkPath}',
         //目录
         self::CODE_DIR_NOT_FOUND => '目录不存在：{path}',
+        
+        //上传路径
+        self::CODE_LINK_GET_DATA_FAIL => '获取远程数据失败！',
     ];
     
     /**
