@@ -30,7 +30,7 @@ class CreateVideoAction extends Action{
         $user = Yii::$app->user->identity;
         $file_id = ArrayHelper::getValue($_REQUEST, 'file_id', '');
         if($file_id == ''){
-            return UploadResponse::create(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'file_id']);
+            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'file_id']);
         }
         
         $file = Uploadfile::findOne(['id' => $file_id]);
@@ -47,7 +47,7 @@ class CreateVideoAction extends Action{
                 ])->one();
         if($video){
             $video['videos'] = [$file];
-            return UploadResponse::create(UploadResponse::CODE_COMMON_OK,null,$video);
+            return new UploadResponse(UploadResponse::CODE_COMMON_OK,null,$video);
         }else{
             /* 不存即创建 */
             $tran = Yii::$app->db->beginTransaction();
@@ -72,14 +72,14 @@ class CreateVideoAction extends Action{
                     $tran->commit();
                     $video_arr = $video->toArray();
                     $video_arr['videos'] = [$file];
-                    return UploadResponse::create(UploadResponse::CODE_COMMON_OK,null,$video_arr);
+                    return new UploadResponse(UploadResponse::CODE_COMMON_OK,null,$video_arr);
                 }else{
                     $tran->rollBack();
-                    return UploadResponse::create(UploadResponse::CODE_FILE_SAVE_FAIL,null,$video_file->getErrorSummary(true));
+                    return new UploadResponse(UploadResponse::CODE_FILE_SAVE_FAIL,null,$video_file->getErrorSummary(true));
                 }
             }else{
                 $tran->rollBack();
-                return UploadResponse::create(UploadResponse::CODE_FILE_SAVE_FAIL,null,$video->getErrorSummary(true));
+                return new UploadResponse(UploadResponse::CODE_FILE_SAVE_FAIL,null,$video->getErrorSummary(true));
             }
         }
     }
