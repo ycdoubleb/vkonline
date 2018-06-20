@@ -54,7 +54,9 @@ class UploadLinkAction extends Action {
             $dbFile->size = (string)$response->VIDEO_SIZE;                       //视频大小b   
             
             //1280x720
-            $wh = explode('x',(string)$response->VIDEO_RESOLUTION);
+            $wh_str = (string)$response->VIDEO_RESOLUTION;
+            if(!strpos('x', $wh_str))$wh_str='0x0';
+            $wh = explode('x',$wh_str);
             $dbFile->level = $this->getVideoLevel($wh[1]);                        //视频质量等级
             $dbFile->width = (integer)$wh[0];                                     //视频宽
             $dbFile->height = (integer)$wh[1];                                    //视频高
