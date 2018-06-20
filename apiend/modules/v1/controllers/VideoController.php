@@ -6,15 +6,16 @@
  * and open the template in the editor.
  */
 
-namespace frontend\modules\api\controllers;
+namespace apiend\modules\v1\controllers;
 
+use apiend\components\BaseApiController;
+use apiend\modules\v1\actions\video\CreateVideoAction;
 use common\modules\webuploader\actions\CheckChunkAction;
 use common\modules\webuploader\actions\CheckFileAction;
 use common\modules\webuploader\actions\DownloadAction;
 use common\modules\webuploader\actions\MergeChunksAction;
 use common\modules\webuploader\actions\UploadAction;
 use common\modules\webuploader\actions\UploadLinkAction;
-use frontend\modules\api\components\BaseApiController;
 use Yii;
 
 /**
@@ -32,6 +33,7 @@ class VideoController extends BaseApiController {
             'merge-chunks' => ['class' => MergeChunksAction::class],
             'check-chunk' => ['class' => CheckChunkAction::class],
             'download' => ['class' => DownloadAction::class],
+            'create-video' => ['class' => CreateVideoAction::class],
         ]);
     }
     public function beforeAction($action) {

@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace frontend\modules\api\components;
+namespace apiend\components;
 
 use Exception;
 use Yii;
