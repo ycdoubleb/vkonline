@@ -76,9 +76,11 @@ $this->title = $model['name'];
             <div class="panel-head">主讲老师</div>
             <div class="panel-body">
                 <div class="info">
-                    <?= Html::img(StringUtil::completeFilePath($model['avatar']), ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
-                    <p class="name"><?= $model['teacher_name'] ?></p>
-                    <p class="job-title"><?= $model['teacher_des'] ?></p>
+                    <?= Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']]), 'target' => '_blank']) ?>
+                        <?= Html::img(StringUtil::completeFilePath($model['avatar']), ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
+                        <p class="name"><?= $model['teacher_name'] ?></p>
+                        <p class="job-title"><?= $model['teacher_des'] ?></p>
+                    <?= Html::endTag('a') ?>
                 </div>
             </div>
         </div>

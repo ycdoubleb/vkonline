@@ -45,7 +45,7 @@ GrowlAsset::register($this);
                     </div>
                     <div class="tuip single-clamp">
                         <?php $percent = isset($model['node_num']) && isset($model['finish_num']) ?  
-                                floor(($model['node_num'] / $model['finish_num'] / 100) * 100) : 0 ?>
+                                floor($model['finish_num'] / $model['node_num'] * 100) : 0 ?>
                         <span>已完成 <?= $percent ?>%</span>
                         <div class="progress">
                             <div class="progress-bar" style="width: <?= $percent ?>%;">

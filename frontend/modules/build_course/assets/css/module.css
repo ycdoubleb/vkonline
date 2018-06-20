@@ -466,8 +466,9 @@ body .select2-container--krajee
 .sortable .knowledges .head > a {
     color: #878787;
 }
-.sortable .knowledges .duration{
+.sortable .knowledges .data{
     position: absolute;
+    top: 0;
     right: 20%;
 }
 /*******************************************************************************

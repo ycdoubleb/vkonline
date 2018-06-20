@@ -58,7 +58,7 @@ $this->title = Yii::t('app', $model['name']);
                     </div>
                     <div class="node-box">
                         <span class="nodes"><i class="glyphicon glyphicon-th-list"></i>共有 <?= $model['node_count'] ?> 个环节</span>
-                        <span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],":",true) ?></span>
+                        <!--<span class="content-time"><i class="glyphicon glyphicon-time"></i><?= DateUtil::intToTime($model['content_time'],":",true) ?></span>-->
                     </div>
                     <div class="control-box">
                         <?php $lastKnowledge = $study_progress['last_knowledge'] != null ? $study_progress['last_knowledge'] : $model['first_knowledge']; ?>
@@ -72,7 +72,7 @@ $this->title = Yii::t('app', $model['name']);
                         
                         <div class="control">
                             <a onclick="favoriteC()" id="favorite">
-                                <i class="glyphicon glyphicon-star <?= $model['is_favorite'] ? 'yes' : '' ?>"></i>
+                                <i class="fa <?= $model['is_favorite'] ? 'fa-heart' : 'fa-heart-o' ?>"></i>
                                 <span><?= $model['is_favorite'] ? '已收藏' : '收藏' ?></span>
                             </a>
                             <a onclick="shareShow()" id="share-btn"><i class="fa fa-share-alt"></i>分享</a>
@@ -146,11 +146,11 @@ $this->title = Yii::t('app', $model['name']);
                 <div class="panel-head">主讲老师</div>
                 <div class="panel-body">
                     <div class="info">
-                        <a href="javascript:">
+                        <?= Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']]), 'target' => '_blank']) ?>
                             <img class="avatar" src="<?= $model['teacher_avatar'] ?>" />
                             <p class="name"><?= $model['teacher_name'] ?></p>
                             <p class="job_title"><?= $model['teacher_job_title'] ?></p>
-                        </a>
+                        <?= Html::endTag('a') ?></a>
                     </div>
                     
                     <hr/>
@@ -338,7 +338,7 @@ $this->title = Yii::t('app', $model['name']);
                 if(result.code == 200){
                     //成功
                     $("#favorite span").html('收藏');
-                    $("#favorite i").removeClass('yes');
+                    $("#favorite i").removeClass('fa-heart').addClass('fa-heart-o');
                 }
             });
         }else{
@@ -347,7 +347,7 @@ $this->title = Yii::t('app', $model['name']);
                 if(result.code == 200){
                     //成功
                     $("#favorite span").html('已收藏');
-                    $("#favorite i").addClass('yes');
+                    $("#favorite i").removeClass('fa-heart-o').addClass('fa-heart');
                     $.notify({
                         message: '收藏成功！请到学习中心查看！'
                     },{

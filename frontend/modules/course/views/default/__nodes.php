@@ -3,6 +3,7 @@
  * 课程目录结构视图 
  */
 
+use common\models\vk\Knowledge;
 use yii\web\View;
 
 /* @var $this View */
@@ -43,6 +44,7 @@ $finish_percent = $knowledge_count == 0 ? 0 : floor($finish_count / $knowledge_c
                                              aria-valuemin="0" aria-valuemax="100" style="width: <?= $knowledge['percent'] ?>%;">
                                         </div>
                                     </div>
+                                    <span class="duration"><?= Knowledge::getKnowledgeResourceInfo($knowledge['knowledge_id'], 'data') ?></span>
                                 </div>
                                 <a class="btn btn-highlight btn-flat play" href="/study_center/default/view?id=<?= $knowledge['knowledge_id'] ?>" ><?= $knowledge['percent'] > 0 ? '继续学习' : '开始学习' ?></a>
                             </div>

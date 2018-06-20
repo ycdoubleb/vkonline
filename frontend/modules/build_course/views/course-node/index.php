@@ -2,8 +2,8 @@
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\Knowledge;
 use common\models\vk\Video;
-use common\utils\DateUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
@@ -24,8 +24,8 @@ GrowlAsset::register($this);
    <div class="panel">
         <div class="title">
             <span>
-                <?= Yii::t('app', '{Course}{Frame}',[
-                    'Course' => Yii::t('app', 'Course'), 'Frame' => Yii::t('app', 'Frame')
+                <?= Yii::t('app', '{Course}{Catalog}',[
+                    'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
                 ]) ?>
             </span>
             <div class="btngroup">
@@ -71,7 +71,7 @@ GrowlAsset::register($this);
                         <?php foreach ($courseNodes->knowledges as $knowledge): ?>
                         <li id="<?= $knowledge->id ?>">
                             <div class="head">
-                                <?= Html::a("<span class=\"name\">{$knowledge->name}</span>") ?>
+                                <?= Html::a("<span class=\"name\">{$knowledge->name}</span><span class=\"data\">". Knowledge::getKnowledgeResourceInfo($knowledge->id, 'data')."</span>") ?>
                                 <div class="icongroup">
                                     <?php 
                                         echo Html::a('<i class="fa fa-eye"></i>', ['/study_center/default/view', 'id'=> $knowledge->id], ['target' => '_blank']) . '&nbsp;';

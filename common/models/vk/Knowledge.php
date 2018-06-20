@@ -3,6 +3,7 @@
 namespace common\models\vk;
 
 use common\models\User;
+use common\utils\DateUtil;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -16,9 +17,11 @@ use yii\db\ActiveRecord;
  * @property int $type 知识点类型：1视频知识点 2其它
  * @property string $name 知识点名称
  * @property string $des 知识点简介
+ * @property string $data 资源自定义数据
  * @property string $zan_count 赞数
  * @property string $favorite_count 收藏数
  * @property int $is_del 是否删除：0否 1是
+ * @property int $has_resource 是否已经关联资源：0否 1是
  * @property int $sort_order 排序
  * @property string $created_by 创建人ID
  * @property string $created_at 创建时间
@@ -58,8 +61,8 @@ class Knowledge extends ActiveRecord
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
-            [['type', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
-            [['des'], 'string'],
+            [['type', 'zan_count', 'favorite_count', 'is_del', 'has_resource', 'sort_order', 'created_at', 'updated_at'], 'integer'],
+            [['des', 'data'], 'string'],
             [['id', 'node_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             [['id'], 'unique'],
@@ -79,9 +82,11 @@ class Knowledge extends ActiveRecord
             'type' => Yii::t('app', 'Type'),
             'name' => Yii::t('app', 'Name'),
             'des' => Yii::t('app', 'Des'),
+            'data' => Yii::t('app', 'Data'),
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
             'is_del' => Yii::t('app', 'Is Del'),
+            'has_resource' => Yii::t('app', 'Has Resource'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -156,23 +161,45 @@ class Knowledge extends ActiveRecord
     }
     
     /**
-     * 获取知识点资源id
+     * 获取知识点资源信息
+     * $resInfo = [
+     *   'id' => 资源id, 
+     *   'data' => 资源数据
+     * ]
+     * @param string $keyName    键名
      * @return string
      */
-    public function getKnowledgeResourceToId()
+    public static function getKnowledgeResourceInfo($id, $keyName)
     {
-        switch ($this->type){
-            case self::TYPE_VIDEO_RESOURCE:
-                $res_id = !empty($this->knowledgeVideo) ? $this->knowledgeVideo->video_id : null;
-                break;
-            case self::TYPE_HTML_RESOURCE:
-                $res_id = null;
-                break;
-            default :
-                $res_id = null;
-                break;
+        $resInfo = ['res_id' => '', 'data' => ''];
+        $res = (new \yii\db\Query())->select([
+            'Knowledge.type', 'Knowledge.data', 'Knowledge.has_resource',
+            'KnowledgeVideo.video_id', 
+        ])->from(['Knowledge' => Knowledge::tableName()]);
+        $res->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], 'KnowledgeVideo.knowledge_id = Knowledge.id');
+        $res->where(['Knowledge.id' => $id]);
+        $resResults = $res->one();
+        if($resResults['has_resource']){
+            switch ($resResults['type']){
+                case self::TYPE_VIDEO_RESOURCE:
+                    $res_id = $resResults['video_id'];
+                    $data = DateUtil::intToTime($resResults['data']);
+                    break;
+                case self::TYPE_HTML_RESOURCE:
+                    $res_id = null;
+                    $data = null;
+                    break;
+                default :
+                    $res_id = null;
+                    $data = null;
+                    break;
+            }
+            $resInfo = [
+                'res_id' => $res_id,
+                'data' => $data,
+            ];
         }
         
-        return $res_id;
+        return $resInfo[$keyName];
     }
 }

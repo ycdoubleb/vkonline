@@ -82,8 +82,6 @@ class CourseFavoriteSearch extends CourseFavorite
         //查询课程下的标签
         $tagRefQuery = TagRef::getTagsByObjectId($copyCourse, 1, false);
         $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"]);
-        //查询参与课程的在学人数
-        $studyQuery = CourseProgress::getCourseProgressByCourseId($copyCourse);
         //以课程id为分组
         self::$query->groupBy(['Favorite.course_id']);
         //查询总数
@@ -94,7 +92,8 @@ class CourseFavoriteSearch extends CourseFavorite
         }
         //添加字段
         self::$query->addSelect([
-            'Customer.name AS customer_name', 'Course.name', 'Course.cover_img',  
+            'Customer.name AS customer_name', 'Course.name', 'Course.cover_img', 
+            'Course.learning_count AS people_num', 
             'Course.content_time', 'Course.avg_star', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ]);
@@ -105,14 +104,11 @@ class CourseFavoriteSearch extends CourseFavorite
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
-        //查询在学人数结果
-        $studyResult = $studyQuery->asArray()->all(); 
-        //查询课程结果
+        
         $courseResult = self::$query->asArray()->all();
         //以course_id为索引
         $courses = ArrayHelper::index($courseResult, 'course_id');
-        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
-                ArrayHelper::index($studyResult, 'course_id'));
+        $results = ArrayHelper::index($tagRefResult, 'object_id');
         
         //合并查询后的结果
         foreach ($courses as $id => $item) {
