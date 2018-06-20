@@ -27,7 +27,7 @@ class UploadLinkAction extends Action {
         $params = Yii::$app->request->getQueryParams();
         $video_path = ArrayHelper::getValue($params, 'video_path');
         if($video_path == null){
-            return UploadResponse::create(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'video_path']);
+            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'video_path']);
         }
         $authUrl = "http://eefile.gzedu.com/video/getVideoInfoByUrl.do?formMap.VIDEO_URL={$video_path}";
         //调用api获取视频详细数据
@@ -36,7 +36,7 @@ class UploadLinkAction extends Action {
             $response = simplexml_load_string($curl->get($authUrl));
             //获取不成功返回失败信息
             if((string)$response->CODE != 200){
-                return UploadResponse::create(UploadResponse::CODE_LINK_GET_DATA_FAIL, null, [
+                return new UploadResponse(UploadResponse::CODE_LINK_GET_DATA_FAIL, null, [
                     'eerorCode' => (string)$response->CODE,
                     'mes' => (string)$response->MESSAGE,
                 ]);
@@ -63,10 +63,10 @@ class UploadLinkAction extends Action {
             $dbFile->bitrate =floatval($response->VIDEO_BIT_RATE)*1000;           //码率
             $dbFile->duration = floatval($response->VIDEO_TIME)/1000;            //视频长度
             if ($dbFile->save()) {
-                return UploadResponse::create(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
+                return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
             }
         } catch (Exception $ex) {
-            return UploadResponse::create(UploadResponse::CODE_COMMON_SAVE_DB_FAIL, $ex->getMessage(), $ex->getTraceAsString());
+            return new UploadResponse(UploadResponse::CODE_COMMON_SAVE_DB_FAIL, $ex->getMessage(), $ex->getTraceAsString());
         }
     }
     

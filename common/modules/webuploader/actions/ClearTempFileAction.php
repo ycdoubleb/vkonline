@@ -12,7 +12,7 @@ class ClearTempFileAction {
     public function run($targetDir) {
         $maxFileAge = 24 * 3600; // Temp file age in seconds
         if (!is_dir($targetDir) || !$dir = opendir($targetDir)) {
-            return UploadResponse::create(UploadResponse::CODE_DIR_NOT_FOUND, null, null, ['path' => $targetDir]);
+            return new UploadResponse(UploadResponse::CODE_DIR_NOT_FOUND, null, null, ['path' => $targetDir]);
         }
         $paths = [];
         while (($file = readdir($dir)) !== false) {
