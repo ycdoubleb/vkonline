@@ -143,7 +143,7 @@ class MergeChunksAction extends Action{
                     // Return Success JSON-RPC response
                     return UploadResponse::create(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
                 } else {
-                    return UploadResponse::create(UploadResponse::CODE_COMMON_OK, null, $dbFile->getErrorSummary(true));
+                    return UploadResponse::create(UploadResponse::CODE_FILE_SAVE_FAIL, null, $dbFile->getErrorSummary(true));
                 }
             }
         }

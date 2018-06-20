@@ -112,10 +112,11 @@ class Video extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
+            /*
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],
+            ])],*/
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")

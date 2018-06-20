@@ -101,7 +101,7 @@ class UploadResponse {
         self::CODE_FILE_EXIT => '文件已存在！',
         self::CODE_FILE_INTERRUPT => '文件上传未完成，请继续上传其它分片！',
         self::CODE_FILE_CHUNKS_NOT_FOUND => '合并文件失败，找不到对应分片数据！',
-        self::CODE_FILE_SAVE_FAIL => '合并文件失败：！',
+        self::CODE_FILE_SAVE_FAIL => '合并文件失败!',
         self::CODE_READ_INPUT_FILE_FAIL => '无法读取文件：{name}',
         self::CODE_READ_INPUT_STREAM_FAIL => '无法读取输入流：{name}',
         self::CODE_OPEN_OUPUT_STEAM_FAIL => '系统错误，无法建立临时输出流：{name}',
