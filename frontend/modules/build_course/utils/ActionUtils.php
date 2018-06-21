@@ -921,6 +921,7 @@ class ActionUtils
     private function saveObjectTags($objectId, $tagArrays, $type = 1)
     {
         $tagRefs = [];
+        $tagArrays = array_filter($tagArrays);
         //删除已存在的标签
         TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
         if(!empty($tagArrays)){
@@ -941,10 +942,9 @@ class ActionUtils
                 }
                 $tagRefs[] = [$objectId, $tag_id, $type];
             }
+            //添加
+            Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(), ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
         }
-        //添加
-        Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(),
-            ['object_id', 'tag_id', 'type'], $tagRefs)->execute();
     }
     
     /**

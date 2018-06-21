@@ -168,7 +168,7 @@ $this->registerJs($format, View::POS_HEAD);
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
             <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
-                'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
+                'id' => 'obj_taginput', 'class' => 'form-control',  'data-role' => 'tagsinput'
             ]) ?>
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
@@ -218,8 +218,7 @@ $js =
     UE.getEditor('course-content', {
         initialFrameHeight: 500,
         maximumWords: 100000,
-    });     
-    
+    });
     //选择二级分类加载其对应的属性
     $('select[data-name="course-category_id"]').eq(2).change(function(){
         var items = $domes;

@@ -82,7 +82,8 @@ video {
     border-radius: 0;
 }
 .form .form-group .form-control,
-.form .form-group .select2-selection {
+.form .form-group .select2-selection,
+.form .bootstrap-tagsinput {
     min-height: 40px;
     padding: 10px 24px 10px 12px;
     border-radius: 0;
