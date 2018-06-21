@@ -77,7 +77,7 @@ class ApiResponse {
     
     /**
      * 返回 code 与 反馈修改的对应关系
-     * 使用时由子类合并使用
+     * 使用时由子类合并使用，注意：请使用  + 号合并数组，保留原来键值
      */
     public function getCodeMap(){
         return [
