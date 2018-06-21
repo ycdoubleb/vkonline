@@ -7,12 +7,11 @@ use yii\web\AssetBundle;
 class TagsInputAsset extends AssetBundle
 {
     public $css = [
-        'css/amazeui.css',
-        'css/amazeui.tagsinput.css',
+        'css/bootstrap/bootstrap-tagsinput.css',
+        'css/bootstrap/app.css',
     ];
     public $js = [
-        'js/amazeui.tagsinput.min.js',
-        'js/typeahead.min.js',
+        'js/bootstrap/bootstrap-tagsinput.js',
     ];
     public $depends = [
         'yii\bootstrap\BootstrapPluginAsset',

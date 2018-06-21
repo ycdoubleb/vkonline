@@ -227,6 +227,7 @@ class Category extends ActiveRecord
     // Cache
     //
     //==========================================================================
+    
     /* 初始缓存 */
     private static function initCache() {
         if (self::$cache == null) {
@@ -439,5 +440,14 @@ class Category extends ActiveRecord
             return new Category(self::$categorys[$id]);
         }
         return null;
+    }
+    
+    /**
+     * 获取所有分类数据
+     * @return array
+     */
+    public static function getCategorys() {
+        self::initCache();
+        return self::$categorys;
     }
 }
