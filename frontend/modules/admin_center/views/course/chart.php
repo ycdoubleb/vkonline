@@ -3,7 +3,6 @@
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
-use common\models\vk\Video;
 use common\widgets\charts\ChartAsset;
 use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\admin_center\assets\ModuleAssets;
@@ -100,7 +99,7 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'category');  //统计�
                 </div>
                 <!--范围-->
                 <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'level')->radioList(Video::$levelMap,[
+                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
                         'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
                         'itemOptions'=>[
                             'labelOptions'=>[

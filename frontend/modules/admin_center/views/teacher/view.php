@@ -37,7 +37,7 @@ ModuleAssets::register($this);
     </div>
         
     <!--基本信息-->
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -103,7 +103,7 @@ ModuleAssets::register($this);
     </div>
     
     <!--主讲课程-->
-    <div class="frame">
+    <div class="panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{mainSpeak}{Course}',[
