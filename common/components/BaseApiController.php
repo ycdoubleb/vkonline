@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace apiend\components;
+namespace common\components;
 
 use Exception;
 use Yii;
@@ -16,7 +16,6 @@ use yii\base\Event;
 use yii\base\Object;
 use yii\base\UserException;
 use yii\db\Exception as Exception2;
-use yii\filters\auth\QueryParamAuth;
 use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
 use yii\web\Response;
@@ -29,11 +28,11 @@ use yii\web\Response;
 class BaseApiController extends Controller {
     
     /**
-     * 使用令牌认证
+     * 不使用令牌认证
      * @return type
      */
     public function behaviors() {
-        return array_merge(parent::behaviors(),[QueryParamAuth::class]);
+        return parent::behaviors();
     }
     
     public function beforeAction($action) {

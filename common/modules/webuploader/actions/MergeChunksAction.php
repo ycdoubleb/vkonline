@@ -57,26 +57,26 @@ class MergeChunksAction extends Action{
         $uploadPath = $uploadDir . '/' . $fileMd5 . strrchr($fileName, '.');
 
         if ($fileMd5 == '') {
-            return UploadResponse::create(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'fileMd5']);
+            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'fileMd5']);
         } else {
             //查出所有分片记录
             $fileChunks = UploadfileChunk::find()->where(['file_id' => $fileMd5])->orderBy('chunk_index')->all();
             if ($fileChunks == null) {
-                return UploadResponse::create(UploadResponse::CODE_FILE_CHUNKS_NOT_FOUND);
+                return new UploadResponse(UploadResponse::CODE_FILE_CHUNKS_NOT_FOUND);
             } else {
                 /* @var $fileChunk UploadfileChunk  */
                 $unFoundChunks = [];
                 foreach ($fileChunks as $fileChunk) {
                     if (!file_exists($fileChunk->chunk_path)) {
                         $unFoundChunks [] = $fileChunk->chunk_path;
-                        return UploadResponse::create(UploadResponse::CODE_CHUNK_NOT_FOUND, null, null, ['chunkPath' => $fileChunk->chunk_path]);
+                        return new UploadResponse(UploadResponse::CODE_CHUNK_NOT_FOUND, null, null, ['chunkPath' => $fileChunk->chunk_path]);
                     }
                 }
                 //删除无用分片数据
                 UploadfileChunk::deleteAll(['chunk_path' => $unFoundChunks]);
 
                 if (!$out = @fopen($uploadPath, "wb")) {
-                    return UploadResponse::create(UploadResponse::CODE_OPEN_OUPUT_STEAM_FAIL);
+                    return new UploadResponse(UploadResponse::CODE_OPEN_OUPUT_STEAM_FAIL);
                 }
                 if (flock($out, LOCK_EX)) {
                     //合并分片
@@ -141,13 +141,13 @@ class MergeChunksAction extends Action{
                     //删除数据库分片数据记录
                     Yii::$app->db->createCommand()->delete(UploadfileChunk::tableName(), ['file_id' => $fileMd5])->execute();
                     // Return Success JSON-RPC response
-                    return UploadResponse::create(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
+                    return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
                 } else {
-                    return UploadResponse::create(UploadResponse::CODE_FILE_SAVE_FAIL, null, $dbFile->getErrorSummary(true));
+                    return new UploadResponse(UploadResponse::CODE_FILE_SAVE_FAIL, null, $dbFile->getErrorSummary(true));
                 }
             }
         }
-        return UploadResponse::create(UploadResponse::CODE_COMMON_UNKNOWN);
+        return new UploadResponse(UploadResponse::CODE_COMMON_UNKNOWN);
     }
     
     /**

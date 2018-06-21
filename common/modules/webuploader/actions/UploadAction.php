@@ -58,10 +58,10 @@ class UploadAction extends Action{
         $chunks = isset($_REQUEST["chunks"]) ? intval($_REQUEST["chunks"]) : 1;
         
         if(!isset($_REQUEST["fileMd5"])){
-            return UploadResponse::create(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'fileMd5']);
+            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'fileMd5']);
         }
         if(!isset($_REQUEST["chunkMd5"])){
-            return UploadResponse::create(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'chunkMd5']);
+            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM,null,null,['param' => 'chunkMd5']);
         }
         //分片md5和文件md5`
         $chunkMd5 = $_REQUEST["chunkMd5"];
@@ -76,24 +76,24 @@ class UploadAction extends Action{
             $fileChunk = UploadfileChunk::findOne(['chunk_id' => $chunkMd5]);
             if ($fileChunk != null && file_exists($fileChunk->chunk_path)) {
                 //分片已存在
-                return UploadResponse::create(UploadResponse::CODE_CHUNK_EXIT,null,$fileChunk->toArray());
+                return new UploadResponse(UploadResponse::CODE_CHUNK_EXIT,null,$fileChunk->toArray());
             }
         }
         // Open temp file
         if (!$out = @fopen("{$filePath}_{$chunk}.parttmp", "wb")) {
-            return UploadResponse::create(UploadResponse::CODE_OPEN_OUPUT_STEAM_FAIL,null,null,['name' => "{$filePath}_{$chunk}.parttmp"]);
+            return new UploadResponse(UploadResponse::CODE_OPEN_OUPUT_STEAM_FAIL,null,null,['name' => "{$filePath}_{$chunk}.parttmp"]);
         }
         if (!empty($_FILES)) {
             if ($_FILES["file"]["error"] || !is_uploaded_file($_FILES["file"]["tmp_name"])) {
-                return UploadResponse::create(UploadResponse::CODE_MOVE_INPUT_FILE_FAIL,null,null,['name' => $_FILES["file"]["tmp_name"]]);
+                return new UploadResponse(UploadResponse::CODE_MOVE_INPUT_FILE_FAIL,null,null,['name' => $_FILES["file"]["tmp_name"]]);
             }
             // Read binary input stream and append it to temp file
             if (!$in = @fopen($_FILES["file"]["tmp_name"], "rb")) {
-                return UploadResponse::create(UploadResponse::CODE_READ_INPUT_FILE_FAIL,null,null,['name' => "{$filePath}_{$chunk}.parttmp"]);
+                return new UploadResponse(UploadResponse::CODE_READ_INPUT_FILE_FAIL,null,null,['name' => "{$filePath}_{$chunk}.parttmp"]);
             }
         } else {
             if (!$in = @fopen("php://input", "rb")) {
-                return UploadResponse::create(UploadResponse::CODE_READ_INPUT_STREAM_FAIL,null,null,['name' => "php://input"]);
+                return new UploadResponse(UploadResponse::CODE_READ_INPUT_STREAM_FAIL,null,null,['name' => "php://input"]);
             }
         }
         while ($buff = fread($in, 4096)) {
@@ -107,7 +107,7 @@ class UploadAction extends Action{
         $fileChunk = new UploadfileChunk(['chunk_id' => $chunkMd5, 'file_id' => $fileMd5, 'chunk_path' => "{$filePath}_{$chunk}.part", 'chunk_index' => $chunk]);
         $fileChunk->save();
         // Return Success JSON-RPC response
-        return UploadResponse::create(UploadResponse::CODE_COMMON_OK);
+        return new UploadResponse(UploadResponse::CODE_COMMON_OK);
     }
     
     /**
