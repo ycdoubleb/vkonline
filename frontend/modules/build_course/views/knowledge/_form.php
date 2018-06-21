@@ -81,8 +81,8 @@ $this->registerJs($format, View::POS_HEAD);
             <?= SwitchInput::widget([
                 'id' => 'reference-video',
                 'name' => 'ReferenceVideo',
-                'disabled' => $model->isNewRecord ? false : true,
-                'value' => $model->isNewRecord ? 0 : 1,
+                'disabled' => $model->has_resource,
+                'value' => $model->has_resource,
                 'pluginOptions' => [
                     'onText' => 'Yes',
                     'offText' => 'No',
@@ -92,7 +92,7 @@ $this->registerJs($format, View::POS_HEAD);
                 ],
             ]) ?>
         </div>
-        <div class="col-lg-1 col-md-1 <?= $model->isNewRecord ? 'hidden' : '' ?>">
+        <div class="col-lg-1 col-md-1 <?= !$model->has_resource ? 'hidden' : '' ?>">
             <?= Html::a('重选', ['my-collect'], [
                 'id' => 'reelect', 'class' => 'btn btn-info',
                 'onclick' => 'reelectEvent($(this)); return false;'
@@ -103,12 +103,12 @@ $this->registerJs($format, View::POS_HEAD);
     <div id="reference-video-list" class="hidden"></div>
     <div id="knowledge-info">
         <!--视频详细-->
-        <div class="form-group field-video-details <?= $model->isNewRecord ? 'hidden' : '' ?>">
+        <div class="form-group field-video-details <?= !$model->has_resource ? 'hidden' : '' ?>">
             <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
             <div class="col-lg-6 col-md-6">
                 <div id="video-details">
                     <div class="list">
-                    <?php if(!$model->isNewRecord && !empty($model->knowledgeVideo)): ?>
+                    <?php if($model->has_resource): ?>
                         <ul>
                             <li class="clear-margin">
                                 <div class="pic">
@@ -194,7 +194,8 @@ $this->registerJs($format, View::POS_HEAD);
             'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
         <!--隐藏的属性-->
-        <?= Html::hiddenInput('Resource[res_id]', $model->isNewRecord ? null : $model->getKnowledgeResourceToId()) ?>
+        <?= Html::hiddenInput('Resource[res_id]', Knowledge::getKnowledgeResourceInfo($model->id, 'res_id')) ?>
+        <?= Html::hiddenInput('Resource[data]', Knowledge::getKnowledgeResourceInfo($model->id, 'data')) ?>
     </div>
     
     <?php ActiveForm::end(); ?>

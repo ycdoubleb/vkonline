@@ -109,7 +109,7 @@ class SiteController extends Controller
         $customers = (new Query())
                 ->select(['id','name','logo'])
                 ->from(Customer::tableName())
-                ->where(['status' => Customer::STATUS_ACTIVE,'is_official' => 0])
+                ->where(['status' => Customer::STATUS_ACTIVE])
                 ->orderBy('sort_order')
                 ->limit(10)
                 ->all();

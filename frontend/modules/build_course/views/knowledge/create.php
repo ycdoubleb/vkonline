@@ -56,11 +56,6 @@ $js =
 
     // 提交表单
     $("#submitsave").click(function(){
-        if($('input[name="Resource[res_id]"]').val() == ''){
-            $('.field-reference-video').addClass('has-error');
-            $('.field-reference-video .help-block').html('视频资源不能为空。');
-            return;
-        }
         if($('#knowledge-name').val() == ''){
             $('.field-knowledge-name').addClass('has-error');
             $('.field-knowledge-name .help-block').html('名称不能为空。');

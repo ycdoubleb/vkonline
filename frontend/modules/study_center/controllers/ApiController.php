@@ -2,6 +2,7 @@
 
 namespace frontend\modules\study_center\controllers;
 
+use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseProgress;
 use common\models\vk\Knowledge;
@@ -170,6 +171,11 @@ class ApiController extends Controller  {
                     ]);
                 }
                 $courseProgress->last_knowledge = $knowledge_id;
+                if($courseProgress->isNewRecord){
+                    $courseMdeol = Course::findOne($course_id);
+                    $courseMdeol->learning_count = $courseMdeol->learning_count + 1;
+                    $courseMdeol->update(true, ['learning_count']);
+                }
                 if(!$isFinish){
                     $courseProgress->is_finish = 0;
                     $courseProgress->end_time = 0;
@@ -214,11 +220,16 @@ class ApiController extends Controller  {
                 $isFinish = $this->getIsFinishStudyByKnowledge($course_id);
                 $courseProgress = CourseProgress::findOne(['course_id' => $course_id, 'user_id' => \Yii::$app->user->id]);
                 $courseProgress->last_knowledge = $knowledge_id;
+                if($courseProgress->isNewRecord){
+                    $courseMdeol = Course::findOne($course_id);
+                    $courseMdeol->learning_count = $courseMdeol->learning_count + 1;
+                    $courseMdeol->update(true, ['learning_count']);
+                }
                 if($isFinish){
                     $courseProgress->is_finish = 1;
                     $courseProgress->end_time = time();
                 }
-                $courseProgress->save();
+                $courseProgress->save();                
             }
             
             $trans->commit();  //提交事务

@@ -4,6 +4,7 @@ use common\models\vk\Video;
 use common\utils\StringUtil;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\webuploader\WebUploaderAsset;
+use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -14,7 +15,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Video */
 /* @var $form ActiveForm */
-
+GrowlAsset::register($this);
 TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
@@ -113,7 +114,7 @@ $this->registerJs($format, View::POS_HEAD);
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
             <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
-                'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
+                'id' => 'obj_taginput', 'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
             ]) ?>
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
@@ -247,9 +248,19 @@ $js =
     //添加外部链接
     $("#outside_link").blur(function(){
         $.get("/webuploader/default/upload-link?video_path=" + $(this).val(), function(rel){
-            if(rel['code'] == '200'){
+            if(rel['success'] && rel['data']['code'] == '0'){
                 window.uploader.clearAll();
-                window.uploader.addCompleteFiles([rel['data']['dbFile']]);
+                window.uploader.addCompleteFiles([rel['data']['data']]);
+            }else{
+                $.notify({
+                    message: rel['data']['mes']
+                },{
+                    type: 'warning',
+                    animate: {
+                        enter: 'animated fadeInRight',
+                        exit: 'animated fadeOutRight'
+                    }
+                });
             }
         });
     }); 

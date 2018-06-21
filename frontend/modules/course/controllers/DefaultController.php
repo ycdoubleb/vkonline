@@ -300,7 +300,7 @@ class DefaultController extends Controller
         $study_progress = (new Query())
                 ->select([
                     'Node.id as node_id','Node.name as node_name','Node.sort_order as node_sort_order',
-                    'Knowledge.id as knowledge_id','Knowledge.name knowledge_name', 
+                    'Knowledge.id as knowledge_id','Knowledge.name knowledge_name', 'Knowledge.data',
                     'Knowledge.sort_order as knowledge_sort_order', '(Progress.percent * 100) AS percent', 
                     'Progress.is_finish'
                 ])->from(['Node' => CourseNode::tableName()])
@@ -341,6 +341,7 @@ class DefaultController extends Controller
                     'sort_order' => $progress['knowledge_sort_order'],
                     'is_finish' => $progress['is_finish'],
                     'percent' => $progress['percent'],
+                    'data' => $progress['data']
                 ];
             }
         }
