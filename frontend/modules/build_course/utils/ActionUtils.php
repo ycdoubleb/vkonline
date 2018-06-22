@@ -122,6 +122,48 @@ class ActionUtils
     }
     
     /**
+     * 删除课程操作
+     * @param Course $model
+     * @throws Exception
+     */
+    public function deleteCourse($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                CourseNode::updateAll(['is_del' => $model->is_del], ['course_id' => $model->id]);
+                $nodes = CourseNode::findAll(['course_id' => $model->id, 'is_del' => $model->is_del]);
+                Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
+                $knowledges = Knowledge::findAll(['node_id' => ArrayHelper::getColumn($nodes, 'id'), 'is_del' => $model->is_del]);
+                foreach ($knowledges as $knowledge) {
+                    if($knowledge->has_resource){
+                        switch($knowledge->type){
+                            case Knowledge::TYPE_VIDEO_RESOURCE:
+                                Yii::$app->db->createCommand()->update(KnowledgeVideo::tableName(), [
+                                    'is_del' => $model->is_del], ['knowledge_id' => $knowledge->id])->execute();
+                            case Knowledge::TYPE_HTML_RESOURCE:
+                                break;
+                        }
+                    }
+                }
+                $this->saveCourseActLog(['action' => '删除', 'title' => "课程管理", 
+                    'content' => "{$model->name}", 'course_id' => $model->id]);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
      * 关闭课程操作
      * @param Course $model
      * @throws Exception
@@ -311,7 +353,11 @@ class ActionUtils
             $trans->commit();  //提交事务
             return [
                 'code'=> 200,
-                'data' => ['id' => $model->id, 'name' => $model->name],
+                'data' => [
+                    'id' => $model->id, 
+                    'course_id' => $model->course_id, 
+                    'name' => $model->name
+                ],
                 'message' => '操作成功！'
             ];
         }catch (Exception $ex) {
@@ -381,6 +427,18 @@ class ActionUtils
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
                 Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);
+                $knowledges = Knowledge::findAll(['node_id' => $model->id, 'is_del' => $model->is_del]);
+                foreach ($knowledges as $knowledge) {
+                    if($knowledge->has_resource){
+                        switch($knowledge->type){
+                            case Knowledge::TYPE_VIDEO_RESOURCE:
+                                Yii::$app->db->createCommand()->update(KnowledgeVideo::tableName(), [
+                                    'is_del' => $model->is_del], ['knowledge_id' => $knowledge->id])->execute();
+                            case Knowledge::TYPE_HTML_RESOURCE:
+                                break;
+                        }
+                    }
+                }
                 $this->saveCourseActLog(['action' => '删除', 'title' => "环节管理", 
                     'content' => "{$model->name}", 'course_id' => $model->course_id]);
             }else{
@@ -423,10 +481,14 @@ class ActionUtils
             }
             if($model->save()){
                 if($model->has_resource){
-                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                        $resource = new KnowledgeVideo([
-                            'knowledge_id' => $model->id, 'video_id' => $resId
-                        ]);
+                    switch ($model->type){
+                        //如果为视频资源的是否执行
+                        case Knowledge::TYPE_VIDEO_RESOURCE:
+                            $resource = new KnowledgeVideo([
+                                'knowledge_id' => $model->id, 'video_id' => $resId
+                            ]);
+                        case Knowledge::TYPE_HTML_RESOURCE:
+                            break;
                     }
                     $resource->save();
                 }
@@ -443,7 +505,10 @@ class ActionUtils
             return [
                 'code'=> 200,
                 'data' => [
-                    'id' => $model->id, 'node_id' => $model->node_id, 'name' => $model->name,
+                    'id' => $model->id, 
+                    'node_id' => $model->node_id, 
+                    'course_id' => $model->node->course_id, 
+                    'name' => $model->name,
                     'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
                 ],
                 'message' => '操作成功！'
@@ -483,20 +548,23 @@ class ActionUtils
             if($model->save()){
                 $content = '';
                 if($model->has_resource){
-                    //如果为视频资源的是否执行
-                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
-                        if($resource !== null){
-                            $oldRes = clone $resource;
-                            $oldResId = $oldRes->video_id;
-                            $resource->video_id = $resId;
-                            $resource->save(false, ['video_id']);
-                            $content .= $oldResId != $resId ? 
-                                "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
-                        }else{
-                            $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
-                            $resource->save();
-                        }
+                    switch ($model->type){
+                        //如果为视频资源的是否执行
+                        case Knowledge::TYPE_VIDEO_RESOURCE:
+                            $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
+                            if($resource !== null){
+                                $oldRes = clone $resource;
+                                $oldResId = $oldRes->video_id;
+                                $resource->video_id = $resId;
+                                $resource->save(false, ['video_id']);
+                                $content .= $oldResId != $resId ? 
+                                    "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                            }else{
+                                $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
+                                $resource->save();
+                            }
+                        case Knowledge::TYPE_HTML_RESOURCE:
+                            break;
                     }
                 }
                 //新属性值非空时执行
@@ -547,10 +615,14 @@ class ActionUtils
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
                 if($model->has_resource){
-                    if($model->type == Knowledge::TYPE_VIDEO_RESOURCE){
-                        $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
-                        $resource->is_del = $model->is_del;
+                    switch ($model->type){
+                        //如果为视频资源的是否执行
+                        case Knowledge::TYPE_VIDEO_RESOURCE:
+                            $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
+                        case Knowledge::TYPE_HTML_RESOURCE:
+                            break;
                     }
+                    $resource->is_del = $model->is_del;
                     $resource->update(false, ['is_del']);
                 }
                 $this->saveCourseActLog([

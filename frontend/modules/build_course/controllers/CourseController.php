@@ -40,6 +40,7 @@ class CourseController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'close' => ['POST'],
                 ],
             ],
             'access' => [
@@ -158,8 +159,18 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by !== Yii::$app->user->id){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Edit' => Yii::t('app', 'Edit')
+                ]));
+            }
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
         if ($model->load(Yii::$app->request->post())) {
@@ -178,6 +189,37 @@ class CourseController extends Controller
     }
     
     /**
+     * 删除 现有的 Course 模型。
+     * 如果删除成功，浏览器将被重定向到“查看”页面。
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Delete' => Yii::t('app', 'Delete')
+                ]));
+            }
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
+        if (Yii::$app->request->isPost) {
+            ActionUtils::getInstance()->deleteCourse($model);
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+        
+    }
+    
+    /**
      * 关闭 现有的 Course 模型。
      * 如果关闭成功，浏览器将被重定向到“查看”页面。
      * @param integer $id
@@ -187,17 +229,24 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by !== Yii::$app->user->id){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if($model->created_by == Yii::$app->user->id){
+            if(!$model->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{notPublished}{canNot}{Down}{Shelves}', [
+                    'notPublished' => Yii::t('app', 'The course is not published,'),
+                    'canNot' => Yii::t('app', 'Can not be ') ,
+                    'Down' => Yii::t('app', 'Down'), 'Shelves' => Yii::t('app', 'Shelves')
+                ]));
+            }
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
             ActionUtils::getInstance()->closeCourse($model);
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->renderAjax('close', [
-                'model' => $model,  //模型
-            ]);
         }
     }
     
@@ -211,8 +260,18 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by !== Yii::$app->user->id){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Publish}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Publish' => Yii::t('app', 'Publish')
+                ]));
+            }
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
         if (Yii::$app->user->identity->is_official || $model->load(Yii::$app->request->post())) {

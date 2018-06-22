@@ -33,7 +33,7 @@ class KnowledgeController extends Controller
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    //'delete' => ['POST'],
+                   'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -59,7 +59,17 @@ class KnowledgeController extends Controller
         $model = new Knowledge(['node_id' => $node_id, 'created_by' => \Yii::$app->user->id]);
         $model->loadDefaultValues();
 
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+            if($model->node->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Add' => Yii::t('app', 'Add')
+                ]));
+            }
+            if($model->node->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -88,6 +98,15 @@ class KnowledgeController extends Controller
             if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
                 throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
             }
+            if($model->node->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Edit' => Yii::t('app', 'Edit')
+                ]));
+            }
+            if($model->node->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
@@ -107,7 +126,7 @@ class KnowledgeController extends Controller
      * 删除 现有的 Knowledge 模型。
      * 如果删除成功，返回json数据
      * @param string $id
-     * @return mixed
+     * @return json
      */
     public function actionDelete($id)
     {
@@ -117,17 +136,22 @@ class KnowledgeController extends Controller
             if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
                 throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
             }
+            if($model->node->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Delete' => Yii::t('app', 'Delete')
+                ]));
+            }
+            if($model->node->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->deleteKnowledge($model);
-        } else {
-            return $this->renderAjax('delete',[
-                'model' => $model,  //模型
-            ]);
         }
     }
 

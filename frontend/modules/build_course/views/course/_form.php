@@ -79,11 +79,12 @@ $this->registerJs($format, View::POS_HEAD);
     <?= $form->field($model, 'category_id',[
         'template' => "{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>", 
     ])->widget(DepDropdown::class, [
-        'plugOptions' => [
+        'pluginOptions' => [
             'url' => Url::to('/admin_center/category/search-children', false),
-            'level' => 3,
+            'max_level' => 3,
+            'onChangeEvent' => new JsExpression('function(value){ getAttr(value); }')
         ],
-        'items' => Category::getSameLevelCats($model->category_id),
+        'items' => Category::getSameLevelCats($model->category_id, true),
         'values' => $model->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($model->category_id)->path))),
     ])->label(Yii::t('app', '{Course}{Category}', [
         'Course' => Yii::t('app', 'Course'), 'Category' => Yii::t('app', 'Category')
@@ -219,12 +220,13 @@ $js =
         initialFrameHeight: 500,
         maximumWords: 100000,
     });
-    //选择二级分类加载其对应的属性
-    $('select[data-name="course-category_id"]').eq(2).change(function(){
+    //选择分类加载其对应的属性
+    function getAttr(value){
         var items = $domes;
         var dome = "";
         var options = [];
-        $.post("../course/attr-search?cate_id=" + $(this).val(), function(rel){
+        $("#courseattribute").html("");
+        $.post("../course/attr-search?cate_id=" + value, function(rel){
             var data = rel['data'];
             for(var name in data){
                 $.each(data[name].values, function(index, text){
@@ -235,7 +237,7 @@ $js =
             }
             $("#courseattribute").append(dome);
         });
-    });
+    }
         
     //单击刷新按钮重新加载老师下拉列表
     $("#refresh").click(function(){

@@ -31,6 +31,7 @@ use yii\web\UploadedFile;
  * @property int $content_time  课程时长
  * @property string $favorite_count 收藏数
  * @property string $learning_count 在学数量
+ * @property int $is_del 是否删除：0否 1是
  * @property string $created_by 创建人
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
@@ -120,7 +121,7 @@ class Course extends ActiveRecord
                 "Can't be empty" => \Yii::t('app', "Can't be empty.")
             ])],
             [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'content_time',
-                'is_official', 'created_at', 'updated_at'], 'integer'],
+                'is_del', 'is_official', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             //[['level', 'is_recommend', 'is_publish'], 'string', 'max' => 1],
@@ -152,6 +153,7 @@ class Course extends ActiveRecord
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
             'learning_count' => Yii::t('app', 'Learning Count'),
+            'is_del' => Yii::t('app', 'Is Del'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),

@@ -162,6 +162,7 @@ class CourseSearch extends Course
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
+        self::$query->andFilterWhere(['is_del' => 0]);
         //复制课程对象
         $copyCourse= clone self::$query;    
         //查询课程下的标签

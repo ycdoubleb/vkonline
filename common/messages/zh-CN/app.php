@@ -8,10 +8,15 @@
 return [
     'Y' => '是',
     'N' => '否',
+    'Yes' => '是',
+    'No' => '否',
     'My' => '我的',
     'All' => '全部',
     'Start' => '开始',
     'End' => '结束',
+    'Up' => '上',
+    'Down' => '下',
+    
     
     //公共- 用户
     'User' => '用户',
@@ -150,6 +155,7 @@ return [
     'Data' => '数据',
     'Resolution' => '分辨率',
     'Knowledge' => '知识点',
+    'Shelves' => '架',
     
   
     //提示消息
@@ -167,6 +173,11 @@ return [
     'Please contact us if you think this is a server error. Thank you.' => '如果您认为这是服务器错误，请与我们联系。谢谢您.',
     'Incorrect username or password' => '账号或密码错误.',
     'You have no permissions to perform this operation.' => '您没有执行此操作的权限。',
+    'Are you sure ' => '你确定要',
+    'The course is not published,' => '课程未发布,',
+    'The course has been published,' => '课程已发布，',
+    'Can not be ' => '不能被',
+    'The course does not exist.' => '课程不存在。',
     
     //后台-公共配置
     'Config' => '配置',
