@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\Teacher;
+use common\widgets\ueditor\UeditorAsset;
 use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
@@ -67,7 +68,9 @@ use yii\widgets\ActiveForm;
     
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
-    ])->textarea(['value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 6, 'placeholder' => '请输入...']) ?>
+    ])->textarea([
+        'id' => 'container', 'style' => 'width:100%; height:200px;',
+        'value' => $model->isNewRecord ? '无' : $model->des, 'placeholder' => '请输入...']) ?>
 
     <div class="form-group">
         <div class="col-lg-1 col-md-1"></div>
@@ -84,6 +87,12 @@ use yii\widgets\ActiveForm;
 $js = 
 <<<JS
    
+    /** 富文本编辑器 */
+    $('#container').removeClass('form-control');
+    UE.getEditor('container', {
+        maximumWords: 100000,
+    });
+        
     //失去焦点提交表单
     $("#teacher-name").blur(function(){
         $.post("../teacher/search?name=" + $(this).val(), function(rel){
@@ -99,4 +108,5 @@ $js =
         
 JS;
     $this->registerJs($js,  View::POS_READY);
+    UeditorAsset::register($this);
 ?>

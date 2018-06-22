@@ -385,7 +385,7 @@ class DefaultController extends Controller
             ->from(['Uploadfile' => Uploadfile::tableName()]);
         
         $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.id' => $userIds]);
+        $query->where(['Uploadfile.created_by' => $userIds]);
         
         return $query->one();
     }

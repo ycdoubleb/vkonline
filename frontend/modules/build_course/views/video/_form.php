@@ -3,6 +3,7 @@
 use common\models\vk\Video;
 use common\utils\StringUtil;
 use common\widgets\tagsinput\TagsInputAsset;
+use common\widgets\ueditor\UeditorAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
@@ -17,6 +18,7 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 GrowlAsset::register($this);
 TagsInputAsset::register($this);
+UeditorAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
@@ -123,6 +125,7 @@ $this->registerJs($format, View::POS_HEAD);
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea([
+        'id' => 'container', 'type' => 'text/plain', 'style' => 'width:100%; height:200px;',
         'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Des}', [
         'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
@@ -187,6 +190,19 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
+        
+    /** 富文本编辑器 */
+    $('#container').removeClass('form-control');
+    var ue = UE.getEditor('container', {toolbars:[
+        [
+            'fullscreen', 'source', '|', 'undo', 'redo', '|',  
+            'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+            'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'paragraph', 'fontfamily', 'fontsize', '|',
+            'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+            'simpleupload', 'horizontal'
+        ]
+    ]});
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
         $('#video-teacher_id').html("");

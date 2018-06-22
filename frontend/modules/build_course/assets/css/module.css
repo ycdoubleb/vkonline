@@ -337,8 +337,8 @@ body .select2-container--krajee
     border-radius: 0;
 }
 .panel .right-panel-height {
-    min-height: 418px;
-    max-height: 418px;
+    min-height: 337px;
+    max-height: 337px;
     overflow-y: auto;
 }
 .panel .panel-height {
