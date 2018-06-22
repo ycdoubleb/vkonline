@@ -11,7 +11,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Category */
 /* @var $form ActiveForm */
-
+//解决出现创建顶级分类的错误
 $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
 
 ?>

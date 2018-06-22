@@ -11,6 +11,7 @@ use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -24,6 +25,7 @@ $this->title = Yii::t('app', '{Course}{Statistics}',[
 ]);
 
 $filterChart = ArrayHelper::getValue($filters, 'chart', 'category');  //统计类型
+$category_id = ArrayHelper::getValue($filters, 'CourseSearch.category_id'); //分类ID
 
 ?>
 <div class="course-index main">
@@ -62,11 +64,12 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'category');  //统计�
                         'pluginOptions' => [
                             'url' => Url::to('/admin_center/category/search-children', false),
                             'max_level' => 3,
+                            'onChangeEvent' => new JsExpression('function(){$("#course-form").submit();}')
                         ],
-                        'items' => Category::getSameLevelCats($searchModel->category_id, true),
-                        'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
+                        'items' => Category::getSameLevelCats($category_id, true),
+                        'values' => $category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($category_id)->path))),
                         'itemOptions' => [
-                            'style' => 'width: 129.5px; display: inline-block;',
+                            'style' => 'width: 127.36px; display: inline-block;',
                         ],
                     ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
                 </div>
