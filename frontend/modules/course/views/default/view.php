@@ -62,7 +62,7 @@ $this->title = Yii::t('app', $model['name']);
                     </div>
                     <div class="control-box">
                         <?php $lastKnowledge = $study_progress['last_knowledge'] != null ? $study_progress['last_knowledge'] : $model['first_knowledge']; ?>
-                        <a class="btn btn-highlight btn-flat" href="/study_center/default/view?id=<?= $lastKnowledge ?>">
+                        <a class="btn btn-highlight btn-flat <?= $model['node_count']==0 ? 'disabled' : '' ?>" href="/study_center/default/view?id=<?= $lastKnowledge ?>">
                             <?= $study_progress['last_knowledge'] != null ? '继续学习' : '开始学习' ?>
                         </a>
                         
@@ -335,7 +335,7 @@ $this->title = Yii::t('app', $model['name']);
         if($("#favorite span").html() == '已收藏'){
             //移除收藏
             $.get('/course/api/del-favorite',{course_id:'<?= $model['id'] ?>'},function(result){
-                if(result.code == 200){
+                if(result.success && result.data.code == '0'){
                     //成功
                     $("#favorite span").html('收藏');
                     $("#favorite i").removeClass('fa-heart').addClass('fa-heart-o');
@@ -344,7 +344,7 @@ $this->title = Yii::t('app', $model['name']);
         }else{
             //添加收藏
             $.get('/course/api/add-favorite',{course_id:'<?= $model['id'] ?>'},function(result){
-                if(result.code == 200){
+                if(result.success && result.data.code == '0'){
                     //成功
                     $("#favorite span").html('已收藏');
                     $("#favorite i").removeClass('fa-heart-o').addClass('fa-heart');

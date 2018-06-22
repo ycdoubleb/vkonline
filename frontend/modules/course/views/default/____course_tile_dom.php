@@ -16,10 +16,10 @@
         <span class="leaning">{%learning_count%}人在学</span>
     </div>
     <div class="foot-box">
-        <a href="#">
+        <a href="/teacher/default/view?id={%teacher_id%}">
             <img class="teacher-avatar" src="{%teacher_avatar%}"/>
             <span class="teacher-name">{%teacher_name%}</span>
         </a>
-        <span class="play_count">播放量 {%month_play_count%}</span>
+        <span class="star">{%avg_star%} 分</span>
     </div>
 </div>

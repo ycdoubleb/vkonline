@@ -96,7 +96,7 @@ class UploadResponse extends ApiResponse {
      * 
      */
     public function getCodeMap() {
-        return array_merge(parent::getCodeMap(), [
+        return parent::getCodeMap() + [
             //文件
             self::CODE_FILE_EXIT => '文件已存在！',
             self::CODE_FILE_INTERRUPT => '文件上传未完成，请继续上传其它分片！',
@@ -113,7 +113,7 @@ class UploadResponse extends ApiResponse {
             self::CODE_DIR_NOT_FOUND => '目录不存在：{path}',
             //上传路径
             self::CODE_LINK_GET_DATA_FAIL => '获取远程数据失败！',
-        ]);
+        ];
     }
 
 }
