@@ -28,7 +28,7 @@ class CourseNodeController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    //'delete' => ['POST'],
+                    'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -45,7 +45,7 @@ class CourseNodeController extends Controller
     
     /**
      * 列出所有 CourseNodeSearch 模型。
-     * @return mixed  [dataProvider => 课程节点数据]
+     * @return mixed 
      */
     public function actionIndex($course_id)
     {
@@ -53,7 +53,7 @@ class CourseNodeController extends Controller
         $dataProvider = $searchModel->search(['course_id' => $course_id]);
         
         return $this->renderAjax('index', [
-            'dataProvider' => $dataProvider,
+            'dataProvider' => $dataProvider,    //课程节点数据
         ]);
     }
     
@@ -61,14 +61,24 @@ class CourseNodeController extends Controller
      * 创建 一个新的 CourseNode 模块
      * 如果创建成功，返回json数据。
      * @param string $course_id
-     * @return mixed|json [model => 模型, ]
+     * @return mixed|json 
      */
     public function actionCreate($course_id)
     {        
         $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id) && $model->course->is_publish){
+        if(ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Add' => Yii::t('app', 'Add')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -77,7 +87,7 @@ class CourseNodeController extends Controller
             return ActionUtils::getInstance()->createCourseNode($model);
         } else {
             return $this->renderAjax('create', [
-                'model' => $model,
+                'model' => $model,      //模型
             ]);
         }
     }
@@ -86,13 +96,23 @@ class CourseNodeController extends Controller
      * 更新 现有的 CourseNode 模型。
      * 如果更新成功，返回json数据。
      * @param string $id
-     * @return mixed|json [model => 模型]
+     * @return mixed|json 
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id) && $model->course->is_publish){
+        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Edit' => Yii::t('app', 'Edit')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -101,7 +121,7 @@ class CourseNodeController extends Controller
             return ActionUtils::getInstance()->updateCourseNode($model);
         } else {
             return $this->renderAjax('update', [
-                'model' => $model,
+                'model' => $model,      //模型
             ]);
         }
     }
@@ -110,23 +130,29 @@ class CourseNodeController extends Controller
      * 删除 现有的 CourseNode 模型。
      * 如果删除成功，返回json数据。
      * @param string $id
-     * @return mixed [model => 模型]
+     * @return json 
      */
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
         
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id) && $model->course->is_publish){
+        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Delete' => Yii::t('app', 'Delete')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->deleteCourseNode($model);
-        } else {
-            return $this->renderAjax('delete',[
-                'model' => $model,
-            ]);
         }
     }
     

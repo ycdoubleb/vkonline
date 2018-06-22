@@ -47,7 +47,8 @@ ModuleAssets::register($this);
         ]); ?>
         
         <?= $form->field($searchModel, 'name')->textInput([
-            'placeholder' => '请输入...', 'maxlength' => true
+            'placeholder' => '请输入...', 'maxlength' => true,
+            'onchange' => 'submitForm();',
         ])->label(Yii::t('app', '{Teacher}{Name}：', [
             'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
@@ -55,6 +56,7 @@ ModuleAssets::register($this);
         <?= $form->field($searchModel, 'is_certificate')->radioList(['' => '全部', 1 => '已认证', 0 => '未认证'], [
             'value' => ArrayHelper::getValue($filters, 'TeacherSearch.is_certificate', ''),
             'itemOptions'=>[
+                'onclick' => 'submitForm();',
                 'labelOptions'=>[
                     'style'=>[
                         'margin'=>'10px 39px 10px 0',
@@ -113,16 +115,10 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/teacher/_list.php')));
 $js = 
 <<<JS
-   
-    //失去焦点提交表单
-    $("#teachersearch-name").blur(function(){
+    //提交表单 
+    window.submitForm = function(){
         $('#build-course-form').submit();
-    });
-   
-    //单击选中radio提交表单
-    $('input[name="TeacherSearch[is_certificate]"]').click(function(){
-        $('#build-course-form').submit();
-    });
+    }  
         
     //鼠标经过、离开事件
     hoverEvent();        

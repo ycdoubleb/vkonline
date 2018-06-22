@@ -57,6 +57,9 @@ GrowlAsset::register($this);
         <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
             'data' => $teacherMap, 'options' => ['placeholder'=>'请选择...',],
             'pluginOptions' => ['allowClear' => true],
+            'pluginEvents' => [
+                'change' => 'function(){ submitForm(); }'
+            ]
         ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ])) ?>
@@ -64,6 +67,7 @@ GrowlAsset::register($this);
         <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
             'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
             'itemOptions'=>[
+                'onclick' => 'submitForm();',
                 'labelOptions'=>[
                     'style'=>[
                         'margin'=>'10px 15px 10px 0',
@@ -77,7 +81,8 @@ GrowlAsset::register($this);
         ])) ?>
         <!--视频名称-->
         <?= $form->field($searchModel, 'name')->textInput([
-            'placeholder' => '请输入...', 'maxlength' => true
+            'placeholder' => '请输入...', 'maxlength' => true,
+            'onchange' => 'submitForm();',
         ])->label(Yii::t('app', '{Video}{Name}：', [
             'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
@@ -155,19 +160,10 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
 $js = 
 <<<JS
-        
-    //触发change事件
-    $("#videosearch-teacher_id").change(function(){
+    //提交表单 
+    window.submitForm = function(){
         $('#build-course-form').submit();
-    });
-    //单击选中radio提交表单
-    $('input[name="VideoSearch[level]"]').click(function(){
-        $('#build-course-form').submit();
-    });
-    //失去焦点提交表单
-    $("#videosearch-name").blur(function(){
-        $('#build-course-form').submit();
-    }); 
+    }  
    
     //排序选中效果
     $(".sort ul li[id=$sort]").addClass('active');    

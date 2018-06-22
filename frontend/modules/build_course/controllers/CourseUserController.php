@@ -31,7 +31,7 @@ class CourseUserController extends Controller
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    //'delete' => ['POST'],
+                    'delete' => ['POST'],
                 ],
             ],
             'access' => [
@@ -73,9 +73,19 @@ class CourseUserController extends Controller
         $model = new CourseUser(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-        }
+        if($model->course->created_by == Yii::$app->user->id){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Add' => Yii::t('app', 'Add')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }        
         
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
@@ -99,10 +109,20 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if($model->course->created_by == Yii::$app->user->id){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Edit' => Yii::t('app', 'Edit')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-       
+        
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->updateCourseUser($model);
@@ -123,17 +143,23 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by != Yii::$app->user->id && $model->course->is_publish){
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        if($model->course->created_by == Yii::$app->user->id){
+            if($model->course->is_publish){
+                throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
+                    'beenPublished' => Yii::t('app', 'The course has been published,'),
+                    'canNot' => Yii::t('app', 'Can not be '), 'Delete' => Yii::t('app', 'Delete')
+                ]));
+            }
+            if($model->course->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The course does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->deleteCourseUser($model);
-        } else {
-            return $this->renderAjax('delete',[
-                'model' => $model
-            ]);
         }
     }
     

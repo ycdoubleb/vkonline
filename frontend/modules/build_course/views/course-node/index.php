@@ -29,7 +29,7 @@ GrowlAsset::register($this);
                 ]) ?>
             </span>
             <div class="btngroup">
-                <?php if($is_hasEditNode && !$model->is_publish){
+                <?php if($is_hasEditNode && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
                         'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
@@ -59,8 +59,19 @@ GrowlAsset::register($this);
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $courseNodes->id], [
                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
-                            echo Html::a('<i class="fa fa-times"></i>',['course-node/delete', 'id' => $courseNodes->id], [
-                                'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
+                            echo Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
+                                    'data' => [
+                                        'pjax' => 0, 
+                                        'confirms' => Yii::t('app', "{Are you sure}{Delete}【{$courseNodes->name}】{Node}", [
+                                            'Are you sure' => Yii::t('app', 'Are you sure '), 
+                                            'Delete' => Yii::t('app', 'Delete'), 'Node' => Yii::t('app', 'Node') 
+                                        ]),
+                                        'method' => 'post',
+                                        'id' => $courseNodes->id,
+                                        'course_id' => $courseNodes->course_id,
+                                    ],
+                                    'onclick' => 'deleteCourseNode($(this));'
+                                ]) . '&nbsp;';
                             echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
                         }?>
                     </div>
@@ -78,8 +89,19 @@ GrowlAsset::register($this);
                                         if($is_hasEditNode && !$model->is_publish){
                                             echo Html::a('<i class="fa fa-pencil"></i>', ['knowledge/update','id' => $knowledge->id], [
                                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
-                                            echo Html::a('<i class="fa fa-times"></i>',['knowledge/delete', 'id' => $knowledge->id], [
-                                                'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
+                                            echo Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
+                                                'data' => [
+                                                    'pjax' => 0, 
+                                                    'confirms' => Yii::t('app', "{Are you sure}{Delete}【{$knowledge->name}】{Knowledge}", [
+                                                        'Are you sure' => Yii::t('app', 'Are you sure '), 
+                                                        'Delete' => Yii::t('app', 'Delete'), 'Knowledge' => Yii::t('app', 'Knowledge') 
+                                                    ]),
+                                                    'method' => 'post',
+                                                    'id' => $knowledge->id,
+                                                    'course_id' => $knowledge->node->course_id,
+                                                ],
+                                                'onclick' => 'deleteKnowledge($(this));'
+                                            ]) . '&nbsp;';
                                             echo Html::a('<i class="fa fa-arrows"></i>', 'javascript:;', ['class' => 'handle']);
                                         }
                                     ?>
@@ -104,9 +126,6 @@ $js =
         forcePlaceholderSize: true,
         handle: '.fa-arrows',
 	items: 'li',
-        //items: ':not(.disabled)',
-        //connectWith: '.data-cou-phase',
-        //placeholderClass: 'border border-orange mb1'
     });
     //提交更改顺序
     $(".sortable").each(function(i,e){
@@ -125,7 +144,6 @@ $js =
                     newIndexs[$(item).attr('id')] = index;
                 }
             });
-            
             $.post("../course-node/move-node", 
                 {"tableName":e.id, "oldIndexs":oldIndexs, "newIndexs":newIndexs, "course_id":"$model->id"},
             function(rel){
@@ -150,6 +168,43 @@ $js =
             elem.find('i').removeClass("fa-caret-down").addClass("fa-caret-right");
         else
             elem.find('i').removeClass("fa-caret-right").addClass("fa-caret-down");
+    }
+    //删除节点
+    window.deleteCourseNode = function(elem){
+        if(confirm(elem.attr("data-confirms"))){
+            $.post("../course-node/delete?id=" + elem.attr("data-id"), function(rel){
+                if(rel['code'] == '200'){
+                    $("#" + elem.attr("data-id")).remove();
+                    if($("#course_node li").length <= 0){
+                        $('<li class="empty"><div class="head"><center>没有找到数据。</center></div></li>').appendTo($("#course_node"));
+                    }
+                    $("#act_log").load("../course-actlog/index?course_id=" + elem.attr("data-course_id"));
+                }
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: rel['code'] == '200' ? "success " : "danger",
+                });
+            });
+            return false;
+        }
+    }
+    //删除节点
+    window.deleteKnowledge = function(elem){
+        if(confirm(elem.attr("data-confirms"))){
+            $.post("../knowledge/delete?id=" + elem.attr("data-id"), function(rel){
+                if(rel['code'] == '200'){
+                    $("#" + elem.attr("data-id")).remove();
+                    $("#act_log").load("../course-actlog/index?course_id=" + elem.attr("data-course_id"));
+                }
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: rel['code'] == '200' ? "success " : "danger",
+                });
+            });
+            return false;
+        }
     }
 
 JS;

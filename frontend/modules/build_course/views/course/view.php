@@ -40,16 +40,28 @@ SwitchInputAsset::register($this);
                 'icon' => null,
                 'options' => ['class' => 'btn btn-success btn-flat', 'target' => '_black'],
                 'symbol' => '&nbsp;',
-                'conditions' => true,
+                'conditions' => !$model->is_del,
                 'adminOptions' => true,
             ],
             [
-                'name' => Yii::t('app', 'Close'),
+                'name' => Yii::t('app', '{Down}{Shelves}', [
+                    'Down' => Yii::t('app', 'Down'), 'Shelves' => Yii::t('app', 'Shelves')
+                ]),
                 'url' => ['close', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-danger btn-flat', 'onclick' => 'showModal($(this));return false;'],
+                'options' => [
+                    'class' => 'btn btn-danger btn-flat', 
+                    'data' => [
+                        'pjax' => 0, 
+                        'confirm' => Yii::t('app', "{Are you sure}{Down}{Shelves}【{$model->name}】{Course}", [
+                            'Are you sure' => Yii::t('app', 'Are you sure '), 'Down' => Yii::t('app', 'Down'), 
+                            'Shelves' => Yii::t('app', 'Shelves'), 'Course' => Yii::t('app', 'Course')
+                        ]),
+                        'method' => 'post',
+                    ],
+                ],
                 'symbol' => '',
-                'conditions' => $model->is_publish && $model->created_by === Yii::$app->user->id,
+                'conditions' => $model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
                 'adminOptions' => true,
             ],
             [
@@ -57,12 +69,30 @@ SwitchInputAsset::register($this);
                 'url' => ['publish', 'id' => $model->id],
                 'icon' => null,
                 'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => !Yii::$app->user->identity->is_official ? 'showModal($(this));return false;' : null],
+                'symbol' => '&nbsp;',
+                'conditions' => !$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
+                'adminOptions' => true,
+            ],
+            [
+                'name' => Yii::t('app', 'Delete'),
+                'url' => ['delete', 'id' => $model->id],
+                'icon' => null,
+                'options' => [
+                    'class' => 'btn btn-danger btn-flat', 
+                    'data' => [
+                        'pjax' => 0, 
+                        'confirm' => Yii::t('app', "{Are you sure}{Delete}【{$model->name}】{Course}", [
+                            'Are you sure' => Yii::t('app', 'Are you sure '), 'Delete' => Yii::t('app', 'Delete'), 
+                            'Course' => Yii::t('app', 'Course')
+                        ]),
+                        'method' => 'post',
+                    ],
+                ],
                 'symbol' => '',
-                'conditions' => !$model->is_publish && $model->created_by === Yii::$app->user->id,
+                'conditions' => !$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
                 'adminOptions' => true,
             ],
         ];
-        
         foreach ($btnItems as $btn) {
             if($btn['conditions']){
                 $btngroup .= Html::a($btn['icon'].$btn['symbol'].$btn['name'], $btn['url'], $btn['options']) . $btn['symbol'];
@@ -87,7 +117,7 @@ SwitchInputAsset::register($this);
                 ]) ?>
             </span>
             <div class="btngroup">
-                <?php if(!$model->is_publish && $model->created_by === Yii::$app->user->id){
+                <?php if(!$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']);
                 }?>
