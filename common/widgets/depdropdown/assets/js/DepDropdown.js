@@ -44,9 +44,13 @@
         this.container.find("select:gt(" + index + ")").remove();
         $.each(this.container.find("select"), function () {
             if ($(this).val() != "" && $(this).val() != self.config['prompt']) {
-                $('#' + self.config['name']).val($(this).val());
+                $('#' + self.config['name']).val(self.config.value = $(this).val());
             }
         });
+        /* 触发 onChange 事件 */
+        if(self.config['onChangeEvent'] && typeof self.config['onChangeEvent'] === "function"){
+            self.config['onChangeEvent'].call(self, self.config.value);
+        }
         if ($(elem).val() == '' || index>= self.config['max_level'] - 1 ) {
             return;
         }

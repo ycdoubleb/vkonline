@@ -58,8 +58,6 @@ class DepDropdown extends InputWidget {
             'class' => 'form-control',
             'prompt' => $this->pluginOptions['prompt'],
                 ], $this->itemOptions);
-        
-        //var_dump($this->pluginOptions);
     }
 
     //put your code here
@@ -92,9 +90,7 @@ class DepDropdown extends InputWidget {
         DepDropdownAssets::register($view);
         //设置组件配置
         $this->pluginOptions['itemOptions'] = Html::renderTagAttributes($this->itemOptions);
-
         $config = Json::encode($this->pluginOptions);
-
         $js = <<< JS
             new  window.{$this->pluginName}({$config});
 JS;
