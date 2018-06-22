@@ -152,6 +152,9 @@ $total_page = ceil($max_count/$page_size);                      //最大页数
 
 $params_js = json_encode($params,JSON_FORCE_OBJECT);
 $ev_attrs_js = json_encode($ev_attrs);
+
+//加载 ITEM_DOM 模板
+$course_tile_dom = str_replace("\n", ' ', $this->render('____course_tile_dom'));
 $js = 
 <<<JS
     //----------------------------------------------------------------------------
@@ -182,28 +185,7 @@ $js =
     var total_page = $total_page;   //最大数量
     var isPageLoading = false;      //是否换页中
     //课程item项
-    var item_dom = '<div class="course-tile">'
-                    +'<div class="pic-box">'
-                        +'<a href="/course/default/view?id={%id%}" target="_blank"><img src="{%cover_img%}"/></a>'
-                    +'</div>'
-                    +'<div class="name-box">'
-                        +'<span class="name single-clamp" title="{%name%}">{%name%}</span>'
-                    +'</div>'
-                    +'<div class="tag-box">'
-                        +'<span class="tag single-clamp">{%tags%}</span>'
-                    +'</div>'
-                    +'<div class="customer-box">'
-                        +'<span class="customer">{%customer_name%}</span>'
-                        +'<span class="leaning">{%learning_count%}人在学</span>'
-                    +'</div>'
-                    +'<div class="foot-box">'
-                        +'<a href="/teacher/default/view?id={%teacher_id%}">'
-                            +'<img class="teacher-avatar" src="{%teacher_avatar%}"/>'
-                            +'<span class="teacher-name">{%teacher_name%}</span>'
-                        +'</a>'
-                        +'<span class="star">{%avg_star%} 分</span>'
-                    +'</div>'
-                +'</div>';
+    var item_dom = '$course_tile_dom';
         
     $(window).scroll(function() {
         if($('.loading-box').offset().top - $(document).scrollTop() < $(window).height() + 100 && !isPageLoading){
@@ -264,9 +246,9 @@ $js =
             //异步执行查询
             $.get('/course/api/search-course',params,function(result){
                 isPageLoading = false;
-                if(result.code == '200'){
+                if(result.success && result.data.code == '0'){
                     //添加查询到的课程
-                    $.each(result.data.courses,function(){
+                    $.each(result.data.data.courses,function(){
                         this.content_time = Wskeee.StringUtil.intToTime(this.content_time,true);
                         var item = $(Wskeee.StringUtil.renderDOM(item_dom,this)).appendTo($('.course-list'));
                         item.hover(
@@ -285,7 +267,7 @@ $js =
                     
                 }else{
                     if(console && console.error){
-                        console.error(result.data.error);
+                        console.error(result.data.mes);
                     }
                 }
                 //隐藏loading

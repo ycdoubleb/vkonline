@@ -18,7 +18,7 @@ use yii\web\AssetBundle;
 class DepDropdownAssets extends AssetBundle{
     public $sourcePath = '@common/widgets/depdropdown/assets';
     public $css = [
-       
+       'css/depdropdown.css',
     ];
     public $js = [
         'js/DepDropdown.js',

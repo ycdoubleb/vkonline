@@ -37,6 +37,12 @@ class BaseApiController extends Controller {
     
     public function beforeAction($action) {
         if (parent::beforeAction($action)) {
+            
+            //无状态认证
+            Yii::$app->user->enableSession = false;
+            //绑定beforeSend事件，更改数据输出格式
+            Yii::$app->getResponse()->on(Response::EVENT_BEFORE_SEND, [$this, 'beforeSend']);
+            
             // 5 minutes execution time
             @set_time_limit(5 * 60);
             
@@ -57,19 +63,6 @@ class BaseApiController extends Controller {
             }
         };
         return parent::beforeAction($action);
-    }
-    
-    /**
-     * (non-PHPdoc)
-     * @see Object::init()
-     */
-    public function init()
-    {
-        parent::init();
-        //无状态认证
-        Yii::$app->user->enableSession = false;
-        //绑定beforeSend事件，更改数据输出格式
-        Yii::$app->getResponse()->on(Response::EVENT_BEFORE_SEND, [$this, 'beforeSend']);
     }
     
      /**

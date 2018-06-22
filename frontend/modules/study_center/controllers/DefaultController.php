@@ -16,7 +16,6 @@ use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoFile;
-use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -25,6 +24,7 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\Controller;
 
 /**
@@ -267,8 +267,12 @@ class DefaultController extends Controller
         
         /* 查找视频播放量 */
         $playQuery = PlayStatistics::getObjectPlayStatistics(['knowledge_id' => $id]);
+        
+        $videoData = $videoQuery->one();
+        $videoData['des'] = Html::decode($videoData['des']);      //decode并替换
+        $videoData['teacher_des'] = Html::decode($videoData['teacher_des']);      //decode并替换
 
-        return ArrayHelper::merge($videoQuery->one(), $playQuery->asArray()->one());
+        return ArrayHelper::merge($videoData, $playQuery->asArray()->one());
     }
     
     /**

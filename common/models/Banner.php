@@ -6,6 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 use yii\web\UploadedFile;
 
 /**
@@ -159,9 +160,15 @@ class Banner extends ActiveRecord
             if (trim($this->path) == '') {
                 $this->path = $this->getOldAttribute('path');
             }
+            $this->des = Html::encode($this->des);
             return true;
         }
         return false;
+    }
+    
+    public function afterFind()
+    {
+        $this->des = Html::decode($this->des);
     }
 
     /**

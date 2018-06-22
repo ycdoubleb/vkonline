@@ -114,13 +114,14 @@ a.desc:after {
 }
 /* 导航按钮样式 */
 .nav li{
-    padding-top: 25px;      
+    padding-top: 25px;     
 }
 .nav li a{
     color: #666666;
     font-size: 16px;
 }
-.nav li a:hover{
+.nav li a:hover,
+.nav li a:focus{
     color: #2aabb6;
     background-color: #f8f8f8; /* 调整hover底色与navbar-vk 底色一样，达到去除底色功能 */
 }
@@ -129,16 +130,32 @@ a.desc:after {
 }
 /* 客户栏目 */
 .nav li .customer-box{
-    border-bottom: 2px solid #2aabb6;
+    background-color: #ccc;
+    border-bottom: 2px solid #ccc;
     margin: -6px 0 0;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+.nav li .customer-box:hover,
+.nav li.active .customer-box{
+    background-color: #2aabb6;
+    border-bottom: 2px solid #2aabb6;
+}
+/* 课工坊 */
+.nav li .m_name{
+    background-color: #f8f8f8;
+    padding: 4px 5px 3px;
+}
+.nav li .m_name:hover,active{
+    
 }
 /* 客户简称 */
 .nav li .short_name{
-    background-color: #2aabb6;
     color: #fff;
     display: inline-block;
     padding: 3px 3px 1px 3px;
-    margin-right: 5px;
 }
 
 /* 搜索框 */

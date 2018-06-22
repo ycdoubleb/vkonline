@@ -39,7 +39,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
                         [
                             'attribute' => 'content',
                             'format' => 'raw',
-                            'value' => implode("<br/>",explode("\n\r", $model->content)),
+                            'value' => Html::decode($model->content),
                         ],
                         [
                             'attribute' => 'created_by',

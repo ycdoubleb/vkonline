@@ -8,7 +8,7 @@
 
 namespace apiend\modules\v1\controllers;
 
-use apiend\components\BaseApiController;
+use apiend\components\ApiController;
 use apiend\modules\v1\actions\video\CreateVideoAction;
 use common\modules\webuploader\actions\CheckChunkAction;
 use common\modules\webuploader\actions\CheckFileAction;
@@ -16,14 +16,13 @@ use common\modules\webuploader\actions\DownloadAction;
 use common\modules\webuploader\actions\MergeChunksAction;
 use common\modules\webuploader\actions\UploadAction;
 use common\modules\webuploader\actions\UploadLinkAction;
-use Yii;
 
 /**
  * Description of VideoController
  *
  * @author Administrator
  */
-class VideoController extends BaseApiController {
+class VideoController extends ApiController {
     
     public function actions() {
         return array_merge(parent::actions(),[

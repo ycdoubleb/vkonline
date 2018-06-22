@@ -168,13 +168,6 @@ SwitchInputAsset::register($this);
                     'attribute' => 'created_at',
                     'value' => date('Y-m-d H:i', $model->created_at),
                 ],
-                [
-                    'label' => Yii::t('app', '{Course}{Des}', [
-                        'Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')
-                    ]),
-                    'format' => 'raw',
-                    'value' => "<div class=\"detail-des multi-line-clamp\" style=\"height: 63px;display: inline-block\">{$model->des}</div>",
-                ],
             ],
         ]) ?>
     </div>

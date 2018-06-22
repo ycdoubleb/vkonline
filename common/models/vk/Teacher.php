@@ -8,6 +8,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\UploadedFile;
 
 /**
@@ -152,7 +153,7 @@ class Teacher extends ActiveRecord
             if (trim($this->avatar) == ''){
                 $this->avatar = $this->getOldAttribute('avatar');
             }
-            $this->des = htmlentities($this->des);
+            $this->des = Html::encode($this->des);
             
             return true;
         }
@@ -161,7 +162,7 @@ class Teacher extends ActiveRecord
     
     public function afterFind()
     {
-        $this->des = html_entity_decode($this->des);
+        $this->des = Html::decode($this->des);
     }
     
     /**

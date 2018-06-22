@@ -191,7 +191,8 @@ $this->registerJs($format, View::POS_HEAD);
         <?= $form->field($model, 'des', [
             'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
         ])->textarea([
-            'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
+            'id' => 'knowledge-des', 'style' => 'width:100%; height:200px;',
+            'value' => $model->isNewRecord ? '无' : $model->des, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
         <!--隐藏的属性-->
         <?= Html::hiddenInput('Resource[res_id]', Knowledge::getKnowledgeResourceInfo($model->id, 'res_id')) ?>
@@ -205,6 +206,22 @@ $this->registerJs($format, View::POS_HEAD);
 <?php
 $js = 
 <<<JS
+    
+    /** 富文本编辑器 */
+    $('#knowledge-des').removeClass('form-control');
+    if(window.knowledge_ue){
+        window.knowledge_ue.destroy();
+    }
+    window.knowledge_ue = UE.getEditor('knowledge-des', {toolbars:[
+        [
+            'source', '|', 'undo', 'redo', '|',  
+            'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+            'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'paragraph', 'fontfamily', 'fontsize', '|',
+            'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+            'simpleupload', 'horizontal'
+        ]
+    ]});
     
     //开关事件
     function switchLog(event, state){

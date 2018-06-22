@@ -20,6 +20,6 @@
             <img class="teacher-avatar" src="{%teacher_avatar%}"/>
             <span class="teacher-name">{%teacher_name%}</span>
         </a>
-        <span class="star">{%avg_star%} 分</span>
+        <span class="play_count">播放量 {%month_play_count%}</span>
     </div>
 </div>

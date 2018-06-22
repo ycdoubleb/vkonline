@@ -67,7 +67,7 @@ $this->title = $model['name'];
         <div class="panel">
             <div class="panel-head">本节目标</div>
             <div class="panel-body" style="min-height: 500px;">
-                <?= str_replace(array("\r\n", "\r", "\n"), "<br/>", $model['des']) ?>
+                <?= $model['des']; ?>
             </div>
         </div>
     </div>

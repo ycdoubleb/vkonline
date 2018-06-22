@@ -1,0 +1,9 @@
+/* 组件本身 */
+.dep-dropdown{
+    
+}
+.dep-dropdown select{
+    width: 200px;
+    float: left;
+    margin-right: 5px;
+}

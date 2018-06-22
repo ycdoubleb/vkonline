@@ -126,9 +126,9 @@ $is_comment = !empty($myComment);
         $('.loading-box .no-more').hide();
         $('.loading-box .loading').show();
         $.get('/course/api/get-comment',parems,function(result){
-            if(result.code == '200' && result.data.error == undefined){
+            if(result.success && result.data.code == '0'){
                 $('.loading-box .loading').hide();
-                $.each(result.data.comments,function(){
+                $.each(result.data.data.comments,function(){
                     //已经点赞改变样式
                     this['is_praise'] = this['is_praise'] == "1" ? 'is_praise' : "";
                     var item = $(Wskeee.StringUtil.renderDOM(comment_itme_dom,this)).appendTo($("#comments-box"));
@@ -186,10 +186,9 @@ $is_comment = !empty($myComment);
                    "CommentPraise[user_id]":'<?= Yii::$app->user->id ?>',
                    "CommentPraise[result]":1,
                 },function(result){
-                   if(result.code == 200 && result.data.error == undefined){
-                       console.log(_this);
+                   if(result.success && result.data.code == '0'){
                        _this.addClass('is_praise');
-                       _this.find('.txt').html(result.data.zan_count);
+                       _this.find('.txt').html(result.data.data.zan_count);
                    }
                });
            }
