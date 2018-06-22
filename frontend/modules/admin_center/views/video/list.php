@@ -180,7 +180,7 @@ use yii\widgets\LinkPager;
                                     ];
                                     $buttonHtml = [
                                         'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                        'url' => ['/study_center/default/view', 'id' => $data['id']],
+                                        'url' => ['/build_course/video/view', 'id' => $data['id']],
                                         'options' => $options,
                                         'symbol' => '&nbsp;',
                                         'conditions' => true,
