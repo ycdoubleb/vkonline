@@ -7,6 +7,8 @@ use common\utils\DateUtil;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "{{%knowledge}}".
@@ -107,7 +109,7 @@ class Knowledge extends ActiveRecord
             if($this->isNewRecord && !empty($knowledges)){
                 $this->sort_order = $knowledges->sort_order + 1;
             }
-            $this->des = htmlentities($this->des);
+            $this->des = Html::encode($this->des);
             
             return true;
         }
@@ -117,7 +119,7 @@ class Knowledge extends ActiveRecord
     
     public function afterFind()
     {
-        $this->des = html_entity_decode($this->des);
+        $this->des = Html::decode($this->des);
     }
     
     /**
@@ -172,7 +174,7 @@ class Knowledge extends ActiveRecord
     public static function getKnowledgeResourceInfo($id, $keyName)
     {
         $resInfo = ['res_id' => '', 'data' => ''];
-        $res = (new \yii\db\Query())->select([
+        $res = (new Query())->select([
             'Knowledge.type', 'Knowledge.data', 'Knowledge.has_resource',
             'KnowledgeVideo.video_id', 
         ])->from(['Knowledge' => Knowledge::tableName()]);

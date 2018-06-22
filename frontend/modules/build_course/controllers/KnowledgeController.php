@@ -3,7 +3,6 @@
 namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Knowledge;
-use common\models\vk\searchs\KnowledgeSearch;
 use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
@@ -16,6 +15,7 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -279,7 +279,9 @@ class KnowledgeController extends Controller
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ]);
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
-        $results = ArrayHelper::merge(ArrayHelper::index([$query->one()], 'id'), 
+        $videoInfo = $query->one();
+        $videoInfo['des'] = Html::decode($videoInfo['des']);  //decode并替换
+        $results = ArrayHelper::merge(ArrayHelper::index([$videoInfo], 'id'), 
                 ArrayHelper::index($tagRefQuery->asArray()->all(), 'object_id'));
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';

@@ -4,7 +4,6 @@ use common\models\vk\CourseActLog;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;

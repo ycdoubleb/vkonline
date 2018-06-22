@@ -15,6 +15,7 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
+use yii\helpers\Html;
 use yii\web\UploadedFile;
 
 
@@ -180,7 +181,7 @@ class Video extends ActiveRecord
             if(trim($this->img) == ''){
                 $this->img = $this->getOldAttribute('img');
             }
-            $this->des = htmlentities($this->des);
+            $this->des = Html::encode($this->des);
             
             return true;
         }
@@ -190,7 +191,7 @@ class Video extends ActiveRecord
     
     public function afterFind()
     {
-        $this->des = html_entity_decode($this->des);
+        $this->des = Html::decode($this->des);
     }
     
     /**
