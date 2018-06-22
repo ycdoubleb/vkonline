@@ -146,7 +146,11 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by != \Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -160,6 +164,29 @@ class VideoController extends Controller
                 'videoFiles' => json_encode(Video::getUploadfileByVideo($model->videoFile->file_id)),    //已存在的视频文件
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             ]);
+        }
+    }
+    
+    /**
+     * 删除 现有的 Video 模型。
+     * 如果删除成功，浏览器将被重定向到“查看”或者“列表” 页面。
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
+        if (Yii::$app->request->isPost) {
+            return ActionUtils::getInstance()->deleteVideo($model);
         }
     }
     

@@ -138,6 +138,7 @@ class TeacherSearch extends Teacher
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
+        self::$query->andFilterWhere(['Teacher.is_del' => 0]);
         //查询总数
         $totalCount = self::$query->count('id');
         //显示数量

@@ -214,7 +214,7 @@ class CourseController extends Controller
         
         if (Yii::$app->request->isPost) {
             ActionUtils::getInstance()->deleteCourse($model);
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['index']);
         }
         
     }

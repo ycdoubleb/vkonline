@@ -178,6 +178,9 @@ return [
     'The course has been published,' => '课程已发布，',
     'Can not be ' => '不能被',
     'The course does not exist.' => '课程不存在。',
+    'The video does not exist.' => '视频不存在。',
+    'The teacher does not exist.' => '老师不存在。',
+    'The certified teacher can not be deleted.' => '认证的老师不可以被删除。',
     
     //后台-公共配置
     'Config' => '配置',

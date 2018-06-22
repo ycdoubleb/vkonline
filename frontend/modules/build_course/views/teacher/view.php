@@ -46,7 +46,21 @@ ModuleAssets::register($this);
             </span>
             <div class="btngroup">
                 <?php if($model->created_by == Yii::$app->user->id){
-                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary btn-flat']);
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
+                        ['class' => 'btn btn-primary btn-flat']);
+                    if(!$model->is_certificate){
+                        echo '&nbsp;' . Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+                            'class' => 'btn btn-danger btn-flat', 
+                            'data' => [
+                                'pjax' => 0, 
+                                'confirm' => Yii::t('app', "{Are you sure}{Delete}【{$model->name}】{Teacher}", [
+                                    'Are you sure' => Yii::t('app', 'Are you sure '), 'Delete' => Yii::t('app', 'Delete'), 
+                                    'Teacher' => Yii::t('app', 'Teacher')
+                                ]),
+                                'method' => 'post',
+                            ],
+                        ]);
+                    }
                 } ?>
             </div>
         </div>

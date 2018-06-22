@@ -52,15 +52,10 @@ class CourseUserSearch extends CourseUser
 
         $this->load($params);
         
-        /*if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }*/
-     
         // grid filtering conditions
         $query->andFilterWhere([
             'course_id' => $this->course_id,
+            'is_del' => 0,
         ]);
         
         $query->orderBy(['privilege' => SORT_DESC]);
