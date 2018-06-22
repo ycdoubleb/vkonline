@@ -8,6 +8,7 @@ use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -56,19 +57,21 @@ GrowlAsset::register($this);
         <?= $form->field($searchModel, 'is_publish')->radioList(['' => '全部', 1 => '已发布', 0 => '未发布'], [
             'value' => ArrayHelper::getValue($filters, 'CourseSearch.is_publish', ''),
             'itemOptions'=>[
+                'onclick' => 'submitForm();',
                 'labelOptions'=>[
                     'style'=>[
                         'margin'=>'10px 39px 10px 0',
                         'color' => '#999',
                         'font-weight' => 'normal',
                     ]
-                ]
+                ],
             ],
         ])->label(Yii::t('app', '{Status}：', ['Status' => Yii::t('app', 'Status')])) ?>
         <!--查看权限-->
         <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
             'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
             'itemOptions'=>[
+                'onclick' => 'submitForm();',
                 'labelOptions'=>[
                     'style'=>[
                         'margin'=>'10px 15px 10px 0',
@@ -82,7 +85,8 @@ GrowlAsset::register($this);
         ])) ?>
         <!--课程名称-->
         <?= $form->field($searchModel, 'name')->textInput([
-            'placeholder' => '请输入...', 'maxlength' => true
+            'placeholder' => '请输入...', 'maxlength' => true, 
+            'onchange' => 'submitForm();',
         ])->label(Yii::t('app', '{Course}{Name}：', [
             'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
         ])) ?>
@@ -178,18 +182,10 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/course/_list.php')));
 $js = 
 <<<JS
-    //单击选中radio提交表单
-    $('input[name="CourseSearch[is_publish]"]').click(function(){
+    //提交表单 
+    window.submitForm = function(){
         $('#build-course-form').submit();
-    });
-    $('input[name="CourseSearch[level]"]').click(function(){
-        $('#build-course-form').submit();
-    });
-        
-    //失去焦点提交表单
-    $("#coursesearch-name").blur(function(){
-        $('#build-course-form').submit();
-    });    
+    }
     
     //排序选中效果
     $(".sort ul li[id=$sort]").addClass('active');
