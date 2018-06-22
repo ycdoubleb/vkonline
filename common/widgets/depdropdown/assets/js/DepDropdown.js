@@ -13,7 +13,7 @@
             name: 'dep-dropdown',
             url: '',
             type: '',
-            level: 2,
+            max_level: 4,
             prompt: '请选择...',
             itemOptions: '', //select 组件的父级DIV样式
             itemInputOptions: '', //select 组件样式
@@ -47,7 +47,7 @@
                 $('#' + self.config['name']).val($(this).val());
             }
         });
-        if ($(elem).val() == '') {
+        if ($(elem).val() == '' || index>= self.config['max_level'] - 1 ) {
             return;
         }
 
