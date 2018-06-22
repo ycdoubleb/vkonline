@@ -257,8 +257,8 @@ $js =
                 if($("#knowledge-teacher_id").val() == ''){
                     $("#knowledge-teacher_id").val(data.teacher_id).trigger("change");
                 }
-                if($("#knowledge-des").val() == '无'){
-                    $("#knowledge-des").val(data.des);
+                if(window.knowledge_ue.getContent() == '<p>无</p>'){
+                    window.knowledge_ue.setContent(data.des);
                 }
                 $('input[name="Resource[res_id]"]').val(data.id);
                 $('input[name="Resource[data]"]').val(data.duration);
