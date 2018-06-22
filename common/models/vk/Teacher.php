@@ -24,6 +24,7 @@ use yii\web\UploadedFile;
  * @property string $des ''
  * @property int $is_certificate    是否认证：0否 1是 
  * @property int $certicicate_at    认证时间 
+ * @property int $is_del     是否删除：0否 1是
  * @property string $created_by     创建人
  * @property string $created_at     创建时间
  * @property string $updated_at     更新时间
@@ -99,12 +100,10 @@ class Teacher extends ActiveRecord
             //[['id'], 'required'],
             [['name', 'sex'], 'required'],
             [['des'], 'string'],
-            [['level', 'certicicate_at', 'sex', 'is_certificate', 'created_at', 'updated_at'], 'integer'],
+            [['level', 'certicicate_at', 'sex', 'is_certificate', 'is_del', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name', 'job_title'], 'string', 'max' => 50],
-            //[['sex', 'is_certificate'], 'string', 'max' => 1],
             [['avatar'], 'string', 'max' => 255],
-            //[['level'], 'string', 'max' => 3],
             [['id'], 'unique'],
         ];
     }
@@ -125,6 +124,7 @@ class Teacher extends ActiveRecord
             'des' => Yii::t('app', 'Des'),
             'is_certificate' => Yii::t('app', 'Is Certificate'), 
             'certicicate_at' => Yii::t('app', 'Certicicate At'), 
+            'is_del' => Yii::t('app', 'Is Del'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),

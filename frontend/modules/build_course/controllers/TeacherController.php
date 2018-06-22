@@ -135,7 +135,11 @@ class TeacherController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by != Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The teacher does not exist.'));
+            }
+        }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
@@ -147,6 +151,34 @@ class TeacherController extends Controller
                 'model' => $model,
             ]);
         }
+    }
+    
+    /**
+     * 删除 现有的 Teacher 模型。
+     * 如果删除成功，浏览器将被重定向到“查看”页面。
+     * @param string $id
+     * @return mixed
+     */
+    public function actionDelete($id)
+    {
+        $model = $this->findModel($id);
+        
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_certificate){
+                throw new NotFoundHttpException(Yii::t('app', 'The certified teacher can not be deleted.'));
+            }
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The teacher does not exist.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
+        if (Yii::$app->request->isPost) {
+            ActionUtils::getInstance()->deleteTeacher($model);
+            return $this->redirect(['index']);
+        }
+        
     }
     
     /**

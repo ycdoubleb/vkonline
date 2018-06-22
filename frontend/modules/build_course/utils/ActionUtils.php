@@ -134,21 +134,6 @@ class ActionUtils
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
-                CourseNode::updateAll(['is_del' => $model->is_del], ['course_id' => $model->id]);
-                $nodes = CourseNode::findAll(['course_id' => $model->id, 'is_del' => $model->is_del]);
-                Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => ArrayHelper::getColumn($nodes, 'id')]);
-                $knowledges = Knowledge::findAll(['node_id' => ArrayHelper::getColumn($nodes, 'id'), 'is_del' => $model->is_del]);
-                foreach ($knowledges as $knowledge) {
-                    if($knowledge->has_resource){
-                        switch($knowledge->type){
-                            case Knowledge::TYPE_VIDEO_RESOURCE:
-                                Yii::$app->db->createCommand()->update(KnowledgeVideo::tableName(), [
-                                    'is_del' => $model->is_del], ['knowledge_id' => $knowledge->id])->execute();
-                            case Knowledge::TYPE_HTML_RESOURCE:
-                                break;
-                        }
-                    }
-                }
                 $this->saveCourseActLog(['action' => '删除', 'title' => "课程管理", 
                     'content' => "{$model->name}", 'course_id' => $model->id]);
             }else{
@@ -307,7 +292,8 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->delete()){
+            $model->is_del = 1;
+            if($model->update(false, ['is_del'])){
                 $this->saveCourseActLog(['action'=>'删除','title'=>'协作人员', 
                     'content'=>'删除【'.$model->user->nickname.'】的协作',
                     'course_id'=>$model->course_id]);
@@ -760,6 +746,36 @@ class ActionUtils
     }
     
     /**
+     * 删除视频操作
+     * @param Video $model
+     * @throws Exception
+     */
+    public function deleteVideo($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            $knowledgeVideo = KnowledgeVideo::findAll(['is_del' => 0]);
+            $videoIds = ArrayHelper::getColumn($knowledgeVideo, 'video_id'); 
+            if($model->update(true, ['is_del']) && !in_array($model->id, $videoIds)){
+                
+            }else{
+                Yii::$app->getSession()->setFlash('error','操作失败，该视频在其它地方被引用了。');
+                return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+            return Yii::$app->controller->redirect(['index']);
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
      * 创建老师操作
      * @param Teacher $model
      * @param array $post
@@ -805,6 +821,32 @@ class ActionUtils
             }
             
             if(!$model->save()){
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
+    
+    /**
+     * 删除老师操作
+     * @param Teacher $model
+     * @throws Exception
+     */
+    public function deleteTeacher($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                
+            }else{
                 throw new Exception($model->getErrors());
             }
             
@@ -1032,7 +1074,7 @@ class ActionUtils
         $privilege = ArrayHelper::getValue($post, 'CourseUser.privilege');  //权限
         //过滤已经添加的协作人
         $courseUsers = (new Query())->select(['user_id'])->from(CourseUser::tableName())
-            ->where(['course_id'=>$course_id])->all();
+            ->where(['course_id'=>$course_id, 'is_del' => 0])->all();
         $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
         //组装保存数组
         foreach ($user_ids as $user_id) {

@@ -15,6 +15,7 @@ use yii\db\ActiveRecord;
  * @property string $course_id 课程ID
  * @property string $user_id 用户ID
  * @property int $privilege 权限：1只读，2编辑，10所有权
+ * @property int $is_del 是否删除： 0否 1是
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
@@ -64,14 +65,11 @@ class CourseUser extends ActiveRecord
     public function rules()
     {
         return [
-            //[['id'], 'required'],
             [['user_id'], 'required', 'message' => Yii::t('app', "{helpMan}{Can't be empty}", [
                 'helpMan' => Yii::t('app', 'Help Man'), "Can't be empty" => \Yii::t('app', "Can't be empty.")
             ])],
-            [['privilege', 'created_at', 'updated_at'], 'integer'],
+            [['privilege', 'is_del', 'created_at', 'updated_at'], 'integer'],
             [['course_id'], 'string', 'max' => 32],
-            //[['user_id'], 'array'],
-            //[['privilege'], 'string', 'max' => 2],
             [['id'], 'unique'],
         ];
     }
@@ -84,8 +82,9 @@ class CourseUser extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'course_id' => Yii::t('app', 'Course ID'),
-            'user_id' => Yii::t('app', '{User}{ID}', ['User' => \Yii::t('app', 'User'), 'ID' => \Yii::t('app', 'ID')]),
+            'user_id' => Yii::t('app', 'User ID'),
             'privilege' => Yii::t('app', 'Privilege'),
+            'is_del' => Yii::t('app', 'Is Del'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
