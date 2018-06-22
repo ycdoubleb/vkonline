@@ -28,7 +28,7 @@ class DepDropdown extends InputWidget {
      * type     类型
      * @var array 
      */
-    public $plugOptions = [];
+    public $pluginOptions = [];
     //插件名
     public $pluginName = 'ewidegets.DepDropdown';
     //所有数据=[[1=>'A',2=>'B'],[],...]
@@ -45,18 +45,18 @@ class DepDropdown extends InputWidget {
         $this->input = Html::activeInput('text', $this->model, $this->attribute, ['style' => ['display' => 'none']]);
         $this->input_id = Html::getInputId($this->model, $this->attribute);
 
-        $this->plugOptions = array_merge([
+        $this->pluginOptions = array_merge([
             'plug_id' => 'DepDropdown_' . rand(1000, 9999),
             'max_level' => 4,
             'url' => '',
             'type' => '',
             'prompt' => Yii::t('app', 'Select Placeholder'),
             'name' => $this->input_id,
-            'value' => $this->value,], $this->plugOptions);
+            'value' => $this->value,], $this->pluginOptions);
 
         $this->itemOptions = array_merge([
             'class' => 'form-control',
-            'prompt' => $this->plugOptions['prompt'],
+            'prompt' => $this->pluginOptions['prompt'],
                 ], $this->itemOptions);
     }
 
@@ -65,8 +65,8 @@ class DepDropdown extends InputWidget {
         parent::run();
         //级数最小一级
         $level = count($this->items);
-        if ($level > $this->plugOptions['max_level']) {
-            $level = $this->plugOptions['max_level'];
+        if ($level > $this->pluginOptions['max_level']) {
+            $level = $this->pluginOptions['max_level'];
         }
         /**
          * 初始已选
@@ -82,17 +82,15 @@ class DepDropdown extends InputWidget {
         }
         $html .= $this->input;
         $this->registerAssets();
-        return Html::tag('div', $html, ['id' => $this->plugOptions['plug_id'], 'class' => 'dep-dropdown']);
+        return Html::tag('div', $html, ['id' => $this->pluginOptions['plug_id'], 'class' => 'dep-dropdown']);
     }
 
     public function registerAssets() {
         $view = $this->getView();
         DepDropdownAssets::register($view);
         //设置组件配置
-        $this->plugOptions['itemOptions'] = Html::renderTagAttributes($this->itemOptions);
-
-        $config = Json::encode($this->plugOptions);
-
+        $this->pluginOptions['itemOptions'] = Html::renderTagAttributes($this->itemOptions);
+        $config = Json::encode($this->pluginOptions);
         $js = <<< JS
             new  window.{$this->pluginName}({$config});
 JS;
