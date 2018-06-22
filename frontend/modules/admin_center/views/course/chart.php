@@ -59,9 +59,9 @@ $filterChart = ArrayHelper::getValue($filters, 'chart', 'category');  //统计�
                 <!--分类-->
                 <div class="col-lg-6 col-md-6 clear-padding">
                     <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
-                        'plugOptions' => [
+                        'pluginOptions' => [
                             'url' => Url::to('/admin_center/category/search-children', false),
-                            'level' => 3,
+                            'max_level' => 3,
                         ],
                         'items' => Category::getSameLevelCats($searchModel->category_id, true),
                         'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),

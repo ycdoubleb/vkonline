@@ -62,34 +62,34 @@ use yii\web\View;
                             },
                             'contentOptions' => ['style' => 'min-width:200px;text-align:left;white-space:unset'],
                         ],
-                        [
-                            'attribute' => 'is_show',
-                            'header' => Yii::t('app', '{Is}{Show}',[
-                                'Is' => Yii::t('app', 'Is'),
-                                'Show' => Yii::t('app', 'Show'),
-                            ]),
-                            'class' => GridViewChangeSelfColumn::class,
-                            'filter' => Select2::widget([
-                                'model' => $searchModel,
-                                'attribute' => 'is_show',
-                                'data' => Category::$showStatus,
-                                'hideSearch' => true,
-                                'options' => ['placeholder' => Yii::t('app', 'All')],
-                                'pluginOptions' => [
-                                    'allowClear' => true,
-                                ],
-                            ]),
-                            'value' => function ($model){
-                                return Category::$showStatus[$model->is_publish];
-                            },
-                            'disabled' => function($model) {
-                                return $model->parent_id == 0 ? true : (!empty(Course::findOne(['category_id' => $model->id])) 
-                                        ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
-                                            ? true : (count($model->courseAttribute) > 0 ? true : false)));
-                            },
-                            'headerOptions' => ['style' => 'width:80px'],
-                            'contentOptions' => ['style' => 'text-align:center;width:60px'],
-                        ],
+//                        [
+//                            'attribute' => 'is_show',
+//                            'header' => Yii::t('app', '{Is}{Show}',[
+//                                'Is' => Yii::t('app', 'Is'),
+//                                'Show' => Yii::t('app', 'Show'),
+//                            ]),
+//                            'class' => GridViewChangeSelfColumn::class,
+//                            'filter' => Select2::widget([
+//                                'model' => $searchModel,
+//                                'attribute' => 'is_show',
+//                                'data' => Category::$showStatus,
+//                                'hideSearch' => true,
+//                                'options' => ['placeholder' => Yii::t('app', 'All')],
+//                                'pluginOptions' => [
+//                                    'allowClear' => true,
+//                                ],
+//                            ]),
+//                            'value' => function ($model){
+//                                return Category::$showStatus[$model->is_publish];
+//                            },
+//                            'disabled' => function($model) {
+//                                return $model->parent_id == 0 ? true : (!empty(Course::findOne(['category_id' => $model->id])) 
+//                                        ? true : (!empty(Category::findOne(['parent_id' => $model->id]))
+//                                            ? true : (count($model->courseAttribute) > 0 ? true : false)));
+//                            },
+//                            'headerOptions' => ['style' => 'width:80px'],
+//                            'contentOptions' => ['style' => 'text-align:center;width:60px'],
+//                        ],
                         [
                             'attribute' => 'sort_order',
                             'header' => Yii::t('app', 'Sort Order'),

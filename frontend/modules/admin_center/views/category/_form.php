@@ -32,14 +32,14 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
     ]); ?>
 
     <?= $form->field($model, 'parent_id')->widget(DepDropdown::class,[
-        'plugOptions' => [
+        'pluginOptions' => [
             'url' => Url::to('search-children', false),
-            'level' => $model->isNewRecord ? $parentModel->level : ($model->level > 1 ? $model->level - 1 : $model->level),
+            'max_level' => $model->isNewRecord ? $parentModel->level : ($model->level > 1 ? $model->level - 1 : $model->level),
         ],
         'items' => Category::getSameLevelCats($model->isNewRecord ? $parentModel->id : $model->parent_id),
         'values' => ($model->isNewRecord ? $parentModel->id : $model->parent_id) == 0 ? [] : array_values(array_filter(
                 explode(',', Category::getCatById($model->isNewRecord ? $parentModel->id : $model->parent_id)->path))),
-        'itemInputOptions' => [
+        'itemOptions' => [
             'disabled' => $model->isNewRecord ? true : ($model->level == 1 ? true : false),
         ],
     ]) ?>
@@ -52,13 +52,14 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
     
     <?= $form->field($model, 'sort_order')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'is_show')->widget(SwitchInput::classname(), [
-        'pluginOptions' => [
-            'onText' => Yii::t('app', 'Y'),
-            'offText' => Yii::t('app', 'N'),
-        ],
-        'containerOptions' => ['class' => ' ']
-    ]);?>
+    <?php
+//    $form->field($model, 'is_show')->widget(SwitchInput::classname(), [
+//        'pluginOptions' => [
+//            'onText' => Yii::t('app', 'Y'),
+//            'offText' => Yii::t('app', 'N'),
+//        ],
+//        'containerOptions' => ['class' => ' ']
+//    ]);?>
     
     <div class="form-group" style="padding-left: 105px;">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
