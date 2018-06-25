@@ -222,9 +222,9 @@ class Teacher extends ActiveRecord
         }else{
             self::$teachers->andFilterWhere($condition);
         }
-        self::$teachers->orderBy(['is_certificate' => SORT_DESC])->all();
+        self::$teachers->orderBy(['is_certificate' => SORT_DESC]);
         $teachers = [];
-        foreach (self::$teachers as $id => $teacher) {
+        foreach (self::$teachers->all() as $id => $teacher) {
             $teachers[] = $teacher;
         }
        
