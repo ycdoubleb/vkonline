@@ -13,13 +13,17 @@ use yii\web\View;
 
 /* @var $this View */
 /* @var $model Video */
-
+$this->title = $model['name'];
 
 PalyAssets::register($this);
 GrowlAsset::register($this);
 
 $shareAssetsPath = $this->assetManager->getPublishedUrl(ShareAsset::register($this)->sourcePath);
-$this->title = $model['name'];
+//分享链接
+$shareLink = Url::to([
+            '/site/visit', 'item_id' => $model['id'],
+            'share_by' => Yii::$app->user->id,
+            'item_type' => VisitLog::TYPE_KNOWLEDGE], true);
 
 ?>
 
@@ -241,7 +245,11 @@ JS;
             "bdMiniList": ["qzone", "tsina", "weixin", "renren", "tqq", "tqf", "tieba", "douban", "sqq", "isohu", "ty"],
             "bdPic": "<?= Url::to($model['img'], true) ?>",
             "bdStyle": "1",
-            "bdSize": "32"
+            "bdSize": "32",
+            "onBeforeClick": function (cmd, config) {
+                config['bdUrl'] = "<?= $shareLink ?>" + "&income=" + cmd;
+                return config;
+            }
         },
         "share": {}
     };
@@ -278,11 +286,7 @@ JS;
             background: null,
 
             // content
-            text: "<?= Url::to([
-                '/site/visit','item_id' => $model['id'] , 
-                'income' => 'weixin' ,
-                'share_by' => Yii::$app->user->id , 
-                'item_type' => VisitLog::TYPE_COURSE], true) ?>",
+            text: "<?= $shareLink ?>&income=weixin",
 
             // corner radius relative to module width: 0.0 .. 0.5
             radius: 0,

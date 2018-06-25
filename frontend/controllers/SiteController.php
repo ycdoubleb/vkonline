@@ -301,11 +301,10 @@ class SiteController extends Controller
         if($visitLog->save()){
             $paths = [
                 VisitLog::TYPE_COURSE => "/course/default/view?id={$item_id}",
-                VisitLog::TYPE_VIDEO => "/study_center/default/view?id={$item_id}",
+                VisitLog::TYPE_KNOWLEDGE => "/study_center/default/view?id={$item_id}",
             ];
             $this->redirect($paths[$item_type]);
         }else{
-            var_dump($visitLog->getErrorSummary(true));exit;
             throw new NotFoundHttpException('找不到对应分享！');
         }
     }
