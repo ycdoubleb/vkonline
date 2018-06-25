@@ -31,117 +31,14 @@ $this->title = Yii::t('app', '{Course}{List}',[
 <div class="course-index main">
     <div class="frame">
         <div class="frame-content">
-            <div class="frame-title">
-                <span><?= Yii::t('app', '{Course}{List}',[
-                    'Course' => Yii::t('app', 'Course'),
-                    'List' => Yii::t('app', 'List'),
-                ]) ?></span>
-                <div class="framebtn show-type">
-                    <a href="index?type=1" class="btn btn-default btn-flat <?=$type == 2 ? '' : 'active'?>" title="课程列表"><i class="fa fa-list"></i></a>
-                    <a href="index?type=2&chart=category" class="btn btn-default btn-flat <?=$type == 2 ? 'active' : ''?>" title="课程统计"><i class="fa fa-pie-chart"></i></a>
-                </div>
-            </div>
-            <div class="course-form form">
-                <?php $form = ActiveForm::begin([
-                    'action' => ['index'],
-                    'method' => 'get',
-                    'options'=>[
-                        'id' => 'course-form',
-                        'class'=>'form-horizontal',
-                    ],
-                    'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
-                        'labelOptions' => [
-                            'class' => 'col-lg-2 col-md-2 control-label form-label',
-                        ],  
-                    ], 
-                ]); ?>
-                <!--分类-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
-                        'pluginOptions' => [
-                            'url' => Url::to('/admin_center/category/search-children', false),
-                            'max_level' => 3,
-                            'onChangeEvent' => new JsExpression('function(){$("#course-form").submit();}')
-                        ],
-                        'items' => Category::getSameLevelCats($searchModel->category_id, true),
-                        'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
-                        'itemOptions' => [
-                            'style' => 'width: 127.36px; display: inline-block;',
-                        ],
-                    ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
-                </div>
-                <!--状态-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'is_publish')->radioList(Course::$publishStatus,[
-                        'value' => ArrayHelper::getValue($filters, 'CourseSearch.is_publish', ''),
-                        'itemOptions'=>[
-                            'labelOptions'=>[
-                                'style'=>[
-                                    'margin'=>'5px 29px 10px 0',
-                                    'color' => '#666666',
-                                    'font-weight' => 'normal',
-                                ]
-                            ]
-                        ],
-                    ])->label(Yii::t('app', 'Status') . '：') ?>
-                </div>
-                <!--主讲老师-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
-                        'data' => $teachers, 'options' => ['placeholder'=>'请选择...',],
-                        'pluginOptions' => ['allowClear' => true],
-                    ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
-                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
-                    ])) ?>
-                </div>
-                <!--范围-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
-                        'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
-                        'itemOptions'=>[
-                            'labelOptions'=>[
-                                'style'=>[
-                                    'margin'=>'5px 29px 10px 0',
-                                    'color' => '#666666',
-                                    'font-weight' => 'normal',
-                                ]
-                            ]
-                        ],
-                    ])->label(Yii::t('app', 'Range') . '：') ?>
-                </div>
-                <!--创建者-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'created_by')->widget(Select2::class, [
-                        'data' => $createdBys, 'options' => ['placeholder'=>'请选择...',],
-                        'pluginOptions' => ['allowClear' => true],
-                    ])->label(Yii::t('app', 'Created By') . '：') ?>
-                </div>
-                <!--标签-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <div class="form-group">
-                        <label class="col-lg-2 col-md-2 control-label form-label" for="coursesearch-id">标签：</label>
-                        <div class="col-lg-10 col-md-10">
-                            <?= Html::input('text', 'tag', ArrayHelper::getValue($filters, 'tag', ''), [
-                                'placeholder' => '请输入...',
-                                'class' => "form-control" ,
-                                'id' => 'tag'
-                            ])?>
-                        </div>
-                    </div>
-                </div>
-                <!--课程名称-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'name')->textInput([
-                        'placeholder' => '请输入...', 'maxlength' => true
-                    ])->label(Yii::t('app', '{Course}{Name}：', [
-                        'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
-                    ])) ?>
-                </div>
-                <?php ActiveForm::end(); ?>
-            </div>
             
-            <div class="hr"></div>
+            <?= $this->render('_search', [
+                'searchModel' => $searchModel, 
+                'filters' => $filters, 
+                'teachers' => $teachers,
+                'createdBys' => $createdBys,
+                'title' => $this->title
+            ]) ?>
             
             <div id="content">
                 <?= GridView::widget([
@@ -158,10 +55,8 @@ $this->title = Yii::t('app', '{Course}{List}',[
                                 'Course' => Yii::t('app', 'Course'),
                                 'Category' => Yii::t('app', 'Category')
                             ]),
-                            'value' => function($data) {
-                                /** @var $model Course **/
-                                $model= Course::findOne(['id' => $data['id']]);
-                                return $model->category->fullPath;
+                            'value' => function($data) use($catFullPath) {
+                                return $catFullPath[$data['id']];
                             },
                             'headerOptions' => ['style' => 'width:248px'],
                             'contentOptions' => ['style' => 'white-space:normal'],
@@ -265,40 +160,3 @@ $this->title = Yii::t('app', '{Course}{List}',[
         </div>
     </div>
 </div>
-<?php
-
-$js = <<<JS
-      
-    //教师触发change事件
-    $("#coursesearch-teacher_id").change(function(){
-        $('#course-form').submit();
-    });
-        
-    //创建人触发change事件
-    $("#coursesearch-created_by").change(function(){
-        $('#course-form').submit();
-    });
-    
-    //课程名触发change事件
-    $("#coursesearch-name").change(function(){
-        $('#course-form').submit();
-    });
-        
-    //标签触发change事件
-    $("#tag").change(function(){
-        $('#course-form').submit();
-    });
-   
-    //单击状态选中radio提交表单
-    $('input[name="CourseSearch[is_publish]"]').click(function(){
-        $('#course-form').submit();
-    });
-        
-    //单击范围选中radio提交表单
-    $('input[name="CourseSearch[level]"]').click(function(){
-        $('#course-form').submit();
-    });
-JS;
-    $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
-?>
