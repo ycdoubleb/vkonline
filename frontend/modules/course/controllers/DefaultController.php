@@ -46,6 +46,7 @@ class DefaultController extends Controller
             ],
             'access' => [
                 'class' => AccessControl::className(),
+                'only' => ['view', 'get-node','get-comment','get-task','get-attachment'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -76,7 +77,7 @@ class DefaultController extends Controller
     public function actionList(){
         //当前已选择的分类
         $category_id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'cat_id');
-        $customer_id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'customer_id' , "0");
+        $customer_id = ArrayHelper::getValue(Yii::$app->request->queryParams, 'customer_id' , null);
         //获取当前分类的父级分类[顶级分类,子级分类,……]
         if ($category_id === "0") {
             //没有选择任何单位情况下，只需要显示顶级分类
