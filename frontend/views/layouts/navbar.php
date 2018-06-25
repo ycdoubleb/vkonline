@@ -24,9 +24,9 @@ NavBar::begin([
 ]);
 $menuItems = [
     //登录
-    ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index'], 'visible' => !Yii::$app->user->isGuest],
-    ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list'], 'visible' => !Yii::$app->user->isGuest],
-    ['label' => Yii::t('app', 'StudyCenter'), 'url' => ['/study_center/default'], 'visible' => !Yii::$app->user->isGuest],
+    ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
+    ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list']],
+    ['label' => Yii::t('app', 'StudyCenter'), 'url' => ['/study_center/default']],
     ['label' => "<div class='customer-box'><span class='short_name'>{$group_name}</span><span class='m_name'>课工坊</span></div>", 'url' => ['/build_course/default'], 'encode' => false,
         /* 团体用户可见 */
         'visible' => $is_group_user
