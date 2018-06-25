@@ -157,14 +157,14 @@ class CourseController extends Controller
      * @param array $params
      * @return array
      */
-    public static function searchStatistics($params)
+    public function searchStatistics($params)
     {
         $category = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
         $teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');//教师ID
         $created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');//创建人ID
         $is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');//发布状态
         $level = ArrayHelper::getValue($params, 'CourseSearch.level');          //课件范围
-  
+        
         $categoryId = Category::getCatChildrenIds($category, true);    //获取分类的子级ID
         $cat_id = !empty($categoryId) ? array_merge([$category], $categoryId) : $category;
         
@@ -182,7 +182,7 @@ class CourseController extends Controller
         
         return [
             'filter' => $params,
-            'category' => $this->getStatisticsByCategory($query, $category, $cat_id),       //按课程分类统计
+            'category' => $this->getStatisticsByCategory($cat_id),       //按课程分类统计
             'teacher' => $this->getStatisticsByTeacher($query),         //按主讲老师统计
             'created_by' => $this->getStatisticsByCreatedBy($query),    //按创建人统计
             'status' => $this->getStatisticsByStatus($query),           //按状态统计
@@ -192,61 +192,35 @@ class CourseController extends Controller
 
     /**
      * 根据课程分类统计
-     * @param Query $sourceQuery
+     * @param Query $cat_id
      * @return array
      */
-    public static function getStatisticsByCategory($sourceQuery, $category, $cat_id)
+    public function getStatisticsByCategory($cat_id)
     {
-        $categoryQuery = clone $sourceQuery;
-        $categoryQuery->select(['Category.path', 'Category.name AS name', "COUNT(Course.category_id) AS value", 'Category.level'])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
-                ->andFilterWhere(['is_show' => 1])
-                ->groupBy('Category.id')
-                ;
-        
-        if ($cat_id == '') {
-//            $cat_id = Category::find()->select(['id'])->where(['level' => 1])->all();
-//            var_dump(Category::getCatById(4)->path);exit;
-//            $categoryQuery->andFilterWhere(['Category.level' => 1]);
-            $result = $categoryQuery->all(Yii::$app->db);
+        //子查询，查询course 和 category 属性
+        $tCourse = (new Query())->select([
+                'Category.path', "SUBSTRING_INDEX( Category.path, ',', 3 ) AS tpath",
+                'COUNT( * ) AS `count`'
+            ])->from(['Course' => Course::tableName()])
+            ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
+            ->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id])
+            ->andFilterWhere(['is_del' => 0])
+            ->andFilterWhere(['is_show' => 1])
+            ->groupBy('tpath');    
+        if(!empty($cat_id)){
+            $tCourse->andFilterWhere(['or',
+                ['like', 'Category.path', Category::getCatById($cat_id)->path . ",%", false],
+                ['Category.path' => Category::getCatById($cat_id)->path]
+            ]);
+        }else{
             
-//            var_dump($results);exit;
-        } else {
-//            $level = Category::getCatById($category)->level + 1;
-            $categoryQuery->andFilterWhere(['Course.category_id' => $cat_id]);
-//            $results = $categoryQuery->all(Yii::$app->db);
-////            var_dump($results);exit;
-//            foreach ($results as $item){
-////                var_dump($item);
-//                if($item['level'] > $level){
-//                    $expArr = explode(",", $item['path']);
-//                    $name = Category::getCatById($expArr[$level])->name;
-//                    $ii[] = [
-//                        'name' => $name,
-//                        'value' => $item['value'],
-//                        'level' => $level
-//                    ];
-////                    var_dump($ii);
-//                }
-//                $ss[] = [
-//                    'name' => $item['name'],
-//                    'value' => $item['value'],
-//                    'level' => $item['level']
-//                ];
-//            }
-//            $result = !empty($ii) ? array_merge($ss, $ii) : $ss;
-//            //var_dump($result);exit;
-//            foreach ($result as $k => $value) {
-//                if($value['level'] > $level){
-//                    array_splice($result, $k, 1);
-//                }
-//            }
-            $result = $categoryQuery->all(Yii::$app->db);
-//            exit;
-//            $result = [];
-    }
-        return $result;
+        }
+        //查询分类的课程统计
+        $catCourse = (new Query())->select(['Category.name', 'Tcourse.count AS value'])->from(['Tcourse' => $tCourse])
+            ->leftJoin(['Category' => Category::tableName()], 'Category.path = Tcourse.tpath')
+            ->all();
+        
+        return $catCourse;
     }
     
     /**
@@ -254,7 +228,7 @@ class CourseController extends Controller
      * @param Query $sourceQuery
      * @return array
      */
-    public static function getStatisticsByTeacher($sourceQuery)
+    public function getStatisticsByTeacher($sourceQuery)
     {
         $teacherQuery = clone $sourceQuery;
         $teacherQuery->select(['Teacher.name AS name', "COUNT(Course.teacher_id) AS value"])
@@ -270,7 +244,7 @@ class CourseController extends Controller
      * @param Query $sourceQuery
      * @return array
      */
-    public static function getStatisticsByCreatedBy($sourceQuery)
+    public function getStatisticsByCreatedBy($sourceQuery)
     {
         $createdByQuery = clone $sourceQuery;
         $createdByQuery->select(['User.nickname AS name', "COUNT(Course.created_by) AS value"])
@@ -286,7 +260,7 @@ class CourseController extends Controller
      * @param Query $sourceQuery
      * @return array
      */
-    public static function getStatisticsByStatus($sourceQuery)
+    public function getStatisticsByStatus($sourceQuery)
     {
         $noStatusQuery = clone $sourceQuery;
         $yesStatusQuery = clone $sourceQuery;
@@ -312,7 +286,7 @@ class CourseController extends Controller
      * @param Query $sourceQuery
      * @return array
      */
-    public static function getStatisticsByRange($sourceQuery)
+    public function getStatisticsByRange($sourceQuery)
     {
         $customerQuery = clone $sourceQuery;
         $privateQuery = clone $sourceQuery;
