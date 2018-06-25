@@ -21,10 +21,12 @@ use yii\db\ActiveRecord;
  */
 class VisitLog extends ActiveRecord
 {
-    //课程分享
+    /* 课程 */
     const TYPE_COURSE = 1;
-    //视频分享
-    const TYPE_VIDEO = 2;
+    /* 知识点 */
+    const TYPE_KNOWLEDGE = 2;
+    /* 视频 */
+    const TYPE_VIDEO = 5;
     
     /**
      * @inheritdoc
