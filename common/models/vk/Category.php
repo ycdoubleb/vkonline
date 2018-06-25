@@ -34,13 +34,14 @@ use yii\web\UploadedFile;
  * 
  * @property CourseAttribute $courseAttribute   获取所有课程属性 
  */
-class Category extends ActiveRecord
-{
+class Category extends ActiveRecord {
+
     /** 显示状态-不显示 */
     const NO_SHOW = 0;
+
     /** 显示状态-显示 */
     const YES_SHOW = 1;
-    
+
     /**
      * 显示状态
      * @var array 
@@ -49,7 +50,7 @@ class Category extends ActiveRecord
         self::NO_SHOW => '不显示',
         self::YES_SHOW => '显示',
     ];
-    
+
     /* @var $cache Cache */
     private static $cache;
 
@@ -63,30 +64,27 @@ class Category extends ActiveRecord
      * @var array
      */
     private static $categorys;
-    
+
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return '{{%category}}';
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() 
-    {
+    public function behaviors() {
         return [
             TimestampBehavior::class
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['name'], 'required'],
             [['parent_id', 'level', 'sort_order', 'is_show', 'created_at', 'updated_at'], 'integer'],
@@ -100,12 +98,10 @@ class Category extends ActiveRecord
      * 关联查询课程属性
      * @return ActiveQuery
      */
-    public function getCourseAttribute()
-    { 
+    public function getCourseAttribute() {
         return $this->hasMany(CourseAttribute::class, ['category_id' => 'id'])->where(['is_del' => '0']);
     }
 
-    
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if ($this->mobile_name == "") {
@@ -139,7 +135,7 @@ class Category extends ActiveRecord
         }
         return false;
     }
-    
+
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径
@@ -171,12 +167,12 @@ class Category extends ActiveRecord
         self::initCache();
         return self::getCatById($this->parent_id);
     }
-    
+
     /**
      * 获取所有父级
      * @return type
      */
-    public function getParents(){
+    public function getParents() {
         self::initCache();
         $parentids = array_values(array_filter(explode(',', $this->path)));
         $parents = [];
@@ -202,17 +198,16 @@ class Category extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
-            'customer_id' => Yii::t('app', 'Customer ID'), 
+            'customer_id' => Yii::t('app', 'Customer ID'),
             'name' => Yii::t('app', 'Name'),
             'mobile_name' => Yii::t('app', 'Mobile Name'),
             'level' => Yii::t('app', 'Level'),
             'path' => Yii::t('app', 'Path'),
             'parent_id' => Yii::t('app', 'Parent ID'),
-            'created_by' => Yii::t('app', 'Created By'), 
+            'created_by' => Yii::t('app', 'Created By'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'image' => Yii::t('app', 'Image'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -227,7 +222,7 @@ class Category extends ActiveRecord
     // Cache
     //
     //==========================================================================
-    
+
     /* 初始缓存 */
     private static function initCache() {
         if (self::$cache == null) {
@@ -291,10 +286,10 @@ class Category extends ActiveRecord
                 $categorys[] = $category;
             }
         }
-        
+
         return $key_to_value ? ArrayHelper::map($categorys, 'id', 'name') : $categorys;
     }
-    
+
     /**
      * 获取客户分类的子级
      * @param integer $id               分类ID
@@ -305,24 +300,26 @@ class Category extends ActiveRecord
      * 
      * @return array [array|key=value]
      */
-    public static function getCustomerCatChildren($id,$customer_id, $key_to_value = false, $recursion = false, $include_unshow = false) {
+    public static function getCustomerCatChildren($id, $customer_id, $key_to_value = false, $recursion = false, $include_unshow = false) {
         self::initCache();
         //不传customerID,默认使用当前用户的客户ID
-        if(!isset($customer_id) || empty($customer_id)){
-            $customer_id = Yii::$app->user->identity->customer_id;
-        }     
+        if (!isset($customer_id) || empty($customer_id)) {
+            $customer_id = Yii::$app->user->isGuest ? null : Yii::$app->user->identity->customer_id;
+        }
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && (empty($category['customer_id']) || $category['customer_id'] == $customer_id) && ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['parent_id'] == $id &&
+                    (empty($category['customer_id']) || ($customer_id && $category['customer_id'] == $customer_id)) &&
+                    ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $category;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCustomerCatChildren($c_id, $customer_id , false, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getCustomerCatChildren($c_id, $customer_id, false, $recursion, $include_unshow));
                 }
             }
         }
         return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
     }
-    
+
     /**
      * 获取分类的子级
      * @param integer $id               分类ID
@@ -345,15 +342,17 @@ class Category extends ActiveRecord
      * 
      * @return array [id,id...]
      */
-    public static function getCustomerCatChildrenIds($id, $customer_id ,$recursion = false, $include_unshow = false) {
+    public static function getCustomerCatChildrenIds($id, $customer_id, $recursion = false, $include_unshow = false) {
         self::initCache();
         //不传customerID,默认使用当前用户的客户ID
-        if(!isset($customer_id) || empty($customer_id)){
-            $customer_id = Yii::$app->user->identity->customer_id;
-        }   
+        if (!isset($customer_id) || empty($customer_id)) {
+            $customer_id = Yii::$app->user->isGuest ?: Yii::$app->user->identity->customer_id;
+        }
         $childrens = [];
         foreach (self::$categorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && (empty($category['customer_id']) || $category['customer_id'] == $customer_id) &&  ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['parent_id'] == $id &&
+                    (empty($category['customer_id']) || ($customer_id && $category['customer_id'] == $customer_id)) &&
+                    ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $c_id;
                 if ($recursion) {
                     $childrens = array_merge($childrens, self::getCustomerCatChildrenIds($c_id, $customer_id, $recursion, $include_unshow));
@@ -362,6 +361,7 @@ class Category extends ActiveRecord
         }
         return $childrens;
     }
+
     /**
      * 获取分类的子级ID
      * @param integer $id               分类ID
@@ -370,7 +370,7 @@ class Category extends ActiveRecord
      * 
      * @return array [id,id...]
      */
-    public static function getCatChildrenIds($id ,$recursion = false, $include_unshow = false) {
+    public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false) {
         return self::getCustomerCatChildrenIds($id, null, $recursion, $include_unshow);
     }
 
@@ -386,16 +386,16 @@ class Category extends ActiveRecord
      */
     public static function getCustomerSameLevelCats($id, $customer_id, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
         //不传customerID,默认使用当前用户的客户ID
-        if(!isset($customer_id) || empty($customer_id)){
-            $customer_id = Yii::$app->user->identity->customer_id;
-        } 
+        if (!isset($customer_id) || empty($customer_id)) {
+            $customer_id = Yii::$app->user->isGuest ? null : Yii::$app->user->identity->customer_id;
+        }
         $catgegory = self::getCatById($id);
         $categorys = [];
-        if(($containerSelfLevel && $catgegory!=null)){
+        if (($containerSelfLevel && $catgegory != null)) {
             //加上当前目录的子层级
             $childrens = self::getCustomerCatChildren($id, $customer_id, true, false, $include_unshow);
-            if(count($childrens)>0){
-                $categorys []= $childrens;
+            if (count($childrens) > 0) {
+                $categorys [] = $childrens;
             }
         }
         /* 递归获取所有层级 */
@@ -412,10 +412,10 @@ class Category extends ActiveRecord
             if ($catgegory->parent_id == 0)
                 break;
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
-        
+
         return $categorys;
     }
-    
+
     /**
      * 反回当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
@@ -426,7 +426,7 @@ class Category extends ActiveRecord
      * 
      * @return array [[level_1],[level_2],..]
      */
-    public static function getSameLevelCats($id , $containerSelfLevel = false, $recursion = true, $include_unshow = false){
+    public static function getSameLevelCats($id, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
         return self::getCustomerSameLevelCats($id, null, $containerSelfLevel, $recursion, $include_unshow);
     }
 
@@ -441,7 +441,7 @@ class Category extends ActiveRecord
         }
         return null;
     }
-    
+
     /**
      * 获取所有分类数据
      * @return array
@@ -450,4 +450,5 @@ class Category extends ActiveRecord
         self::initCache();
         return self::$categorys;
     }
+
 }

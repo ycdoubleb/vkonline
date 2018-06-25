@@ -261,7 +261,7 @@ JS;
      */
     function initShare(){
         //添加分享图片到第一位置，以便在微信分享时可以被微信捕捉到作为分享缩略图
-        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="/<?= $model['img'] ?>"></div>');
+        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= StringUtil::completeFilePath($model['img']) ?>"></div>');
         //设置二维码容器大小
         $('.share-panel .wx-qrcode').attr({width:150,height:150});
         //初始微信二维码
