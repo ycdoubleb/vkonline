@@ -204,8 +204,11 @@ class VideoSearch extends Video
     {
         //查询知识点视频内容
         $relation = (new Query())->select([
-            'KnowledgeVideo.knowledge_id', 'Customer.name AS customer_name', 'Course.name AS course_name',
-            'Knowledge.name AS knowledge_name', 'User.nickname', 'Knowledge.created_at'
+            'Course.id', 'KnowledgeVideo.knowledge_id', 'Customer.name AS customer_name', 'Course.name AS course_name',
+            'Knowledge.name AS knowledge_name', 'User.nickname', 'Knowledge.created_at', 'Course.content_time',
+            'Course.learning_count AS people_num', 'KnowledgeVideo.video_id', 'Course.cover_img', 'Course.avg_star', 
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
+            "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"
         ])->from(['KnowledgeVideo' => KnowledgeVideo::tableName()]);
         //关联查询
         $relation->leftJoin(['Knowledge' => Knowledge::tableName()], 'Knowledge.id = KnowledgeVideo.knowledge_id');
@@ -213,13 +216,16 @@ class VideoSearch extends Video
         $relation->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseNode.course_id');
         $relation->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Course.customer_id');
         $relation->leftJoin(['User' => User::tableName()], 'User.id = Knowledge.created_by');
+        $relation->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Course.id AND TagRef.is_del = 0)');
+        $relation->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
+        $relation->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         //条件查询
         $relation->andFilterWhere([
             'KnowledgeVideo.video_id' => $id,
             'KnowledgeVideo.is_del' => 0,
         ]);
         //以knowledge_id为分组
-        $relation->groupBy('KnowledgeVideo.knowledge_id');
+        $relation->groupBy('Course.id');
         //以id排序
         $relation->orderBy('KnowledgeVideo.id');
         

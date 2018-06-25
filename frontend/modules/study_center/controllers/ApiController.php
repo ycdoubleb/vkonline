@@ -158,7 +158,7 @@ class ApiController extends Controller {
         $trans = Yii::$app->db->beginTransaction();
         try {
             if ($percent > $model->percent) {
-                $model->percent = $percent;
+                $model->percent = (float)$percent;
             }
             $model->data = $data;
             if ($model->save()) {
@@ -179,10 +179,12 @@ class ApiController extends Controller {
                     $courseProgress->is_finish = 0;
                     $courseProgress->end_time = 0;
                 }
-                $courseProgress->save();
+                if($courseProgress->save()){
+                    $trans->commit();  //提交事务
+                }
             }
-
-            $trans->commit();  //提交事务
+            
+            return $model->getErrorSummary(true);
         } catch (Exception $ex) {
             $trans->rollBack(); //回滚事务
             return ['error' => $ex->getMessage()];

@@ -2,6 +2,7 @@
 
 namespace frontend\modules\study_center\controllers;
 
+use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Knowledge;
@@ -12,6 +13,9 @@ use common\models\vk\searchs\CourseFavoriteSearch;
 use common\models\vk\searchs\CourseProgressSearch;
 use common\models\vk\searchs\CourseTaskSearch;
 use common\models\vk\searchs\VideoFavoriteSearch;
+use common\models\vk\searchs\VideoSearch;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
@@ -213,6 +217,33 @@ class DefaultController extends Controller
         ]);
     }
     
+    
+    public function actionVideoInfo($id)
+    {
+        $this->layout = '@frontend/modules/study_center/views/layouts/paly';
+        $model = $this->findVideoInfo($id);
+        
+        $searchModel = new VideoSearch();
+        $result = $searchModel->relationSearch($id);
+        $result->pagination->pageSize = 6;
+
+        if(\Yii::$app->request->isAjax){
+            Yii::$app->getResponse()->format = 'json';
+            return [
+                'code'=> 200,
+                'page' => $result['filter']['page'],
+                'data' => array_values($result),
+                'message' => '请求成功！',
+            ];
+        }
+        
+        return $this->render('video-info', [
+            'model' => $model,
+            'totalCount' => $result->totalCount,
+            'dataProvider' => $result,
+        ]);
+    }
+
     /**
      * 环节播放，呈现视频播放的视图
      * @return mixed  [
@@ -349,4 +380,31 @@ class DefaultController extends Controller
             $model->save();
         }
     }
+    
+    /**
+     * 查找视频的信息（名称 老师 标签等）
+     * @param string $id 视频ID
+     * @return array
+     */
+    public function findVideoInfo($id)
+    {
+        $videoQuery = (new Query())
+                ->select(['Video.id AS video_id', 'Video.name', 'User.nickname', 'Video.img', 'Video.des AS video_des',
+                    'Uploadfile.path', 'Teacher.id AS teacher_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags",
+                    'Teacher.avatar', 'Teacher.name AS teacher_name', 'Teacher.des AS teacher_des',])
+                ->from(['Video' => Video::tableName()])
+                ->andFilterWhere(['Video.id' => $id])
+                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
+                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
+                ->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Video.id AND TagRef.is_del = 0)')
+                ->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id')
+                ->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1)')
+                ->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id')
+                ->one();
+        
+        $videoQuery['video_des'] = Html::decode($videoQuery['video_des']);      //decode并替换
+        
+        return $videoQuery;
+    }
+    
 }

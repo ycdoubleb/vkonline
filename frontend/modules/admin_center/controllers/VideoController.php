@@ -117,7 +117,7 @@ class VideoController extends Controller
                 ->select(['Video.teacher_id AS id', 'Teacher.name'])
                 ->from(['Video' => Video::tableName()])
                 ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
-                ->where(['Video.customer_id' => $customerId, 'is_del' => 0])
+                ->where(['Video.customer_id' => $customerId, 'Video.is_del' => 0])
                 ->all();
         
         return ArrayHelper::map($teacher, 'id', 'name');
