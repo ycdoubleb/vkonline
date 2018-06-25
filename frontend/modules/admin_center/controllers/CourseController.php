@@ -159,21 +159,17 @@ class CourseController extends Controller
      */
     public function searchStatistics($params)
     {
-        $category = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
+        $category_id = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
         $teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');//教师ID
         $created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');//创建人ID
         $is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');//发布状态
         $level = ArrayHelper::getValue($params, 'CourseSearch.level');          //课件范围
-        
-        $categoryId = Category::getCatChildrenIds($category, true);    //获取分类的子级ID
-        $cat_id = !empty($categoryId) ? array_merge([$category], $categoryId) : $category;
         
         /* @var $query Query */
         $query = (new Query())->where(['Course.customer_id' => Yii::$app->user->identity->customer_id]);  //该客户下的数据
         
         //条件查询
         $query->andFilterWhere([
-//            'Course.category_id' => !empty($categoryId) ? $categoryId : $category,
             'Course.teacher_id' => $teacher_id,
             'Course.created_by' => $created_by,
             'Course.is_publish' => $is_publish,
@@ -182,7 +178,7 @@ class CourseController extends Controller
         
         return [
             'filter' => $params,
-            'category' => $this->getStatisticsByCategory($cat_id),       //按课程分类统计
+            'category' => $this->getStatisticsByCategory($category_id),       //按课程分类统计
             'teacher' => $this->getStatisticsByTeacher($query),         //按主讲老师统计
             'created_by' => $this->getStatisticsByCreatedBy($query),    //按创建人统计
             'status' => $this->getStatisticsByStatus($query),           //按状态统计
@@ -197,9 +193,10 @@ class CourseController extends Controller
      */
     public function getStatisticsByCategory($cat_id)
     {
+        $catLevel = !empty($cat_id) ? Category::getCatById($cat_id)->level + 2 : 2;
         //子查询，查询course 和 category 属性
         $tCourse = (new Query())->select([
-                'Category.path', "SUBSTRING_INDEX( Category.path, ',', 3 ) AS tpath",
+                'Category.path', "SUBSTRING_INDEX( Category.path, ',', $catLevel ) AS tpath",
                 'COUNT( * ) AS `count`'
             ])->from(['Course' => Course::tableName()])
             ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
@@ -212,9 +209,8 @@ class CourseController extends Controller
                 ['like', 'Category.path', Category::getCatById($cat_id)->path . ",%", false],
                 ['Category.path' => Category::getCatById($cat_id)->path]
             ]);
-        }else{
-            
         }
+        
         //查询分类的课程统计
         $catCourse = (new Query())->select(['Category.name', 'Tcourse.count AS value'])->from(['Tcourse' => $tCourse])
             ->leftJoin(['Category' => Category::tableName()], 'Category.path = Tcourse.tpath')
