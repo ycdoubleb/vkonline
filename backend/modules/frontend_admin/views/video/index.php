@@ -209,7 +209,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => Url::to([WEB_ROOT . '/study_center/default/view', 'id' => $data['id']], 'http'),
+                                'url' => Url::to([WEB_ROOT . '/study_center/default/video-info', 'id' => $data['id']], 'http'),
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'conditions' => true,

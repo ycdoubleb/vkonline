@@ -193,16 +193,10 @@ $js =
         
     /** 富文本编辑器 */
     $('#container').removeClass('form-control');
-    var ue = UE.getEditor('container', {toolbars:[
-        [
-            'fullscreen', 'source', '|', 'undo', 'redo', '|',  
-            'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
-            'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
-            'paragraph', 'fontfamily', 'fontsize', '|',
-            'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
-            'simpleupload', 'horizontal'
-        ]
-    ]});
+    var ue = UE.getEditor('container', {
+        initialFrameHeight: 200, 
+        maximumWords: 100000,
+    });
     //单击刷新按钮重新加载老师下拉列表
     window.refresh = function(elem){
         $('#video-teacher_id').html("");

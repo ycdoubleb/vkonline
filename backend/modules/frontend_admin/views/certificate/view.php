@@ -113,6 +113,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'label' => Yii::t('app', 'Des'),
+                    'format' => 'raw',
                     'value' => $model->teacher->des,
                 ],
                 [
