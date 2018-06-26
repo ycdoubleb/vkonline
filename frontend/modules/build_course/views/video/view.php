@@ -252,7 +252,7 @@ ModuleAssets::register($this);
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="fa fa-eye"></span>',
-                                'url' => ['/study_center/default/view', 'id' => $data['knowledge_id']],
+                                'url' => ['/course/default/view', 'id' => $data['id']],
                                 'options' => $options,
                                 'symbol' => '&nbsp;',
                                 'adminOptions' => true,

@@ -287,10 +287,10 @@ class DefaultController extends Controller
         //关联查询
         $videoQuery->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0)');
         $videoQuery->leftJoin(['Course' => Course::tableName()],"Course.id = CourseNode.course_id");
-        $videoQuery->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Knowledge.teacher_id');
         $videoQuery->leftJoin(['Progress' => KnowledgeProgress::tableName()], "(Progress.knowledge_id = Knowledge.id AND Progress.user_id= '$user_id')");
         $videoQuery->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], '(KnowledgeVideo.knowledge_id = Knowledge.id AND KnowledgeVideo.is_del = 0)');
         $videoQuery->leftJoin(['Video' => Video::tableName()], 'Video.id = KnowledgeVideo.video_id');
+        $videoQuery->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         $videoQuery->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1)');
         $videoQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id');
         $videoQuery->leftJoin(['Favorite' => VideoFavorite::tableName()],"(Favorite.video_id = Video.id AND Favorite.user_id = '$user_id')");

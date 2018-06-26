@@ -36,20 +36,16 @@ $actionId = Yii::$app->controller->action->id; //当前action
                     'onkeydown' => 'if(event.keyCode == 13) return false;'
                 ],
             ]); ?>
-            <!--关键字搜索-->
-            <div class="col-lg-6 col-md-6 clear-padding">
-                <?= $form->field($searchModel, 'name', [
-                    'template' => "<div class=\"col-lg-12 col-md-12 clear-padding\">{input}</div>\n",  
-                ])->textInput([
-                    'id' => $actionId . '-name', 'placeholder' => '请输入...', 'maxlength' => true
-                ])->label('') ?>
+            <!--返回按钮-->
+            <div class="keep-left" style="padding: 5px 15px 0 0">
+                <?= Html::a(Yii::t('app', 'Back'), 'javascript:;', ['class' => 'btn btn-default', 'onclick' => 'clickBackEvent();']) ?>
             </div>
             <!--搜索类型-->
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-4 col-md-4 clear-padding">
                 <div class="form-group field-knowledgereference-type">
                     <div class="col-lg-12 col-md-12 clear-padding">
                         <?= Html::radioList('KnowledgeReference[type]', $actionId, [
-                            'my-collect' => '我的收藏', 'my-video' => '我的视频', 'inside-video' => '品牌内部'
+                            'my-video' => '我的视频',  'my-collect' => '我的收藏', 'inside-video' => '集团全部'
                         ], [
                             'itemOptions'=>[
                                 'labelOptions'=>[
@@ -64,7 +60,15 @@ $actionId = Yii::$app->controller->action->id; //当前action
                     </div>
                 </div>
             </div>
-                
+            <!--关键字搜索-->
+            <div class="col-lg-7 col-md-7 clear-padding">
+                <?= $form->field($searchModel, 'name', [
+                    'template' => "<div class=\"col-lg-12 col-md-12 clear-padding\">{input}</div>\n",  
+                ])->textInput([
+                    'id' => $actionId . '-name', 'placeholder' => '请输入...', 'maxlength' => true
+                ])->label('') ?>
+            </div>     
+            
             <?php ActiveForm::end(); ?>
         </div>
         <!-- 排序 -->
@@ -90,7 +94,7 @@ $actionId = Yii::$app->controller->action->id; //当前action
             <?php foreach ($dataProvider->allModels as $index => $model): ?>
             <li class="reference <?= $index % 5 == 4 ? 'clear-margin' : null ?>">
                 <div class="pic">
-                    <a title="<?= $model['name'] ?>" target="_blank">
+                    <a href="/study_center/default/video-info?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
@@ -146,6 +150,15 @@ $js =
     window.clickSortEvent = function(elem){
         $("#reference-video-list").load(elem.attr("href"));
     }    
+    //单击返回事件
+    window.clickBackEvent = function(){
+        $("#reference-video-list").addClass("hidden");
+        $("#knowledge-info").removeClass("hidden");
+        if($('input[name="Resource[res_id]"]').val() != ''){
+            $(".field-video-details").removeClass("hidden");
+            $("#fill").removeClass("hidden");
+        }
+    }
    
     //鼠标经过、离开事件
     hoverEvent();
@@ -236,6 +249,7 @@ $js =
                 var data = rel['data']['result'][0];
                 dome = Wskeee.StringUtil.renderDOM(items, {
                     className: 'clear-margin',
+                    id: data.id,
                     isExist: data.img == null || data.img == '' ? 
                         '<div class="title">' + data.name + '</div>' : 
                             '<img src="' + Wskeee.StringUtil.completeFilePath(data.img) + '" width="100%" height="100%" />',
@@ -244,28 +258,18 @@ $js =
                     tags: data.tags != undefined ? data.tags : 'null',
                     createdAt: Wskeee.DateUtil.unixToDate('Y-m-d H:i', data.created_at),
                     levelName: dataLevel[data.level],
+                    des: data.des,
                     teacherId: data.teacher_id,
                     teacherAvatar: Wskeee.StringUtil.completeFilePath(data.teacher_avatar),
                     teacherName: data.teacher_name,
                 });
+                $("#video-details .list").html("");
                 list.html(dome).appendTo($("#video-details .list"));
-                $(".field-reference-video .form-group .bootstrap-switch-container").addClass("disabled");
-                $("#reference-video").bootstrapSwitch('state', true, 'disabled', true);
-                if($("#knowledge-name").val() == ''){
-                    $("#knowledge-name").val(data.name);
-                }
-                if($("#knowledge-teacher_id").val() == ''){
-                    $("#knowledge-teacher_id").val(data.teacher_id).trigger("change");
-                }
-                if(window.knowledge_ue.getContent() == '<p>无</p>'){
-                    window.knowledge_ue.setContent(data.des);
-                }
+                $('#operation').html("重选");
                 $('input[name="Resource[res_id]"]').val(data.id);
                 $('input[name="Resource[data]"]').val(data.duration);
-                $('.field-reference-video').removeClass('has-error');
-                $('.field-reference-video .help-block').html('');
                 $(".field-video-details").removeClass("hidden");
-                $("#reelect").parent("div").removeClass("hidden");
+                $("#fill").removeClass("hidden");
                 $("#reference-video-list").addClass("hidden");
                 $("#knowledge-info").removeClass("hidden");
             }else{

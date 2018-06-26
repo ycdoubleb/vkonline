@@ -15,7 +15,6 @@ use yii\helpers\Html;
  *
  * @property string $id
  * @property string $node_id 环节ID
- * @property string $teacher_id 老师ID
  * @property int $type 知识点类型：1视频知识点 2其它
  * @property string $name 知识点名称
  * @property string $des 知识点简介
@@ -59,10 +58,6 @@ class Knowledge extends ActiveRecord
         return [
             //[['id'], 'required'],
             [['name'], 'required'],
-            [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
-                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
-                "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],
             [['type', 'zan_count', 'favorite_count', 'is_del', 'has_resource', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['des', 'data'], 'string'],
             [['id', 'node_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
@@ -80,7 +75,6 @@ class Knowledge extends ActiveRecord
         return [
             'id' => Yii::t('app', 'ID'),
             'node_id' => Yii::t('app', 'Node ID'),
-            'teacher_id' => Yii::t('app', 'Teacher ID'),
             'type' => Yii::t('app', 'Type'),
             'name' => Yii::t('app', 'Name'),
             'des' => Yii::t('app', 'Des'),
@@ -138,14 +132,6 @@ class Knowledge extends ActiveRecord
         return $this->hasOne(CourseNode::className(), ['id' => 'node_id']);
     }
 
-    /**
-     * @return ActiveQuery
-     */
-    public function getTeacher()
-    {
-        return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
-    }
-    
     /**
      * @return ActiveQuery
      */

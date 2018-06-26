@@ -1,6 +1,6 @@
 <li class="{%className%}">
     <div class="pic">
-        <a title="{%name%}" target="_blank">{%isExist%}</a>
+        <a href="/study_center/default/video-info?id={%id%}" title="{%name%}" target="_blank">{%isExist%}</a>
         <div class="duration">{%duration%}</div>
     </div>
     <div class="text">
@@ -10,6 +10,7 @@
             <span class="keep-left">{%createdAt%}</span>
             <span class="keep-right font-danger">{%levelName%}</span>
         </div>
+        <div class="tuip des hidden">{%des%}</div>
     </div>
     <div class="teacher">
         <div class="tuip">

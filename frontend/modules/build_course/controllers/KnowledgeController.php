@@ -299,7 +299,7 @@ class KnowledgeController extends Controller
         $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
         $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         $query->addSelect([
-            'Video.name', 'Video.img', 'Video.duration', 'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Video.id', 'Video.name', 'Video.img', 'Video.duration', 'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ]);
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');

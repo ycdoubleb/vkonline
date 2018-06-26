@@ -58,11 +58,6 @@ $js =
             $('.field-video-name .help-block').html('名称不能为空。');
             return;
         }
-        if($('#knowledge-teacher_id').val() == ''){
-            $('.field-video-teacher_id').addClass('has-error');
-            $('.field-video-teacher_id .help-block').html('主讲老师不能为空。');
-            return;
-        }
         $.post("../knowledge/update?id=$model->id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){
                 $.each(rel['data'],function(key, value){
