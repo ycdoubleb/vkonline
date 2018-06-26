@@ -14,7 +14,6 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -80,11 +79,8 @@ class CourseController extends Controller
      */
     public function actionStatistics()
     {
-        $searchModel = new CourseSearch();
-        
         //查看统计页
         return $this->render('statistics', [
-            'searchModel' => $searchModel,
             'teachers' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id]),       //所有主讲老师
             'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
             'results' => $this->findCourseStatistics(Yii::$app->request->queryParams),
@@ -105,11 +101,12 @@ class CourseController extends Controller
 
     /**
      * 根据课程分类统计
-     * @param Query $cat_id
+     * @param Query $searchModel
      * @return array
      */
-    protected function getStatisticsByCategory($cat_id)
+    protected function getStatisticsByCategory($searchModel)
     {
+        $cat_id = $searchModel->category_id;    //分类ID   
         $catLevel = !empty($cat_id) ? Category::getCatById($cat_id)->level + 2 : 2;
         //子查询，查询course 和 category 属性
         $tCourse = (new Query())->select([
@@ -117,10 +114,18 @@ class CourseController extends Controller
                 'COUNT( * ) AS `count`'
             ])->from(['Course' => Course::tableName()])
             ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
-            ->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id])
-            ->andFilterWhere(['is_del' => 0])
-            ->andFilterWhere(['is_show' => 1])
-            ->groupBy('tpath');    
+            ->groupBy('tpath');
+        
+        //条件查询
+        $tCourse->andFilterWhere([
+            'Course.teacher_id' => $searchModel->teacher_id,    //教师ID
+            'Course.created_by' => $searchModel->created_by,    //创建人ID
+            'Course.is_publish' => $searchModel->is_publish,    //发布状态
+            'Course.level' => $searchModel->level,              //课件范围
+            'Course.customer_id' => Yii::$app->user->identity->customer_id,//客户ID
+            'Course.is_del' => 0,
+            'Category.is_show' => 1
+        ]);
         if(!empty($cat_id)){
             $tCourse->andFilterWhere(['or',
                 ['like', 'Category.path', Category::getCatById($cat_id)->path . ",%", false],
@@ -143,15 +148,17 @@ class CourseController extends Controller
      */
     protected function findCourseStatistics($params)
     {
-        $category_id = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
-        $teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');//教师ID
-        $created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');//创建人ID
-        $is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');//发布状态
-        $level = ArrayHelper::getValue($params, 'CourseSearch.level');          //课件范围
+        $searchModel = new CourseSearch();
+        
+        $searchModel->category_id = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
+        $searchModel->teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');   //教师ID
+        $searchModel->created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');   //创建人ID
+        $searchModel->is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');   //发布状态
+        $searchModel->level = ArrayHelper::getValue($params, 'CourseSearch.level');             //课件范围
         $group_name = ArrayHelper::getValue($params, 'group', 'category_id');          //分组名
         
         /* @var $query Query */
-        $query = (new Query())->select([
+        $query = Course::find()->select([
             'Teacher.name AS teacher_name', 'User.nickname', 
             "Course.is_publish", 'Course.level',
             'COUNT(Course.id) AS value'
@@ -159,10 +166,10 @@ class CourseController extends Controller
         
         //条件查询
         $query->andFilterWhere([
-            'Course.teacher_id' => $teacher_id,
-            'Course.created_by' => $created_by,
-            'Course.is_publish' => $is_publish,
-            'Course.level' => $level,
+            'Course.teacher_id' => $searchModel->teacher_id,
+            'Course.created_by' => $searchModel->created_by,
+            'Course.is_publish' => $searchModel->is_publish,
+            'Course.level' => $searchModel->level,
             'Course.customer_id' => Yii::$app->user->identity->customer_id,
             'Course.is_del' => 0
         ]);
@@ -170,7 +177,7 @@ class CourseController extends Controller
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
         $query->groupBy("Course.{$group_name}");
-        $results = $query->all();
+        $results = $query->asArray()->all();
         
         $teachers = [];
         $createdBys = [];
@@ -185,11 +192,12 @@ class CourseController extends Controller
         }
         
         return [
+            'searchModel' => $searchModel,
             'filter' => $params,    //过滤条件
-            'category' => $this->getStatisticsByCategory($category_id),       //按课程分类统计
+            'category' => $this->getStatisticsByCategory($searchModel),       //按课程分类统计
             'teacher' => $teachers,         //按主讲老师统计
             'created_by' => $createdBys,    //按创建人统计
-            'status' => $status,           //按状态统计
+            'status' => $status,            //按状态统计
             'range' => $levels,             //按范围统计
         ];
     }
