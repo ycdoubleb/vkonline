@@ -32,7 +32,6 @@ $this->title = Yii::t(null, "{Edit}{Knowledge}", [
                 
                 <?= $this->render('_form', [
                     'model' => $model,
-                    'teacherMap' => $teacherMap,
                 ]) ?>
                 
             </div>
