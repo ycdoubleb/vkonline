@@ -37,7 +37,6 @@ use yii\widgets\ActiveForm;
     <div id="knowledge-info">
         <!--知识点名称-->
         <?= $form->field($model, 'name')->textInput(['placeholder' => '请输入...']) ?>
-        
         <!--简介-->
         <?= $form->field($model, 'des', [
             'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
@@ -99,6 +98,7 @@ use yii\widgets\ActiveForm;
                                             <?= Video::$levelMap[$model->knowledgeVideo->video->level] ?>
                                         </span>
                                     </div>
+                                    <div class="tuip des hidden"><?= $model->knowledgeVideo->video->des ?></div>
                                 </div>
                                 <div class="teacher">
                                     <div class="tuip">
@@ -131,17 +131,23 @@ use yii\widgets\ActiveForm;
 $js = 
 <<<JS
     
-    /** 富文本编辑器 */
+    /**
+     * 销毁百度编辑器
+     */
     $('#knowledge-des').removeClass('form-control');
     if(window.knowledge_ue){
         window.knowledge_ue.destroy();
     }
+    /** 
+     * 初始化百度编辑器
+     */
     window.knowledge_ue = UE.getEditor('knowledge-des', {
         initialFrameHeight: 400, 
         maximumWords: 100000,
     });
-    
-    //引用视频事件
+    /**
+     * 引用视频事件
+     */   
     $('#operation').click(function(event){
         event.preventDefault();   
         $('#fill').addClass("hidden");
@@ -149,25 +155,13 @@ $js =
         $("#reference-video-list").removeClass("hidden");
         $("#reference-video-list").load($(this).attr("href"));
     });    
-    //单击填充信息
+    /**
+     * 单击填充信息
+     */   
     $('#fill').click(function(){
-        $("#knowledge-name").val($('#video-details .list .title').text());
-        window.knowledge_ue.setContent($('#video-details .list .des').text());
+        $("#knowledge-name").val($.trim($('#video-details .list .text .title').text()));
+        window.knowledge_ue.setContent($.trim($('#video-details .list .text .des').text()));
     });
-        
-    //单击刷新按钮重新加载老师下拉列表
-    window.refresh = function(elem){
-        $('#knowledge-teacher_id').html("");
-        $.get(elem.attr("href"),function(rel){
-            if(rel['code'] == '200'){
-                window.formats = rel['data']['format'];
-                $('<option/>').val('').text('请选择...').appendTo($('#knowledge-teacher_id'));
-                $.each(rel['data']['dataMap'], function(id, name){
-                    $('<option>').val(id).text(name).appendTo($('#knowledge-teacher_id'));
-                });
-            }
-        });
-    }
         
 JS;
     $this->registerJs($js,  View::POS_READY);

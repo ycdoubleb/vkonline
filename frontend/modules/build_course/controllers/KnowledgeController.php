@@ -303,7 +303,6 @@ class KnowledgeController extends Controller
         ]);
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         $videoInfo = $query->one();
-        $videoInfo['des'] = Html::decode($videoInfo['des']);  //decode并替换
         $results = ArrayHelper::merge(ArrayHelper::index([$videoInfo], 'id'), 
                 ArrayHelper::index($tagRefQuery->asArray()->all(), 'object_id'));
         if(\Yii::$app->request->isAjax){
