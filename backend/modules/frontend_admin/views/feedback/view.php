@@ -43,11 +43,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'id',
                 [
                     'attribute' => 'customer_id',
-                    'value' => $model->customer->name,
+                    'value' => !empty($model->customer_id) ? $model->customer->name : null,
                 ],
                 [
                     'attribute' => 'user_id',
-                    'value' => $model->user->nickname,
+                    'value' => !empty($model->user_id) ? $model->user->nickname : null,
                 ],
                 'contact',
                 [
