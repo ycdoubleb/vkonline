@@ -30,7 +30,6 @@ GrowlAsset::register($this);
                     <a class="icon" data-videoid="<?= $model['video_id'] ?>" onclick="removeItem($(this));">
                         <i class="fa fa-times"></i>
                     </a>
-                    <!--<a href="/study_center/default/view?id=<?= $model['video_id'] ?>" title="<?= $model['name'] ?>" target="_blank">-->
                     <a href="video-info?id=<?=$model['video_id']?>" title="<?= $model['name'] ?>" target="_blank">
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>

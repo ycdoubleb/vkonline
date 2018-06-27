@@ -136,16 +136,10 @@ $js =
     if(window.knowledge_ue){
         window.knowledge_ue.destroy();
     }
-    window.knowledge_ue = UE.getEditor('knowledge-des', {toolbars:[
-        [
-            'source', '|', 'undo', 'redo', '|',  
-            'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
-            'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
-            'paragraph', 'fontfamily', 'fontsize', '|',
-            'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
-            'simpleupload', 'horizontal'
-        ]
-    ]});
+    window.knowledge_ue = UE.getEditor('knowledge-des', {
+        initialFrameHeight: 400, 
+        maximumWords: 100000,
+    });
     
     //引用视频事件
     $('#operation').click(function(event){

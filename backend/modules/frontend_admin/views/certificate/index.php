@@ -74,8 +74,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
                 [
                     'label' => Yii::t('app', 'Des'),
+                    'format' => 'raw',
                     'value' => function ($data) {
-                        return $data['des'];
+                        return Html::decode($data['des']);
                     },
                     'contentOptions' => [
                         'style' => [

@@ -27,6 +27,7 @@ ModuleAssets::register($this);
         <div class="btngroup">
             <?php 
                 if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
+                    //是否正在申请中
                     if(!$is_applying){
                         echo Html::a(Yii::t('app', '{Proposer}{Authentication}', [
                             'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication')

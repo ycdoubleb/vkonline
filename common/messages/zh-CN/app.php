@@ -142,6 +142,7 @@ return [
     'Privilege' => '权限',
     'Action' => '动作',
     'Reference' => '引用',
+    'Frequency' => '次数',
     'Keyword' => '关键字',
     'Attribute' => '属性',
     'Top Level' => '顶级',

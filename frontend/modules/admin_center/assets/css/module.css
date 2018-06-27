@@ -128,8 +128,9 @@
 
 /***修改输入框样式***/
 .form-control,
-.select2-container--krajee .select2-selection{
-    height: 40px !important;
+.select2-container--krajee .select2-selection,
+.main .form-group .form-control {
+    height: 40px;
     border-radius: 0px !important;
 }
 

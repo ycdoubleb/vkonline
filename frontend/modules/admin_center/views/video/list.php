@@ -1,103 +1,37 @@
 <?php
 
 use common\models\vk\Course;
-use frontend\modules\admin_center\assets\ModuleAssets;
-use kartik\widgets\Select2;
+use common\models\vk\searchs\VideoSearch;
+use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
 
-
 /* @var $this View */
+/* @var $searchModel VideoSearch */
+/* @var $dataProvider ActiveDataProvider */
+
+$this->title = Yii::t('app', '{Video}{List}',[
+    'Video' => Yii::t('app', 'Video'),
+    'List' => Yii::t('app', 'List'),
+]);
 
 ?>
 <div class="video-index main">
 
     <div class="frame">
         <div class="frame-content">
-            <div class="frame-title">
-                <span><?= Yii::t('app', '{Video}{List}',[
-                    'Video' => Yii::t('app', 'Video'),
-                    'List' => Yii::t('app', 'List'),
-                ]) ?></span>
-                <div class="framebtn show-type">
-                    <a href="index?type=1" class="btn btn-default btn-flat <?=$type == 2 ? '' : 'active'?>" title="视频列表"><i class="fa fa-list"></i></a>
-                    <a href="index?type=2&chart=teacher" class="btn btn-default btn-flat <?=$type == 2 ? 'active' : ''?>" title="视频统计"><i class="fa fa-pie-chart"></i></a>
-                </div>
-            </div>
-            <div class="video-form form">
-                <?php $form = ActiveForm::begin([
-                    'action' => ['index'],
-                    'method' => 'get',
-                    'options'=>[
-                        'id' => 'video-form',
-                        'class'=>'form-horizontal',
-                    ],
-                    'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
-                        'labelOptions' => [
-                            'class' => 'col-lg-2 col-md-2 control-label form-label',
-                        ],  
-                    ], 
-                ]); ?>
-                <!--主讲老师-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
-                        'data' => $teachers, 'options' => ['placeholder'=>'请选择...',],
-                        'pluginOptions' => ['allowClear' => true],
-                    ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
-                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
-                    ])) ?>
-                </div>
-                <!--范围-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
-                        'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
-                        'itemOptions'=>[
-                            'labelOptions'=>[
-                                'style'=>[
-                                    'margin'=>'5px 29px 10px 0',
-                                    'color' => '#666666',
-                                    'font-weight' => 'normal',
-                                ]
-                            ]
-                        ],
-                    ])->label(Yii::t('app', 'Range') . '：') ?>
-                </div>
-                <!--创建者-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'created_by')->widget(Select2::class, [
-                        'data' => $createdBys, 'options' => ['placeholder'=>'请选择...',],
-                        'pluginOptions' => ['allowClear' => true],
-                    ])->label(Yii::t('app', 'Created By') . '：') ?>
-                </div>
-                <!--标签-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <div class="form-group">
-                        <label class="col-lg-2 col-md-2 control-label form-label" for="videosearch-id">标签：</label>
-                        <div class="col-lg-10 col-md-10">
-                            <?= Html::input('text', 'tag', ArrayHelper::getValue($filters, 'tag', ''), [
-                                'placeholder' => '请输入...',
-                                'class' => "form-control" ,
-                                'id' => 'tag'
-                            ])?>
-                        </div>
-                    </div>
-                </div>
-                <!--视频名称-->
-                <div class="col-lg-6 col-md-6 clear-padding">
-                    <?= $form->field($searchModel, 'name')->textInput([
-                        'placeholder' => '请输入...', 'maxlength' => true
-                    ])->label(Yii::t('app', '{Video}{Name}：', [
-                        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-                    ])) ?>
-                </div>
-                <?php ActiveForm::end(); ?>
-            </div>
+            
+            <?= $this->render('_search', [
+                'searchModel' => $searchModel, 
+                'filters' => $filters, 
+                'teachers' => $teachers,
+                'createdBys' => $createdBys,
+                'title' => $this->title,
+                'is_show' => true
+            ]) ?>
             
             <div class="hr"></div>
             
@@ -150,9 +84,11 @@ use yii\widgets\LinkPager;
                             'contentOptions' => ['style' => 'white-space:normal'],
                         ],
                         [
-                            'label' => Yii::t('app', '引用次数'),
+                            'label' => Yii::t('app', '{Reference}{Frequency}',[
+                                'Reference' => Yii::t('app', 'Reference'), 'Frequency' => Yii::t('app', 'Frequency')
+                            ]),
                             'value' => function ($data){
-                                return  $data['rel_num'];
+                                return isset($data['ref_num']) ? $data['ref_num'] : null;
                             },
                             'headerOptions' => ['style' => 'width:60px'],
                         ],
@@ -213,35 +149,3 @@ use yii\widgets\LinkPager;
         </div>
     </div>
 </div>
-<?php
-
-$js = <<<JS
-    
-    //教师触发change事件
-    $("#videosearch-teacher_id").change(function(){
-        $('#video-form').submit();
-    });
-        
-    //创建人触发change事件
-    $("#videosearch-created_by").change(function(){
-        $('#video-form').submit();
-    });
-    
-    //视频名触发change事件
-    $("#videosearch-name").change(function(){
-        $('#video-form').submit();
-    });
-        
-    //单击范围选中radio提交表单
-    $('input[name="VideoSearch[level]"]').click(function(){
-        $('#video-form').submit();
-    });
-        
-    //标签触发change事件
-    $("#tag").change(function(){
-        $('#video-form').submit();
-    });
-JS;
-    $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
-?>

@@ -77,7 +77,7 @@ class VideoSearch extends Video
         //添加字段
         $addArrays = [
             'Customer.name AS customer_name','Video.name', 'Video.is_publish',
-            'Video.level',  'Video.created_at','User.nickname', 'COUNT(KnowledgeVideo.video_id) AS rel_num',
+            'Video.level',  'Video.created_at','User.nickname',
             'Teacher.name AS teacher_name', 'Video.created_at',
         ];
         
@@ -151,16 +151,18 @@ class VideoSearch extends Video
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
+        //关联查询标签
+        self::$query->leftJoin(['TagRef' => TagRef::tableName()], '(TagRef.object_id = Video.id AND TagRef.is_del = 0)');
+        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //复制视频对象
         $copyVideo= clone self::$query;
         //查询视频下的标签
         $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
         $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags"]);
+        //查询视频的被引用数量
+        $ref_num = KnowledgeVideo::getRefNum($copyVideo);
         //以视频id为分组
         self::$query->groupBy(['Video.id']);
-        //关联查询标签
-        self::$query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Video.id');
-        self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //查询总数
         $totalCount = self::$query->count('id');
         //添加字段
@@ -171,14 +173,15 @@ class VideoSearch extends Video
         self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         self::$query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
-        self::$query->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], '(KnowledgeVideo.id = Video.id AND KnowledgeVideo.is_del = 0)');
+        self::$query->andFilterWhere(['Video.is_del' => 0]);
         //查询标签结果
         $tagRefResult = $tagRefQuery->asArray()->all(); 
         //查询的视频结果
         $viedoResult = self::$query->asArray()->all();        
         //以video_id为索引
         $videos = ArrayHelper::index($viedoResult, 'id');
-        $results = ArrayHelper::index($tagRefResult, 'object_id');
+        $results = ArrayHelper::merge(ArrayHelper::index($tagRefResult, 'object_id'), 
+            ArrayHelper::index($ref_num, 'video_id'));
         //合并查询后的结果
         foreach ($videos as $id => $item) {
             if(isset($results[$id])){
@@ -258,99 +261,5 @@ class VideoSearch extends Video
         
         return $query;
     }
-    
-    /**
-     * 统计查询
-     * @param array $params
-     * @return array
-     */
-    public static function searchStatistics($params)
-    {
-        $teacher_id = ArrayHelper::getValue($params, 'VideoSearch.teacher_id');
-        $created_by = ArrayHelper::getValue($params, 'VideoSearch.created_by');
-        $level = ArrayHelper::getValue($params, 'VideoSearch.level');  
-        
-        /* @var $query Query */
-        $query = (new Query())->where(['Video.customer_id' => Yii::$app->user->identity->customer_id, 'Video.is_del' => 0]);  //该客户下的数据
-        
-        //条件查询
-        $query->andFilterWhere([
-            'Video.teacher_id' => $teacher_id,
-            'Video.created_by' => $created_by,
-            'Video.level' => $level,
-        ]);
-        
-        return [
-            'filter' => $params,
-            'teacher' => self::getStatisticsByTeacher($query),         //按主讲老师统计
-            'created_by' => self::getStatisticsByCreatedBy($query),    //按创建人统计
-            'range' => self::getStatisticsByRange($query),             //按范围统计
-        ];
-    }
-    
-    /**
-     * 根据主讲老师统计
-     * @param Query $sourceQuery
-     * @return array
-     */
-    public static function getStatisticsByTeacher($sourceQuery)
-    {
-        $teacherQuery = clone $sourceQuery;
-        $teacherQuery->select(['Teacher.name AS name', "COUNT(Video.teacher_id) AS value"])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
-                ->groupBy('Teacher.id');
-        
-        return $teacherQuery->all(Yii::$app->db);
-    }
-    
-    /**
-     * 根据创建人统计
-     * @param Query $sourceQuery
-     * @return array
-     */
-    public static function getStatisticsByCreatedBy($sourceQuery)
-    {
-        $createdByQuery = clone $sourceQuery;
-        $createdByQuery->select(['User.nickname AS name', "COUNT(Video.created_by) AS value"])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
-                ->groupBy('User.id');
-        
-        return $createdByQuery->all(Yii::$app->db);
-    }
-    
-    /**
-     * 根据范围统计
-     * @param Query $sourceQuery
-     * @return array
-     */
-    public static function getStatisticsByRange($sourceQuery)
-    {
-        $customerQuery = clone $sourceQuery;
-        $privateQuery = clone $sourceQuery;
-        $openQuery = clone $sourceQuery;
-        $customerQuery->select(["COUNT(Video.level) AS value"])
-                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 0]);
-        $privateQuery->select(["COUNT(Video.level) AS value"])
-                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 1]);
-        $openQuery->select(["COUNT(Video.level) AS value"])
-                ->from(['Video' => Video::tableName()])->andFilterWhere(['level' => 2]);
-        
-        $customer[] = [
-            'name' => '内网',
-            'value' => $customerQuery->one(Yii::$app->db)['value']
-        ];
-        $private[] = [
-            'name' => '私有',
-            'value' => $privateQuery->one(Yii::$app->db)['value']
-        ];
-        $open[] = [
-            'name' => '公开',
-            'value' => $openQuery->one(Yii::$app->db)['value']
-        ];
-        
-        return array_merge($customer, $private, $open);
-    }
-    
+ 
 }

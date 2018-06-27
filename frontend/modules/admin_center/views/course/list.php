@@ -1,22 +1,13 @@
 <?php
 
-use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
-use common\widgets\depdropdown\DepDropdown;
-use frontend\modules\admin_center\assets\ModuleAssets;
-use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\data\Pagination;
 use yii\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\web\JsExpression;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 use yii\widgets\LinkPager;
-
 
 /* @var $this View */
 /* @var $searchModel CourseSearch */
@@ -37,7 +28,8 @@ $this->title = Yii::t('app', '{Course}{List}',[
                 'filters' => $filters, 
                 'teachers' => $teachers,
                 'createdBys' => $createdBys,
-                'title' => $this->title
+                'title' => $this->title,
+                'is_show' => true
             ]) ?>
             
             <div id="content">

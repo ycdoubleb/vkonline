@@ -27,16 +27,16 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <div class="col-lg-12 col-md-12" style="padding-left: 0px; padding-right: 0px;">
+    <div class="form-group">
         <?= Html::label(Yii::t('app', '{The}{Category}',['The' => Yii::t('app', 'The'),'Category'=> Yii::t('app', 'Category')]),
             '', [
                 'class' => 'col-lg-1 col-md-1 control-label',
-                'style' => ['color' => '#999999', 'padding-left' => '0px', 'padding-right' => '22px']
+                'style' => ['color' => '#999999', 'padding-left' => '0px', 'padding-right' => '10px']
             ])?>
-        <div class="col-lg-11 col-md-11" style="padding-left: 3px; padding-right: 0px;">
+        <div class="col-lg-11 col-md-11">
             <?= Html::input('text', 'input', $path, [
                     'class' => 'form-control',
-                    'style' => 'margin-bottom:25px',
+                    'style' => 'margin-bottom:12px',
                     'readonly' => 'readonly'
                 ])?>
         </div>

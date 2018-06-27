@@ -16,8 +16,6 @@ html, body{
 }
 .wrap {
     padding: 30px 0 20px !important;
-    margin: 0 auto -20px !important;
-    background-color: #f9f9f9 !important;
 }
 .content {
     padding: 0 !important;
@@ -102,6 +100,10 @@ html, body{
     display: inline-block;
     width: 885px;
     float: right;
+}
+
+.main .right-box .panel {
+    color: #666;
 }
 
 .main .table {

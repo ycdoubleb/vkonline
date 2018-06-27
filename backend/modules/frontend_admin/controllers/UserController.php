@@ -12,7 +12,6 @@ use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
-use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\data\ArrayDataProvider;
