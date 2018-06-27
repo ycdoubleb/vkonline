@@ -30,7 +30,6 @@ use yii\helpers\Html;
  *
  * @property User $createdBy 获取创建者
  * @property CourseNode $node   获取节点
- * @property Teacher $teacher   获取老师
  * @property KnowledgeVideo $knowledgeVideo 获取视频资源     
  * @property KnowledgeVideo[] $knowledgeVideos
  */
@@ -56,11 +55,10 @@ class Knowledge extends ActiveRecord
     public function rules()
     {
         return [
-            //[['id'], 'required'],
             [['name'], 'required'],
             [['type', 'zan_count', 'favorite_count', 'is_del', 'has_resource', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['des', 'data'], 'string'],
-            [['id', 'node_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'node_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             [['id'], 'unique'],
             [['node_id'], 'exist', 'skipOnError' => true, 'targetClass' => CourseNode::className(), 'targetAttribute' => ['node_id' => 'id']],

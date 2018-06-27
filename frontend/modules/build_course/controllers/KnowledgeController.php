@@ -117,7 +117,6 @@ class KnowledgeController extends Controller
         } else {
             return $this->renderAjax('update', [
                 'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),  //和自己相关的老师
             ]);
         }
     }
