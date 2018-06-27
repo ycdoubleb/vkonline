@@ -5,6 +5,7 @@ namespace common\models\vk;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 /**
  * This is the model class for table "{{%knowledge_video}}".
@@ -67,5 +68,24 @@ class KnowledgeVideo extends ActiveRecord
     public function getVideo()
     {
         return $this->hasOne(Video::class, ['id' => 'video_id']);
+    }
+    
+    /**
+     * 查询视频的被引用数量
+     * @param ActiveQuery $videoId
+     * @return array
+     */
+    public static function getRefNum($videoId)
+    {
+        $refNum = (new Query())
+            ->select(['KnowledgeVideo.video_id', 'COUNT(KnowledgeVideo.video_id) AS ref_num'])
+            ->from(['KnowledgeVideo' => KnowledgeVideo::tableName()])
+            ->leftJoin(['Video' => Video::tableName()], 'Video.id = KnowledgeVideo.video_id')
+            ->andFilterWhere([
+                'KnowledgeVideo.video_id' => $videoId,
+                'KnowledgeVideo.is_del' => 0
+            ])->groupBy(['KnowledgeVideo.video_id']);
+                
+        return $refNum->all();
     }
 }

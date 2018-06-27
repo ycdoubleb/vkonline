@@ -13,6 +13,11 @@ use yii\widgets\LinkPager;
 /* @var $searchModel VideoSearch */
 /* @var $dataProvider ActiveDataProvider */
 
+$this->title = Yii::t('app', '{Video}{List}',[
+    'Video' => Yii::t('app', 'Video'),
+    'List' => Yii::t('app', 'List'),
+]);
+
 ?>
 <div class="video-index main">
 
@@ -79,9 +84,11 @@ use yii\widgets\LinkPager;
                             'contentOptions' => ['style' => 'white-space:normal'],
                         ],
                         [
-                            'label' => Yii::t('app', '引用次数'),
+                            'label' => Yii::t('app', '{Reference}{Frequency}',[
+                                'Reference' => Yii::t('app', 'Reference'), 'Frequency' => Yii::t('app', 'Frequency')
+                            ]),
                             'value' => function ($data){
-                                return  $data['rel_num'];
+                                return isset($data['ref_num']) ? $data['ref_num'] : null;
                             },
                             'headerOptions' => ['style' => 'width:60px'],
                         ],

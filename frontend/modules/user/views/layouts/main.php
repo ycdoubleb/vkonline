@@ -38,9 +38,7 @@ foreach ($menuItems as $index => $item) {
 }
 
 $html = <<<Html
-    <header class="header">
-        <img src="/imgs/build_course/images/u5303.png" />
-    </header>
+    <header class="header"></header>
     
     <div class="container content">
         <nav class="subnav">
