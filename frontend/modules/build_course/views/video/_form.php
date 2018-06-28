@@ -24,9 +24,9 @@ UeditorAsset::register($this);
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
-        'avatar' => $teacher->avatar, 
-        'is_certificate' => $teacher->is_certificate,
-        'sex' => $teacher->sex,
+        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
+        'sex' => $teacher->sex == 1 ? '男' : '女',
         'job_title' => $teacher->job_title,
     ];
 }
@@ -38,30 +38,23 @@ $format = <<< SCRIPT
         if (!state.id){
             return state.text
         };
-        //图片位置
-        var src = formats[state.id]['avatar'].toLowerCase();
-        //为否显示认证图标
-        var isShow = formats[state.id]['is_certificate'] ? '<i class="fa fa-vimeo icon-vimeo"></i>' : '<i class="fa icon-vimeo"></i>';
-        var sex = formats[state.id]['sex'] == 1 ? '男' : '女';
+        //访问名师堂的链接
         var links = '/teacher/default/view?id=' + $.trim(state.id);
         //返回结果（html）
-        return isShow + 
-            '<div class="avatars">' + 
-                '<img class="img-circle" src="' + src + '" width="32" height="32"/>' + 
-            '</div>' 
-            + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
-            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;">' + 
-                '<i class="fa fa-eye"></i>' + 
-            '</a>';
+        return '<div class="vk-select2-results">' +
+            '<a class="icon-vimeo"><i class="fa fa-vimeo ' + formats[state.id]['is_certificate'] + '"></i></a>' + 
+            '<img class="avatars img-circle" src="' + formats[state.id]['avatar'].toLowerCase() + '" width="32" height="32"/>' +  state.text + 
+            '（' + formats[state.id]['sex'] + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
+            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;"><i class="fa fa-eye"></i></a>' +
+        '</div>';
     } 
         
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
-
 ?>
 
-<div class="video-form form set-margin set-bottom">
+<div class="video-form vk-form set-spacing set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -76,21 +69,18 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
-    <!--主讲老师-->
     <?php
         $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
-                'class' => 'btn btn-primary', 'onclick' => 'refresh($(this)); return false;'
-            ]);
-        $newAdd = Html::a('新增', ['teacher/create'], [
-            'class' => 'btn btn-primary', 'target' => '_blank'
+            'id' => 'refresh',  'class' => 'btn btn-primary'
         ]);
+        $newAdd = Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']);
         $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
         echo  $form->field($model, 'teacher_id', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
                 "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
-                    "<div class=\"keep-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                    "<div class=\"keep-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                    "<div class=\"keep-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
                 "</div>\n" .
             "<div class=\"col-lg-7 col-md-7\">{error}</div>",
         ])->widget(Select2::class,[
@@ -190,17 +180,20 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
-        
-    /** 富文本编辑器 */
+    /**
+     * 初始化百度编辑器
+     */
     $('#container').removeClass('form-control');
     var ue = UE.getEditor('container', {
         initialFrameHeight: 200, 
         maximumWords: 100000,
     });
-    //单击刷新按钮重新加载老师下拉列表
-    window.refresh = function(elem){
+    /**
+     * 单击刷新按钮重新加载老师下拉列表
+     */
+    $("#refresh").click(function(){
         $('#video-teacher_id').html("");
-        $.get(elem.attr("href"),function(rel){
+        $.get($(this).attr("href"),function(rel){
             if(rel['code'] == '200'){
                 window.formats = rel['data']['format'];
                 $('<option/>').val('').text('请选择...').appendTo($('#video-teacher_id'));
@@ -208,11 +201,13 @@ $js =
                     $('<option>').val(id).text(name).appendTo($('#video-teacher_id'));
                 });
             }
-        });
-    }
-    
+        })
+        return false;
+    });
+    /**
+     * 加载文件上传
+     */
     window.uploader;
-    //加载文件上传  
     require(['euploader'], function (euploader) {
         //公共配置
         window.config = {
@@ -255,8 +250,10 @@ $js =
         window.uploader.clearAll();
         window.uploader.addCompleteFiles($videoFiles);
     });
-    //添加外部链接
-    $("#outside_link").blur(function(){
+    /**
+     * 添加外部链接
+     */
+    $("#outside_link").change(function(){
         $.get("/webuploader/default/upload-link?video_path=" + $(this).val(), function(rel){
             if(rel['success'] && rel['data']['code'] == '0'){
                 window.uploader.clearAll();

@@ -19,8 +19,8 @@ ModuleAssets::register($this);
 ?>
 
 <div class="video-view main">
-    <!--面包屑-->
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', "{Video}{Detail}：{$model->name}", [
                 'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
@@ -28,14 +28,14 @@ ModuleAssets::register($this);
         </span>
     </div>
     
-    <div class="panel">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
-            <div class="btngroup">
+            <div class="btngroup pull-right">
                 <?php if($model->created_by == Yii::$app->user->id){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']) . '&nbsp;';
@@ -55,7 +55,7 @@ ModuleAssets::register($this);
         </div>
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view'],
+            'options' => ['class' => 'table table-bordered detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -109,13 +109,13 @@ ModuleAssets::register($this);
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => !empty($model->videoFile) ? 
-                        '<video src="' . StringUtil::completeFilePath($model->videoFile->uploadfile->path) . '" controls poster="' . StringUtil::completeFilePath($model->img) . '"></video>' : null,
+                        '<video src="' . StringUtil::completeFilePath($model->videoFile->uploadfile->path) . '" class="vk-video" controls poster="' . StringUtil::completeFilePath($model->img) . '"></video>' : null,
                 ],
             ],
         ]) ?>
     </div>
     
-    <div class="panel">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Relation}{Course}',[
@@ -134,7 +134,7 @@ ModuleAssets::register($this);
                     'class' => 'hidden',
                 ]
             ],
-            'tableOptions' => ['class' => 'table table-bordered'],
+            'tableOptions' => ['class' => 'table table-bordered vk-table'],
             'columns' => [
                 [
                     'label' => Yii::t('app', '{The}{Customer}', [

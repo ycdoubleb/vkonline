@@ -19,7 +19,7 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
 ]);
 
 ?>
-<div class="course-user-update main modal">
+<div class="course-user-update main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -29,7 +29,7 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body form clear">
+            <div class="modal-body vk-form clear-shadow">
                 
                 <?php $form = ActiveForm::begin([
                     'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],

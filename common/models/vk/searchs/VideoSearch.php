@@ -102,7 +102,7 @@ class VideoSearch extends Video
         
         //添加字段
         $addArrays = [
-            'Video.name', 'Video.img', 'Video.duration',  'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序

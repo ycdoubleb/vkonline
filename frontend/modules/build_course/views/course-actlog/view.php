@@ -18,9 +18,9 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
 ]);
 
 ?>
-<div class="coutse_actlog-view main modal">
+<div class="coutse_actlog-view main vk-modal">
 
-    <div class="modal-dialog" role="document" style="width: 70%">
+    <div class="modal-dialog modal-width" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -31,7 +31,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
             <div class="modal-body">
                 <?= DetailView::widget([
                     'model' => $model,
-                    'options' => ['class' => 'table table-bordered detail-view '],
+                    'options' => ['class' => 'table table-bordered detail-view vk-table'],
                     'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                     'attributes' => [
                         'action',
@@ -49,11 +49,6 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
                             'attribute' => 'course_id',
                             'value' => !empty($model->course_id) ? $model->course->name : null,
                         ],
-//                        [
-//                            'attribute' => 'related_id',
-//                            'label' => Yii::t('app', 'Relative') . 'ID',
-//                            'value' => $model->related_id,
-//                        ],
                         [
                             'attribute' => 'created_at',
                             'value' => date('Y-m-d H:i',$model->created_at),
@@ -74,12 +69,3 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
     </div>
 
 </div>
-
-<?php
-$js = 
-<<<JS
-        
-    
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>

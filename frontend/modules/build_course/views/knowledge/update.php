@@ -18,7 +18,7 @@ $this->title = Yii::t(null, "{Edit}{Knowledge}", [
 
 
 ?>
-<div class="knowledge-update main modal">
+<div class="knowledge-update main vk-modal">
 
     <div class="modal-dialog modal-lg modal-width" role="document">
         <div class="modal-content">
@@ -32,6 +32,7 @@ $this->title = Yii::t(null, "{Edit}{Knowledge}", [
                 
                 <?= $this->render('_form', [
                     'model' => $model,
+                    'videoDetail' => $videoDetail,
                 ]) ?>
                 
             </div>

@@ -19,7 +19,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="knowledge-form form clear">
+<div class="knowledge-form vk-form clear-shadow">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -66,54 +66,8 @@ use yii\widgets\ActiveForm;
             <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
             <div class="col-lg-6 col-md-6">
                 <div id="video-details">
-                    <div class="list">
-                    <?php if($model->has_resource): ?>
-                        <ul>
-                            <li class="clear-margin">
-                                <div class="pic">
-                                    <a href="/study_center/default/video-info?id=<?= $model->knowledgeVideo->video_id ?>" title="<?= $model->knowledgeVideo->video->name ?>" target="_blank">
-                                        <?php if(empty($model->knowledgeVideo->video->img)): ?>
-                                        <div class="title"><?= $model->knowledgeVideo->video->name ?></div>
-                                        <?php else: ?>
-                                        <img src="<?= StringUtil::completeFilePath($model->knowledgeVideo->video->img) ?>" width="100%" height="100%" />
-                                        <?php endif; ?>
-                                    </a>
-                                    <div class="duration"><?= DateUtil::intToTime($model->knowledgeVideo->video->duration) ?></div>
-                                </div>
-                                <div class="text">
-                                    <div class="tuip">
-                                        <span class="title single-clamp">
-                                            <?= $model->knowledgeVideo->video->name ?>
-                                        </span>
-                                    </div>
-                                    <div class="tuip single-clamp">
-                                        <span>
-                                            <?= count($model->knowledgeVideo->video->tagRefs) > 0 ?
-                                                implode(',', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->knowledgeVideo->video->tagRefs, 'tags'), 'name'))) : 'null' ?>
-                                        </span>
-                                    </div>
-                                    <div class="tuip">
-                                        <span class="keep-left"><?= Date('Y-m-d H:i', $model->knowledgeVideo->video->created_at) ?></span>
-                                        <span class="keep-right font-danger">
-                                            <?= Video::$levelMap[$model->knowledgeVideo->video->level] ?>
-                                        </span>
-                                    </div>
-                                    <div class="tuip des hidden"><?= $model->knowledgeVideo->video->des ?></div>
-                                </div>
-                                <div class="teacher">
-                                    <div class="tuip">
-                                        <a href="/teacher/default/view?id=<?= $model->knowledgeVideo->video->teacher->id ?>" target="_blank">
-                                            <div class="avatars img-circle keep-left">
-                                                <?= Html::img(StringUtil::completeFilePath($model->knowledgeVideo->video->teacher->avatar), [
-                                                    'class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
-                                            </div>
-                                            <span class="keep-left"><?= $model->knowledgeVideo->video->teacher->name ?></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    <?php endif; ?>
+                    <div class="vk-list">
+                        <ul class="list-unstyled"></ul>
                     </div>
                 </div>
             </div>
@@ -128,11 +82,16 @@ use yii\widgets\ActiveForm;
 </div>
 
 <?php
+//视频详情
+$videoDetail = json_encode(isset($videoDetail) ? $videoDetail : []);
+//加载 LIST_DOM 模板
+$list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+    $this->renderFile('@frontend/modules/build_course/views/layouts/_video.php')));
 $js = 
 <<<JS
     
     /**
-     * 销毁百度
+     * 销毁百度编辑器
      */
     $('#knowledge-des').removeClass('form-control');
     if(window.knowledge_ue){
@@ -159,10 +118,17 @@ $js =
      * 单击填充信息
      */   
     $('#fill').click(function(){
-        $("#knowledge-name").val($.trim($('#video-details .text .title').text()));
-        window.knowledge_ue.setContent($.trim($('#video-details .text .des').html()));
+        $("#knowledge-name").val($.trim($('#video-details .list-body .title').text()));
+        window.knowledge_ue.setContent($.trim($('#video-details .list-body .des').html()));
     });
-        
+    /**
+     * 加载视频详细
+     */
+    window.list_dom = $list_dom;    //加载 LIST_DOM 模板
+    if($model->has_resource){
+        var videoDetail = $videoDetail;
+        $(Wskeee.StringUtil.renderDOM(window.list_dom, videoDetail[0])).appendTo($("#video-details .vk-list > ul"));
+    }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

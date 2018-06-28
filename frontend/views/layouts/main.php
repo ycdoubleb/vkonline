@@ -2,6 +2,7 @@
 
 use common\widgets\Alert;
 use frontend\assets\AppAsset;
+use frontend\assets\BaseAssets;
 use kartik\widgets\AlertBlock;
 use yii\helpers\Html;
 use yii\web\View;
@@ -12,6 +13,7 @@ use yii\widgets\Breadcrumbs;
 
 
 AppAsset::register($this);
+BaseAssets::register($this);
 
 ?>
 <?php $this->beginPage() ?>

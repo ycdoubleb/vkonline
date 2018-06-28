@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\CourseUser;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
@@ -21,7 +22,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
 
 ?>
 
-<div class="course-user-create main modal">
+<div class="course-user-create main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -31,7 +32,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body form clear">
+            <div class="modal-body vk-form clear-shadow">
                 
                 <?php $form = ActiveForm::begin([
                     'options'=>[
@@ -51,8 +52,8 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                     <div class="col-lg-12 col-md-12">
                         <?php foreach ($userRecentContacts as $item): ?>
                         <div class="recent">
-                            <?= Html::img($item['avatar'],['width' => 40, 'height' => 37]) ?>
-                            <p id="<?= $item['id'] ?>"><?= $item['nickname']; ?></p>
+                            <?= Html::img(StringUtil::completeFilePath($item['avatar']),['width' => 40, 'height' => 37]) ?>
+                            <span id="<?= $item['id'] ?>"><?= $item['nickname']; ?></span>
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -115,7 +116,7 @@ $js =
         if($("#courseuser-user_id").val() == ''){
             temp = [];
         }
-        var id = $(this).children("p").attr("id");
+        var id = $(this).children("span").attr("id");
         if($.inArray(id, temp) < 0){
             temp.push(id);
         }else {
@@ -128,7 +129,6 @@ $js =
     
     // 提交表单
     $("#submitsave").click(function(){
-        //$('#build-course-form').submit();return;
         if($("#courseuser-user_id").val() == ''){
             $('.field-courseuser-user_id').addClass('has-error');
             $('.field-courseuser-user_id .help-block').html('协作人员不能为空。');

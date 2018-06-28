@@ -18,10 +18,10 @@ GrowlAsset::register($this);
 
 ?>
 <div class="course-user-index">
-    <div class="panel keep-right right-panel">
+    <div class="vk-panel right-panel pull-right">
         <div class="title">
             <span><?= Yii::t('app', 'Help Man') ?></span>
-            <div class="btngroup">
+            <div class="btngroup pull-right">
                 <?php if($model->created_by == Yii::$app->user->id && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-user/create', 'course_id' => $model->id], 
                         ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));']);
@@ -31,7 +31,7 @@ GrowlAsset::register($this);
         <div class="right-panel-height">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
-                'tableOptions' => ['class' => 'table table-list'],
+                'tableOptions' => ['class' => 'table table-list vk-table'],
                 'layout' => "{items}\n{summary}\n{pager}",
                 'summaryOptions' => [
                     'class' => 'hidden',

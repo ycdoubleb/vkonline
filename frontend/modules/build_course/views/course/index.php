@@ -16,28 +16,27 @@ use yii\widgets\ActiveForm;
 /* @var $searchModel CourseSearch */
 /* @var $model Course */
 
-
 ModuleAssets::register($this);
 GrowlAsset::register($this);
 
 ?>
 
 <div class="course-index main">
-    <!-- 面包屑 -->
-    <div class="crumbs">
+    <!-- 页面标题 -->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', '{My}{Course}', [
                 'My' => Yii::t('app', 'My'), 'Course' => Yii::t('app', 'Course')
             ]) ?>
         </span>
-        <div class="btngroup">
+        <div class="btngroup pull-right">
             <?= Html::a(Yii::t('app', '{Create}{Course}', [
                 'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
             ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
         </div>
     </div>
     <!-- 搜索 -->
-    <div class="course-form form set-margin"> 
+    <div class="course-form vk-form set-spacing"> 
         
         <?php $form = ActiveForm::begin([
             'action' => ['index'],
@@ -95,8 +94,8 @@ GrowlAsset::register($this);
         
     </div>
     <!-- 排序 -->
-    <div class="sort">
-        <ul>
+    <div class="vk-tabs">
+        <ul class="list-unstyled">
             <li id="created_at">
                 <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at']) ?>
             </li>
@@ -109,58 +108,9 @@ GrowlAsset::register($this);
         </ul>
     </div>
     <!--列表-->
-    <div class="list">
-        <ul>
-            <?php if(count($dataProvider->allModels) <= 0): ?>
-            <h5>没有找到数据。</h5>
-            <?php endif; ?>
-            <?php foreach ($dataProvider->allModels as $index => $model): ?>
-            <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
-                <div class="pic">
-                    <?php if($model['level'] == Course::INTRANET_LEVEL): ?>
-                    <div class="icon font-danger"><i class="fa fa-lock"></i></div>
-                    <?php endif; ?>
-                    <a href="/course/default/view?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
-                        <?php if(empty($model['cover_img'])): ?>
-                        <div class="title"><?= $model['name'] ?></div>
-                        <?php else: ?>
-                        <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
-                        <?php endif; ?>
-                    </a>
-                </div>
-                <div class="text">
-                    <div class="tuip">
-                        <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
-                        <!--<span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>-->
-                    </div>
-                    <div class="tuip single-clamp">
-                        <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
-                    </div>
-                    <div class="tuip">
-                        <span class="keep-left font-<?= $model['is_publish'] ? 'success' : 'danger' ?>">
-                            <?= $model['is_publish'] ? '已发布' : '未发布' ?>
-                        </span>
-                        <span class="font-success keep-right">
-                            <?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学
-                        </span>
-                    </div>
-                </div>
-                <div class="teacher">
-                    <div class="tuip">
-                        <a href="/teacher/default/view?id=<?= $model['teacher_id'] ?>" target="_blank">
-                            <div class="avatars img-circle keep-left">
-                                <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
-                            </div>
-                            <span class="keep-left"><?= $model['teacher_name'] ?></span>
-                        </a>
-                        <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
-                        <?= Html::a(Yii::t('app', 'Edit'), ['view', 'id' => $model['id']], [
-                            'class' => 'btn btn-info btn-flat edit keep-right', 'style' => 'display: none;', 'target' => '_blank'
-                        ]) ?>
-                    </div>
-                </div>
-            </li>
-            <?php endforeach; ?>
+    <div class="vk-list">
+        <ul class="list-unstyled">
+            
         </ul>
     </div>
     <!--加载-->
@@ -176,9 +126,10 @@ GrowlAsset::register($this);
 </div>
 
 <?php
-$url = Url::to(array_merge(['index'], $filters));   //链接
-$sort = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+$tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
+$params_js = json_encode($filters); //js参数
+//加载 LIST_DOM 模板
+$list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course/_list.php')));
 $js = 
 <<<JS
@@ -186,95 +137,79 @@ $js =
     window.submitForm = function(){
         $('#build-course-form').submit();
     }
-    
-    //排序选中效果
-    $(".sort ul li[id=$sort]").addClass('active');
-      
-    //鼠标经过、离开事件
-    hoverEvent();
-    
-    //下拉加载更多
-    var page = 1;
+    //标签页选中效果
+    $(".vk-tabs ul li[id=$tabs]").addClass('active');
+    /**
+     * 滚屏自动换页
+     */
     var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
-            dataLoad(page);
+            loaddata(++page, '/build_course/course/index');
         }
-    });       
-    //分页请求加载数据
-    function dataLoad(pageNum) {
-        var maxPageNum =  ($totalCount - 6) / 6;
+    });
+    //加载第一页的课程数据
+    loaddata(0, '/build_course/course/index');
+    /**
+     * 加载数据
+     * @param int target_page 指定页
+     * @param string url 指定的链接
+     */
+    function loaddata (target_page, url) {
+        var maxPageNum =  $totalCount / 6;
         // 当前页数是否大于最大页数
-        if((pageNum) > Math.ceil(maxPageNum)){
+        if(target_page > Math.ceil(maxPageNum)){
             $('.loading').hide();
             $('.no_more').show();
             return;
         }
+        /**
+         * 如果页面非加载当中执行
+         */
         if(!isPageLoading){
-            //设置已经加载当中...
-            isPageLoading = true;
-            $.get("$url", {page: (pageNum + 1)}, function(rel){
-                isPageLoading = false;
-                var data = rel['data'];
-                page = Number(data['page']);
-                var items = $domes;
-                var dome = "";
+            isPageLoading = true;   //设置已经加载当中...
+            var params = $.extend($params_js, {page: (target_page + 1)});  //传值
+            $.get(url, params, function(rel){
+                isPageLoading = false;  //取消设置加载当中...
+                var data = rel.data;     //获取返回的数据
+                page = Number(data.page);    //当前页
+                //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
-                    for(var i in data['result']){
-                        dome += Wskeee.StringUtil.renderDOM(items, {
-                            className: i % 3 == 2 ? 'clear-margin' : '',
-                            id: data['result'][i].id,
-                            isShow: data['result'][i].level == 1 ? '<div class="icon font-danger"><i class="fa fa-lock"></i></div>' : '',
-                            isExist: data['result'][i].cover_img == null || data['result'][i].cover_img == '' ? 
-                                '<div class="title">' + data['result'][i].name + '</div>' : 
-                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].cover_img) + '" width="100%" height="100%" />',
-                            name: data['result'][i].name,
-                            contentTime: '', //Wskeee.DateUtil.intToTime(data['result'][i].content_time),
-                            tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',
-                            colorName: data['result'][i].is_publish == 1 ? 'success' : 'danger',
-                            publishStatus: data['result'][i].is_publish == 1 ? '已发布' : '未发布',
-                            number: data['result'][i].people_num != undefined ? data['result'][i].people_num : 0,
-                            teacherId: data['result'][i].teacher_id,
-                            teacherAvatar: data['result'][i].teacher_avatar,
-                            teacherName: data['result'][i].teacher_name,
-                            avgStar: data['result'][i].avg_star
+                    for(var i in data.result){
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
+                        //如果条件成立，每行最后一个添加清除外边距
+                        if(i % 3 == 2){
+                            item.addClass('clear-margin');
+                        }
+                        //鼠标经过、离开事件
+                        item.hover(function(){
+                            $(this).addClass('hover');
+                            $(this).find(".list-footer span.avg-star").hide();
+                            $(this).find(".list-footer a.btn-edit").show();
+                        }, function(){
+                            $(this).removeClass('hover');
+                            $(this).find(".list-footer span.avg-star").show();
+                            $(this).find(".list-footer a.btn-edit").hide();
                         });
                     }
-                    $(".list > ul").append(dome);
-                    hoverEvent();   //鼠标经过、离开事件
+                    //如果当前页大于最大页数显示“没有更多了”
                     if(page > Math.ceil(maxPageNum)){
-                        //没有更多了
                         $('.no_more').show();
                     }
                 }else{
                     $.notify({
-                        message: rel['message'],
+                        message: rel['message'],    //提示消息
                     },{
-                        type: "danger",
+                        type: "danger", //错误类型
                     });
                 }
-                //隐藏loading
-                $('.loading').hide();
+                $('.loading').hide();   //隐藏loading
             });
             $('.loading').show();
             $('.no_more').hide();
         }
     }
-    //经过、离开事件
-    function hoverEvent(){
-        $(".list > ul > li").each(function(){
-            var elem = $(this);
-            elem.hover(function(){
-                elem.addClass('hover');
-                elem.find(".teacher span.avg-star").hide();
-                elem.find(".teacher a.edit").show();
-            },function(){
-                elem.removeClass('hover');
-                elem.find(".teacher span.avg-star").show();
-                elem.find(".teacher a.edit").hide();
-            });    
-        });
-    }    
+   
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

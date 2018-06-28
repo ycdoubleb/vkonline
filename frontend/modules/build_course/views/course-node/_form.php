@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 ?>
 
-<div class="course-node-form form clear">
+<div class="course-node-form vk-form clear-shadow">
 
    <?php $form = ActiveForm::begin([
         'options'=>[
@@ -25,8 +25,6 @@ use yii\widgets\ActiveForm;
             ],  
         ], 
     ]); ?>
-
-    <?php // $form->field($model, 'parent_id')->dropDownList(CourseNode::getCouNodeByLevel(), ['placeholder'=>'请输入...']) ?>
     
     <?= $form->field($model, 'name')->textInput(['placeholder'=>'请输入...']) ?>
 

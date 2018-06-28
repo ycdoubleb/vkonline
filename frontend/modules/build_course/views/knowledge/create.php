@@ -20,7 +20,7 @@ $this->title = Yii::t('app', "{Add}{Knowledge}",[
 
 ?>
 
-<div class="knowledge-create main modal">
+<div class="knowledge-create main vk-modal">
 
     <div class="modal-dialog modal-lg modal-width" role="document">
         <div class="modal-content">
@@ -48,7 +48,8 @@ $this->title = Yii::t('app', "{Add}{Knowledge}",[
 </div>
 
 <?php
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+//加载 ITEM_DOM 模板
+$item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/knowledge/view.php')));
 $js = 
 <<<JS
@@ -60,10 +61,9 @@ $js =
             $('.field-knowledge-name .help-block').html('名称不能为空。');
             return;
         }
-        var items = $domes;    
         $.post("../knowledge/create?node_id=$model->node_id", $('#build-course-form').serialize(), function(rel){
             if(rel['code'] == '200'){
-                var dome = Wskeee.StringUtil.renderDOM(items, rel['data']);
+                var dome = Wskeee.StringUtil.renderDOM($item_dom, rel['data']);
                 $('#' + rel['data']['node_id'] + ' > div > .sortable').append(dome);
                 sortable('.sortable', {
                     forcePlaceholderSize: true,
