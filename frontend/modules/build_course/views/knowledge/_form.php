@@ -132,7 +132,7 @@ $js =
 <<<JS
     
     /**
-     * 销毁百度编辑器
+     * 销毁百度
      */
     $('#knowledge-des').removeClass('form-control');
     if(window.knowledge_ue){
@@ -159,8 +159,8 @@ $js =
      * 单击填充信息
      */   
     $('#fill').click(function(){
-        $("#knowledge-name").val($.trim($('#video-details .list .text .title').text()));
-        window.knowledge_ue.setContent($.trim($('#video-details .list .text .des').text()));
+        $("#knowledge-name").val($('#video-details .list .title').text());
+        window.knowledge_ue.setContent($('#video-details .list .des').html());
     });
         
 JS;
