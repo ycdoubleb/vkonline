@@ -105,14 +105,15 @@ $js =
     /**
      * 滚屏自动换页
      */
+    var page = 0; //页数
     var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
-           loaddata(++page, '/build_course/teacher/index');
+           loaddata(page, '/build_course/teacher/index');
         }
     });
     //加载第一页的课程数据
-    loaddata(0, '/build_course/teacher/index');
+    loaddata(page, '/build_course/teacher/index');
     /**
      * 加载数据
      * @param int target_page 指定页

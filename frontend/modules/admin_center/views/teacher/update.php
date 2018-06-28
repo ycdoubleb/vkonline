@@ -14,8 +14,8 @@ ModuleAssets::register($this);
 ?>
 <div class="teacher-update main">
 
-    <!--面包屑-->
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', '{Update}{Teacher}', [
                 'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')

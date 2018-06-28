@@ -140,17 +140,18 @@ $js =
     /**
      * 滚屏自动换页
      */
+    var page = 0; //页数
     var isPageLoading = false;
     $(".myModal .modal-body").scroll(function(){
         var contentHeight = $(this).innerHeight();   //内容高度  
         var scrollHeight  = $(this).get(0).scrollHeight;   //真实的宽高  
         var scrollTop  = $(this).get(0).scrollTop ;  //滚动的最顶端部分
         if(scrollHeight - scrollTop <= contentHeight) { 
-            loaddata(++page, "/build_course/knowledge/$actionId");
+            loaddata(page, "/build_course/knowledge/$actionId");
         }  
     });
     //加载第一页的课程数据
-    loaddata(0, "/build_course/knowledge/$actionId");
+    loaddata(page, "/build_course/knowledge/$actionId");
     /**
      * 加载数据
      * @param int target_page 指定页
