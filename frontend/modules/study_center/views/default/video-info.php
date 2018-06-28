@@ -19,7 +19,6 @@ VideoInfoAssets::register($this);
 
 <div class="video-info main">
     <div class="video-title">
-        <?= Html::a('<i class="fa fa-arrow-circle-o-left"></i>' . Yii::t('app', 'Back'), ['/study_center/default/collect-video'], ['class' => 'keep-left']) ?>
         <span class="title-name"><?= $model['name'] ?></span>
     </div>
     <div class="player">
@@ -48,8 +47,8 @@ VideoInfoAssets::register($this);
                         'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
                         'attributes' => [
                             [
-                                'label' => Yii::t('app', '{Course}{Name}', [
-                                    'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
+                                'label' => Yii::t('app', '{Video}{Name}', [
+                                    'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
                                 ]),
                                 'value' => $model['name'],
                             ],
@@ -62,8 +61,8 @@ VideoInfoAssets::register($this);
                                 'value' => $model['nickname'],
                             ],
                             [
-                                'label' => Yii::t('app', '{Course}{Des}', [
-                                    'Course' => Yii::t('app', 'Course'), 'Des' => Yii::t('app', 'Des')
+                                'label' => Yii::t('app', '{Video}{Des}', [
+                                    'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
                                 ]),
                                 'format' => 'raw',
                                 'value' => $model['video_des'],
@@ -97,7 +96,7 @@ VideoInfoAssets::register($this);
                     <div class="text">
                         <div class="tuip">
                             <span class="title title-size single-clamp keep-left"><?= $model['course_name'] ?></span>
-                            <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
+                            <!--<span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>-->
                         </div>
                         <div class="tuip single-clamp">
                             <?= isset($model['tags']) ? $model['tags'] : 'null' ?>

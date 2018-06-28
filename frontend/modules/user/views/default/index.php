@@ -131,7 +131,7 @@ ModuleAssets::register($this);
                         'value' => $courseProgress['cou_pro_num'] . ' 门',
                     ],
                     [
-                        'label' => '关注课程',
+                        'label' => '收藏课程',
                         'format' => 'raw',
                         'value' => $courseFavorite['cou_fav_num'] . ' 门',
                     ],
@@ -141,7 +141,7 @@ ModuleAssets::register($this);
                         'value' => $videoFavorite['vid_fav_num'] . ' 个',
                     ],
                     [
-                        'label' => '评论',
+                        'label' => Yii::t('app', 'Comment'),
                         'format' => 'raw',
                         'value' => $courseMessage['cou_mes_num'] . ' 条',
                     ],

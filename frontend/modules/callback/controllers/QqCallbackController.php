@@ -117,7 +117,7 @@ class QqCallbackController extends Controller
         $userAuths = UserAuths::findOne(['identifier' => $open_id]);
         if($type == 2){
             if($userAuths == null){
-                //保存微博用户数据
+                //保存QQ用户数据
                 $results = $this->saveQqUser($open_id, $access_token, $nickname, $gender, $avatar);
                 if($results['code'] == 400){
                     throw new NotAcceptableHttpException('数据保存出错！请重新登录');

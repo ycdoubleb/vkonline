@@ -38,11 +38,11 @@ $this->title = Yii::t('app', '{Help}{Center}', [
         <div class="telphone-content">
             <div class="phone">
                 <span class="icon-phone"></span>
-                <p class="title">000-00000000</p>
+                <p class="title">020-83481388转631</p>
             </div>
             <div class="QQ">
                 <span class="icon-qq"></span>
-                <p class="title">在线客服QQ</p>
+                <p class="title"><a href="javascrip:;">在线客服QQ:361733529</a></p>
             </div>
         </div>
         <div class="time">

@@ -57,14 +57,15 @@
     margin-bottom: 15px;
 }
 
-.default-index .footer-kefu .telphone-content p{
+.default-index .footer-kefu .telphone-content p,
+.default-index .footer-kefu .telphone-content a{
     margin-top: 8px;
     color: #fc583d;
 }
 
 .default-index .footer-kefu .telphone-content .phone,
 .default-index .footer-kefu .telphone-content .QQ {
-    width: 180px;
+    width: 200px;
     display: inline-block
 }
 
