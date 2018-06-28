@@ -166,6 +166,9 @@
 /**
  * 课程操作记录 
  */
+.coutse_actlog-view .modal-body {
+    background-color: #fff !important;
+}
 .coutse_actlog-view .modal-body .table-bordered {
     border: 1px solid #e4e4e4;
 }

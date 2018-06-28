@@ -1,13 +1,46 @@
 <?php
 
 use common\models\vk\Course;
+use common\utils\StringUtil;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
+//组装获取老师的下拉的格式对应数据
+$teacherFormat = [];
+foreach ($teacherMap as $teacher) {
+    $teacherFormat[$teacher->id] = [
+        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
+        'sex' => $teacher->sex == 1 ? '男' : '女',
+        'job_title' => $teacher->job_title,
+    ];
+}
+$formats = json_encode($teacherFormat);
+$format = <<< SCRIPT
+    window.formats = $formats;
+    function format(state) {
+        //如果非数组id，返回选项组
+        if (!state.id){
+            return state.text
+        };
+        //访问名师堂的链接
+        var links = '/teacher/default/view?id=' + $.trim(state.id);
+        //返回结果（html）
+        return '<div class="vk-select2-results single-clamp">' +
+            '<a class="icon-vimeo"><i class="fa fa-vimeo ' + formats[state.id]['is_certificate'] + '"></i></a>' + 
+            '<img class="avatars img-circle" src="' + formats[state.id]['avatar'].toLowerCase() + '" width="32" height="32"/>' +  state.text + 
+            '（' + formats[state.id]['sex'] + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
+        '</div>';
+    } 
+        
+SCRIPT;
+$escape = new JsExpression("function(m) { return m; }");
+$this->registerJs($format, View::POS_HEAD);
 ?>
 <div class="frame-title">
     <span><?= $title ?></span>
@@ -40,8 +73,13 @@ use yii\widgets\ActiveForm;
     <!--主讲老师-->
     <div class="col-lg-6 col-md-6 clear-padding">
         <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
-            'data' => $teachers, 'options' => ['placeholder'=>'请选择...',],
-            'pluginOptions' => ['allowClear' => true],
+            'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
+            'options' => ['placeholder'=>'请选择...',],
+            'pluginOptions' => [
+                'templateResult' => new JsExpression('format'),     //设置选项格式
+                'escapeMarkup' => $escape,
+                'allowClear' => true
+            ],
             'pluginEvents' => [
                 'change' => 'function(){ submitForm(); }'
             ]

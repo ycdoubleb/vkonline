@@ -32,69 +32,69 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body vk-form clear-shadow">
-                
-                <?php $form = ActiveForm::begin([
-                    'options'=>[
-                        'id' => 'build-course-form',
-                        'class'=>'form-horizontal',
-                    ],
-                    'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
+            <div class="modal-body">
+                <div class="course-user-form vk-form clear-shadow">
+                    <?php $form = ActiveForm::begin([
+                        'options'=>[
+                            'id' => 'build-course-form',
+                            'class'=>'form-horizontal',
+                        ],
+                        'fieldConfig' => [  
+                            'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
+                            'labelOptions' => [
+                                'class' => 'col-lg-12 col-md-12',
+                            ],  
+                        ], 
+                    ]); ?>
+
+                    <div class="form-group field-recentcontacts-contacts_id">
+                        <label class="col-lg-12 col-md-12" for="recentcontacts-contacts_id">最近联系：</label>
+                        <div class="col-lg-12 col-md-12">
+                            <?php foreach ($userRecentContacts as $item): ?>
+                            <div class="recent">
+                                <?= Html::img(StringUtil::completeFilePath($item['avatar']),['width' => 40, 'height' => 37]) ?>
+                                <span id="<?= $item['id'] ?>"><?= $item['nickname']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+
+                    <?= Html::activeHiddenInput($model, 'course_id') ?>
+
+                    <?= $form->field($model, 'user_id')->widget(Select2::class, [
+                        'data' => $courseUsers, 
+                        'hideSearch' => true,
+                        'options' => [
+                            'placeholder' => '请选择...',
+                            'multiple' => true,     //设置多选
+                        ],
+                        'toggleAllSettings' => [
+                            'selectLabel' => '<i class="glyphicon glyphicon-ok-circle"></i> 添加全部',
+                            'unselectLabel' => '<i class="glyphicon glyphicon-remove-circle"></i> 取消全部',
+                            'selectOptions' => ['class' => 'text-success'],
+                            'unselectOptions' => ['class' => 'text-danger'],
+                        ],
+                    ])->label(Yii::t(null, '{Add}{People}',[
+                        'Add'=>Yii::t('app', 'Add'), 'People'=> Yii::t('app', 'People')
+                    ])) ?>
+
+                    <?= $form->field($model, 'privilege', [
+                        'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",
                         'labelOptions' => [
                             'class' => 'col-lg-12 col-md-12',
-                        ],  
-                    ], 
-                ]); ?>
+                        ],
+                    ])->widget(Select2::class, [
+                        'data' => CourseUser::$privilegeMap,
+                        'hideSearch' => true,
+                        'options' => [
+                            'placeholder' => '请选择...'
+                        ]
+                    ])->label(Yii::t('app', '{Set}{Privilege}',[
+                        'Set'=> Yii::t('app', 'Set'), 'Privilege'=> Yii::t('app', 'Privilege')
+                    ])) ?>
 
-                <div class="form-group field-recentcontacts-contacts_id">
-                    <label class="col-lg-12 col-md-12" for="recentcontacts-contacts_id">最近联系：</label>
-                    <div class="col-lg-12 col-md-12">
-                        <?php foreach ($userRecentContacts as $item): ?>
-                        <div class="recent">
-                            <?= Html::img(StringUtil::completeFilePath($item['avatar']),['width' => 40, 'height' => 37]) ?>
-                            <span id="<?= $item['id'] ?>"><?= $item['nickname']; ?></span>
-                        </div>
-                        <?php endforeach; ?>
-                    </div>
+                    <?php ActiveForm::end(); ?>
                 </div>
-                
-                <?= Html::activeHiddenInput($model, 'course_id') ?>
-                
-                <?= $form->field($model, 'user_id')->widget(Select2::class, [
-                    'data' => $courseUsers, 
-                    'hideSearch' => true,
-                    'options' => [
-                        'placeholder' => '请选择...',
-                        'multiple' => true,     //设置多选
-                    ],
-                    'toggleAllSettings' => [
-                        'selectLabel' => '<i class="glyphicon glyphicon-ok-circle"></i> 添加全部',
-                        'unselectLabel' => '<i class="glyphicon glyphicon-remove-circle"></i> 取消全部',
-                        'selectOptions' => ['class' => 'text-success'],
-                        'unselectOptions' => ['class' => 'text-danger'],
-                    ],
-                ])->label(Yii::t(null, '{Add}{People}',[
-                    'Add'=>Yii::t('app', 'Add'), 'People'=> Yii::t('app', 'People')
-                ])) ?>
-
-                <?= $form->field($model, 'privilege', [
-                    'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",
-                    'labelOptions' => [
-                        'class' => 'col-lg-12 col-md-12',
-                    ],
-                ])->widget(Select2::class, [
-                    'data' => CourseUser::$privilegeMap,
-                    'hideSearch' => true,
-                    'options' => [
-                        'placeholder' => '请选择...'
-                    ]
-                ])->label(Yii::t('app', '{Set}{Privilege}',[
-                    'Set'=> Yii::t('app', 'Set'), 'Privilege'=> Yii::t('app', 'Privilege')
-                ])) ?>
-
-                <?php ActiveForm::end(); ?>
-                
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
@@ -139,11 +139,13 @@ $js =
                 $("#help_man").load("../course-user/index?course_id=$model->course_id");
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
-            $.notify({
-                message: rel['message'],
-            },{
-                type: rel['code'] == '200' ? "success " : "danger",
-            });
+            setTimeout(function(){
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: rel['code'] == '200' ? "success " : "danger",
+                });
+            }, 1000);
         });
         $('.myModal').modal('hide');
     });

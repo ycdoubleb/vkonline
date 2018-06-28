@@ -25,47 +25,47 @@ ModuleAssets::register($this);
     </div>
     <!-- 搜索 -->
     <div class="teacher-form vk-form set-spacing"> 
-        
         <?php $form = ActiveForm::begin([
             'action' => ['index'],
             'method' => 'get',
             'options'=>[
-                'id' => 'admin_center-form',
+                'id' => 'admin-center-form',
                 'class'=>'form-horizontal',
             ],
             'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n",  
+                'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
                 'labelOptions' => [
-                    'class' => 'col-lg-1 col-md-1 control-label form-label',
+                    'class' => 'col-lg-2 col-md-2 control-label form-label',
                 ],  
             ], 
         ]); ?>
-        
-        <?= $form->field($searchModel, 'name')->textInput([
-            'placeholder' => '请输入...', 'maxlength' => true,
-            'onchange' => 'submitForm();',
-        ])->label(Yii::t('app', '{Teacher}{Name}：', [
-            'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
-        ])) ?>
-        
-        <?= $form->field($searchModel, 'is_certificate')->radioList(['' => '全部', 1 => '已认证', 0 => '未认证'], [
-            'value' => ArrayHelper::getValue($filters, 'TeacherSearch.is_certificate', ''),
-            'itemOptions'=>[
-                'onclick' => 'submitForm();',
-                'labelOptions'=>[
-                    'style'=>[
-                        'margin'=>'10px 39px 10px 0',
-                        'color' => '#999',
-                        'font-weight' => 'normal',
+        <div class="col-lg-6 col-md-6">
+            <!--老师名称-->
+            <?= $form->field($searchModel, 'name')->textInput([
+                'placeholder' => '请输入...', 'maxlength' => true,
+                'onchange' => 'submitForm();',
+            ])->label(Yii::t('app', '{Teacher}{Name}：', [
+                'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
+            ])) ?>
+            <!--认证状态-->
+            <?= $form->field($searchModel, 'is_certificate')->radioList(['' => '全部', 1 => '已认证', 0 => '未认证'], [
+                'value' => ArrayHelper::getValue($filters, 'TeacherSearch.is_certificate', ''),
+                'itemOptions'=>[
+                    'onclick' => 'submitForm();',
+                    'labelOptions'=>[
+                        'style'=>[
+                            'margin'=>'5px 29px 10px 0px',
+                            'color' => '#666666',
+                            'font-weight' => 'normal',
+                        ]
                     ]
-                ]
-            ],
-        ])->label(Yii::t('app', '{Authentication}{Status}：', [
-            'Authentication' => Yii::t('app', 'Authentication'), 'Status' => Yii::t('app', 'Status')
-        ])) ?>
-        
+                ],
+            ])->label(Yii::t('app', '{Authentication}{Status}：', [
+                'Authentication' => Yii::t('app', 'Authentication'), 'Status' => Yii::t('app', 'Status')
+            ])) ?>
+        </div>
         <?php ActiveForm::end(); ?>
-        
+       
     </div>
     <!--列表-->
     <div class="vk-list">
@@ -95,7 +95,7 @@ $js =
 <<<JS
     //提交表单 
     window.submitForm = function(){
-        $('#admin_center-form').submit();
+        $('#admin-center-form').submit();
     }  
     /**
      * 滚屏自动换页

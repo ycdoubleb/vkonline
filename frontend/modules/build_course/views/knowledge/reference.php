@@ -130,7 +130,7 @@ $js =
      * 单击返回事件
      */
     window.clickBackEvent = function(){
-        $("#reference-video-list").addClass("hidden");
+        $("#reference-video-list").addClass("hidden").html("");
         $("#knowledge-info").removeClass("hidden");
         if($('input[name="Resource[res_id]"]').val() != ''){
             $(".field-video-details").removeClass("hidden");
@@ -158,7 +158,7 @@ $js =
      * @param string url 指定的链接
      */
     function loaddata (target_page, url) {
-        var maxPageNum =  $totalCount / 20;
+        var maxPageNum =  $totalCount / 15;
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
             $('.loading').hide();
@@ -225,7 +225,7 @@ $js =
                 $('input[name="Resource[data]"]').val(data.duration);
                 $(".field-video-details").removeClass("hidden");
                 $("#fill").removeClass("hidden");
-                $("#reference-video-list").addClass("hidden");
+                $("#reference-video-list").addClass("hidden").html("");
                 $("#knowledge-info").removeClass("hidden");
             }else{
                 $.notify({

@@ -67,7 +67,7 @@ class CourseController extends Controller
             'dataProvider' => $dataProvider,
             'totalCount' => $result['total'],       //课程总数量
             'filters' => $result['filter'],         //过滤条件
-            'teachers' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id]),       //所有主讲老师
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
             'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
             'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'id')),    //分类全路径
         ]);
@@ -81,7 +81,7 @@ class CourseController extends Controller
     {
         //查看统计页
         return $this->render('statistics', [
-            'teachers' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id]),       //所有主讲老师
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
             'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
             'results' => $this->findCourseStatistics(Yii::$app->request->queryParams),
         ]);

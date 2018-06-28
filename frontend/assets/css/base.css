@@ -107,6 +107,7 @@
  * 表单样式
  *******************************************************************************/
 .vk-form {
+    display: inline-block;
     width: 100%;
 }
 /**
@@ -210,13 +211,16 @@
 .vk-tabs > ul > li > a {
     display: inline-block;
     padding: 0px 20px;
-    color: #666;
+    color: #333;
     line-height: 54px;
     text-decoration: none;
 }
 .vk-tabs > ul > li.active > a,
 .vk-tabs > ul > li:hover > a {
     color: #fc583d;
+}
+.vk-tabs > ul > li.active > a {
+    font-weight: bold;
     border-bottom: 2px solid #FC583D;
 }
 /*******************************************************************************
@@ -380,11 +384,16 @@
 .vk-modal .modal-content {
     border-radius: 0px; 
 }
+.vk-modal .modal-body, 
+.modal-body .vk-form {
+    background-color: #F2F2F2;
+}
 .vk-modal .modal-width {
-    width: 1150px;
+    min-width: 1150px;
 }
 .vk-modal .modal-height {
-    height: 730px;
+    min-height: 720px;
+    max-height: 720px;
     overflow-y: auto;
 }
 /*******************************************************************************

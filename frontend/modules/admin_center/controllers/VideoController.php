@@ -68,8 +68,8 @@ class VideoController extends Controller
             'dataProvider' => $dataProvider,
             'filters' => $result['filter'],         //过滤条件
             'totalCount' => $result['total'],       //视频总数量
-            'teachers' => $this->getTeacher(Yii::$app->user->identity->customer_id),       //所有主讲老师
-            'createdBys' => $this->getCreatedBy(Yii::$app->user->identity->customer_id),   //所有创建者
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
         ]);
     }
 
@@ -81,46 +81,12 @@ class VideoController extends Controller
     {
         //查看统计页
         return $this->render('statistics', [
-            'teachers' => $this->getTeacher(Yii::$app->user->identity->customer_id),       //所有主讲老师
-            'createdBys' => $this->getCreatedBy(Yii::$app->user->identity->customer_id),   //所有创建者
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
             'results' => $this->findVideoStatistics(Yii::$app->request->queryParams),
         ]);
     }
   
-    /**
-     * 查找所有主讲老师
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getTeacher($customerId)
-    {
-        $teacher = (new Query())
-                ->select(['Video.teacher_id AS id', 'Teacher.name'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], '(Teacher.id = Video.teacher_id AND Teacher.is_del = 0)')
-                ->where(['Video.customer_id' => $customerId, 'Video.is_del' => 0])
-                ->all();
-        
-        return ArrayHelper::map($teacher, 'id', 'name');
-    }
-    
-    /**
-     * 查找所有创建者
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getCreatedBy($customerId)
-    {
-        $createdBy = (new Query())
-                ->select(['Video.created_by AS id', 'User.nickname AS name'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
-                ->where(['Video.customer_id' => $customerId, 'Video.is_del' => 0])
-                ->all();
-        
-        return ArrayHelper::map($createdBy, 'id', 'name');
-    }
-    
     /**
      * 查询视频统计
      * @param type $params
