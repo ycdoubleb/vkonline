@@ -161,7 +161,6 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'updated_at',
             [
                 'class' => 'yii\grid\ActionColumn',
-                'header' => Yii::t('app', 'Operating'),
                 'headerOptions' => [
                     'style' => [
                         'text-align' => 'center'
