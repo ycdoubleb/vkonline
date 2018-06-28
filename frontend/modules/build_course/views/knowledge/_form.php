@@ -159,8 +159,8 @@ $js =
      * 单击填充信息
      */   
     $('#fill').click(function(){
-        $("#knowledge-name").val($('#video-details .list .title').text());
-        window.knowledge_ue.setContent($('#video-details .list .des').html());
+        $("#knowledge-name").val($.trim($('#video-details .text .title').text()));
+        window.knowledge_ue.setContent($.trim($('#video-details .text .des').html()));
     });
         
 JS;
