@@ -120,7 +120,7 @@
 }
 /*inputs*/
 .site-signup #msform input, .site-signup #msform textarea {
-    padding: 15px;
+    /*padding: 15px;*/
     border: 1px solid #ccc;
     border-radius: 0px;
     width: 100%;
