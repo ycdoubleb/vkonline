@@ -166,7 +166,7 @@ class KnowledgeController extends Controller
     public function actionMyCollect()
     {
         $searchModel = new VideoFavoriteSearch();
-        $results = $searchModel->myCollectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 20]));
+        $results = $searchModel->myCollectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
         $videos = array_values($results['data']['video']);    //视频数据
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
@@ -211,7 +211,7 @@ class KnowledgeController extends Controller
     public function actionMyVideo()
     {
         $searchModel = new VideoSearch();
-        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 20]));
+        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
         $videos = array_values($results['data']['video']);    //视频数据
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
@@ -256,7 +256,7 @@ class KnowledgeController extends Controller
     public function actionInsideVideo()
     {
         $searchModel = new VideoSearch();
-        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 20]), false);
+        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]), false);
         $videos = array_values($results['data']['video']);    //视频数据
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {

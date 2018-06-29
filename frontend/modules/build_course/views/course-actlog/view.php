@@ -20,7 +20,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
 ?>
 <div class="coutse_actlog-view main vk-modal">
 
-    <div class="modal-dialog modal-width" role="document">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -39,7 +39,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
                         [
                             'attribute' => 'content',
                             'format' => 'raw',
-                            'value' => Html::decode($model->content),
+                            'value' => implode("<br/>",explode("\n\r", $model->content)),
                         ],
                         [
                             'attribute' => 'created_by',

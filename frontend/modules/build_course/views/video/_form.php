@@ -41,7 +41,7 @@ $format = <<< SCRIPT
         //访问名师堂的链接
         var links = '/teacher/default/view?id=' + $.trim(state.id);
         //返回结果（html）
-        return '<div class="vk-select2-results">' +
+        return '<div class="vk-select2-results single-clamp">' +
             '<a class="icon-vimeo"><i class="fa fa-vimeo ' + formats[state.id]['is_certificate'] + '"></i></a>' + 
             '<img class="avatars img-circle" src="' + formats[state.id]['avatar'].toLowerCase() + '" width="32" height="32"/>' +  state.text + 
             '（' + formats[state.id]['sex'] + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 

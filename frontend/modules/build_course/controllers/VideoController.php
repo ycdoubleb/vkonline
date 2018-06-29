@@ -96,7 +96,7 @@ class VideoController extends Controller
             'searchModel' => $searchModel,      //搜索模型
             'filters' => $results['filter'],     //查询过滤的属性
             'totalCount' => $results['total'],   //总数量
-            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id),    //自己相关的老师
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
         ]);
     }
     

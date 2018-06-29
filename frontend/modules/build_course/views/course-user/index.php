@@ -159,11 +159,13 @@ $js =
                     $("#help_man").load("../course-user/index?course_id=" + elem.attr("data-course_id"));
                     $("#act_log").load("../course-actlog/index?course_id=" + elem.attr("data-course_id"));
                 }
-                $.notify({
-                    message: rel['message'],
-                },{
-                    type: rel['code'] == '200' ? "success " : "danger",
-                });
+                setTimeout(function(){
+                    $.notify({
+                        message: rel['message'],
+                    },{
+                        type: rel['code'] == '200' ? "success " : "danger",
+                    });
+                }, 800);
             });
             return false;
         }
