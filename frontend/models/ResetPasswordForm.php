@@ -1,19 +1,21 @@
 <?php
 namespace frontend\models;
 
-use yii\base\Model;
-use yii\base\InvalidParamException;
 use common\models\User;
+use Yii;
+use yii\base\InvalidParamException;
+use yii\base\Model;
 
 /**
  * Password reset form
  */
 class ResetPasswordForm extends Model
 {
-    public $password;
+    public $password_hash;
+    public $password2;
 
     /**
-     * @var \common\models\User
+     * @var User
      */
     private $_user;
 
@@ -23,16 +25,16 @@ class ResetPasswordForm extends Model
      *
      * @param string $token
      * @param array $config name-value pairs that will be used to initialize the object properties
-     * @throws \yii\base\InvalidParamException if token is empty or not valid
+     * @throws InvalidParamException if token is empty or not valid
      */
     public function __construct($token, $config = [])
     {
         if (empty($token) || !is_string($token)) {
-            throw new InvalidParamException('Password reset token cannot be blank.');
+            throw new InvalidParamException(Yii::t('app', 'Password reset token cannot be blank.'));
         }
         $this->_user = User::findByPasswordResetToken($token);
         if (!$this->_user) {
-            throw new InvalidParamException('Wrong password reset token.');
+            throw new InvalidParamException(Yii::t('app', 'Wrong password reset token.'));
         }
         parent::__construct($config);
     }
@@ -43,11 +45,22 @@ class ResetPasswordForm extends Model
     public function rules()
     {
         return [
-            ['password', 'required'],
-            ['password', 'string', 'min' => 6],
+            [['password_hash', 'password2'], 'required'],
+            [['password_hash'], 'string', 'min' => 6, 'max' => 64],
+            [['password2'], 'compare', 'compareAttribute' => 'password_hash'],
         ];
     }
-
+    
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels() {
+        return [
+            'password_hash' => Yii::t('app', 'Password Hash'),
+            'password2' => Yii::t('app', 'Password2'),
+        ];
+    }
+    
     /**
      * Resets password.
      *
@@ -56,7 +69,7 @@ class ResetPasswordForm extends Model
     public function resetPassword()
     {
         $user = $this->_user;
-        $user->setPassword($this->password);
+        $user->setPassword($this->password_hash);
         $user->removePasswordResetToken();
 
         return $user->save(false);
