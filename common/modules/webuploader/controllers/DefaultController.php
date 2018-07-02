@@ -25,8 +25,4 @@ class DefaultController extends BaseApiController {
             'download' => ['class' => DownloadAction::class],
         ]);
     }
-    
-    public function actionIndex(){
-        return $this->render('index');
-    }
 }

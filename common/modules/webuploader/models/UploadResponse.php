@@ -90,6 +90,14 @@ class UploadResponse extends ApiResponse {
      * 获取数据失败
      */
     const CODE_LINK_GET_DATA_FAIL = '20301';
+    
+    //--------------------------------------------------------------------------
+    // OSS
+    //--------------------------------------------------------------------------
+    /**
+     * 上传OSS错误
+     */
+    const CODE_UPLOAD_OSS_FAIL = '20401';
 
     /**
      * 返回 code 与 反馈修改的对应关系
@@ -113,6 +121,8 @@ class UploadResponse extends ApiResponse {
             self::CODE_DIR_NOT_FOUND => '目录不存在：{path}',
             //上传路径
             self::CODE_LINK_GET_DATA_FAIL => '获取远程数据失败！',
+            //OSS
+            self::CODE_UPLOAD_OSS_FAIL => '上传OSS错误',
         ];
     }
 

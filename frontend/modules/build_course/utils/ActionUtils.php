@@ -2,7 +2,9 @@
 
 namespace frontend\modules\build_course\utils;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
+use common\models\vk\AliyunMtsService;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
@@ -10,6 +12,7 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\RecentContacts;
@@ -775,6 +778,84 @@ class ActionUtils
         }
     }
     
+    /**
+     * 添加视频资源传码任务
+     * 
+     * @param string|Video $video       视频资源
+     * @param bool $force               是否强制添加（【正在转码中】和【已完成转码】的资源在没有设置force情况不再触发转码操作）
+     */
+    public function addVideoTranscode($video, $force = false) {
+        if (!($video instanceof Video)) {
+            $video = Video::findOne(['id' => $video, 'is_del' => 0]);
+        }
+        if (!$video) {
+            throw new NotFoundHttpException('找不到对应资源！');
+        }
+        //检查是否已经上传到OSS
+        if ($video->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO) {
+            $this->uploadVideoToOSS($video, $force);
+        }
+
+        //检查是否已经转码或者在转码中
+        if ($force || $video->mts_status == Uploadfile::MTS_STATUS_NO || $video->mts_status == Uploadfile::MTS_STATUS_FAIL) {
+            //源文件
+            $source_file = $video->videoFile->uploadfile;
+            //水印配置
+            $water_mark_options = CustomerWatermark::findAllForMts(['id' => explode(',', $video->mts_watermark_ids),'is_del' => 0]);
+            //用户自定数据，转码后用于关联数据
+            $user_data = [
+                'source_file_id' => $source_file->id,
+            ];
+            //获取已完成转码文件等级
+            $hasDoneLevels = AliyunMtsService::getFinishLevel($video->id);
+            //执行转码操作
+            $result = Aliyun::getMts()->addTranscode($source_file->oss_key, $water_mark_options, $hasDoneLevels, $user_data);
+            if ($result['success']) {
+                //修改视频为转码中状态
+                $video->mts_status = Uploadfile::MTS_STATUS_DOING;
+                $tran = \Yii::$app->db->beginTransaction();
+                try {
+                    //清旧任务记录
+                    AliyunMtsService::updateAll(['is_del' => 1], ['video_id' => $video->id]);
+                    //批量添加记录
+                    AliyunMtsService::batchInsertServiceForMts($video->id, $result['response']);
+                    $tran->commit();
+                } catch (Exception $ex) {
+                    $tran->rollBack();
+                    //取消转码任务
+                    Aliyun::getMts()->cancelJob(ArrayHelper::getColumn($rows, 1));
+                }
+            } else {
+                $video->mts_status = Uploadfile::MTS_STATUS_FAIL;
+            }
+            $video->save(false, ['mts_status']);
+        }
+    }
+
+    /**
+     * 上传 Video 资源 到OSS
+     * 
+     * @param string|Video $video   视频资源
+     * @param bool $force           是否强制上传，设置true时，已经上传的文件会重新上传一次
+     */
+    public function uploadVideoToOSS($video, $force) {
+        if (!($video instanceof Video)) {
+            $video = Video::findOne(['id' => $video, 'is_del' => 0]);
+        }
+        if (!$video) {
+            throw new NotFoundHttpException('找不到对应资源！');
+        }
+
+        if ($video->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO || $force) {
+            $file = $video->videoFile;
+            if ($file) {
+                $result = $file->uploadfile->uploadOSS();
+            } else {
+                throw new NotFoundHttpException('找不到对应实体文件！');
+            }
+        }
+    }
+
     /**
      * 创建老师操作
      * @param Teacher $model
