@@ -8,9 +8,9 @@ use yii\web\View;
 /* @var $content string */
 
 
-$this->title = Yii::t('app', '{Admin}{Center}',[
-    'Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center'),
-]);
+//$this->title = Yii::t('app', '{Admin}{Center}',[
+//    'Admin' => Yii::t('app', 'Admin'),'Center' => Yii::t('app', 'Center'),
+//]);
 
 echo $this->render('@frontend/modules/build_course/views/layouts/main', ['content' => $content]); 
 

@@ -11,14 +11,16 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', '{Create}{Teacher}', [
+    'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
+]);
+
 ?>
 <div class="teacher-create main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Create}{Teacher}', [
-                'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     <!--表单-->

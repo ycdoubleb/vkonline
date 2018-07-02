@@ -12,15 +12,17 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', '{My}{Teachers}', [
+    'My' => Yii::t('app', 'My'), 'Teachers' => Yii::t('app', 'Teachers')
+]);
+
 ?>
 
 <div class="teacher-index main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{My}{Teachers}', [
-                'My' => Yii::t('app', 'My'), 'Teachers' => Yii::t('app', 'Teachers')
-            ]) ?>
+            <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
             <?= Html::a(Yii::t('app', '{Create}{Teacher}', [
@@ -141,11 +143,7 @@ $js =
                 //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
                     for(var i in data.result){
-                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
-                        //如果条件成立，每行最后一个添加清除外边距
-                        if(i % 4 == 3){
-                            item.addClass('clear-margin');
-                        }
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));                       
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');

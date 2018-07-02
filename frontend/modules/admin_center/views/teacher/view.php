@@ -14,15 +14,17 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
+    'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
+]);
+
 ?>
 
 <div class="teacher-view main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
-                'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
         

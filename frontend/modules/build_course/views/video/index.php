@@ -15,6 +15,10 @@ use yii\widgets\ActiveForm;
 ModuleAssets::register($this);
 GrowlAsset::register($this);
 
+$this->title = Yii::t('app', '{My}{Video}', [
+    'My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')
+]);
+
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
@@ -46,6 +50,7 @@ $format = <<< SCRIPT
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
+
 ?>
 
 <div class="video-index main">
@@ -53,9 +58,7 @@ $this->registerJs($format, View::POS_HEAD);
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{My}{Video}', [
-                'My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')
-            ]) ?>
+            <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
             <?= Html::a(Yii::t('app', '{Create}{Video}', [
@@ -206,10 +209,6 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data.result){
                         var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
-                        //如果条件成立，每行最后一个添加清除外边距
-                        if(i % 3 == 2){
-                            item.addClass('clear-margin');
-                        }
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');

@@ -11,7 +11,7 @@ use yii\web\View;
 
 MainAssets::register($this);
 
-$this->title = Yii::t('app', 'CourseFactory');
+//$this->title = Yii::t('app', 'CourseFactory');
 
 ?>
 

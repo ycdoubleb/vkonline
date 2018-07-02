@@ -16,7 +16,7 @@ $this->title = Yii::t('app', "{Edit}{Administrators}：{$model->user->nickname}"
 ]);
 
 ?>
-<div class="customer-update-admin main modal">
+<div class="customer-update-admin main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -27,6 +27,7 @@ $this->title = Yii::t('app', "{Edit}{Administrators}：{$model->user->nickname}"
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body">
+                <div class="vk-form clear-shadow">
                 <?php $form = ActiveForm::begin([
                     'options'=>[
                         'id' => 'form-admin',
@@ -54,6 +55,7 @@ $this->title = Yii::t('app', "{Edit}{Administrators}：{$model->user->nickname}"
                 ])->label(Yii::t('app', '{Set}{Privilege}',['Set'=> Yii::t('app', 'Set'),'Privilege'=> Yii::t('app', 'Privilege')])) ?>
 
                 <?php ActiveForm::end(); ?>
+                </div>
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
@@ -67,19 +69,14 @@ $this->title = Yii::t('app', "{Edit}{Administrators}：{$model->user->nickname}"
 </div>
 
 <?php
-
-$admin = Url::to(['admin-index', 'id' => $model->customer_id]);
-$adminUrl = Url::to(['update-admin', 'id' => $model->id]);
-
 $js = 
 <<<JS
         
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$("#form-admin").submit();return;
-        $.post("$adminUrl",$('#form-admin').serialize(),function(data){
+        $.post("../default/update-admin?id={$model->id}",$('#form-admin').serialize(),function(data){
             if(data['code'] == '200'){
-                $("#admin").load("$admin");
+                $("#admin_info").load("../default/admin-index?id={$model->customer_id}");
             }
         });
     });

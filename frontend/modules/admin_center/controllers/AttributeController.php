@@ -79,6 +79,7 @@ class AttributeController extends Controller
     public function actionCreate($category_id = null)
     {
         $model = new CourseAttribute(['category_id' => $category_id]);
+        $model->loadDefaultValues();
 
         $model->category_id = $category_id;
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

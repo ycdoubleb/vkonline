@@ -12,15 +12,17 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', '{Teachers}{List}', [
+    'Teachers' => Yii::t('app', 'Teachers'), 'List' => Yii::t('app', 'List')
+]);
+
 ?>
 
 <div class="teacher-index main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Teachers}{List}', [
-                'Teachers' => Yii::t('app', 'Teachers'), 'List' => Yii::t('app', 'List')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     <!-- 搜索 -->
@@ -136,10 +138,6 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data.result){
                         var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
-                        //如果条件成立，每行最后一个添加清除外边距
-                        if(i % 4 == 3){
-                            item.addClass('clear-margin');
-                        }
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');

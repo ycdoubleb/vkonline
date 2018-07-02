@@ -39,6 +39,7 @@ class UserController extends BaseController
                 'class' => ActionVerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'enable' => ['POST'],
                 ],
             ],
             'access' => [
@@ -70,8 +71,6 @@ class UserController extends BaseController
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            
-            'customer' => $this->getTheCustomer(),
         ]);
     }
 
@@ -84,17 +83,15 @@ class UserController extends BaseController
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $user_id = $model->id;
-
         return $this->render('view', [
             'model' => $model,
-            
-            'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
-            'userCouVid' => $this->getUserCouVid($user_id),             //用户自己创建的课程和视频
-            'courseProgress' => $this->getCourseProgress($user_id),     //已学课程数
-            'courseFavorite' => $this->getCourseFavorite($user_id),     //关注的课程数
-            'videoFavorite' => $this->getVideoFavorite($user_id),       //收藏的视频数
-            'courseMessage' => $this->getCourseMessage($user_id),       //评论数
+            'usedSpace' => $this->getUsedSpace($id),               //用户已经使用的空间
+            'userCouVid' => $this->getUserCouVid($id),             //用户自己创建的课程和视频
+            'courseProgress' => $this->getCourseProgress($id),     //已学课程数
+            'courseFavorite' => $this->getCourseFavorite($id),     //关注的课程数
+            'videoFavorite' => $this->getVideoFavorite($id),       //收藏的视频数
+            'courseMessage' => $this->getCourseMessage($id),       //评论数
+            'isAdmin' => $this->getIsCustomerAdmin($id),           //是否是管理员
         ]);
     }
 
@@ -114,8 +111,6 @@ class UserController extends BaseController
         } else {
             return $this->render('create', [
                 'model' => $model,
-
-                'customer' => $this->getCustomer(),
             ]);
         }
     }
@@ -132,13 +127,16 @@ class UserController extends BaseController
         $model = $this->findModel($id);
         $model->scenario = User::SCENARIO_UPDATE;
         
+        if(!$this->getIsCustomerAdmin($id)){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }else{
             $model->max_store = ($model->max_store / User::MBYTE);
             return $this->render('update', [
                 'model' => $model,
-                'customer' => $this->getCustomer(),
             ]);
         }
     }
@@ -153,20 +151,19 @@ class UserController extends BaseController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        $userId = Yii::$app->user->id;
-        $adminModel = CustomerAdmin::find()->where(['user_id' => $id])->one();      //被删除用户的等级 可能为空
-        $userLevel = CustomerAdmin::find()->where(['user_id' => $userId])->one();   //当前用户的管理员等级
         
-        if($userId == $model->id){
-            throw new NotAcceptableHttpException('不能禁用自己！');
-        } elseif ($userLevel->level >= (!empty ($adminModel) ? $adminModel->level : 3)) {
-            throw new NotAcceptableHttpException('不能禁用权限比自己高的用户！');
-        } else {
-            $model->status = User::STATUS_STOP;
-            $model->save(false,['status']);
-
-            return $this->redirect(['index']);
+        if($this->getIsCustomerAdmin($id)){
+            if(Yii::$app->user->id == $model->id){
+                throw new NotAcceptableHttpException('不能禁用自己！');
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
+        
+        $model->status = User::STATUS_STOP;
+        $model->save(false,['status']);
+
+        return $this->redirect(['index']);
     }
     
     /**
@@ -200,35 +197,6 @@ class UserController extends BaseController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-    /**
-     * 查找所有客户
-     * @return array
-     */
-    public function getCustomer()
-    {
-        $customer = (new Query())
-                ->select(['id', 'name'])
-                ->from(['Customer' => Customer::tableName()])
-                ->all();
-
-        return ArrayHelper::map($customer, 'id', 'name');
-    }
-    
-    /**
-     * 查找所属客户
-     * @return array
-     */
-    public function getTheCustomer()
-    {
-        $theCustomer = (new Query())
-                ->select(['Customer.id', 'Customer.name'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = User.customer_id')
-                ->all();
-
-        return ArrayHelper::map($theCustomer, 'id', 'name');
     }
     
     /**
@@ -349,4 +317,35 @@ class UserController extends BaseController
         return $courseMessage;
     }
     
+    /**
+     * 获取当前用户是否为管理员
+     * @param string $user_id   用户模型id
+     * @return boolean
+     */
+    protected function getIsCustomerAdmin($user_id)
+    {
+        //查询已存在的管理员
+        $admin = (new Query())->select(['level', 'user_id'])
+            ->from(['CustomerAdmin' => CustomerAdmin::tableName()])
+            ->where(['customer_id' => Yii::$app->user->identity->customer_id])
+            ->all();
+        $userIds = ArrayHelper::getColumn($admin, 'user_id');
+        $mainAdmin = [];    //主管理员
+        /** 获取level为1的所有用户 */
+        foreach ($admin as $item) {
+            if($item['level'] == 1){
+                $mainAdmin[] = $item['user_id'];
+            }
+        }
+        //判断当前用户是否是管理员
+        if(in_array(Yii::$app->user->id, $userIds)){
+            //判断当前用户是否是主管理员
+            if(in_array($user_id, $mainAdmin) && $user_id != Yii::$app->user->id){
+                return false;
+            }
+            return true;
+        }
+        
+        return false;
+    }
 }

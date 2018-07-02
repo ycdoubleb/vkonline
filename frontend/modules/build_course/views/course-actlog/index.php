@@ -28,7 +28,7 @@ ModuleAssets::register($this);
                 'id' => 'gv1',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-                'tableOptions' => ['class' => 'table table-list vk-table'],
+                'tableOptions' => ['class' => 'table table-bordered table-list vk-table'],
                 'layout' => "{items}\n{summary}\n{pager}",
                 'summaryOptions' => [
                     'class' => 'hidden',

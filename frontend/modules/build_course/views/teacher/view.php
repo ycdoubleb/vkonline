@@ -14,15 +14,17 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
+    'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
+]);
+
 ?>
 
 <div class="teacher-view main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
-                'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
-            ]) ?>
+            <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
             <?php 
@@ -158,8 +160,6 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -180,14 +180,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -201,14 +197,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '125px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -222,14 +214,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '165px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -256,16 +244,12 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '75px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
                             'width' => '75px',
                             'padding' => '4px 0px',
-                            'border-left-width' => '1px',
                         ],
                     ],
                     'template' => '{view}',

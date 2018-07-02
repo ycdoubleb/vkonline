@@ -15,7 +15,7 @@ $this->title = Yii::t('app', '{Info}{Prompt}', [
 ]);
 
 ?>
-<div class="info-index main modal">
+<div class="info-index main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

@@ -13,14 +13,16 @@ use yii\web\View;
 ModuleAssets::register($this);
 UeditorAsset::register($this);
 
+$this->title = Yii::t('app', '{Create}{Course}', [
+    'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
+]);
+
 ?>
 <div class="course-create main">
     <!-- 页面标题 -->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Create}{Course}', [
-                'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     <!-- 表单 -->

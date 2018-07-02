@@ -15,7 +15,8 @@ $this->title = Yii::t('app', 'Customer');
 
      <?= DetailView::widget([
         'model' => $model,
-        'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
+        'options' => ['class' => 'table table-bordered detail-view vk-table'],
+        'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
         'attributes' => [
             [
                 'label' => Yii::t('app', 'Invite Code'),
@@ -33,7 +34,7 @@ $this->title = Yii::t('app', 'Customer');
      ])?>
       
     <!--被置底不显示的邀请码框-->
-    <?= Html::input('input', 'inviteCode', $model->invite_code, ['id' => 'inviteCode', 'readonly'=> 'readonly'])?>
+    <?= Html::textInput('inviteCode', $model->invite_code, ['id' => 'inviteCode', 'class' => 'inviteCode', 'readonly'=> 'readonly'])?>
 </div>
 
 <?php
