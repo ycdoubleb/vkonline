@@ -6,6 +6,7 @@ use common\models\vk\Category;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 
 /**
  * CategorySearch represents the model behind the search form of `common\models\vk\Category`.
@@ -42,6 +43,7 @@ class CategorySearch extends Category
      */
     public function search($params)
     {
+        $this->customer_id = ArrayHelper::getValue($params, 'CategorySearch.customer_id');  //客户ID
         $query = Category::find();
         
         $query->from(['Category' => Category::tableName()]);
@@ -59,6 +61,7 @@ class CategorySearch extends Category
         
         // grid filtering conditions
         $query->andFilterWhere(['is_show' => $this->is_show]);
+        $query->andFilterWhere(['or', ['customer_id' => $this->customer_id], ['level' => 1]]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'mobile_name', $this->mobile_name]);
@@ -96,7 +99,7 @@ class CategorySearch extends Category
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'pagination' => [
-                'pageSize' => 100,
+                'pageSize' => 1000,
             ],
         ]);
         

@@ -18,9 +18,9 @@ $this->title = Yii::t('app', '{Teachers}{Admin}',[
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="teacher-index">
+<div class="teacher-index customer">
     
-    <?php echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php echo $this->render('_search', ['model' => $searchModel, 'customer' => $customer]); ?>
 
     <div class="teacher-list">
         <?php foreach($dataProvider as $key => $data):?>

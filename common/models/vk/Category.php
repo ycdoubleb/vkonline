@@ -32,7 +32,8 @@ use yii\web\UploadedFile;
  * @property Category $parent   分类
  * @property string $fullPath   全路径
  * 
- * @property CourseAttribute $courseAttribute   获取所有课程属性 
+ * @property Course[] $courses   获取所有课程 
+ * @property CourseAttribute[] $courseAttribute   获取所有课程属性 
  */
 class Category extends ActiveRecord {
 
@@ -94,6 +95,13 @@ class Category extends ActiveRecord {
         ];
     }
 
+    /**
+     * 关联查询课程
+     * @return ActiveQuery
+     */
+    public function getCourses() {
+        return $this->hasMany(Course::class, ['category_id' => 'id'])->where(['is_del' => '0']);
+    }
     /**
      * 关联查询课程属性
      * @return ActiveQuery

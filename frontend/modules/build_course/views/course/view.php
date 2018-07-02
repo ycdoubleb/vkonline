@@ -15,6 +15,10 @@ use yii\widgets\DetailView;
 ModuleAssets::register($this);
 SwitchInputAsset::register($this);
 
+$this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
+    'Course' => Yii::t('app', 'Course'), 'Detail' => Yii::t('app', 'Detail')
+]);
+
 ?>
 
 <div class="course-view main">
@@ -102,9 +106,7 @@ SwitchInputAsset::register($this);
     <!-- 页面标题 -->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Course}{Detail}：', [
-                'Course' => Yii::t('app', 'Course'), 'Detail' => Yii::t('app', 'Detail')
-            ]).$model->name ?>
+            <?= $this->title ?>
         </span>
         <div class="btngroup pull-right"><?= $btngroup ?></div>
     </div>

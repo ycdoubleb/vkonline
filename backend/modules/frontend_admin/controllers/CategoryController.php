@@ -4,9 +4,11 @@ namespace backend\modules\frontend_admin\controllers;
 
 use backend\components\BaseController;
 use common\models\vk\Category;
+use common\models\vk\Customer;
 use common\models\vk\searchs\CategorySearch;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -54,6 +56,7 @@ class CategoryController extends BaseController
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'customer' => $this->getCustomer(),         //客户
         ]);
     }
 
@@ -176,5 +179,18 @@ class CategoryController extends BaseController
         }
         
         return $path;
+    }
+    
+    /**
+     * 查找客户
+     * @return array
+     */
+    protected function getCustomer()
+    {
+        $query = (new Query())
+                ->select(['id', 'name'])
+                ->from(['Customer' => Customer::tableName()])
+                ->all();
+        return ArrayHelper::map($query, 'id', 'name');
     }
 }

@@ -56,7 +56,6 @@ class CertificateController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'teacherName' => $this->getTeacherName(),   //获取申请认证的所有老师
             'userName' => $this->getUserName(),         //获取所有申请人
         ]);
     }
@@ -199,22 +198,7 @@ class CertificateController extends Controller
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
-    
-    /**
-     * 获取申请认证的所有老师
-     * @return array
-     */
-    public function getTeacherName()
-    {
-        $teacherName = (new Query())
-                ->select(['Teacher.id', 'Teacher.name'])
-                ->from(['Certificate' => TeacherCertificate::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Certificate.teacher_id')
-                ->all();
         
-        return ArrayHelper::map($teacherName, 'id', 'name');
-    }
-    
     /**
      * 获取所有申请人
      * @return array

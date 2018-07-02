@@ -36,16 +36,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'teacher_id',
                     'label' => Yii::t('app', 'Name'),
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'teacher_id',
-                        'data' => $teacherName,
-                        'hideSearch' => false,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
                     'value' => function ($data) {
                         return $data['name'];
                     },

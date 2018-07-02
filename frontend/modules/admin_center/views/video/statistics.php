@@ -19,39 +19,31 @@ $this->title = Yii::t('app', '{Video}{Statistics}',[
 $filterChart = ArrayHelper::getValue($results['filter'], 'group', 'teacher_id');  //统计类型
 
 ?>
-<div class="video-index main">
-    <div class="frame">
-        <div class="frame-content chart-content">
-           
-            <?= $this->render('_search', [
-                'searchModel' => $results['searchModel'], 
-                'filters' => $results['filter'], 
-                'teacherMap' => $teacherMap,
-                'createdBys' => $createdBys,
-                'title' => $this->title,
-                'is_show' => false
-            ]) ?>
-            
-            <div id="content">
-               <div class="chart-type">
-                   <ul>
-                       <li id="teacher_id">
-                           <?= Html::a('主讲老师', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'teacher_id']))) ?>
-                       </li>
-                       <li id="created_by">
-                           <?= Html::a('创建人', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'created_by']))) ?>
-                       </li>
-                       <li id="level">
-                           <?= Html::a('范围', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'level']))) ?>
-                       </li>
-                   </ul>
-               </div>
-                <!--统计结果-->
-               <div>
-                   <div id="chartCanvas" class="chart"></div>
-               </div>
-           </div>
-        </div>
+<div class="video-statistics main">
+    <?= $this->render('_search', [
+        'searchModel' => $results['searchModel'], 
+        'filters' => $results['filter'], 
+        'teacherMap' => $teacherMap,
+        'createdBys' => $createdBys,
+        'title' => $this->title,
+        'is_show' => false
+    ]) ?>
+    <div class="vk-tabs">
+        <ul class="list-unstyled">
+            <li id="teacher_id">
+                <?= Html::a('主讲老师', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'teacher_id']))) ?>
+            </li>
+            <li id="created_by">
+                <?= Html::a('创建人', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'created_by']))) ?>
+            </li>
+            <li id="level">
+                <?= Html::a('范围', array_merge(['statistics'], array_merge($results['filter'], ['group' => 'level']))) ?>
+            </li>
+        </ul>
+    </div>
+    <div class="vk-panel clear-shadow">
+        <!--统计结果-->
+        <div id="chartCanvas" class="chart"></div>
     </div>
 </div>
 
@@ -81,7 +73,7 @@ $js=
 <<<JS
 
     //统计选中效果
-    $(".chart-type ul li[id=$filterChart]").addClass('active');
+    $(".vk-tabs > ul > li[id=$filterChart]").addClass('active');
     //饼图统计结果显示
     var categoryChart = new ccoacharts.PicChart({title:"",itemLabelFormatter:'{b} ( {c} 门) {d}%',tooltipFormatter:'{a} <br/>{b} : {c}门 ({d}%)'},document.getElementById('chartCanvas'),$results);
         

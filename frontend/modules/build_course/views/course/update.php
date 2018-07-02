@@ -12,14 +12,16 @@ use yii\web\View;
 ModuleAssets::register($this);
 UeditorAsset::register($this);
 
+$this->title = Yii::t('app', "{Update}{Course}：{$model->name}", [
+    'Update' => Yii::t('app', 'Update'), 'Course' => Yii::t('app', 'Course')
+]);
+
 ?>
 <div class="course-update main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Update}{Course}', [
-                'Update' => Yii::t('app', 'Update'), 'Course' => Yii::t('app', 'Course')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     
