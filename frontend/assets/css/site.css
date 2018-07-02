@@ -91,13 +91,14 @@
 }
 
 .site-login .vkonline .platform .frame .forget {
-    margin-top: 10px;
+    margin-top: 9px;
     text-align: right;
     right: 6px;
 }
 
 .site-login .vkonline .platform .frame .forget span{
     color: #999999;
+    vertical-align: text-bottom;
 }
 
 .site-login .vkonline .platform .frame .button{
@@ -384,4 +385,64 @@
 }
 .course-tile .foot-box .play_count{
     float: right;
+}
+
+/****************************重置密码页面**************************/
+.site-password {
+    width: 700px;
+    margin: 0px auto;
+    text-align: center;
+    position: relative;
+}
+
+.site-password .request-reset {
+    background: white;
+    border: 0 none;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+    padding: 10px 30px;
+    box-sizing: border-box;
+    width: 80%;
+    margin: 10%;
+    position: absolute;
+}
+
+.site-password .request-reset .fs-title{
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #2C3E50;
+    margin-bottom: 10px;
+}
+
+.site-password .request-reset .fs-subtitle{
+    font-weight: normal;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.site-password .form-horizontal .form-group {
+    margin-right: -15px;
+    margin-left: -15px;
+    height: 75px;
+    margin-bottom: 0px;
+}
+
+.site-password .request-reset input {
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    font-family: montserrat;
+    color: #2C3E50;
+    font-size: 13px;
+}
+
+.site-password .form-group .help-block {
+    float: left;
+}
+
+.site-password .request-reset .form-group button {
+    margin-top: 10px;
 }

@@ -2,7 +2,11 @@
 
 namespace common\modules\webuploader\models;
 
+use common\components\aliyuncs\Aliyun;
+use common\models\User;
+use OSS\Core\OssException;
 use Yii;
+use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
@@ -25,19 +29,38 @@ use yii\db\ActiveRecord;
  * @property int $level 视频质量：1=480P 2=720P 3=1080P
  * @property string $duration 时长
  * @property string $bitrate 码率
+ * @property string $oss_key        oss名称/文件名
+ * @property string $oss_path       码率
+ * @property string $oss_etag       ETag 在每个Object生成的时候被创建，用于标示一个Object的内容。
+ * @property int $oss_upload_status        上传状态：0未上传，1上传中，2已上传
+ * @property int $mts_status               转码状态：0未转码，1已转码
  * @property string $created_by 上传人
  * @property string $deleted_by 删除人ID
  * @property string $deleted_at 删除时间
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
-class Uploadfile extends ActiveRecord
-{
+class Uploadfile extends ActiveRecord {
+
     /** 否 */
     const TYPE_NO_CHOICE = 0;
+
     /** 是 */
     const TYPE_YES_CHOICE = 1;
-    
+
+    /* 未上传 */
+    const OSS_UPLOAD_STATUS_NO = 0;
+    /* 已上传 */
+    const OSS_UPLOAD_STATUS_YES = 2;
+    /* 未转码 */
+    const MTS_STATUS_NO = 0;
+    /* 转码中 */
+    const MTS_STATUS_DOING = 1;
+    /* 已转码 */
+    const MTS_STATUS_YES = 2;
+    /* 转码失败 */
+    const MTS_STATUS_FAIL = 5;
+
     /** 类型 */
     public static $TYPES = [
         self::TYPE_NO_CHOICE => '否',
@@ -47,32 +70,30 @@ class Uploadfile extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return '{{%uploadfile}}';
     }
 
     /**
      * @inheritdoc
      */
-    public function behaviors() 
-    {
+    public function behaviors() {
         return [
             TimestampBehavior::class
         ];
     }
-    
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id'], 'required'],
-            [['download_count', 'del_mark', 'size', 'is_del', 'is_fixed', 'is_link', 'width', 'height', 'level', 'bitrate', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
+            [['download_count', 'del_mark', 'size', 'is_del', 'is_fixed', 'is_link', 'width', 'height', 'level', 'bitrate',
+            'oss_upload_status', 'mts_status', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
-            [['name', 'path', 'thumb_path'], 'string', 'max' => 255],
+            [['name', 'path', 'thumb_path', 'oss_key', 'oss_path', 'oss_etag'], 'string', 'max' => 255],
             [['app_id'], 'string', 'max' => 50],
             [['id'], 'unique'],
         ];
@@ -81,8 +102,7 @@ class Uploadfile extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
             'name' => Yii::t('app', 'Name'),
@@ -100,6 +120,11 @@ class Uploadfile extends ActiveRecord
             'level' => Yii::t('app', 'Level'),
             'duration' => Yii::t('app', 'Duration'),
             'bitrate' => Yii::t('app', 'Bitrate'),
+            'oss_key' => Yii::t('app', 'OSS Key'),
+            'oss_path' => Yii::t('app', 'OSS Path'),
+            'oss_etag' => Yii::t('app', 'OSS ETag'),
+            'oss_upload_status' => Yii::t('app', 'OSS Upload Status'),
+            'mts_status' => Yii::t('app', 'Mts Status'),
             'created_by' => Yii::t('app', 'Created By'),
             'deleted_by' => Yii::t('app', 'Deleted By'),
             'deleted_at' => Yii::t('app', 'Deleted At'),
@@ -107,4 +132,55 @@ class Uploadfile extends ActiveRecord
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
+
+    /**
+     * 获取文件后缀
+     * @return string 后缀名
+     */
+    public function getExt() {
+        $thisinfo = pathinfo($this->path);
+        return strtolower($thisinfo['extension']);
+    }
+
+    /**
+     * 上传到阿里云
+     * 
+     * @param string $key           文件名称，默认=customer_id/user_id/file_id.[ext]
+     * @return array [success,msg]
+     */
+    public function uploadOSS($key = null) {
+        if($key == null){
+             /* @var $user User */
+            $user = User::findOne(['id' => $this->created_by]);
+            if(!$user){
+                return ['success' => false, 'msg' => '文件缺少创建人数据！'];
+            }else if($user->customer_id == null){
+                return ['success' => false, 'msg' => '用户未加入任何品牌！'];
+            }
+
+            //设置上传到的OSS
+            $oss_bucket_input = Yii::$app->params['aliyun']['oss']['bucket-input'];
+            //设置文件名
+            $object_key = "{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
+        }else{
+            $object_key = $key;
+        }
+       
+        try {
+            $result = Aliyun::getOss()->multiuploadFile($oss_bucket_input, $object_key, $this->path);
+            //更新数据
+            $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
+            $this->oss_path = $result['oss-request-url'];
+            $this->oss_key = $object_key;
+            $this->oss_etag = $this->id;
+
+            $this->save(false, ['oss_upload_status', 'oss_path', 'oss_key', 'oss_etag']);
+            return ['success' => true];
+        } catch (OssException $ex) {
+            return ['success' => false, 'msg' => $ex->getMessage()];
+        } catch (Exception $ex) {
+            return ['success' => false, 'msg' => $ex->getMessage()];
+        }
+    }
+
 }

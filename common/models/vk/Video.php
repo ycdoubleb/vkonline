@@ -39,6 +39,10 @@ use yii\web\UploadedFile;
  * @property string $favorite_count 收藏数
  * @property int $is_del 是否删除：0否 1是
  * @property int $sort_order 排序
+ * @property int $oss_upload_status         OSS上传状态：0未上传 1已上传
+ * @property int $mts_status            是否转码：0未转码 1转码中 2已转码 5转码失败
+ * @property int $mts_need              是否需要转码：0否 1是
+ * @property string $mts_watermark_ids     水印配置，多个使用逗号分隔
  * @property string $created_by 创建人ID
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
@@ -123,11 +127,12 @@ class Video extends ActiveRecord
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['duration'], 'number'],
-            [['is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
+            [['is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 
+                'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at','oss_upload_status','mts_status' ,'mts_need'], 'integer'],
             [['des'], 'string'],
             [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
-            [['img'], 'string', 'max' => 255],
+            [['img','mts_watermark_ids'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
     }
@@ -154,6 +159,10 @@ class Video extends ActiveRecord
             'zan_count' => Yii::t('app', 'Zan Count'),
             'favorite_count' => Yii::t('app', 'Favorite Count'),
             'is_del' => Yii::t('app', 'Is Del'),
+            'oss_upload_status' => Yii::t('app', 'OSS Upload Status'),
+            'mts_status' => Yii::t('app', 'Mts Status'),
+            'mts_need' => Yii::t('app', 'Mts Need'),
+            'mts_watermark_ids' => Yii::t('app', 'Mts Watermark Ids'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),

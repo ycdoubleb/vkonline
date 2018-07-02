@@ -1,9 +1,9 @@
 <?php
 namespace frontend\models;
 
+use common\models\User;
 use Yii;
 use yii\base\Model;
-use common\models\User;
 
 /**
  * Password reset request form
@@ -25,11 +25,20 @@ class PasswordResetRequestForm extends Model
             ['email', 'exist',
                 'targetClass' => '\common\models\User',
                 'filter' => ['status' => User::STATUS_ACTIVE],
-                'message' => 'There is no user with this email address.'
+                'message' => Yii::t('app', 'There is no user with this email address.')
             ],
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels() {
+        return [
+            'email' => Yii::t('app', 'Email'),
+        ];
+    }
+    
     /**
      * Sends an email with a link, for resetting the password.
      *
@@ -60,9 +69,9 @@ class PasswordResetRequestForm extends Model
                 ['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'],
                 ['user' => $user]
             )
-            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name . ' robot'])
+            ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
             ->setTo($this->email)
-            ->setSubject('Password reset for ' . Yii::$app->name)
+            ->setSubject(Yii::$app->name . '--密码重置请求')
             ->send();
     }
 }

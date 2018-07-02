@@ -114,6 +114,8 @@ return [
     'Select' => '选择',
     'Save' => '保存',
     'Apply' => '申请',
+    'Request' => '请求',
+    'Send' => '发送',
     
     //公共-属性
     'ID' => 'ID',
@@ -182,6 +184,12 @@ return [
     'The video does not exist.' => '视频不存在。',
     'The teacher does not exist.' => '老师不存在。',
     'The certified teacher can not be deleted.' => '认证的老师不可以被删除。',
+    'Password reset token cannot be blank.' => '密码重置令牌不能为空。',
+    'Wrong password reset token.' => '错误的密码重置令牌。',
+    'There is no user with this email address.' => '不存在该电子邮件地址的用户。',
+    'Check your email for further instructions.' => '检查您的电子邮件以获得进一步的说明。',
+    'Sorry, we are unable to reset password for the provided email address.' => '对不起，我们无法为所提供的电子邮件地址重置密码。',
+    'New password saved.' => '新密码已成功保存。',
     
     //后台-公共配置
     'Config' => '配置',
@@ -316,6 +324,13 @@ return [
     //前台-查看视频
     'Relation' => '关联',
     'Source' => '来源',
+    'OSS Key' => 'Oss名称',
+    'OSS Path' => 'Oss路径',
+    'OSS ETag' => 'Oss实体',
+    'OSS Upload Status' => 'Oss上传状态',
+    'Mts Status' => '转码状态',
+    'Mts Need' => '是否需要转码',
+    'Mts Watermark Ids' => '水印配置',
     //前台-操作记录
     'Relative' => '相关',
     //前台-管理中心

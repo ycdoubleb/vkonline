@@ -1,7 +1,7 @@
 <?php
 return [
     'adminEmail' => 'admin@example.com',
-    'supportEmail' => 'support@example.com',
+    'supportEmail' => 'lmgclj@qq.com',
     'user.passwordResetTokenExpire' => 3600,
     'user.passwordAccessTokenExpire' => 3600 * 24 * 7,
     /* 企业微信配置 */
