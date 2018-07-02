@@ -7,35 +7,24 @@ use yii\web\View;
 /* @var $this View */
 /* @var $model CourseAttribute */
 
-$this->title = Yii::t('app', '{Update}{Attribute}: {nameAttribute}', [
-    'Update' => Yii::t('app', 'Update'),
-    'Attribute' => Yii::t('app', 'Attribute'),
-    'nameAttribute' => $model->name,
+ModuleAssets::register($this);
+
+$this->title = Yii::t('app', "{Update}{Attribute}：{$model->name}",[
+    'Update' => Yii::t('app', 'Update'), 'Attribute' => Yii::t('app', 'Attribute'),
 ]);
 
 ?>
 <div class="course-attribute-update main">
-    <div class="frame">
-        <div class="frame-content">
-            <div class="frame-title">
-                <span><?= Yii::t('app', '{Update}{Attribute}',[
-                    'Update' => Yii::t('app', 'Update'),
-                    'Attribute' => Yii::t('app', 'Attribute'),
-                ]) ?></span>
-            </div>
-            <div class="content-content">
-                <?= $this->render('_form', [
-                    'model' => $model,
-                    'path' => $path,
-                ]) ?>
-            </div>
-        </div>
+    <!-- 页面标题 -->
+    <div class="vk-title">
+        <span>
+            <?= $this->title ?>
+        </span>
     </div>
+    <!-- 表单 -->
+    <?= $this->render('_form', [
+        'model' => $model,
+        'path' => $path,
+    ]) ?>
+    
 </div>
-<?php
-    $js = <<<JS
-        
-JS;
-    $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
-?>

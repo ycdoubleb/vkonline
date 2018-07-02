@@ -324,6 +324,13 @@ return [
     //前台-查看视频
     'Relation' => '关联',
     'Source' => '来源',
+    'OSS Key' => 'Oss名称',
+    'OSS Path' => 'Oss路径',
+    'OSS ETag' => 'Oss实体',
+    'OSS Upload Status' => 'Oss上传状态',
+    'Mts Status' => '转码状态',
+    'Mts Need' => '是否需要转码',
+    'Mts Watermark Ids' => '水印配置',
     //前台-操作记录
     'Relative' => '相关',
     //前台-管理中心

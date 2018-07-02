@@ -1,203 +1,33 @@
-/*
-    用于模块页面样式
-*/
 /* 
+    用于模块页面样式
     创建时间 : 2018-5-10, 14:10:17
     更新时间 : 2018-5-15, 13:11:00
 */
 
-/***************************************公共****************************************/
 .main {
     display: inline-block;
     float: right;  
     width: 1000px;
     height: auto;
-    font-size: 14px;
-    color: #666;
+    overflow-x: hidden;
 }
-
-.main .frame {
-    width: 100%;
-    padding-left: 0;
-    padding-right: 0;
-    display: inline-block;
-}
-
-.main .page-title {
-    width: 100%;
-    height: 60px;
-    line-height: 60px;
-    padding-left: 20px;
-    margin-bottom: 45px;
-    font-size: 16px;
-    color: #666666;
-    background-color: #ffffff;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.main .frame-content .frame-title {    
-    height: 60px;
-    line-height: 60px;
-    padding-left: 20px;
-    font-size: 16px;
-    color: #878787;
-    background-color: #ffffff;
-}
-
-/*无第一层标题的情况下*/
-.course-index.main .frame-content .frame-title,
-.video-index.main .frame-content .frame-title,
-.teacher-index.main .frame-content .frame-title,
-.user-index.main .frame-content .frame-title,
-.user-create.main .frame-content .frame-title,
-.user-update.main .frame-content .frame-title,
-.category-index.main .frame-content .frame-title, 
-.category-create.main .frame-content .frame-title,
-.category-update.main .frame-content .frame-title,
-.course-attribute-create.main .frame-content .frame-title,
-.course-attribute-update.main .frame-content .frame-title {
-    color: #666666;
-}
-
-.main .frame-content {
-    margin-bottom: 45px;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.main .frame-content .table>tr {
-    background-color: #ffffff;
-    min-height: 48px !important;
-}
-
-.main .frame .frame-title .framebtn {
-    position: relative;
-    padding-right: 15px;
-    float: right;
-}
-
-.disabled {
-    pointer-events: none;
-    cursor: not-allowed;
-    box-shadow: none;
-    opacity: .65;
-}
-
-/** table表格th样式 */
-.main .viewdetail-th {
-    color: #999999;
-    background-color: #ffffff;
-    width: 13%;
-    font-weight: normal;
-    text-align: center;
-    min-width: 73px;
-    vertical-align: middle;
-    border: 1px solid #eee;
-}
-
-/** table表格th-head样式 */
-.main .viewdetail-th-head {
-    color: #000000;
-    background-color: #ffffff;
-    float: left;
-    font-weight: bold;
-}
-
-.frame-content .table {
-    margin-bottom: 0px;
-    table-layout: fixed;
-    color: #666;
-    border-right: 2px solid rgba(255, 255, 255, 0);
-    border-left: 2px solid rgba(255, 255, 255, 0);
-}
-
-.table > thead > tr > th, .table > tbody > tr > th,
-.table > tfoot > tr > th, .table > thead > tr > td, 
-.table > tbody > tr > td, .table > tfoot > tr > td {
-    padding: 4px;
-    vertical-align: middle !important;
-    background-color: #ffffff;
-    border: 1px solid #eee !important;
-}
-
-.table-striped > tbody > tr{
-    height: 48px;
-    font-size: 14px;
-}
-
-/***修改输入框样式***/
-.form-control,
-.select2-container--krajee .select2-selection,
-.main .form-group .form-control {
-    height: 40px;
-    border-radius: 0px !important;
-}
-
-/***修改下拉框样式***/
-.select2-selection__rendered{
-    line-height: 28px;
-}
-
-.select2-container--krajee .select2-selection--single .select2-selection__arrow{
-    height: 38px;
-    border-left: none
-}
-
-/***  概况  **/
-.main .admin-num{
+/**
+ * 概况  
+ */
+.admin_center-default-index .vk-panel .admin-num{
     color: #878787;
 }
-
-/***  用户模块  **/
-.main .frame-content .grid-view {
-    background-color: #ffffff;
+/**
+ * 邀请码去边框 置底隐藏 加底色 
+ */
+.invite-code-index .inviteCode{
+    position: absolute;
+    z-index: -10;
+    border: 0;
+    opacity: 0;
 }
-
-.main .frame-content .grid-view .table > thead:first-child > tr:first-child > th{
-    text-align: center;
-    height: 48px;
-    font-weight: 700;
-    color: rgb(102, 102, 102);
-    background-color: #f9f9f9;
-}
-
-.main .frame-content .grid-view .table > tbody > tr > td {
-    min-height: 45px;
-    text-align: center;
-}
-
-.main .frame-content .grid-view .summary {
-    padding: 20px;
-    background-color: #ffffff;
-    color: #999999;
-    margin-bottom: 20px;
-}
-
-.main .frame-content .content-content {
-    background-color: #ffffff;
-    border-top: 1px solid #f2f2f2;
-    padding: 20px;
-    margin-bottom: 25px;
-}
-
-.user-view.main .viewdetail-th {
-    text-align: right;
-}
-
-.user-index.main .frame .grid-view .pagination,
-.category-index.main .frame .grid-view .pagination,
-.category-view.main .frame .grid-view .pagination {
-    padding-left: 20px;
-    margin: -20px 0px 20px;
-}
-/***  课程/视频管理模块  **/
-.main .frame .frame-content .show-type .btn-flat.active{
-    color: #ffffff;
-    background-color: #28b28b;
-}
-
-.main .frame .frame-content .show-type .btn-flat{
+.course-search .vk-title .btngroup .btn-flat,
+.video-search .vk-title .btngroup .btn-flat {
     border-color: #28b28b;
     padding: 3px 18px;
     margin-right: -5px;
@@ -205,155 +35,34 @@
     color: #999999;
     background-color: #f2f2f2;
 }
-
-.main .frame .form .clear-padding {
-    padding: 0 !important;
-    height: 52px;
+.course-search .vk-title .btngroup .btn-flat.active,
+.video-search .vk-title .btngroup .btn-flat.active {
+    color: #ffffff;
+    background-color: #28b28b;
 }
 
-.course-index.main .frame .course-form.form,
-.video-index.main .frame .video-form.form {
-    width: 100%;
-    display: inline-block;
-    padding: 15px 15px 25px 20px;
-    border-top: 1px solid #f2f2f2;
-    background-color: #ffffff;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.course-index.main .frame .course-form .control-label.form-label, 
-.video-index.main .frame .video-form .control-label.form-label {
-    padding-left: 0px;
-    padding-right: 0px;
-    color: #999999;
-}
-
-.video-index.main .frame .hr,
-.course-index.main .frame .hr{
-    margin-left: -2px;
-    margin-right: -2px;
-    height: 30px;
-    border-left: 2px solid #f2f2f2;
-    border-right: 2px solid #f2f2f2;
-}
-
-.main .frame .frame-content.chart-content {
-    margin-bottom: 45px;
-    -webkit-box-shadow: none;
-    box-shadow: none;
-}
-
-.video-index.main .frame .frame-content #content,
-.course-index.main .frame .frame-content #content{
-    margin-left: -2px;
-    margin-right: -2px;
-    border-left: 2px solid #f2f2f2;
-    border-right: 2px solid #f2f2f2;
-}
-
-.video-index.main .frame .frame-content .chart-type, 
-.course-index.main .frame .frame-content .chart-type {
-    width: 100%;
-    height: 54px;
-    margin-bottom: 35px;
-    line-height: 54px;
-    border-bottom: 1px solid #ccc;
-}
-
-.chart-type > ul {
-    padding: 0;
-    margin: 0;
-}
-
-.chart-type > ul > li {
-    float: left;
-    margin-top: -2px;
-    cursor: pointer;
-}
-
-.chart-type > ul > li > a {
-    display: inline-block;
-    width: 100%;
-    height: 54px;
-    padding: 0 20px;
-    color: #666;
-    line-height: 54px;
-    text-decoration: none;
-}
-
-.chart-type > ul > li.active > a, .chart-type > ul > li:hover > a {
-    color: #fc583d;
-}
-.chart-type > ul > li.active, .chart-type > ul > li:hover {
-    border-bottom: 2px solid #FC583D;
-}
-.chart, .pie, .bars{
-    height: 500px;
-}
-
-.video-index.main .table, .course-index.main .table{
+.course-statistics .vk-tabs,
+.video-statistics .vk-tabs {
     margin-bottom: 0px;
 }
-
-.video-index.main .video-bottom, .course-index.main .course-bottom {
-    min-height: 60px;
-    /*padding-top: 15px;*/
-    padding-left: 10px;
-    background-color: #ffffff;
-    color: #999999;
+.course-statistics .vk-panel,
+.video-statistics .vk-panel {
+    margin-top: 0px;
+    background-color: transparent;
 }
-
-.course-index.main .course-bottom .summary {
-    padding: 20px 15px 10px 20px;
-    margin-bottom: 45px;
-    background-color: #ffffff;
-    color: #999999;
-}
-
-.course-index.main .course-bottom .pagination{
+.course-index .vk-panel .summary,
+.video-index .vk-panel .summary,
+.category-index .vk-panel .summary,
+.category-view .vk-panel .summary,
+.user-index .vk-panel .summary,
+.course-index .vk-panel .pagination,
+.video-index .vk-panel .pagination,
+.category-index .vk-panel .pagination,
+.category-view .vk-panel .pagination,
+.video-index .vk-panel .pagination {
     padding-left: 20px;
-    margin: -45px 0px 15px 0px;
 }
-
-.video-index.main .video-bottom .pagination {
-    padding-left: 10px;
-    margin: 15px 0;
-}
-
-/***  分类管理模块  **/
-.category-view.main .viewdetail-th, .course-attribute-view.main .viewdetail-th {
-    text-align: right;
-}
-
-/***  banner管理模块  **/
-.banner-create .frame .frame-title, .banner-update .frame .frame-title {
-    color: #999999;
-    background-color: #f2f2f2;
-    margin-bottom: 10px;
-}
-
-.banner-form .krajee-default.file-preview-frame .kv-file-content {
-    width: 750px;
-    height: 230px;
-}
-
-/*** 模态框样式 **/
-.main.modal {
-    display: block;
-    width: 100%;
-}
-
-.main.modal .modal-body.height {
-    max-height: 490px;
-    overflow-y: auto;
-}
-
-/*** 邀请码去边框 置底隐藏 加底色 **/
-#inviteCode{
-    position: absolute;
-    border: 0;
-    opacity: 0;
-    z-index: -10;
-    background-color: #ffffff;
+.course-statistics .vk-panel .chart,
+.video-statistics .vk-panel .chart {
+    min-height: 500px;
 }

@@ -12,7 +12,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="course-attribute-form">
+<div class="course-attribute-form vk-form set-spacing set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options' => [
@@ -21,9 +21,8 @@ use yii\widgets\ActiveForm;
         ],
         'fieldConfig' => [
             'template' => "{label}\n<div class=\"col-lg-11 col-md-11\" >{input}</div>\n"
-                . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
-                'color' => '#999999', 'padding-left' => '0', 'padding-right' => '10px']],
+                . "<div class=\"col-lg-1 col-md-1\"></div><div class=\"col-lg-11 col-md-11\">{error}</div>",
+            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
         ],
     ]); ?>
 
@@ -64,8 +63,11 @@ use yii\widgets\ActiveForm;
         'placeholder' => '多个候选值以换行分隔',
     ]) ?>
 
-    <div class="form-group" style="padding-left: 95px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Add') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
+    <div class="form-group">
+        <div class="col-lg-1 col-md-1"></div>
+        <div class="col-lg-11 col-md-11">
+            <?= Html::submitButton(Yii::t('app', 'Submit') , ['class' => 'btn btn-success btn-flat']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

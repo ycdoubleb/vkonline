@@ -16,15 +16,17 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
+    'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
+])
+
 ?>
 
 <div class="video-view main">
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', "{Video}{Detail}：{$model->name}", [
-                'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     
@@ -125,6 +127,7 @@ ModuleAssets::register($this);
         </div>            
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
+            'tableOptions' => ['class' => 'table table-bordered vk-table'],
             'layout' => "{items}\n{summary}\n{pager}",
             'summaryOptions' => [
                 'class' => 'hidden',
@@ -134,7 +137,6 @@ ModuleAssets::register($this);
                     'class' => 'hidden',
                 ]
             ],
-            'tableOptions' => ['class' => 'table table-bordered vk-table'],
             'columns' => [
                 [
                     'label' => Yii::t('app', '{The}{Customer}', [
@@ -147,8 +149,6 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
@@ -167,14 +167,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -189,14 +185,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -208,14 +200,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '125px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -229,14 +217,10 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '125px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -263,16 +247,12 @@ ModuleAssets::register($this);
                     'headerOptions' => [
                         'style' => [
                             'width' => '75px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
                             'width' => '75px',
                             'padding' => '4px 0px',
-                            'border-left-width' => '1px',
                         ],
                     ],
                     'template' => '{view}',

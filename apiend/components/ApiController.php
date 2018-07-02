@@ -27,12 +27,19 @@ use yii\web\Response;
  * @author Administrator
  */
 class ApiController extends BaseApiController {
-    
+
     /**
      * 使用令牌认证
      * @return type
      */
     public function behaviors() {
-        return array_merge(parent::behaviors(),[QueryParamAuth::class]);
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator'] = [
+            'class' => QueryParamAuth::className(),
+            'optional' => [
+            ],
+        ];
+        return $behaviors;
     }
+
 }

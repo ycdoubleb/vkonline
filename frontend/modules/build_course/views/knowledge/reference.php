@@ -179,10 +179,6 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data.result){
                         var item = $(Wskeee.StringUtil.renderDOM($ref_dom, data.result[i])).appendTo($("#reference-video-list .vk-list > ul"));
-                        //如果条件成立，每行最后一个添加清除外边距
-                        if(i % 5 == 4){
-                            item.addClass('clear-margin');
-                        }
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');

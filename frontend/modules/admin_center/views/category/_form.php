@@ -16,7 +16,7 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
 
 ?>
 
-<div class="category-form">
+<div class="category-form vk-form set-spacing set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options' => [
@@ -24,13 +24,12 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\" style=\"padding-left:25px\">{input}</div>\n"
-                . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
-            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label', 'style' => [
-                'color' => '#999999', 'padding-left' => '0', 'padding-right' => '0px']],
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n"
+                . "<div class=\"col-lg-1 col-md-1\"></div><div class=\"col-lg-11 col-md-11\">{error}</div>",
+            'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
         ],
     ]); ?>
-
+    <!--所属父级-->
     <?= $form->field($model, 'parent_id')->widget(DepDropdown::class,[
         'pluginOptions' => [
             'url' => Url::to('search-children', false),
@@ -43,13 +42,13 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
             'disabled' => $model->isNewRecord ? true : ($model->level == 1 ? true : false),
         ],
     ]) ?>
-    
+    <!--名称-->
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
+    <!--移动端名称-->
     <?= $form->field($model, 'mobile_name')->textInput(['maxlength' => true]) ?>
-
-    <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
     
+    <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
+    <!--排序-->
     <?= $form->field($model, 'sort_order')->textInput(['maxlength' => true]) ?>
 
     <?php
@@ -61,8 +60,11 @@ $model->parent_id = $model->isNewRecord ? $parentModel->id : $model->parent_id;
 //        'containerOptions' => ['class' => ' ']
 //    ]);?>
     
-    <div class="form-group" style="padding-left: 105px;">
-        <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
+    <div class="form-group">
+        <div class="col-lg-1 col-md-1 control-label form-label"></div>
+        <div class="col-lg-11 col-md-11">
+            <?= Html::submitButton(Yii::t('app', 'Submit') , ['class' => 'btn btn-success btn-flat']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -11,15 +11,17 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 
+$this->title = Yii::t('app', "{Update}{Teacher}：{$model->name}", [
+    'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')
+]);
+
 ?>
 <div class="teacher-update main">
 
     <!--页面标题-->
     <div class="vk-title">
         <span>
-            <?= Yii::t('app', '{Update}{Teacher}', [
-                'Update' => Yii::t('app', 'Update'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]) ?>
+            <?= $this->title ?>
         </span>
     </div>
     <!--表单-->

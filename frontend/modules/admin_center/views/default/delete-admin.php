@@ -15,7 +15,7 @@ $this->title = Yii::t(null, "{Delete}{Administrators}：{$model->user->nickname}
 ]);
 
 ?>
-<div class="customer-delete-admin main modal">
+<div class="customer-delete-admin main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -57,19 +57,16 @@ $this->title = Yii::t(null, "{Delete}{Administrators}：{$model->user->nickname}
 </div>
 
 <?php
-
-$admin = Url::to(['admin-index', 'id' => $model->customer_id]);
-$adminUrl = Url::to(['delete-admin', 'id' => $model->id]);
-
 $js = 
 <<<JS
         
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$("#form-admin").submit();return;
-        $.post("$adminUrl",$('#form-admin').serialize(),function(data){
+        $.post("../default/delete-admin?id={$model->id}",$('#form-admin').serialize(),function(data){
             if(data['code'] == '200'){
-                $("#admin").load("$admin");
+                var num = Number($("#number").text()) - 1;
+                $("#number").html(num);
+                $("#admin_info").load("../default/admin-index?id={$model->customer_id}");
             }
         });
     });
