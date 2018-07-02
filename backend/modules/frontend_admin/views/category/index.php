@@ -11,6 +11,7 @@ use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $searchModel CategorySearch */
@@ -35,6 +36,23 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-md-12 col-xs-12 frame-title">
             <i class="icon fa fa-list-ul"></i>
             <span><?= Yii::t('app', 'List') ?></span>
+            <?php $form = ActiveForm::begin([
+                'action' => ['index'], 'method' => 'get',
+                'options'=>[
+                    'id' => 'category-form',
+                    'style' => 'float:right; height:40px; margin-top:-33px'
+                ],
+            ]); ?>
+
+                <?= $form->field($searchModel, 'customer_id', [
+                   'options' => ['style' => 'width:240px'] 
+                ])->widget(Select2::class,[
+                    'data' => $customer,
+                    'options' => ['placeholder' => '过滤客户...'],
+                    'pluginOptions' => ['allowClear' => true],
+                ])->label('') ?>
+            
+            <?php ActiveForm::end(); ?>
         </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
@@ -131,6 +149,11 @@ $this->params['breadcrumbs'][] = $this->title;
     $js = <<<JS
         $('.table').treegrid({
             //initialState: 'collapsed',
+        });
+            
+        //客户ID触发change事件
+        $("#categorysearch-customer_id").change(function(){
+            $('#category-form').submit();
         });
 JS;
     $this->registerJs($js, View::POS_READY);

@@ -38,6 +38,10 @@ and open the template in the editor.
     float: left;
 }
 
+.customer .select2-container .select2-selection--single .select2-selection__rendered {
+    margin-top: 0px;
+}
+
 /** table表格th样式 */
 .customer .viewdetail-th {
     color: #666666;

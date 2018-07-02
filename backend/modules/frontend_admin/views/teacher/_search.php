@@ -29,6 +29,13 @@ use yii\widgets\ActiveForm;
     
     <div class="search col-lg-12 col-md-12">
         
+        <?= $form->field($model, 'customer_id')->widget(\kartik\widgets\Select2::class,[
+            'data' => $customer,
+            'options' => ['placeholder' => '请选择...'],
+            'pluginOptions' => ['allowClear' => true],
+        ])->label(Yii::t('app', '{Customer}{Name}：', [
+            'Customer' => Yii::t('app', 'Customer'), 'Name' => Yii::t('app', 'Name')])) ?>
+        
         <?= $form->field($model, 'name')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true
         ])->label(Yii::t('app', '{Teacher}{Name}：', [
@@ -47,6 +54,11 @@ use yii\widgets\ActiveForm;
 
 $js = 
 <<<JS
+    //失去焦点提交表单
+    $("#teachersearch-customer_id").change(function(){
+        $('#teacher-form').submit();
+    });
+        
     //失去焦点提交表单
     $("#teachersearch-name").change(function(){
         $('#teacher-form').submit();
