@@ -211,6 +211,9 @@ class MtsService extends Component {
      * @param string $state     Active|Paused
      */
     public function updatePipeline($state) {
+        //数值校证
+        $state = $state == self::PIPE_STATE_ACTIVE ? $state : self::PIPE_STATE_PAUSED;
+        
         $client = $this->client;
         //创建API请求并设置参数
         $request = new Mts\UpdatePipelineRequest();
