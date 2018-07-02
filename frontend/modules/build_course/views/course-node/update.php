@@ -17,7 +17,7 @@ $this->title = Yii::t(null, "{Edit}{Node}", [
 ]);
 
 ?>
-<div class="course-node-update main modal">
+<div class="course-node-update main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

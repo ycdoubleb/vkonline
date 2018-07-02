@@ -206,20 +206,25 @@ class Teacher extends ActiveRecord
     }
     
     /**
-     * 查询和自己相关的老师
-     * @param array $condition      默认返回键值对形式
+     * 返回老师信息
+     * @param string|array $condition    查询条件
+     * @param integer level         等级
      * @param bool $key_to_value    返回键值对形式
      * 
      * @return array(array|Array) 
      */
-    public static function getTeacherByLevel($created_by, $level = 0, $key_to_value = true) 
+    public static function getTeacherByLevel($condition, $level = 0, $key_to_value = true) 
     {
-        self::$teachers = self::find()
-            ->where(['created_by' => $created_by, 'level' => $level])
-            ->orWhere(['is_certificate' => 1])
-            ->orderBy(['is_certificate' => SORT_DESC])->all();
+        self::$teachers = self::find();
+        if(!is_array($condition)){
+            self::$teachers->andFilterWhere(['created_by' => $condition, 'level' => $level]);
+            self::$teachers->orFilterWhere(['is_certificate' => 1]);
+        }else{
+            self::$teachers->andFilterWhere($condition);
+        }
+        self::$teachers->orderBy(['is_certificate' => SORT_DESC]);
         $teachers = [];
-        foreach (self::$teachers as $id => $teacher) {
+        foreach (self::$teachers->all() as $id => $teacher) {
             $teachers[] = $teacher;
         }
        

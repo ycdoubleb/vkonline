@@ -8,9 +8,10 @@ use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
+use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -116,8 +117,10 @@ class KnowledgeController extends Controller
             return ActionUtils::getInstance()->updateKnowledge($model, Yii::$app->request->post());
         } else {
             return $this->renderAjax('update', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),  //和自己相关的老师
+                'model' => $model,  //模型,
+                //如果有引用资源加载单个video详细
+                'videoDetail' => $model->has_resource ? 
+                    $this->findVideoDetails($model->knowledgeVideo->video_id) : [],
             ]);
         }
     }
@@ -164,9 +167,12 @@ class KnowledgeController extends Controller
     {
         $searchModel = new VideoFavoriteSearch();
         $results = $searchModel->myCollectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
-        ]);
+        $videos = array_values($results['data']['video']);    //视频数据
+        //重修视频数据里面的元素值
+        foreach ($videos as $index => $item) {
+            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+        }
         
         //分页查询
         if(isset($results['filter']['page'])){
@@ -176,7 +182,7 @@ class KnowledgeController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['video']), 
+                        'result' => $videos, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -192,7 +198,6 @@ class KnowledgeController extends Controller
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,      //搜索模型
-            'dataProvider' => $dataProvider,    //我收藏的视频数据
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);
@@ -207,9 +212,12 @@ class KnowledgeController extends Controller
     {
         $searchModel = new VideoSearch();
         $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
-        ]);
+        $videos = array_values($results['data']['video']);    //视频数据
+        //重修视频数据里面的元素值
+        foreach ($videos as $index => $item) {
+            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+        }
         
         //分页查询
         if(isset($results['filter']['page'])){
@@ -219,7 +227,7 @@ class KnowledgeController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['video']), 
+                        'result' => $videos, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -235,7 +243,6 @@ class KnowledgeController extends Controller
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,      //搜索模型
-            'dataProvider' => $dataProvider,    //我收藏的视频数据
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);
@@ -250,9 +257,12 @@ class KnowledgeController extends Controller
     {
         $searchModel = new VideoSearch();
         $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]), false);
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
-        ]);
+        $videos = array_values($results['data']['video']);    //视频数据
+        //重修视频数据里面的元素值
+        foreach ($videos as $index => $item) {
+            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+        }
         
         //分页查询
         if(isset($results['filter']['page'])){
@@ -262,7 +272,7 @@ class KnowledgeController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['video']), 
+                        'result' => $videos, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -278,7 +288,6 @@ class KnowledgeController extends Controller
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,      //搜索模型
-            'dataProvider' => $dataProvider,    //我收藏的视频数据
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);
@@ -291,22 +300,7 @@ class KnowledgeController extends Controller
      */
     public function actionChoice($video_id)
     {
-        $query = (new Query())->select(['Video.id'])->from(['Video' => Video::tableName()]);
-        $query->where(['Video.id' => $video_id]);
-        //复制视频对象
-        $copyVideo= clone $query;
-        //查询视频下的标签
-        $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
-        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
-        $query->addSelect([
-            'Video.name', 'Video.img', 'Video.duration', 'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
-            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
-        ]);
-        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
-        $videoInfo = $query->one();
-        $videoInfo['des'] = Html::decode($videoInfo['des']);  //decode并替换
-        $results = ArrayHelper::merge(ArrayHelper::index([$videoInfo], 'id'), 
-                ArrayHelper::index($tagRefQuery->asArray()->all(), 'object_id'));
+        $results = $this->findVideoDetails($video_id);
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
             try
@@ -314,7 +308,7 @@ class KnowledgeController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results), 
+                        'result' => $results, 
                     ],
                     'message' => '请求成功！',
                 ];
@@ -342,5 +336,43 @@ class KnowledgeController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 查询单个 video 的详细
+     * @param string $video_id
+     * @return array
+     */
+    protected function findVideoDetails($video_id)
+    {
+        $query = (new Query())->select(['Video.id'])->from(['Video' => Video::tableName()]);
+        $query->where(['Video.id' => $video_id]);
+        //复制视频对象
+        $copyVideo= clone $query;
+        //查询视频下的标签
+        $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
+        $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
+        $query->addSelect([
+            'Video.name', 'Video.img', 'Video.duration', 'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        ]);
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
+        $videoInfo = $query->one();
+        //以视频id为键值
+        $results = array_values(ArrayHelper::merge(ArrayHelper::index([$videoInfo], 'id'), 
+            ArrayHelper::index($tagRefQuery->asArray()->all(), 'object_id')));
+        
+        //重修视频数据里面的元素值
+        foreach ($results as $index => $item) {
+            $results[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $results[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $results[$index]['des'] = Html::decode($item['des']);
+            $results[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);
+            $results[$index]['level_name'] = Video::$levelMap[$item['level']];
+            $results[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $results[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        }
+        
+        return $results;
     }
 }

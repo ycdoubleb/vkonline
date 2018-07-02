@@ -2,9 +2,9 @@
 
 use backend\components\GridViewChangeSelfColumn;
 use backend\modules\frontend_admin\assets\FrontendAssets;
-use backend\widgets\treegrid\TreegridAssets;
 use common\models\vk\Category;
 use common\models\vk\searchs\CategorySearch;
+use common\widgets\treegrid\TreegridAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;

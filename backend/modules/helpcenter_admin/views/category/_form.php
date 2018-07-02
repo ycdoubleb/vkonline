@@ -57,7 +57,7 @@ use yii\widgets\ActiveForm;
         $("#postcategory-parent_id").attr("data-add", "true");
         $("#postcategory-parent_id").html("");
         $('#select2-postcategory-parent_id-container').html('<span class="select2-selection__placeholder">请选择...</span>');
-        $.post("/helpcenter_admin/post-category/search-cats?id="+$(this).val(),function(data)
+        $.post("/admin/helpcenter_admin/category/search-cats?id="+$(this).val(),function(data)
         {
             $('<option/>').val('').text(this['name']).appendTo($('#postcategory-parent_id'));
             $.each(data['data'],function()

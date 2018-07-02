@@ -1,248 +1,36 @@
-/*
-    用于模块页面样式
-*/
 /* 
+    用于模块页面样式
     创建时间 : 2018-5-10, 14:10:17
     更新时间 : 2018-5-15, 13:11:00;
 */
-
-/*******************************************************************************
- * 公共部分
- *******************************************************************************/
 .main {
     display: inline-block;
     float: right;  
     width: 1000px;
     height: auto;
 }
-.crumbs,
-.form,
-.list > ul > li,
-.main .panel {
-    background-color: #fff;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-video {
-    width: 300px;
-    height: 200px;
-    object-fit: fill;
-}
-
-/*******************************************************************************
- * 面包屑
- *******************************************************************************/
-.crumbs {
-    width: 100%;
-    height: 60px;
-    padding: 0 15px 0 20px;
-    margin-bottom: 15px;
-    font-size: 16px;
-    color: #666;
-    line-height: 60px;
-    border-bottom: 1px solid #f2f2f2;
-}
-.crumbs .btngroup {
-    float: right;
-}
-.crumbs .btngroup > a {
-   border-radius: 0;
-}
-/*******************************************************************************
- * 表单样式
- *******************************************************************************/
-.form {
-    width: 100%;
-}
-.form.set-margin {
-    margin: -15px 0 0;
-    padding: 15px 0 25px;
-}
 /**
- *  特殊情况下的边距样式
+ * 公共部分
  */
-.form.set-bottom {
-    padding-bottom: 110px;
-}
-.form.clear {
-    background-color: transparent;
-    box-shadow: none;
-}
-.form .form-horizontal .form-group{
-    margin-right: 0;
-    margin-left: 10px;
-}
-.form .form-group .form-label {
-    padding: 10px 0;
-    color: #999;
-    font-weight: bold;
-}
-.form .form-group a {
-    border-radius: 0;
-}
-.form .form-group .form-control,
-.form .form-group .select2-selection,
-.form .bootstrap-tagsinput {
-    min-height: 40px;
-    padding: 10px 24px 10px 12px;
-    border-radius: 0;
-    box-shadow: none;
-}
-body .select2-container--krajee 
-.select2-search--dropdown .select2-search__field {
-    border-radius: 0;
-}
-.form .form-group .edui-default {
-    height: auto
-}
-.form .form-group .edui-default {
-    padding: 0;
-    border-radius: 4px;
-}
-.form .form-group .select2-selection 
-.select2-selection__arrow {
-    min-height: 38px;
-    border-left: none;
-}
-.form .form-group .select2-selection 
-.select2-search .select2-search__field {
-    height: auto;
-    padding: 0;
-}
-.form .form-group .select2-selection 
-.select2-selection__rendered
-.select2-selection__choice {
-    margin: 0 6px 1px 0;
-}
-#select2-course-teacher_id-results > li {
-    border-top: 1px solid #e4e4e4;
-}
-.select2-results .icon-vimeo {
-    width: 16px;
-    font-size: 16px !important;
-    color: #ffcc01;
-}
-.select2-results .avatars {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    margin-right: 10px;
-    margin-left: 5px;
-}
-.select2-results .job-title {
-    margin-left: 5px;
-    color: #999;
-}
-.select2-results .links {
-    position: relative;
-    z-index: 1000;
-    float: right;
-    margin-right: 15px;
-    color: #333 !important;
-    line-height: 35px;
-}
-/*******************************************************************************
- * 排序
- *******************************************************************************/
-.sort {
-    width: 100%;
-    height: 54px;
-    margin: 30px 0 35px;
-    line-height: 54px;
-    border-bottom: 1px solid #ccc;
-}
-.sort > ul {
-    padding: 0;
-    margin: 0;
-}
-.sort > ul > li {
-    float: left;
-    margin-top: -2px;
-    cursor: pointer;
-}
-.sort > ul > li > a {
-    display: inline-block;
-    width: 100%;
-    height: 54px;
-    padding: 0 20px;
-    color: #666;
-    line-height: 54px;
-    text-decoration: none;
-}
-.sort > ul > li.active,
-.sort > ul > li:hover {
-    border-bottom: 2px solid #FC583D;
-}
-.sort > ul > li.active > a,
-.sort > ul > li:hover > a {
-    color: #fc583d;
-}
-/*******************************************************************************
- * 列表
- *******************************************************************************/
-.list {
-    display: inline-block;
-    width: 100%;
-    font-size: 0px;
-}
-.list > ul {
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    font-size: 0px;
-}
-.list > ul > li {
-    float: left;
-    width: 280px;
+.course-index .vk-list .list-panel,
+.video-index .vk-list .list-panel {
     margin-right: 80px;
-    margin-bottom: 30px;
-    font-size: 14px;
-    -webkit-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    transition: all 0.2s linear;
 }
-.list > ul > li.hover {
-    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    -webkit-transform: translate3d(0, -2px, 0);
-    -moz-transform: translate3d(0, -2px, 0);
-    transform: translate3d(0, -2px, 0);
+.course_actlog-index .vk-panel .summary,
+.video-view .vk-panel .summary,
+.teacher-view .vk-panel .summary {
+    padding-left: 20px;
 }
-.list > ul > li a {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-.list > ul > li .tuip {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    margin-top: 15px;
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-}
-.list > ul > li .avatars {
-    width: 25px;
-    height: 25px;
-    margin: 12px 5px;
-    margin-left: 0;
-    line-height: 0;
-    background-color: #26bfcd;
-}
-.list > ul > li .pic {
-    position: relative;
-    width: 100%;
+/*******************************************************************************
+ * 我的课程列表
+ *******************************************************************************/
+.course-index .vk-list .list-panel .list-header {
     height: 210px;
-    background-color: #26bfcd; 
 }
-.list > ul > li .pic .icon {
+.course-index .vk-list .list-panel .list-header .icon {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0px;
+    left: 0px;
     z-index: 1022;
     font-size: 18px;
     border-color: #fff;
@@ -251,188 +39,47 @@ body .select2-container--krajee
     border-bottom-color: transparent;
     border-style: solid;
 }
-.list > ul > li .pic .icon > i {
+.course-index .vk-list .list-panel .list-header .icon > i {
     position: absolute;
     top: -17px;
     left: -17px;
 }
-.list > ul > li .pic .title {
-    display: table-cell;
-    width: 280px;
-    height: 210px;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    vertical-align: middle;
-}
-.list > ul > li .pic .duration {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    height: 20px;
-    padding: 0 5px;
-    color: #fff;
-    text-align: center;
-    line-height: 20px;
-    background-color: rgba(0, 0, 0, .7);
-}
-.list > ul > li .text {
-    width: 100%;
-    padding: 0 10px 15px;
-    border-bottom: dashed 1px #dedede;
-}
-.list > ul > li .text .title {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    font-weight: bold;
-}
-.list > ul > li .text .title-size {
-    display: inline-block;
-    width: 200px;
-}
-.list > ul > li .teacher {
-    height: 50px;
-    margin: 0 10px;
-    line-height: 50px;
-}
-.list > ul > li .teacher .tuip {
-    margin-top: 0;
-}
-.list  > ul > li .teacher .tuip > a {
-    width: auto;
-    height: auto;
-}
-/*******************************************************************************
- * 详情公共
- *******************************************************************************/
- .main .panel {
-    display: inline-block;
-    width: 100%;
-    margin: 30px 0 15px;
-    border-radius: 0;
-}
-.panel.right-panel {
+/**
+ * 课程详细页
+ */
+.course-view .vk-panel.right-panel {
     width: 366px;
     margin-left: 15px;
 }
-.panel.left-panel {
-    width: 604px;
-    margin-right: 15px;
-}
-.panel .title {
-    height: 60px;
-    padding: 0 15px 0 20px;
-    font-size: 16px;
-    color: #878787;
-    text-align: left;
-    line-height: 60px;
-    border-bottom: 1px solid #f2f2f2;
-}
-.panel .title .btngroup {
-    float: right;
-}
-.panel .title .btngroup > a {
-    border-radius: 0;
-}
-.panel .right-panel-height {
+.course-view .vk-panel.right-panel .right-panel-height {
     min-height: 337px;
     max-height: 337px;
     overflow-y: auto;
 }
-.panel .panel-height {
-    min-height: 580px;
-    max-height: 580px;
-    overflow-y: auto;
+.course-view .vk-panel.left-panel {
+    width: 604px;
+    margin-right: 15px;
 }
-/*******************************************************************************
- * table样式
- *******************************************************************************/
-.content .table {
-    margin: -1px 0 0;
-    color: #666;
-    border-right: none;
-    border-left: none;
-}
-.table .detail-th {
-    width: 125px;
-    color: #878787;
-    font-weight: normal;
-    text-align: right !important;
-    border-right-width: 1px !important;
-    border-left: none;
-}
-.table .detail-td {
-    width: 454px;
-    text-align: left !important;
-    font-weight: normal;
-    white-space: inherit !important;;
-}
-.table .detail-des {
-    min-height: 63px;
-    display:table-cell;
-    vertical-align:middle; 
-}
-.main .table > thead  > tr > th,
-.main .table > tbody > tr > th,
-.main .table > tbody > tr > td {
-    height: 48px;
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
-    border-color: #e4e4e4;
-    border-right-width: 0;
-    border-left-width: 0;
-}
-/*******************************************************************************
- * 模态框样式
- *******************************************************************************/
-.main.modal {
-    display: block;
-    width: 100%;
-}
-.main.modal .modal-width {
-    width: 1150px;
-}
-.main.modal .modal-height {
-    height: 730px;
-    overflow-y: auto;
-}
-/*******************************************************************************
- * 模态框视频列表样式
- *******************************************************************************/
-.main.modal .list .pic {
-    height: 157px;
-}
-.main.modal .list .pic .title {
-    height: 157px;
-}
-/*******************************************************************************
- * 课程框架
- *******************************************************************************/
+/**
+ * 课程目录
+ */
 .sortable {
-    padding:0;
-    margin: 0;
     font-size: 14px;
 }
 .sortable li {
-    padding: 0 20px;
     border-top: 1px solid #f2f2f2;
 }
 .sortable li:nth-of-type(1) {
     margin-top: -1px;
 }
-.sortable li.disabled:hover {
-    cursor: default;
-}
 .sortable .head {
     height: 60px;
-    margin: 0;
+    padding: 0px 15px 0px 20px;
     line-height: 60px;
 }
 .sortable .head  > a {
     display: inline-block;
+    width: 90%;
     color: #666;
     text-align: left;
     text-decoration: none;
@@ -449,19 +96,13 @@ body .select2-container--krajee
     color: #666;
     text-decoration: none;
 }
-
 .sortable .head:hover .icongroup{
     display: block;
-}
-.sortable .knowledges {
-}
-.sortable .knowledges li {
-    padding: 0 20px 0 35px;
-    margin: 0 -20px;
 }
 .sortable .knowledges .head {
     position: relative;
     height: 50px;
+    padding: 0px 20px 0px 35px;
     line-height: 50px;
 }
 .sortable .knowledges .head > a {
@@ -473,77 +114,108 @@ body .select2-container--krajee
     right: 20%;
 }
 .sortable .knowledges .head:hover {
-    /*margin: 0 -20px 0 -35px;*/
     background-color: #f9f9f9;
 }
-/*******************************************************************************
- * 最近联系
- *******************************************************************************/
-.recent {
-    float: left;
-    width:60px;
-    height:60px;
-    margin: 0 5px 5px 0;
-    font-size: 12px;
-    text-align: center;
-    border: 1px #ccc solid;
-    background-color:#fff;
+/**
+ * 引用视频
+ */
+.knowledge-reference .vk-tabs {
+    display: inline-block;
+    margin-top: 0;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    line-height: 0px;
 }
-.recent:hover {
-    cursor:pointer;
+.knowledge-reference .vk-tabs .vk-form {
+    width: 80%;
+    margin-top: 5px;
+    background-color: transparent;
+    box-shadow: none;
 }
-/*******************************************************************************
- * 我的课程
- *******************************************************************************/
-.course-index .list .teacher .edit {
-    margin: 7px 0;
+.knowledge-reference .vk-tabs .vk-form .form-group {
+    margin-left: 0;
 }
-/*******************************************************************************
- * 记录详情
- *******************************************************************************/
+.knowledge-reference .list-panel {
+    position: relative;
+    width: 200px !important;
+    margin-right: 25px;
+}
+/*.knowledge-reference .reference .details {
+    position: absolute;
+    top: 0;
+    left: 225px;
+    z-index: 1026;
+}*/
+.knowledge-reference .list-panel .list-header {
+    height: 112px !important;
+}
+.knowledge-reference .list-panel .list-body {
+    display: block !important;
+    height: 40px;
+    padding: 0 5px 0 6px !important;
+    line-height: 40px;
+    border-bottom: none !important;
+}
+.knowledge-reference .list-panel .list-body .title {
+    width: 140px !important;
+}
+.knowledge-reference .list-panel .list-body > a {
+    display: none;
+    margin: 5px 0;
+}
+/**
+ * 课程操作记录 
+ */
+.coutse_actlog-view .modal-body {
+    background-color: #fff !important;
+}
 .coutse_actlog-view .modal-body .table-bordered {
     border: 1px solid #e4e4e4;
 }
 /*******************************************************************************
  * 我的视频
  *******************************************************************************/
-.video-index .list .pic {
-    height: 157px;
-}
-.video-index .list .pic .title {
+.knowledge-form .vk-list .list-panel .list-header,
+.video-index .vk-list .list-panel .list-header {
     height: 157px;
 }
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/
-.teacher-index .list {
+.teacher-index .vk-list {
     margin-top: 30px;
 }
-.teacher-index .list > ul > li {
+.teacher-index .vk-list .list-panel {
     width: 200px;
     height: 203px;
-    margin-right: 66.5px;
+    margin-right: 66px;
     text-align: center;
 }
-.teacher-index .list .text {
-    margin: 14px 0 0;
-    text-align: center;
+.teacher-index .vk-list .list-body {
+    margin: 14px 0px 0px;
     font-size: 16px;
     color: #666;
+    text-align: center;
     border: none;
 }
-.teacher-index .list .text .tuip {
+.teacher-index .vk-list .list-body .tuip {
     width: auto;
     margin: 0;
     font-size: 14px;
     color: #ccc;
 }
+/**
+ * 老师表单
+ */
 .teacher-form .result-show {
     float: left;
     width: 245px;
     padding: 3px;
     color: #ff3300;
 }
+/**
+ * 老师详情
+ */
 .teacher-view.main .frame .grid-view .pagination {
     padding-left: 20px;
     margin: 15px 0px 20px;
@@ -551,81 +223,21 @@ body .select2-container--krajee
 /**
  * 公共部分
  */
-.teacher-index  .list .avatars,
+.teacher-index .vk-list .list-panel .avatars,
 .teacher-view .avatars {
     position: relative;
     display: inline-block;
-    width: 100px !important;
-    height: 100px !important;
+    width: 100px;
+    height: 100px;
     padding: 2px;
-    margin: 20px 0 0;
-    background-color: #f2f2f2 !important;
+    margin: 20px 0px 0px;
+    background-color: #f2f2f2;
 }
-.teacher-index .list .avatars > i,
+.teacher-index .vk-list .list-panel .avatars > i,
 .teacher-view .avatars > i {
     position: absolute;
-    right: 0;
-    bottom: 0;
+    right: 0px;
+    bottom: 0px;
     font-size: 30px;
     color: #ffcc01;
 }
-/*******************************************************************************
- * 引用视频
- *******************************************************************************/
-.knowledge-reference .sort {
-    display: inline-block;
-    margin-top: 0;
-    margin-right: 15px;
-    margin-bottom: 15px;
-    line-height: 0px;
-}
-.knowledge-reference .sort .form {
-    width: 65%;
-    margin-top: 5px;
-    background-color: transparent;
-    box-shadow: none;
-}
-.knowledge-reference .sort .form .form-group {
-    margin-left: 0;
-}
-.knowledge-reference .reference {
-    position: relative;
-    width: 200px;
-    margin-right: 25px;
-}
-.knowledge-reference .reference .details {
-    position: absolute;
-    top: 0;
-    left: 225px;
-    z-index: 1026;
-}
-.knowledge-reference .reference .pic {
-    height: 112px !important;
-}
-.knowledge-reference .reference .pic .title {
-    height: 112px !important;
-}
-.knowledge-reference .reference .text {
-    height: 40px;
-    padding: 0 5px 0 6px;
-    line-height: 40px;
-    border-bottom: none;
-}
-.knowledge-reference .list .reference .title-size {
-    display: inline-block;
-    width: 140px;
-}
-.knowledge-reference .reference .text a {
-    display: none;
-    width: auto;
-    height: auto;
-    margin: 5px 0;
-}
-
-/*******************************************************************************
- * 滚动条大小
- ******************************************************************************/
-/*.video-create .modal-body::-webkit-scrollbar {  
-   width: 1px;  
-   height: 1px;  
-}  */

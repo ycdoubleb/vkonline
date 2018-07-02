@@ -16,8 +16,8 @@ $this->title = Yii::t('app', "{Update}{Video}：{$model->name}", [
 ?>
 <div class="video-update main">
 
-    <!-- 面包屑 -->
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= $this->title ?>
         </span>

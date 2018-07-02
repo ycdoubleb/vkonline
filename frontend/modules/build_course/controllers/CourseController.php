@@ -11,11 +11,10 @@ use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -63,10 +62,17 @@ class CourseController extends Controller
     {
         $searchModel = new CourseSearch();
         $results = $searchModel->buildCourseSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['course']),
-        ]);
+        $courses = array_values($results['data']['course']);    //课程数据
+        //重修课程数据里面的元素值
+        foreach ($courses as $index => $item) {
+            $courses[$index]['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $courses[$index]['level'] = Course::$levelMap[$item['level']];
+            $courses[$index]['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
+            $courses[$index]['color_name'] = $item['is_publish'] ? 'success' : 'danger';
+            $courses[$index]['is_publish'] = Course::$publishStatus[$item['is_publish']];
+            $courses[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $courses[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        }
        
         //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
@@ -76,7 +82,7 @@ class CourseController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['course']), 
+                        'result' => $courses, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -92,7 +98,6 @@ class CourseController extends Controller
         
         return $this->render('index', [
             'searchModel' => $searchModel,      //搜索模型
-            'dataProvider' => $dataProvider,    //课程数据
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);

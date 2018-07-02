@@ -103,10 +103,10 @@ class CourseSearch extends Course
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //添加字段
-        $addArrays = ['Course.name', 'Course.level', 'Course.cover_img',  'Course.content_time', 
-            'Course.learning_count AS people_num', 
-            'Course.is_publish', 'Course.avg_star', 'Teacher.id AS teacher_id',
-            'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+        $addArrays = [
+            'Course.name', 'Course.level', 'Course.cover_img',  'Course.content_time', 
+            'Course.learning_count', 'Course.is_publish', 'Course.avg_star', 
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
         self::$query->orderBy(["Course.{$sort_name}" => SORT_DESC]);

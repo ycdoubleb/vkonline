@@ -19,7 +19,7 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
 ]);
 
 ?>
-<div class="course-user-update main modal">
+<div class="course-user-update main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -29,41 +29,41 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body form clear">
-                
-                <?php $form = ActiveForm::begin([
-                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
-                    'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",  
-                        'labelOptions' => [
-                            'class' => 'col-lg-12 col-md-12',
-                        ],  
-                    ], 
-                ]); ?>
-                
-                <div class="form-group field-user-nickname">
-                    <?= Html::label(Yii::t('app', 'Fullname'), 'user-nickname', ['class' => 'col-lg-12 col-md-12']) ?>
-                    <div class="col-lg-7 col-md-7">
-                        <?= Html::textInput('User[nickname]', $model->user->nickname, [
-                            'id' => 'user-nickname', 'class' => 'form-control',
-                            'disabled' => true,
-                        ]) ?>
+            <div class="modal-body">
+                <div class="course-user-form vk-form clear-shadow">
+                    <?php $form = ActiveForm::begin([
+                        'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                        'fieldConfig' => [  
+                            'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",  
+                            'labelOptions' => [
+                                'class' => 'col-lg-12 col-md-12',
+                            ],  
+                        ], 
+                    ]); ?>
+
+                    <div class="form-group field-user-nickname">
+                        <?= Html::label(Yii::t('app', 'Fullname'), 'user-nickname', ['class' => 'col-lg-12 col-md-12']) ?>
+                        <div class="col-lg-7 col-md-7">
+                            <?= Html::textInput('User[nickname]', $model->user->nickname, [
+                                'id' => 'user-nickname', 'class' => 'form-control',
+                                'disabled' => true,
+                            ]) ?>
+                        </div>
+                        <div class="col-lg-7 col-md-7"><div class="help-block"></div></div>
                     </div>
-                    <div class="col-lg-7 col-md-7"><div class="help-block"></div></div>
+
+                    <?= $form->field($model, 'privilege')->widget(Select2::class, [
+                        'data' => CourseUser::$privilegeMap,
+                        'hideSearch' => true,
+                        'options' => [
+                            'placeholder' => '请选择...'
+                        ]
+                    ])->label(Yii::t(null, '{set}{privilege}',[
+                        'set'=> Yii::t('app', 'Set'),'privilege'=> Yii::t('app', 'Privilege')
+                    ])) ?>
+
+                    <?php ActiveForm::end(); ?>
                 </div>
-
-                <?= $form->field($model, 'privilege')->widget(Select2::class, [
-                    'data' => CourseUser::$privilegeMap,
-                    'hideSearch' => true,
-                    'options' => [
-                        'placeholder' => '请选择...'
-                    ]
-                ])->label(Yii::t(null, '{set}{privilege}',[
-                    'set'=> Yii::t('app', 'Set'),'privilege'=> Yii::t('app', 'Privilege')
-                ])) ?>
-
-                <?php ActiveForm::end(); ?>
-                
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
@@ -88,11 +88,13 @@ $js =
                 $("#help_man").load("../course-user/index?course_id=$model->course_id");
                 $("#act_log").load("../course-actlog/index?course_id=$model->course_id");
             }
-            $.notify({
-                message: rel['message'],
-            },{
-                type: rel['code'] == '200' ? "success " : "danger",
-            });
+            setTimeout(function(){
+                $.notify({
+                    message: rel['message'],
+                },{
+                    type: rel['code'] == '200' ? "success " : "danger",
+                });
+            }, 500);
         });
     });   
         

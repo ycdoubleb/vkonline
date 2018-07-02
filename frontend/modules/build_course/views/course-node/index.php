@@ -21,14 +21,14 @@ GrowlAsset::register($this);
 
 <div class="course-node-index">
     
-   <div class="panel">
+   <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Course}{Catalog}',[
                     'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
                 ]) ?>
             </span>
-            <div class="btngroup">
+            <div class="btngroup pull-right">
                 <?php if($is_hasEditNode && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
                         'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
@@ -40,7 +40,7 @@ GrowlAsset::register($this);
             </div>
         </div>
         <!--框架-->
-        <ul id="course_node" class="sortable list">
+        <ul id="course_node" class="sortable list list-unstyled">
             <?php if(count($dataProvider) <= 0): ?>
             <li class="empty">
                 <div class="head">
@@ -78,7 +78,7 @@ GrowlAsset::register($this);
                 </div>
                 <div id="toggle_<?= $courseNodes->id ?>" class="collapse knowledges" aria-expanded="false">  
                     <!--子节点-->
-                    <ul id="knowledge" class="sortable list">
+                    <ul id="knowledge" class="sortable list list-unstyled">
                         <?php foreach ($courseNodes->knowledges as $knowledge): ?>
                         <li id="<?= $knowledge->id ?>">
                             <div class="head">
@@ -121,13 +121,17 @@ GrowlAsset::register($this);
 <?php
 $js = 
 <<<JS
-    //初始化组件
+    /**
+     * 初始化组件
+     */
     sortable('.sortable', {
         forcePlaceholderSize: true,
         handle: '.fa-arrows',
 	items: 'li',
     });
-    //提交更改顺序
+    /*
+     * 顺序更改
+     */
     $(".sortable").each(function(i,e){
         e.addEventListener('sortupdate', function(evt){
             var oldList = evt.detail.oldStartList,
@@ -158,18 +162,21 @@ $js =
             });
         });
     }); 
-
-    
     //在模态框里Select2不能输入搜索的解决方法
     $.fn.modal.Constructor.prototype.enforceFocus = function () {}; 
-    //替换图标
+    /**
+     * 替换图标
+     * @param object elem   目标对象
+     */
     window.replace = function (elem){
         if(elem.attr("aria-expanded") == 'true')
             elem.find('i').removeClass("fa-caret-down").addClass("fa-caret-right");
         else
             elem.find('i').removeClass("fa-caret-right").addClass("fa-caret-down");
     }
-    //删除节点
+    /**
+     * 删除节点
+     */
     window.deleteCourseNode = function(elem){
         if(confirm(elem.attr("data-confirms"))){
             $.post("../course-node/delete?id=" + elem.attr("data-id"), function(rel){
@@ -189,7 +196,9 @@ $js =
             return false;
         }
     }
-    //删除节点
+    /**
+     * 删除知识点
+     */
     window.deleteKnowledge = function(elem){
         if(confirm(elem.attr("data-confirms"))){
             $.post("../knowledge/delete?id=" + elem.attr("data-id"), function(rel){

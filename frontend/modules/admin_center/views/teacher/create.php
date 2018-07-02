@@ -13,8 +13,8 @@ ModuleAssets::register($this);
 
 ?>
 <div class="teacher-create main">
-    <!--面包屑-->
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', '{Create}{Teacher}', [
                 'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')

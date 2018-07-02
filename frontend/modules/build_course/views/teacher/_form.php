@@ -12,9 +12,10 @@ use yii\widgets\ActiveForm;
 /* @var $model Teacher */
 /* @var $form ActiveForm */
 
+UeditorAsset::register($this);
 ?>
 
-<div class="teacher-form form set-margin set-bottom">
+<div class="teacher-form vk-form set-spacing set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -86,15 +87,18 @@ use yii\widgets\ActiveForm;
 <?php
 $js = 
 <<<JS
-   
-    /** 富文本编辑器 */
+    /**
+     * 初始化百度编辑器
+     */
     $('#container').removeClass('form-control');
     UE.getEditor('container', {
         maximumWords: 100000,
     });
         
-    //失去焦点提交表单
-    $("#teacher-name").blur(function(){
+    /**
+     * 更改时提交表单
+     */
+    $("#teacher-name").change(function(){
         $.post("../teacher/search?name=" + $(this).val(), function(rel){
             if(rel['code'] == '200'){
                 $(".result-show").removeClass("hidden");
@@ -108,5 +112,4 @@ $js =
         
 JS;
     $this->registerJs($js,  View::POS_READY);
-    UeditorAsset::register($this);
 ?>

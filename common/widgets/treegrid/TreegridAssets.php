@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace backend\widgets\treegrid;
+namespace common\widgets\treegrid;
 
 use yii\web\AssetBundle;
 
@@ -16,7 +16,7 @@ use yii\web\AssetBundle;
  * @author Administrator
  */
 class TreegridAssets extends AssetBundle{
-    public $sourcePath = '@backend/widgets/treegrid';
+    public $sourcePath = '@common/widgets/treegrid';
     public $css = [
        'css/jquery.treegrid.css'
     ];

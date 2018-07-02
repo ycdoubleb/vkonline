@@ -1,3 +1,8 @@
+/* 
+    前台注册页样式
+    Created on : 2018-6-26, 10:45:01
+    Author     : 刘文俊
+*/
 /************************************注册页样式*********************************/
 @media (min-height: 800px){
     .site-signup {
@@ -104,7 +109,7 @@
 
 .site-signup #customer {
     height: 15px;
-    bottom: 92px;
+    bottom: 135px;
     color: #3d3d3d;
     position: absolute;
 }
@@ -115,7 +120,7 @@
 }
 /*inputs*/
 .site-signup #msform input, .site-signup #msform textarea {
-    padding: 15px;
+    /*padding: 15px;*/
     border: 1px solid #ccc;
     border-radius: 0px;
     width: 100%;

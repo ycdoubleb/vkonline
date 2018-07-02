@@ -39,7 +39,7 @@ class Oauth{
         //-------生成唯一随机串防CSRF攻击
         $state = md5(uniqid(rand(), TRUE));
         $this->recorder->write('state',$state);
-
+     
         //-------构造请求参数列表
         $keysArr = array(
             "response_type" => "code",
@@ -56,12 +56,11 @@ class Oauth{
 
     public function qq_callback(){
         $state = $this->recorder->read("state");
-//        $parmasState = \yii\helpers\ArrayHelper::getValue(\Yii::$app->request->queryParams, 'state');
-//        var_dump(!$state || $_GET['state'] != $state);exit;
+        
         //--------验证state防止CSRF攻击
-//        if(!$state || $_GET['state'] != $state){
-//            $this->error->showError("30001");
-//        }
+        if(!$state || $_GET['state'] != $state){
+            $this->error->showError("30001");
+        }
 
         //-------请求参数列表
         $keysArr = array(

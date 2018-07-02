@@ -62,7 +62,7 @@ SiteAssets::register($this);
                     ]) ?>
                     
                     <div class="col-xs-6 forget">
-                        <a href="javascrip:;">忘记密码</a><span>&nbsp;|&nbsp;</span><a href="signup">注册</a>
+                        <a href="request-password-reset">忘记密码</a><span>&nbsp;|&nbsp;</span><a href="signup">注册</a>
                     </div>
                 
                 <?php ActiveForm::end(); ?>

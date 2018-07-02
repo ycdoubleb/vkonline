@@ -14,7 +14,6 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -52,41 +51,39 @@ class CourseController extends Controller
     }
 
     /**
-     * Lists all Course models.
+     * 呈现所有课程列表模型.
      * @return mixed
      */
     public function actionIndex()
     {
-        $customerId = Yii::$app->user->identity->customer_id;
-        $params = Yii::$app->request->queryParams;
-        
         $searchModel = new CourseSearch();
-
-        //默认进入列表页
-        if(!isset($params['type']) || $params['type'] == 1){
-            $result = $searchModel->adminCenterSearch($params);
-            $dataProvider = new ArrayDataProvider([
-                'allModels' => $result['data']['course']
-            ]);
-            
-            return $this->render('list', [
-                'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'totalCount' => $result['total'],       //课程总数量
-                'filters' => $result['filter'],         //过滤条件
-                'teachers' => $this->getTeacher($customerId),       //所有主讲老师
-                'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
-            ]);
-        }
-        //查看统计页
-        return $this->render('chart', [
-            'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
+        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $result['data']['course']
+        ]);
+        
+        return $this->render('list', [
             'searchModel' => $searchModel,
-            'filters' => $params,         //过滤条件
-            'teachers' => $this->getTeacher($customerId),       //所有主讲老师
-            'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
-            'statistics' => $this->searchStatistics($params),//统计数据
+            'dataProvider' => $dataProvider,
+            'totalCount' => $result['total'],       //课程总数量
+            'filters' => $result['filter'],         //过滤条件
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
+            'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'id')),    //分类全路径
+        ]);
+    }
+    
+    /**
+     * 统计课程信息
+     * @return mixed
+     */
+    public function actionStatistics()
+    {
+        //查看统计页
+        return $this->render('statistics', [
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
+            'results' => $this->findCourseStatistics(Yii::$app->request->queryParams),
         ]);
     }
     
@@ -101,98 +98,15 @@ class CourseController extends Controller
             'data' => Category::getCatChildren($id),
         ];
     }
-    
-    /**
-     * Finds the Course model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return Course the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    protected function findModel($id)
-    {
-        if (($model = Course::findOne($id)) !== null) {
-            return $model;
-        }
-
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-    /**
-     * 查找所有主讲老师
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getTeacher($customerId)
-    {
-        $teacher = (new Query())
-                ->select(['Course.teacher_id AS id', 'Teacher.name'])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id')
-                ->where(['Course.customer_id' => $customerId])
-                ->all();
-        
-        return ArrayHelper::map($teacher, 'id', 'name');
-    }
-    
-    /**
-     * 查找所有创建者
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getCreatedBy($customerId)
-    {
-        $createdBy = (new Query())
-                ->select(['Course.created_by AS id', 'User.nickname AS name'])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by')
-                ->where(['Course.customer_id' => $customerId])
-                ->all();
-        
-        return ArrayHelper::map($createdBy, 'id', 'name');
-    }
-    
-    /**
-     * 统计查询
-     * @param array $params
-     * @return array
-     */
-    public function searchStatistics($params)
-    {
-        $category_id = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
-        $teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');//教师ID
-        $created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');//创建人ID
-        $is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');//发布状态
-        $level = ArrayHelper::getValue($params, 'CourseSearch.level');          //课件范围
-        
-        /* @var $query Query */
-        $query = (new Query())->where(['Course.customer_id' => Yii::$app->user->identity->customer_id]);  //该客户下的数据
-        
-        //条件查询
-        $query->andFilterWhere([
-            'Course.teacher_id' => $teacher_id,
-            'Course.created_by' => $created_by,
-            'Course.is_publish' => $is_publish,
-            'Course.level' => $level,
-        ]);
-        
-        return [
-            'filter' => $params,
-            'category' => $this->getStatisticsByCategory($category_id),       //按课程分类统计
-            'teacher' => $this->getStatisticsByTeacher($query),         //按主讲老师统计
-            'created_by' => $this->getStatisticsByCreatedBy($query),    //按创建人统计
-            'status' => $this->getStatisticsByStatus($query),           //按状态统计
-            'range' => $this->getStatisticsByRange($query),             //按范围统计
-        ];
-    }    
 
     /**
      * 根据课程分类统计
-     * @param Query $cat_id
+     * @param Query $searchModel
      * @return array
      */
-    public function getStatisticsByCategory($cat_id)
+    protected function getStatisticsByCategory($searchModel)
     {
+        $cat_id = $searchModel->category_id;    //分类ID   
         $catLevel = !empty($cat_id) ? Category::getCatById($cat_id)->level + 2 : 2;
         //子查询，查询course 和 category 属性
         $tCourse = (new Query())->select([
@@ -200,10 +114,18 @@ class CourseController extends Controller
                 'COUNT( * ) AS `count`'
             ])->from(['Course' => Course::tableName()])
             ->leftJoin(['Category' => Category::tableName()], 'Category.id = Course.category_id')
-            ->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id])
-            ->andFilterWhere(['is_del' => 0])
-            ->andFilterWhere(['is_show' => 1])
-            ->groupBy('tpath');    
+            ->groupBy('tpath');
+        
+        //条件查询
+        $tCourse->andFilterWhere([
+            'Course.teacher_id' => $searchModel->teacher_id,    //教师ID
+            'Course.created_by' => $searchModel->created_by,    //创建人ID
+            'Course.is_publish' => $searchModel->is_publish,    //发布状态
+            'Course.level' => $searchModel->level,              //课件范围
+            'Course.customer_id' => Yii::$app->user->identity->customer_id,//客户ID
+            'Course.is_del' => 0,
+            'Category.is_show' => 1
+        ]);
         if(!empty($cat_id)){
             $tCourse->andFilterWhere(['or',
                 ['like', 'Category.path', Category::getCatById($cat_id)->path . ",%", false],
@@ -220,94 +142,90 @@ class CourseController extends Controller
     }
     
     /**
-     * 根据主讲老师统计
-     * @param Query $sourceQuery
+     * 查询课程统计
+     * @param type $params
      * @return array
      */
-    public function getStatisticsByTeacher($sourceQuery)
+    protected function findCourseStatistics($params)
     {
-        $teacherQuery = clone $sourceQuery;
-        $teacherQuery->select(['Teacher.name AS name', "COUNT(Course.teacher_id) AS value"])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id')
-                ->groupBy('Teacher.id');
+        $searchModel = new CourseSearch();
         
-        return $teacherQuery->all(Yii::$app->db);
+        $searchModel->category_id = ArrayHelper::getValue($params, 'CourseSearch.category_id'); //分类ID
+        $searchModel->teacher_id = ArrayHelper::getValue($params, 'CourseSearch.teacher_id');   //教师ID
+        $searchModel->created_by = ArrayHelper::getValue($params, 'CourseSearch.created_by');   //创建人ID
+        $searchModel->is_publish = ArrayHelper::getValue($params, 'CourseSearch.is_publish');   //发布状态
+        $searchModel->level = ArrayHelper::getValue($params, 'CourseSearch.level');             //课件范围
+        $group_name = ArrayHelper::getValue($params, 'group', 'category_id');          //分组名
+        
+        /* @var $query Query */
+        $query = Course::find()->select([
+            'Teacher.name AS teacher_name', 'User.nickname', 
+            "Course.is_publish", 'Course.level',
+            'COUNT(Course.id) AS value'
+        ])->from(['Course' => Course::tableName()]);
+        
+        //条件查询
+        $query->andFilterWhere([
+            'Course.teacher_id' => $searchModel->teacher_id,
+            'Course.created_by' => $searchModel->created_by,
+            'Course.is_publish' => $searchModel->is_publish,
+            'Course.level' => $searchModel->level,
+            'Course.customer_id' => Yii::$app->user->identity->customer_id,
+            'Course.is_del' => 0
+        ]);
+        
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by');
+        $query->groupBy("Course.{$group_name}");
+        $results = $query->asArray()->all();
+        
+        $teachers = [];
+        $createdBys = [];
+        $status = [];
+        $levels = [];
+        //组装返回老师、创建者、状态和范围的课程数量统计
+        foreach ($results as $item) {
+            $teachers[] = ['name' => $item['teacher_name'], 'value' => $item['value']];
+            $createdBys[] = ['name' => $item['nickname'], 'value' => $item['value']];
+            $status[] = ['name' => Course::$publishStatus[$item['is_publish']], 'value' => $item['value']];
+            $levels[] = ['name' => Course::$levelMap[$item['level']], 'value' => $item['value']];
+        }
+        
+        return [
+            'searchModel' => $searchModel,
+            'filter' => $params,    //过滤条件
+            'category' => $this->getStatisticsByCategory($searchModel),       //按课程分类统计
+            'teacher' => $teachers,         //按主讲老师统计
+            'created_by' => $createdBys,    //按创建人统计
+            'status' => $status,            //按状态统计
+            'range' => $levels,             //按范围统计
+        ];
     }
     
     /**
-     * 根据创建人统计
-     * @param Query $sourceQuery
-     * @return array
+     * 获取所有课程下的分类全路径
+     * @param array $courseIds
+     * @return array    键值对
      */
-    public function getStatisticsByCreatedBy($sourceQuery)
+    protected function getCategoryFullPath($courseIds) 
     {
-        $createdByQuery = clone $sourceQuery;
-        $createdByQuery->select(['User.nickname AS name', "COUNT(Course.created_by) AS value"])
-                ->from(['Course' => Course::tableName()])
-                ->leftJoin(['User' => User::tableName()], 'User.id = Course.created_by')
-                ->groupBy('User.id');
+        $catpath = [];
+        $fullPath = [];
+        //根据课程id查出所有分类
+        $allModels = (new Query())->select(['id', 'category_id'])
+            ->from(Course::tableName())->where(['id' => $courseIds, 'is_del' => 0])->all();
+        //分类路径名称
+        foreach ($allModels as $model){
+            $parentids = array_values(array_filter(explode(',', Category::getCatById($model['category_id'])->path)));
+            foreach ($parentids as $index => $id) {
+                $catpath[$model['id']][] = ($index == 0 ? '' : ' > ') . Category::getCatById($id)->name;
+            }
+        }
+        //课程id => 路径 
+        foreach ($catpath as $id => $value) {
+            $fullPath[$id] = implode('', $value);
+        }
         
-        return $createdByQuery->all(Yii::$app->db);
+        return $fullPath;
     }
-    
-    /**
-     * 根据状态统计
-     * @param Query $sourceQuery
-     * @return array
-     */
-    public function getStatisticsByStatus($sourceQuery)
-    {
-        $noStatusQuery = clone $sourceQuery;
-        $yesStatusQuery = clone $sourceQuery;
-        $noStatusQuery->select(["COUNT(Course.is_publish) AS value"])
-                ->from(['Course' => Course::tableName()])->andFilterWhere(['is_publish' => 0]);
-        $yesStatusQuery->select(["COUNT(Course.is_publish) AS value"])
-                ->from(['Course' => Course::tableName()])->andFilterWhere(['is_publish' => 1]);
-        
-        $noStatus[] = [
-            'name' => '未发布',
-            'value' => $noStatusQuery->one(Yii::$app->db)['value']
-        ];
-        $yesStatus[] = [
-            'name' => '已发布',
-            'value' => $yesStatusQuery->one(Yii::$app->db)['value']
-        ];
-
-        return array_merge($noStatus, $yesStatus);
-    }
-    
-    /**
-     * 根据范围统计
-     * @param Query $sourceQuery
-     * @return array
-     */
-    public function getStatisticsByRange($sourceQuery)
-    {
-        $customerQuery = clone $sourceQuery;
-        $privateQuery = clone $sourceQuery;
-        $openQuery = clone $sourceQuery;
-        $customerQuery->select(["COUNT(Course.level) AS value"])
-                ->from(['Course' => Course::tableName()])->andFilterWhere(['level' => 0]);
-        $privateQuery->select(["COUNT(Course.level) AS value"])
-                ->from(['Course' => Course::tableName()])->andFilterWhere(['level' => 1]);
-        $openQuery->select(["COUNT(Course.level) AS value"])
-                ->from(['Course' => Course::tableName()])->andFilterWhere(['level' => 2]);
-        
-        $customer[] = [
-            'name' => '内网',
-            'value' => $customerQuery->one(Yii::$app->db)['value']
-        ];
-        $private[] = [
-            'name' => '私有',
-            'value' => $privateQuery->one(Yii::$app->db)['value']
-        ];
-        $open[] = [
-            'name' => '公开',
-            'value' => $openQuery->one(Yii::$app->db)['value']
-        ];
-        
-        return array_merge($customer, $private, $open);
-    }
-    
 }

@@ -15,7 +15,7 @@ ModuleAssets::register($this);
 
 ?>
 <div class="course_actlog-index">
-    <div class="panel">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Operation}{Log}', [
@@ -28,9 +28,7 @@ ModuleAssets::register($this);
                 'id' => 'gv1',
                 'dataProvider' => $dataProvider,
                 'filterModel' => $searchModel,
-//                'filterUrl' => ['course-actlog/index', $filter],
-//                'filterRowOptions' => ['class' => 'filters', 'method' => 'post'],
-                'tableOptions' => ['class' => 'table table-list'],
+                'tableOptions' => ['class' => 'table table-list vk-table'],
                 'layout' => "{items}\n{summary}\n{pager}",
                 'summaryOptions' => [
                     'class' => 'hidden',

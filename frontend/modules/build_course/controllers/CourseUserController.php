@@ -205,7 +205,7 @@ class CourseUserController extends Controller
     {
         //查找已添加的协作人员
         $query = (new Query())->select(['user_id'])->from(CourseUser::tableName());
-        $query->where(['course_id' => $course_id]);
+        $query->where(['course_id' => $course_id, 'is_del' => 0]);
         $user_ids = ArrayHelper::getColumn($query->all(), 'user_id');
         //合并创建者和已添加的协作人员
         $userIds = array_merge([Yii::$app->user->id], $user_ids);

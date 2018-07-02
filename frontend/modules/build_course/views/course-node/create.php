@@ -19,7 +19,7 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 
 ?>
 
-<div class="course-node-create main modal">
+<div class="course-node-create main vk-modal">
 
     <div class="modal-dialog" role="document">
         <div class="modal-content">

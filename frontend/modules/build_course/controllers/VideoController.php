@@ -4,20 +4,18 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
-use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
+use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -60,10 +58,18 @@ class VideoController extends Controller
     {
         $searchModel = new VideoSearch();
         $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $videos = array_values($results['data']['video']);    //视频数据
+        //重修课程数据里面的元素值
+        foreach ($videos as $index => $item) {
+            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $videos[$index]['des'] = Html::decode($item['des']);
+            $videos[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);
+            $videos[$index]['level_name'] = Video::$levelMap[$item['level']];
+            $videos[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $videos[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        }
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
-        ]);
         //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
@@ -72,7 +78,7 @@ class VideoController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['video']), 
+                        'result' => $videos, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -88,10 +94,9 @@ class VideoController extends Controller
         
         return $this->render('index', [
             'searchModel' => $searchModel,      //搜索模型
-            'dataProvider' => $dataProvider,    //视频数据
             'filters' => $results['filter'],     //查询过滤的属性
             'totalCount' => $results['total'],   //总数量
-            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id),    //自己相关的老师
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
         ]);
     }
     

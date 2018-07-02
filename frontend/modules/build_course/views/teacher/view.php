@@ -17,34 +17,46 @@ ModuleAssets::register($this);
 ?>
 
 <div class="teacher-view main">
-    
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                 'Teacher' => Yii::t('app', 'Teacher'), 'Detail' => Yii::t('app', 'Detail')
             ]) ?>
         </span>
-        <div class="btngroup">
+        <div class="btngroup pull-right">
             <?php 
                 if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
+                    //是否正在申请中
                     if(!$is_applying){
                         echo Html::a(Yii::t('app', '{Proposer}{Authentication}', [
                             'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication')
-                        ]), ['applyr', 'id' => $model->id], ['class' => 'btn btn-success btn-flat']) . ' ';
+                        ]), ['applyr', 'id' => $model->id], [
+                            'class' => 'btn btn-success btn-flat',
+                            'data' => [
+                                'pjax' => 0, 
+                                'confirm' => Yii::t('app', "{Are you sure}{Proposer}{Authentication}【{$model->name}】{Teacher}", [
+                                    'Are you sure' => Yii::t('app', 'Are you sure '), 
+                                    'Proposer' => Yii::t('app', 'Proposer'), 'Authentication' => Yii::t('app', 'Authentication'), 
+                                    'Teacher' => Yii::t('app', 'Teacher')
+                                ]),
+                                'method' => 'post',
+                            ],
+                         ]);
                     }
                 }
             ?>
         </div>
     </div>
         
-    <div class="panel">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
-            <div class="btngroup">
+            <div class="btngroup pull-right">
                 <?php if($model->created_by == Yii::$app->user->id){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']);
@@ -67,7 +79,7 @@ ModuleAssets::register($this);
         <div id="<?= $model->id ?>">
             <?= DetailView::widget([
                 'model' => $model,
-                'options' => ['class' => 'table table-bordered detail-view'],
+                'options' => ['class' => 'table table-bordered detail-view vk-table'],
                 'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                 'attributes' => [
                     [
@@ -121,7 +133,7 @@ ModuleAssets::register($this);
         </div>
     </div>
     
-    <div class="panel">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{mainSpeak}{Course}',[
@@ -132,7 +144,7 @@ ModuleAssets::register($this);
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'layout' => "{items}\n{summary}\n{pager}",
-            'tableOptions' => ['class' => 'table table-bordered'],
+            'tableOptions' => ['class' => 'table table-bordered vk-table'],
             'columns' => [
                 [
                     'label' => Yii::t('app', '{The}{Customer}', [

@@ -1,0 +1,416 @@
+/* 
+    前台模块基本共用样式
+    Created on : 2018-6-26, 10:45:01
+    Author     : Kiwi°
+*/
+/**
+ * 正在加载... and 总结 and 查看更多
+ */
+.loading-box,
+.summary,
+.see-more {
+    width: 100%;
+    padding: 10px 0px;
+    color: #999;
+    text-align: center;
+}
+/**
+ * 总结
+ */
+.summary {
+    text-align: left;
+}
+/**
+ * 禁用样式
+ */
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+/**
+ * 清除外边距
+ */
+.clear-margin {
+    margin: 0 !important;
+}
+/**
+ * 清除内边距
+ */
+.clear-padding {
+    padding: 0 !important;
+}
+/**
+ *  清除阴影
+ */
+.clear-shadow {
+    box-shadow: none !important;
+}
+/**
+ * 查看更多
+ */
+.see-more {
+    color: #666;
+}
+/**
+ * 成功
+ */
+.text-success {
+    color: #339966 !important;
+}
+.bg-success {
+    background-color: #339966 !important;
+}
+/**
+ * 危险
+ */
+.text-danger {
+    color: #ff3300 !important;
+    
+}
+.bg-danger {
+    background-color: #ff3300 !important;
+}
+/*
+ * 视频样式
+ */
+.vk-video {
+    width: 300px;
+    height: 200px;
+    object-fit: fill;
+}
+/**
+ * 加阴影部分
+ */
+.vk-title, .vk-form,
+.list-panel, .vk-panel {
+    background-color: #fff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/*******************************************************************************
+ * 页面标题
+ *******************************************************************************/
+.vk-title {
+    width: 100%;
+    height: 60px;
+    padding: 0 15px 0 20px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: #666;
+    line-height: 60px;
+    border-bottom: 1px solid #f2f2f2;
+} 
+/*******************************************************************************
+ * 表单样式
+ *******************************************************************************/
+.vk-form {
+    display: inline-block;
+    width: 100%;
+}
+/**
+ * 设置间距
+ */
+.vk-form.set-spacing {
+    margin: -15px 0px 0px;
+    padding: 15px 0px 25px;
+}
+/**
+ *  设置底部内边距
+ */
+.vk-form.set-bottom {
+    padding-bottom: 110px;
+}
+.vk-form .form-horizontal .form-group {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+.vk-form .form-group .form-label {
+    padding: 10px 0px;
+    color: #999;
+    font-weight: bold;
+}
+.vk-form .form-group .form-control,
+.vk-form .form-group .select2-selection,
+.vk-form .form-group .bootstrap-tagsinput {
+    min-height: 40px;
+    padding: 10px 24px 10px 12px;
+    border-radius: 0px;
+    box-shadow: none;
+}
+/**
+ * select2 组件多选
+ */
+.vk-form .form-group .select2-selection--multiple {
+    padding: 2px 0px;
+}
+.vk-form .form-group .select2-selection__arrow {
+    min-height: 38px;
+    border-left: none;
+}
+/** 
+ * select2 组件下拉选择列表里的搜索框 
+ */
+.select2-container--krajee .select2-search__field {
+    border-radius: 0px !important;
+}
+/**
+ * 设置百度编辑器样式
+ */
+.vk-form .form-group .edui-default {
+    height: auto;
+    padding: 0;
+    border-radius: 0px;
+}
+/**
+ * 自定义的select2组件下拉选项样式
+ */
+.vk-select2-results {
+    margin: -6px;
+    padding: 6px;
+    border-top: 1px solid #e4e4e4;
+}
+.vk-select2-results .icon-vimeo {
+    display: inline-block;
+    width: 16px;
+    font-size: 16px !important;
+    color: #ffcc01;
+}
+.vk-select2-results .avatars {
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    margin-left: 5px;
+}
+.vk-select2-results .job-title {
+    margin-left: 5px;
+    color: #999;
+}
+.vk-select2-results .links {
+    float: right;
+    margin-right: 15px;
+    color: #333 !important;
+    line-height: 35px;
+}
+/*******************************************************************************
+ * 标签页
+ *******************************************************************************/
+.vk-tabs {
+    display: inline-block;
+    width: 100%;
+    height: 54px;
+    margin: 30px 0px 35px;
+    border-bottom: 1px solid #ccc;
+}
+.vk-tabs > ul > li {
+    float: left;
+    margin-top: -2px;
+}
+.vk-tabs > ul > li > a {
+    display: inline-block;
+    padding: 0px 20px;
+    color: #333;
+    line-height: 54px;
+    text-decoration: none;
+}
+.vk-tabs > ul > li.active > a,
+.vk-tabs > ul > li:hover > a {
+    color: #fc583d;
+}
+.vk-tabs > ul > li.active > a {
+    font-weight: bold;
+    border-bottom: 2px solid #FC583D;
+}
+/*******************************************************************************
+ * 列表
+ *******************************************************************************/
+.vk-list {
+    display: inline-block;
+}
+.vk-list .list-unstyled {
+    display: inline-block;
+    width: 100%;
+}
+.vk-list .list-panel {
+    float: left;
+    width: 280px;
+    margin-bottom: 30px;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+.vk-list .list-panel.hover {
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+.vk-list .list-panel .list-header {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    background-color: #fff; 
+}
+.vk-list .list-panel .list-header > a {
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+}
+.vk-list .list-panel .list-header .hyalinize {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    height: 20px;
+    padding: 0 5px;
+    color: #fff;
+    text-align: center;
+    line-height: 20px;
+    background-color: rgba(0, 0, 0, .7);
+}
+.vk-list .list-panel .list-body {
+    display: inline-block;
+    width: 100%;
+    padding: 0 10px 15px;
+    border-bottom: dashed 1px #dedede;
+}
+.vk-list .list-panel .tuip {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    margin-top: 14px;
+    font-size: 12px;
+    color: #aaa;
+    font-weight: normal;
+}
+.vk-list .list-panel .list-body .title {
+    display: inline-block;
+    width: 100%;
+    font-size: 14px;
+    color: #666;
+    font-weight: bold;
+}
+.vk-list .list-panel .list-footer {
+    height: 50px;
+    margin: 0 10px;
+    line-height: 50px;
+}
+.vk-list .list-panel .list-footer .tuip {
+    margin-top: 0;
+    line-height: 50px;
+}
+.vk-list .list-panel .list-footer .avatars {
+    width: 25px;
+    height: 25px;
+    margin: 12.5px 5px;
+    margin-left: 0px;
+}
+.vk-list .list-panel .list-footer .btn-edit {
+    display: none;
+    margin: 7.5px 0px;
+}
+/*******************************************************************************
+ * 详情公共
+ *******************************************************************************/
+ .vk-panel {
+    display: inline-block;
+    width: 100%;
+    margin: 30px 0px 15px;
+    border-radius: 0px;
+}
+.vk-panel .title {
+    height: 60px;
+    padding: 0px 15px 0px 20px;
+    font-size: 16px;
+    color: #878787;
+    text-align: left;
+    line-height: 60px;
+    border-bottom: 1px solid #f2f2f2;
+}
+.vk-panel .panel-height {
+    min-height: 580px;
+    max-height: 580px;
+    overflow-y: auto;
+}
+/*******************************************************************************
+ * table样式
+ *******************************************************************************/
+.vk-table {
+    margin: -1px 0px 0px;
+    color: #666;
+    border-right: none;
+    border-left: none;
+}
+.vk-table .detail-th {
+    width: 125px;
+    color: #878787;
+    font-weight: normal;
+    text-align: right !important;
+    border-right-width: 1px !important;
+    border-left: none;
+}
+.vk-table .detail-td {
+    width: 454px;
+    text-align: left !important;
+    font-weight: normal;
+    white-space: inherit !important;;
+}
+.vk-table .detail-des {
+    min-height: 63px;
+    display:table-cell;
+    vertical-align:middle; 
+}
+.vk-table > thead  > tr > th,
+.vk-table > tbody > tr > th,
+.vk-table > tbody > tr > td {
+    height: 48px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-color: #e4e4e4;
+    border-right-width: 0px;
+    border-left-width: 0px;
+}
+/*******************************************************************************
+ * 模态框样式
+ *******************************************************************************/
+.vk-modal {
+    display: block;
+    width: 100%;
+}
+.vk-modal .modal-content {
+    border-radius: 0px; 
+}
+.vk-modal .modal-body, 
+.modal-body .vk-form {
+    background-color: #F2F2F2;
+}
+.vk-modal .modal-width {
+    min-width: 1150px;
+}
+.vk-modal .modal-height {
+    min-height: 720px;
+    max-height: 720px;
+    overflow-y: auto;
+}
+/*******************************************************************************
+ * 最近联系
+ *******************************************************************************/
+.recent {
+    float: left;
+    width:60px;
+    height:60px;
+    padding: 3px 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    font-size: 12px;
+    text-align: center;
+    border: 1px #ccc solid;
+    background-color:#fff;
+}
+.recent:hover {
+    cursor:pointer;
+}

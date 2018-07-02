@@ -18,7 +18,7 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
 
 ?>
 
-<div class="course-Publish main modal">
+<div class="course-publish main vk-modal">
     
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -29,35 +29,36 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode('选择发布的方式') ?></h4>
             </div>
             <div class="modal-body">
-                
-                <?php $form = ActiveForm::begin([
-                    'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
-                    'fieldConfig' => [  
-                        'template' => "{label}\n<div class=\"col-lg-12 col-md-12\" style=\"margin-left: 30px\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
-                        'labelOptions' => [
-                            'class' => 'col-lg-12 col-md-12',
-                        ],  
-                    ], 
-                ]); ?>
-                
-                <?= Html::activeHiddenInput($model, 'id') ?>
-                
-                <?php unset(Course::$levelMap[Course::NO_PUBLISH])?>
-                <?= $form->field($model, 'level')->radioList(Course::$levelMap, [
-                    'separator' => '',
-                    'itemOptions'=>[
-                        'labelOptions'=>[
-                            'style'=>[
-                                 'margin-right' => '30px'
+                <div class="vk-form clear-shadow">
+                    <?php $form = ActiveForm::begin([
+                        'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                        'fieldConfig' => [  
+                            'template' => "{label}\n<div class=\"col-lg-12 col-md-12\" style=\"margin-left: 30px\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  
+                            'labelOptions' => [
+                                'class' => 'col-lg-12 col-md-12',
+                            ],  
+                        ], 
+                    ]); ?>
+
+                    <?php unset(Course::$levelMap[Course::ALL_LEVEL]);unset(Course::$levelMap[Course::PRIVATE_LEVEL])?>
+                    <?= $form->field($model, 'level')->radioList(Course::$levelMap, [
+                        'value' => Course::PUBLIC_LEVEL,
+                        'separator' => '',
+                        'itemOptions'=>[
+                            'labelOptions'=>[
+                                'style'=>[
+                                    'margin-right' => '30px',
+                                    'color' => '#666',
+                                    'font-weight' => 'normal'
+                                ]
                             ]
-                        ]
-                    ],
-                ])->label(Yii::t('app', '{Visible}{Range}', [
+                        ],
+                    ])->label(Yii::t('app', '{Visible}{Range}', [
                         'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')
-                ])) ?>
-                
-                <?php ActiveForm::end(); ?>
-                
+                    ])) ?>
+
+                    <?php ActiveForm::end(); ?>
+                </div>
             </div>
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [

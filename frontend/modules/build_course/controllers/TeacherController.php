@@ -5,6 +5,7 @@ namespace frontend\modules\build_course\controllers;
 use common\models\vk\searchs\TeacherSearch;
 use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -33,6 +34,7 @@ class TeacherController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
+                    'applyr' => ['POST'],
                 ],
             ],
             'access' => [
@@ -49,63 +51,72 @@ class TeacherController extends Controller
     
     /**
      * 列出所有 TeacherSearch 模型。
-     * @return string [
-     *    filters => 查询过滤的属性, totalCount => 总数量, dataProvider => 老师数据
-     * ]
+     * @return mixed
      */
     public function actionIndex()
     {
         $searchModel = new TeacherSearch();
-        $result = $searchModel->resourceSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 8]));
+        $results = $searchModel->resourceSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 8]));
+        $teachers = array_values($results['data']['teacher']);    //老师数据
+        //重修老师数据里面的元素值
+        foreach ($teachers as $index => $item) {
+            $teachers[$index]['avatar'] = StringUtil::completeFilePath($item['avatar']);
+            $teachers[$index]['is_hidden'] = $item['is_certificate'] ? 'show' : 'hidden';
+        }
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['teacher']),
-        ]);
-        
+        //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['teacher']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => $teachers, 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,      //搜索模型
+            'filters' => $results['filter'],     //查询过滤的属性
+            'totalCount' => $results['total'],   //总数量
         ]);
     }
     
     /**
      * 显示一个单一的 Teacher 模型。
      * @param string $id
-     * @return mixed [model => 模型, dataProvider => 主讲老师下的所有课程]
+     * @return mixed
      */
     public function actionView($id)
     {
         $model = $this->findModel($id);
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $model->courses,
-        ]);
-        //查询该老师认证信息是否存在
-        $apply = $this->findCertificateModel($model->id);
-        
         return $this->render('view', [
-            'model' => $model,
-            'dataProvider' => $dataProvider,
-            'is_applying' => $apply !== null ? true : false,
+            'model' => $model,      //模型
+            //主讲老师下的所有课程
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => $model->courses,
+            ]),
+            //是否正在申请认证
+            'is_applying' => $this->getIsHasCertificateModel($model->id),    
         ]);
     }
     
     /**
      * 创建 一个新的 Teacher 模块
      * 如果创建成功，浏览器将被重定向到“查看”页面。
-     * @return mixed [model => 模型]
+     * @return mixed
      */
     public function actionCreate()
     {
@@ -120,7 +131,7 @@ class TeacherController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                'model' => $model,
+                'model' => $model,  //模型
             ]);
         }
     }
@@ -148,7 +159,7 @@ class TeacherController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                'model' => $model,
+                'model' => $model,  //模型
             ]);
         }
     }
@@ -169,6 +180,9 @@ class TeacherController extends Controller
             }
             if($model->is_del){
                 throw new NotFoundHttpException(Yii::t('app', 'The teacher does not exist.'));
+            }
+            if($this->getIsHasCertificateModel($model->id)){
+                throw new NotFoundHttpException('该老师正在申请认证中，不能被删除。');
             }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
@@ -196,24 +210,29 @@ class TeacherController extends Controller
         $teacherFormat = [];
         foreach ($results as $teacher) {
             $teacherFormat[$teacher->id] = [
-                'avatar' => $teacher->avatar, 
-                'is_certificate' => $teacher->is_certificate,
-                'sex' => $teacher->sex,
+                'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+                'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
+                'sex' => $teacher->sex == 1 ? '男' : '女',
                 'job_title' => $teacher->job_title,
             ];
         }
-        
-        if (count($results > 0)) {
-            return [
-                'code'=> 200,
-                'data'=> ['dataMap' => ArrayHelper::map($results, 'id', 'name'), 'format' => $teacherFormat],
-                'message' => '刷新成功！'
-            ];
-        } else {
+        try
+        { 
+            if (count($results) > 0){
+                return [
+                    'code'=> 200,
+                    'data'=> [
+                        'dataMap' => ArrayHelper::map($results, 'id', 'name'), 
+                        'format' => $teacherFormat
+                    ],
+                    'message' => '刷新成功！',
+                ];
+            }
+        }catch (Exception $ex) {
             return [
                 'code'=> 404,
-                'data'=> [],
-                'message' => '刷新失败！'
+                'data' => [],
+                'message' => '刷新失败::' . $ex->getMessage(),
             ];
         }
     }
@@ -229,7 +248,7 @@ class TeacherController extends Controller
         $model = $this->findModel($id);
         
         if($model->created_by == Yii::$app->user->id){
-            if(($this->findCertificateModel($model->id) != null)){
+            if($this->getIsHasCertificateModel($model->id)){
                 throw new NotFoundHttpException('该老师正在申请认证中，请勿重复申请。');
             }
             if($model->is_certificate){
@@ -253,27 +272,27 @@ class TeacherController extends Controller
     public function actionSearch($name)
     {
         Yii::$app->getResponse()->format = 'json';
-        
+        //查询相同名称的认证老师的数量
         $number = (new Query())->select(['id'])->from(Teacher::tableName())
             ->where(['name' => $name, 'is_certificate' => 1])->count();
 
-        if ($number > 0) {
-            return [
-                'code'=> 200,
-                'data'=> [
-                    'number' => $number, 
-                    'url' => Url::to(['/teacher/default/search', 'name' => $name])
-                ],
-                'message' => '搜索成功！'
-            ];
-        } else {
+        try
+        { 
+            if ($number > 0){
+                return [
+                    'code'=> 200,
+                    'data'=> [
+                        'number' => $number, 
+                        'url' => Url::to(['/teacher/default/search', 'name' => $name])
+                    ],
+                    'message' => '搜索成功！',
+                ];
+            }
+        }catch (Exception $ex) {
             return [
                 'code'=> 404,
-                'data'=> [
-                    'number' => 0, 
-                    'url' => Url::to(['/teacher/default/search', 'name' => $name])
-                ],
-                'message' => '搜索失败！'
+                'data' => [],
+                'message' => '搜索失败::' . $ex->getMessage(),
             ];
         }
     }
@@ -295,20 +314,19 @@ class TeacherController extends Controller
     }
     
     /**
-     * 基于其主键值找到 TeacherCertificate 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
+     * 获取该老师是否正在申请认证
      * @param string $theacher_id
-     * @return TeacherCertificate 加载模型
+     * @return boolean
      */
-    protected function findCertificateModel($theacher_id)
+    protected function getIsHasCertificateModel($theacher_id)
     {
         $model = TeacherCertificate::findOne([
            'teacher_id' => $theacher_id, 'proposer_id' => Yii::$app->user->id, 'is_dispose' => 0,
         ]);
         if ($model != null) {
-            return $model;
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 }

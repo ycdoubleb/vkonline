@@ -114,6 +114,8 @@ return [
     'Select' => '选择',
     'Save' => '保存',
     'Apply' => '申请',
+    'Request' => '请求',
+    'Send' => '发送',
     
     //公共-属性
     'ID' => 'ID',
@@ -142,6 +144,7 @@ return [
     'Privilege' => '权限',
     'Action' => '动作',
     'Reference' => '引用',
+    'Frequency' => '次数',
     'Keyword' => '关键字',
     'Attribute' => '属性',
     'Top Level' => '顶级',
@@ -181,6 +184,12 @@ return [
     'The video does not exist.' => '视频不存在。',
     'The teacher does not exist.' => '老师不存在。',
     'The certified teacher can not be deleted.' => '认证的老师不可以被删除。',
+    'Password reset token cannot be blank.' => '密码重置令牌不能为空。',
+    'Wrong password reset token.' => '错误的密码重置令牌。',
+    'There is no user with this email address.' => '不存在该电子邮件地址的用户。',
+    'Check your email for further instructions.' => '检查您的电子邮件以获得进一步的说明。',
+    'Sorry, we are unable to reset password for the provided email address.' => '对不起，我们无法为所提供的电子邮件地址重置密码。',
+    'New password saved.' => '新密码已成功保存。',
     
     //后台-公共配置
     'Config' => '配置',

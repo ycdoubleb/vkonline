@@ -2,6 +2,7 @@
 
 use common\models\vk\Category;
 use common\models\vk\Course;
+use common\utils\StringUtil;
 use common\widgets\depdropdown\DepDropdown;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\webuploader\WebUploaderAsset;
@@ -24,9 +25,9 @@ TagsInputAsset::register($this);
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
-        'avatar' => $teacher->avatar, 
-        'is_certificate' => $teacher->is_certificate,
-        'sex' => $teacher->sex,
+        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
+        'sex' => $teacher->sex == 1 ? '男' : '女',
         'job_title' => $teacher->job_title,
     ];
 }
@@ -38,21 +39,15 @@ $format = <<< SCRIPT
         if (!state.id){
             return state.text
         };
-        //图片位置
-        var src = formats[state.id]['avatar'].toLowerCase();
-        //为否显示认证图标
-        var isShow = formats[state.id]['is_certificate'] ? '<i class="fa fa-vimeo icon-vimeo"></i>' : '<i class="fa icon-vimeo"></i>';
-        var sex = formats[state.id]['sex'] == 1 ? '男' : '女';
+        //访问名师堂的链接
         var links = '/teacher/default/view?id=' + $.trim(state.id);
         //返回结果（html）
-        return isShow + 
-            '<div class="avatars">' + 
-                '<img class="img-circle" src="' + src + '" width="32" height="32"/>' + 
-            '</div>' 
-            + state.text + '（' + sex + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
-            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;">' + 
-                '<i class="fa fa-eye"></i>' + 
-            '</a>';
+        return '<div class="vk-select2-results single-clamp">' +
+            '<a class="icon-vimeo"><i class="fa fa-vimeo ' + formats[state.id]['is_certificate'] + '"></i></a>' + 
+            '<img class="avatars img-circle" src="' + formats[state.id]['avatar'].toLowerCase() + '" width="32" height="32"/>' +  state.text + 
+            '（' + formats[state.id]['sex'] + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
+            '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;"><i class="fa fa-eye"></i></a>' +
+        '</div>';
     } 
         
 SCRIPT;
@@ -60,7 +55,7 @@ $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
 ?>
 
-<div class="course-form form set-margin set-bottom">
+<div class="course-form vk-form set-spacing set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -125,9 +120,9 @@ $this->registerJs($format, View::POS_HEAD);
         echo  $form->field($model, 'teacher_id', [
             'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
                 "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
-                    "<div class=\"keep-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                    "<div class=\"keep-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                    "<div class=\"keep-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                    "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
                 "</div>\n" .
             "<div class=\"col-lg-7 col-md-7\">{error}</div>",
         ])->widget(Select2::class,[
@@ -205,7 +200,8 @@ $this->registerJs($format, View::POS_HEAD);
 </div>
 
 <?php
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+//加载载模板
+$item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course/_attr.php')));
 //获取flash上传组件路径
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
@@ -215,31 +211,36 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
-    //初始化百度编辑器
+    /**
+     * 初始化百度编辑器
+     */
     UE.getEditor('course-content', {
         initialFrameHeight: 500,
         maximumWords: 100000,
     });
-    //选择分类加载其对应的属性
+    /**
+     * 选择分类加载其对应的属性
+     * @param int value 指定分类id  
+     */
     function getAttr(value){
-        var items = $domes;
-        var dome = "";
+        var item_dom = $item_dom;
         var options = [];
         $("#courseattribute").html("");
         $.post("../course/attr-search?cate_id=" + value, function(rel){
-            var data = rel['data'];
+            var data = rel.data;
             for(var name in data){
+                //组装课程属性下拉选项
                 $.each(data[name].values, function(index, text){
                     var val = data[name].id + "_" + data[name].sort_order + "_" + text;
                     options[name] += "<option value=" + val + ">" + text + "</option>";
                 });
-                dome += Wskeee.StringUtil.renderDOM(items, {name: name, option: options[name].replace("undefined", "")});
+                $(Wskeee.StringUtil.renderDOM(item_dom, {name: name, option: options[name].replace("undefined", "")})).appendTo($("#courseattribute"));
             }
-            $("#courseattribute").append(dome);
         });
     }
-        
-    //单击刷新按钮重新加载老师下拉列表
+    /**
+     * 单击刷新按钮重新加载老师下拉列表
+     */
     $("#refresh").click(function(){
         $('#course-teacher_id').html("");
         $.get($(this).attr("href"),function(rel){
@@ -253,9 +254,10 @@ $js =
         })
         return false;
     });
-        
+    /**
+     * 加载文件上传
+     */
     window.uploader;
-    //加载文件上传  
     require(['euploader'], function (euploader) {
         //公共配置
         var config = {

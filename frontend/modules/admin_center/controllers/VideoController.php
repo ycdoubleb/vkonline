@@ -13,7 +13,6 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -51,92 +50,94 @@ class VideoController extends Controller
     }
 
     /**
-     * Lists all Video models.
+     * 呈现所有视频列表模型.
      * @return mixed
      */
     public function actionIndex()
-    {
-        $customerId = Yii::$app->user->identity->customer_id;
-        $params = Yii::$app->request->queryParams;
-        
+    {        
         $searchModel = new VideoSearch();
+        $result = $searchModel->adminCenterSearch(Yii::$app->request->queryParams);
         
-        //默认进入列表页
-        if(!isset($params['type']) || $params['type'] == 1){
-            $result = $searchModel->adminCenterSearch($params);
-            $dataProvider = new ArrayDataProvider([
-                'allModels' => array_values($result['data']['video']),
-                'key' => 'id',
-            ]);
-            
-            return $this->render('list', [
-                'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
-                'searchModel' => $searchModel,
-                'dataProvider' => $dataProvider,
-                'filters' => $result['filter'],         //过滤条件
-                'totalCount' => $result['total'],       //视频总数量
-                'teachers' => $this->getTeacher($customerId),       //所有主讲老师
-                'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
-            ]);
-        }
-        //查看统计页
-        return $this->render('chart', [
-            'type' => isset($params['type']) ? $params['type'] : 1, //显示类型（1列表/2统计图）
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($result['data']['video']),
+            'key' => 'id',
+        ]);
+
+        return $this->render('list', [
             'searchModel' => $searchModel,
-            'filters' => $params,         //过滤条件
-            'teachers' => $this->getTeacher($customerId),       //所有主讲老师
-            'createdBys' => $this->getCreatedBy($customerId),   //所有创建者
-            'statistics' => $searchModel->searchStatistics($params),//统计数据
+            'dataProvider' => $dataProvider,
+            'filters' => $result['filter'],         //过滤条件
+            'totalCount' => $result['total'],       //视频总数量
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
+        ]);
+    }
+
+    /**
+     * 统计视频信息
+     * @return mixed
+     */
+    public function actionStatistics()
+    {
+        //查看统计页
+        return $this->render('statistics', [
+            'teacherMap' => Teacher::getTeacherByLevel(['customer_id' => Yii::$app->user->identity->customer_id], 0, false),       //所有主讲老师
+            'createdBys' => ArrayHelper::map(User::findAll(['customer_id' => Yii::$app->user->identity->customer_id]), 'id', 'nickname'),   //所有创建者
+            'results' => $this->findVideoStatistics(Yii::$app->request->queryParams),
         ]);
     }
   
     /**
-     * Finds the Video model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return Video the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * 查询视频统计
+     * @param type $params
+     * @return array
      */
-    protected function findModel($id)
+    protected function findVideoStatistics($params)
     {
-        if (($model = Video::findOne($id)) !== null) {
-            return $model;
+        $searchModel = new VideoSearch();
+        
+        $searchModel->teacher_id = ArrayHelper::getValue($params, 'VideoSearch.teacher_id');   //教师ID
+        $searchModel->created_by = ArrayHelper::getValue($params, 'VideoSearch.created_by');   //创建人ID
+        $searchModel->level = ArrayHelper::getValue($params, 'VideoSearch.level');             //课件范围
+        $group_name = ArrayHelper::getValue($params, 'group', 'teacher_id');          //分组名
+        
+        /* @var $query Query */
+        $query = Video::find()->select([
+            'Teacher.name AS teacher_name', 'User.nickname', 
+            'Video.level','COUNT(Video.id) AS value'
+        ])->from(['Video' => Video::tableName()]);
+        
+        //条件查询
+        $query->andFilterWhere([
+            'Video.teacher_id' => $searchModel->teacher_id,
+            'Video.created_by' => $searchModel->created_by,
+            'Video.level' => $searchModel->level,
+            'Video.customer_id' => Yii::$app->user->identity->customer_id,
+            'Video.is_del' => 0
+        ]);
+        
+        $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
+        $query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        $query->groupBy("Video.{$group_name}");
+        $results = $query->asArray()->all();
+        
+        $teachers = [];
+        $createdBys = [];
+        $levels = [];
+        //组装返回老师、创建者、状态和范围的课程数量统计
+        foreach ($results as $item) {
+            $teachers[] = ['name' => $item['teacher_name'], 'value' => $item['value']];
+            $createdBys[] = ['name' => $item['nickname'], 'value' => $item['value']];
+            $levels[] = ['name' => Video::$levelMap[$item['level']], 'value' => $item['value']];
         }
-
-        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+        
+        return [
+            'searchModel' => $searchModel,
+            'filter' => $params,    //过滤条件
+            'teacher' => $teachers,         //按主讲老师统计
+            'created_by' => $createdBys,    //按创建人统计
+            'range' => $levels,             //按范围统计
+        ];
     }
     
-    /**
-     * 查找所有主讲老师
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getTeacher($customerId)
-    {
-        $teacher = (new Query())
-                ->select(['Video.teacher_id AS id', 'Teacher.name'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id')
-                ->where(['Video.customer_id' => $customerId, 'is_del' => 0])
-                ->all();
-        
-        return ArrayHelper::map($teacher, 'id', 'name');
-    }
-    
-    /**
-     * 查找所有创建者
-     * @param string $customerId    客户ID
-     * @return array
-     */
-    public function getCreatedBy($customerId)
-    {
-        $createdBy = (new Query())
-                ->select(['Video.created_by AS id', 'User.nickname AS name'])
-                ->from(['Video' => Video::tableName()])
-                ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
-                ->where(['Video.customer_id' => $customerId])
-                ->all();
-        
-        return ArrayHelper::map($createdBy, 'id', 'name');
-    }
 }

@@ -99,24 +99,24 @@ SwitchInputAsset::register($this);
             }
         }
     ?>
-    <!--面包屑-->
-    <div class="crumbs">
+    <!-- 页面标题 -->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', '{Course}{Detail}：', [
                 'Course' => Yii::t('app', 'Course'), 'Detail' => Yii::t('app', 'Detail')
             ]).$model->name ?>
         </span>
-        <div class="btngroup"><?= $btngroup ?></div>
+        <div class="btngroup pull-right"><?= $btngroup ?></div>
     </div>
     <!--基本信息-->
-    <div class="panel keep-left left-panel">
+    <div class="vk-panel left-panel pull-left">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
-            <div class="btngroup">
+            <div class="btngroup pull-right">
                 <?php if(!$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']);
@@ -125,7 +125,7 @@ SwitchInputAsset::register($this);
         </div>
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view '],
+            'options' => ['class' => 'table table-bordered detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [

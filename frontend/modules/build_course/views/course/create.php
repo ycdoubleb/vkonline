@@ -15,8 +15,8 @@ UeditorAsset::register($this);
 
 ?>
 <div class="course-create main">
-    <!-- 面包屑 -->
-    <div class="crumbs">
+    <!-- 页面标题 -->
+    <div class="vk-title">
         <span>
             <?= Yii::t('app', '{Create}{Course}', [
                 'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')

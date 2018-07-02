@@ -98,7 +98,7 @@ class DefaultController extends Controller
     
     /**
      * 更新现有的 User 模型。
-     * 如果更新成功，浏览器将被重定向到“info”页面。
+     * 如果更新成功，浏览器将被重定向到“index”页面。
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException
@@ -146,7 +146,8 @@ class DefaultController extends Controller
         $userSize = (new Query())
                 ->select(['SUM(size) AS size'])
                 ->from(['Uploadfile' => Uploadfile::tableName()])
-                ->where(['created_by' => $id, 'is_del' => 0])
+                ->where(['is_del' => 0])
+                ->andFilterWhere(['created_by' => $id])
                 ->one();
 
         return $userSize;
@@ -159,12 +160,18 @@ class DefaultController extends Controller
      */
     public function getUserCouVid($user_id)
     {
-        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.id) AS course_num'])
-                ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
-                ->where(['User.id' => $user_id])->one();
-        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.id) AS video_num'])
-                ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
-                ->where(['User.id' => $user_id, 'Video.is_del' => 0])->one();
+        //查询用户创建课程数量
+        $userCou = (new Query())->select(['COUNT(Course.id) AS course_num'])
+                ->from(['Course' => Course::tableName()])
+                ->where(['Course.is_del' => 0])
+                ->andFilterWhere(['Course.created_by' => $user_id])
+                ->one();
+        //查询用户创建视频数量
+        $userVid = (new Query())->select(['COUNT(Video.id) AS video_num'])
+                ->from(['Video' => Video::tableName()])
+                ->where(['Video.is_del' => 0])
+                ->andFilterWhere(['Video.created_by' => $user_id])
+                ->one();
         
         return array_merge($userCou, $userVid);
     }
@@ -178,9 +185,9 @@ class DefaultController extends Controller
     {
         $courseProgress = (new Query())
                 ->select(['COUNT(CourseProgress.user_id) AS cou_pro_num'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['CourseProgress' => CourseProgress::tableName()], 'CourseProgress.user_id = User.id')
-                ->where(['CourseProgress.is_finish' => 1,'User.id' => $user_id,])
+                ->from(['CourseProgress' => CourseProgress::tableName()])
+                ->where(['is_finish' => 1])
+                ->andFilterWhere(['user_id' => $user_id,])
                 ->one();
 
         return $courseProgress;
@@ -195,9 +202,9 @@ class DefaultController extends Controller
     {
         $courseFavorite = (new Query())
                 ->select(['COUNT(CourseFavorite.user_id) AS cou_fav_num'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['CourseFavorite' => CourseFavorite::tableName()], 'CourseFavorite.user_id = User.id')
-                ->where(['User.id' => $user_id])
+                ->from(['CourseFavorite' => CourseFavorite::tableName()])
+                ->where(['is_del' => 0])
+                ->andFilterWhere(['user_id' => $user_id])
                 ->one();
 
         return $courseFavorite;
@@ -212,9 +219,9 @@ class DefaultController extends Controller
     {
         $videoFavorite = (new Query())
                 ->select(['COUNT(VideoFavorite.user_id) AS vid_fav_num'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['VideoFavorite' => VideoFavorite::tableName()], 'VideoFavorite.user_id = User.id')
-                ->where(['User.id' => $user_id])
+                ->from(['VideoFavorite' => VideoFavorite::tableName()])
+                ->where(['is_del' => 0])
+                ->andFilterWhere(['user_id' => $user_id])
                 ->one();
 
         return $videoFavorite;
@@ -229,9 +236,8 @@ class DefaultController extends Controller
     {
         $courseMessage = (new Query())
                 ->select(['COUNT(CourseMessage.user_id) AS cou_mes_num'])
-                ->from(['User' => User::tableName()])
-                ->leftJoin(['CourseMessage' => CourseMessage::tableName()], 'CourseMessage.user_id = User.id')
-                ->where(['User.id' => $user_id])
+                ->from(['CourseMessage' => CourseMessage::tableName()])
+                ->where(['user_id' => $user_id])
                 ->one();
 
         return $courseMessage;

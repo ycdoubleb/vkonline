@@ -18,8 +18,8 @@ $this->title = Yii::t('app', '{Create}{Video}', [
 
 <div class="video-create main">
 
-    <!-- 面包屑 -->
-    <div class="crumbs">
+    <!--页面标题-->
+    <div class="vk-title">
         <span>
             <?= $this->title ?>
         </span>

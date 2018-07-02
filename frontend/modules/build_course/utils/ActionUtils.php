@@ -558,9 +558,7 @@ class ActionUtils
                 }
                 //新属性值非空时执行
                 if(!empty($newAttr)){
-                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']); //查询旧老师信息
                     $content .= ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['teacher_id'] != $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name},\n\r": null).
                         ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null);
                 }
                 if(!empty($newAttr) || (isset($oldResId) && $oldResId != $resId)){
