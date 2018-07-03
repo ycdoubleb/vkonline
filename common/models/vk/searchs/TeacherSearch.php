@@ -71,6 +71,7 @@ class TeacherSearch extends Teacher
 
         // grid filtering conditions
         $query->andFilterWhere(['is_certificate' => $this->is_certificate]);
+        $query->andFilterWhere(['customer_id' => $this->customer_id]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);
 

@@ -1,11 +1,9 @@
 <?php
 
 use common\models\vk\Category;
-use common\widgets\depdropdown\DepDropdown;
 use kartik\widgets\FileInput;
 use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 

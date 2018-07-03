@@ -68,10 +68,11 @@ class TeacherCertificateSearch extends TeacherCertificate
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'teacher_id' => $this->teacher_id,
             'proposer_id' => $this->proposer_id,
             'is_pass' => $this->is_pass,
         ]);
+        
+        $query->andFilterWhere(['like', 'Teacher.name', $this->teacher_id]);
 
         return $dataProvider;
     }

@@ -2,12 +2,15 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
+use common\models\vk\Customer;
 use common\models\vk\searchs\TeacherSearch;
 use common\models\vk\Teacher;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -53,6 +56,7 @@ class TeacherController extends Controller
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider->models,
+            'customer' => $this->getCustomer(),     //客户
         ]);
     }
 
@@ -145,5 +149,18 @@ class TeacherController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+     /**
+     * 查找客户
+     * @return array
+     */
+    protected function getCustomer()
+    {
+        $query = (new Query())
+                ->select(['id', 'name'])
+                ->from(['Customer' => Customer::tableName()])
+                ->all();
+        return ArrayHelper::map($query, 'id', 'name');
     }
 }
