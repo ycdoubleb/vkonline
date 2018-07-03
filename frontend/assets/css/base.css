@@ -348,6 +348,7 @@
     margin: -1px 0px 0px;
     color: #666;
     border: none;
+    table-layout:fixed;
 }
 .vk-table .detail-th {
     width: 125px;

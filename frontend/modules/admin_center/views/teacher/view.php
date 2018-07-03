@@ -117,9 +117,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'background-color' => '#f9f9f9'
+                            'width' => '250px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -139,15 +137,11 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
+                            'width' => '250px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -160,15 +154,11 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '125px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
+                            'width' => '100px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
                         ],
                     ],
                 ],
@@ -181,15 +171,12 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '165px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
+                            'width' => '110px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'border-left-width' => '1px',
+                            'font-size' => '12px',
                         ],
                     ],
                 ],
@@ -215,17 +202,12 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     ],
                     'headerOptions' => [
                         'style' => [
-                            'width' => '75px',
-                            'border-bottom-width' => '1px',
-                            'border-left-width' => '1px',
-                            'background-color' => '#f9f9f9'
+                            'width' => '45px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'width' => '75px',
                             'padding' => '4px 0px',
-                            'border-left-width' => '1px',
                         ],
                     ],
                     'template' => '{view}',

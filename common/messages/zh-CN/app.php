@@ -159,7 +159,15 @@ return [
     'Resolution' => '分辨率',
     'Knowledge' => '知识点',
     'Shelves' => '架',
-    
+    'Watermark' => '水印',
+    'Width' => '宽',
+    'Height' => '高',
+    'Level' => '水平',
+    'Vertical' => '垂直',
+    'Shifting' => '偏移',
+    'Position' => '位置',
+    'Default' => '默认',
+    'Selected' => '选中',
   
     //提示消息
     "Can't be empty." => '不能为空。',

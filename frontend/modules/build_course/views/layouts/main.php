@@ -132,6 +132,16 @@ $menuItems = [
         ],
         [
             'module' => 'admin_center',
+            'controller' => 'watermark',
+            'action' => 'index',
+            'label' => Yii::t('app', 'Watermark'),
+            'url' => ['/admin_center/watermark/index'],
+            'icons' => null, 
+            'condition' => $hidden,
+            'options' => ['class' => "links"]
+        ],
+        [
+            'module' => 'admin_center',
             'controller' => 'category',
             'action' => 'index',
             'label' => Yii::t('app', 'Category'),

@@ -24,19 +24,18 @@ $userLevel = CustomerAdmin::find()->select(['level'])
 
 ?>
 <div class="user-index main">
-    <!-- 页面标题 -->
-    <div class="vk-title">
-        <span>
-            <?= $this->title ?>
-        </span>
-        <div class="btngroup pull-right">
-            <?= Html::a(Yii::t('app', '{Create}{User}',[
-                'Create' => Yii::t('app', 'Create'),
-                'User' => Yii::t('app', 'User'),
-            ]), ['create'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']) ?>
-        </div>
-    </div>
     <div class="vk-panel">
+        <div class="title">
+            <span>
+                <?= $this->title ?>
+            </span>
+            <div class="btngroup pull-right">
+                <?= Html::a(Yii::t('app', '{Create}{User}',[
+                    'Create' => Yii::t('app', 'Create'),
+                    'User' => Yii::t('app', 'User'),
+                ]), ['create'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']) ?>
+            </div>
+        </div>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,

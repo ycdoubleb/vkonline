@@ -159,7 +159,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
+                            'width' => '250px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -179,7 +179,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
+                            'width' => '250px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -196,7 +196,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '125px',
+                            'width' => '100px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -213,11 +213,12 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '165px',
+                            'width' => '110px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
+                            'font-size' => '12px',
                         ],
                     ],
                 ],
@@ -243,12 +244,11 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     ],
                     'headerOptions' => [
                         'style' => [
-                            'width' => '75px',
+                            'width' => '45px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'width' => '75px',
                             'padding' => '4px 0px',
                         ],
                     ],

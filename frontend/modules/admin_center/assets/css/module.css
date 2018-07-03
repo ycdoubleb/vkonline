@@ -55,11 +55,13 @@
 .category-index .vk-panel .summary,
 .category-view .vk-panel .summary,
 .user-index .vk-panel .summary,
+.customer-watermark-index .vk-panel .summary,
 .course-index .vk-panel .pagination,
 .video-index .vk-panel .pagination,
 .category-index .vk-panel .pagination,
 .category-view .vk-panel .pagination,
-.video-index .vk-panel .pagination {
+.video-index .vk-panel .pagination,
+.customer-watermark-index .vk-panel .pagination{
     padding-left: 20px;
 }
 .course-statistics .vk-panel .chart,

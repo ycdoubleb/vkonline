@@ -1,12 +1,11 @@
-<?php
+ <?php
 
 use backend\components\GridViewChangeSelfColumn;
-use backend\widgets\treegrid\TreegridAssets;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CategorySearch;
+use common\widgets\treegrid\TreegridAssets;
 use frontend\modules\admin_center\assets\ModuleAssets;
-use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;

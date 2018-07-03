@@ -148,7 +148,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
+                            'width' => '200px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -166,7 +166,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
+                            'width' => '200px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -184,7 +184,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '500px',
+                            'width' => '200px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -199,7 +199,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '125px',
+                            'width' => '100px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -216,7 +216,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '125px',
+                            'width' => '110px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -246,12 +246,11 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     ],
                     'headerOptions' => [
                         'style' => [
-                            'width' => '75px',
+                            'width' => '45px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
-                            'width' => '75px',
                             'padding' => '4px 0px',
                         ],
                     ],
