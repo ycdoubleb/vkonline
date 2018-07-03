@@ -1,6 +1,6 @@
 <?php
 
-namespace common\components;
+namespace common\widgets\grid;
 
 use kartik\base\AnimateAsset;
 use kartik\growl\GrowlAsset;
@@ -20,6 +20,7 @@ use yii\web\View;
  */
 class GridViewChangeSelfColumn extends DataColumn {
 
+    const PLUGIN_NAME = 'GridViewChangeSelfColumn';
     /**
      * 选项属性
      * @var array [labels,values,url,type]<br/>
@@ -43,6 +44,7 @@ class GridViewChangeSelfColumn extends DataColumn {
 
     public function init() {
         $this->plugOptions = array_merge([
+            'plugin_id' => self::PLUGIN_NAME.'_'. rand(1, 99999),
             //按钮显示，值为0 否，1 是
             'labels' => ['否', '是'],
             'values' => [0, 1],
@@ -66,7 +68,10 @@ class GridViewChangeSelfColumn extends DataColumn {
                 'checkbox' => 'onclick',
                 'input' => 'onchange',
             ];
-            $inputOptions = [$acts[$this->plugOptions['type']] => "GridViewChangeSelfColumn_ChangeVal('$key','$this->attribute',this)"];
+            $inputOptions = [
+                'plugin-id' => $this->plugOptions['plugin_id'],
+                $acts[$this->plugOptions['type']] => "GridViewChangeSelfColumn_ChangeVal('$key','$this->attribute',this)"
+            ];
         } else {
             $inputOptions = ['disabled' => true,'style' => ['opacity' => 0.5]];
         }
@@ -89,11 +94,24 @@ class GridViewChangeSelfColumn extends DataColumn {
      * 注册资源
      */
     protected function registerAssets() {
+        //当前组件交换显示的文字及值
         $labels = Json::encode($this->plugOptions['labels']);
         $values = Json::encode($this->plugOptions['values']);
+        //当前组件ID
+        $plugin_id = $this->plugOptions['plugin_id'];
+        //当前组件数据更改时调用的联接
         $url = $this->plugOptions['url'];
+        $plugin_name = self::PLUGIN_NAME;
+        
         $js = <<<JS
-            
+            //创建组件数据中心，保存各个组件的labels和values
+            window.$plugin_name = window.$plugin_name || {};
+            //添加当前组件数据到数据中心
+            window.$plugin_name ['$plugin_id'] = {
+                'labels':$labels,
+                'values':$values
+            };
+                
             /**
             * 更新字段值
             * @param {int|string} id       目标ID
@@ -103,8 +121,10 @@ class GridViewChangeSelfColumn extends DataColumn {
             */
            function GridViewChangeSelfColumn_ChangeVal(id,fieldName,obj)
            {	
-                var labels = $labels;
-                var values = $values;
+                var plugin_id = $(obj).attr('plugin-id');
+                var plugin_data = window.$plugin_name [plugin_id];
+                var labels = plugin_data['labels'];
+                var values = plugin_data['values'];;
                 var value;
                 if($(obj).hasClass('no')) // 图片点击是否操作
                 {          

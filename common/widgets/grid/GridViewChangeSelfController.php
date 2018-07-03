@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace common\components;
+namespace common\widgets\grid;
 
 use Yii;
 use yii\db\ActiveRecord;
@@ -17,7 +17,7 @@ use yii\web\Controller;
  *
  * @author Administrator
  */
-class BaseController extends Controller{
+class GridViewChangeSelfController extends Controller{
     /**
      * 更新表值
      * @param type $id          id

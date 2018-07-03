@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace common\components;
+namespace common\core;
 
 use Exception;
 use Yii;
