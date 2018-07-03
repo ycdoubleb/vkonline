@@ -8,7 +8,7 @@
 
 namespace frontend\modules\course\controllers;
 
-use common\components\BaseApiController;
+use common\core\BaseApiController;
 use frontend\modules\course\actions\AddCommentAction;
 use frontend\modules\course\actions\AddCommentPraiseAction;
 use frontend\modules\course\actions\AddFavoriteAction;
@@ -17,7 +17,6 @@ use frontend\modules\course\actions\GetCommentAction;
 use frontend\modules\course\actions\GetPlayRankAction;
 use frontend\modules\course\actions\GetRecommendAction;
 use frontend\modules\course\actions\SearchCourseAction;
-use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 
 /**
