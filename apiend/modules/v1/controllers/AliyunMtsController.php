@@ -2,7 +2,9 @@
 
 namespace apiend\modules\v1\controllers;
 
-use apiend\components\ApiController;
+use apiend\controllers\ApiController;
+use Yii;
+
 
 /**
  * Description of MpsCallback
@@ -22,6 +24,6 @@ class AliyunMtsController extends ApiController {
     }
     
     public function actionTaskComplete(){
-        \Yii::info('aaaa', 'wskeee');
+        Yii::info('aaaa', 'wskeee');
     }
 }

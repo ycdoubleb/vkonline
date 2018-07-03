@@ -6,20 +6,10 @@
  * and open the template in the editor.
  */
 
-namespace apiend\components;
+namespace apiend\controllers;
 
-use common\components\BaseApiController;
-use Exception;
-use Yii;
-use yii\base\ErrorException;
-use yii\base\Event;
-use yii\base\Object;
-use yii\base\UserException;
-use yii\db\Exception as Exception2;
+use common\core\BaseApiController;
 use yii\filters\auth\QueryParamAuth;
-use yii\web\ForbiddenHttpException;
-use yii\web\HttpException;
-use yii\web\Response;
 
 /**
  * Description of BaseApiController

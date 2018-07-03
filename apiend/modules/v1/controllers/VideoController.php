@@ -8,7 +8,7 @@
 
 namespace apiend\modules\v1\controllers;
 
-use apiend\components\ApiController;
+use apiend\controllers\ApiController;
 use apiend\modules\v1\actions\video\CreateVideoAction;
 use common\modules\webuploader\actions\CheckChunkAction;
 use common\modules\webuploader\actions\CheckFileAction;
