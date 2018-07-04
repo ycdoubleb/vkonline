@@ -2,7 +2,7 @@
 
 namespace common\modules\webuploader\controllers;
 
-use common\components\BaseApiController;
+use common\core\BaseApiController;
 use common\modules\webuploader\actions\CheckChunkAction;
 use common\modules\webuploader\actions\CheckFileAction;
 use common\modules\webuploader\actions\DownloadAction;
