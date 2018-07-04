@@ -2,7 +2,7 @@
 
 namespace apiend\modules\v1\controllers;
 
-use apiend\components\ApiController;
+use apiend\controllers\ApiController;
 use DateTime;
 
 /**
