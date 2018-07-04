@@ -33,7 +33,10 @@ class StringUtil {
         if(!is_array($withStr)){
             $withStr = [$withStr];
         }
-        
+        //如果参数path为空，默认为空字符串
+        if($path == null){
+            $path = '';
+        }
         //判断指定的字符串是否存在，若不存在则补全
         $isAppendStr = false;
         foreach ($withStr as $str) {
@@ -44,7 +47,6 @@ class StringUtil {
                 break;
             }
         }
-        
         return $isAppendStr ? $appendStr . $path : $path;
     }
 }

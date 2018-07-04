@@ -1,21 +1,27 @@
 <?php
 
-use yii\helpers\Html;
+use common\models\vk\CustomerWatermark;
+use frontend\modules\admin_center\assets\ModuleAssets;
+use yii\web\View;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\vk\CustomerWatermark */
+/* @var $this View */
+/* @var $model CustomerWatermark */
 
-$this->title = Yii::t('app', 'Update Customer Watermark: ' . $model->name, [
-    'nameAttribute' => '' . $model->name,
+ModuleAssets::register($this);
+
+$this->title = Yii::t('app', "{Update}{Watermark}：{$model->name}", [
+    'Update' => Yii::t('app', 'Update'), 'Watermark' => Yii::t('app', 'Watermark')
 ]);
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Customer Watermarks'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+
 ?>
-<div class="customer-watermark-update">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-
+<div class="customer-watermark-update main">
+    <!-- 页面标题 -->
+    <div class="vk-title">
+        <span>
+            <?= $this->title ?>
+        </span>
+    </div>
+    <!--表单-->
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>
