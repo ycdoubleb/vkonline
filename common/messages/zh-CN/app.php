@@ -339,6 +339,7 @@ return [
     'Mts Status' => '转码状态',
     'Mts Need' => '是否需要转码',
     'Mts Watermark Ids' => '水印配置',
+    'Transcoding' => '转码',
     //前台-操作记录
     'Relative' => '相关',
     //前台-管理中心

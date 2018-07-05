@@ -71,7 +71,7 @@
 /**
  * 水印预览图
  */
-.preview {
+/*.preview {
     position: relative;
     width: 500px;
     height: 280px;
@@ -79,11 +79,11 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100% auto; 
-}
+}*/
 /**
  * 水印图的默认样式
  */
-.watermark {
+/*.watermark {
     position: absolute;
     z-index: 1010;
-}
+}*/

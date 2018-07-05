@@ -4,14 +4,18 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
+use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -137,6 +141,7 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'videoFiles' => json_encode([]),
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),
             ]);
         }
     }
@@ -166,7 +171,7 @@ class VideoController extends Controller
             return $this->render('update', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'videoFiles' => json_encode(Video::getUploadfileByVideo($model->videoFile->file_id)),    //已存在的视频文件
+                'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             ]);
         }
@@ -193,6 +198,46 @@ class VideoController extends Controller
         if (Yii::$app->request->isPost) {
             return ActionUtils::getInstance()->deleteVideo($model);
         }
+    }
+    
+    /**
+     * 选中水印图。
+     * @param integer $cw_id    水印图id
+     * @return string|json
+     */
+    public function actionCheckedWatermark($cw_id)
+    {
+        $watermark = $this->getCustomerWatermark($cw_id);
+        //如果是ajax请求，返回json
+        if(\Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => $watermark, 
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [
+                        'result' => ['id' => $cw_id],
+                    ],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
+        }
+        
+        return [
+            'code'=> 404,
+            'data' => [
+                'result' => ['id' => $cw_id],
+            ],
+            'message' => '请求失败::' . $ex->getMessage(),
+        ];
     }
     
     /**
@@ -228,5 +273,38 @@ class VideoController extends Controller
             ->andWhere(['id' => $courseIds])->all();
         
         return ArrayHelper::map($courses, 'id', 'name');
+    }
+    
+    /**
+     * 获取客户下已启用的所有水印图
+     * @param integer|array $cw_id      水印图id
+     * @return array
+     */
+    protected function getCustomerWatermark($cw_id = null)
+    {
+        //查询客户下的水印图
+        $query = (new Query())->select([
+            'Watermark.id', 'Watermark.width', 'Watermark.height', 
+            'Watermark.dx AS shifting_X', 'Watermark.dy AS shifting_Y', 
+            'Watermark.refer_pos', 'Watermark.is_selected',
+            'Uploadfile.path'
+        ])->from(['Watermark' => CustomerWatermark::tableName()]);
+        //关联实体文件
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Watermark.file_id AND Uploadfile.is_del = 0)');
+        //条件
+        $query->where([
+            'Watermark.customer_id' => \Yii::$app->user->identity->customer_id,
+            'Watermark.is_del' => 0,
+        ]);
+        $query->andFilterWhere(['Watermark.id' => $cw_id]);
+        //查询结果
+        $watermarks = $query->all();
+        //重置is_selected、path属性值
+        foreach ($watermarks as $index => $item) {
+            $watermarks[$index]['is_selected'] = $item['is_selected'] ? 'checked' : null;
+            $watermarks[$index]['path'] = StringUtil::completeFilePath($item['path']);
+        }
+        
+        return $watermarks;
     }
 }

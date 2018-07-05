@@ -339,7 +339,7 @@ class UserController extends BaseController
         }
         //判断当前用户是否是管理员
         if(in_array(Yii::$app->user->id, $userIds)){
-            //判断当前用户是否是主管理员
+            //判断所要修改的用户是否是主管理员
             if(in_array($user_id, $mainAdmin) && $user_id != Yii::$app->user->id){
                 return false;
             }

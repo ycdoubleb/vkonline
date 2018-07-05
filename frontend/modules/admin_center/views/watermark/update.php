@@ -24,6 +24,7 @@ $this->title = Yii::t('app', "{Update}{Watermark}：{$model->name}", [
     <!--表单-->
     <?= $this->render('_form', [
         'model' => $model,
+        'files' => $files
     ]) ?>
 
 </div>

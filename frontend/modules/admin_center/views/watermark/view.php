@@ -1,7 +1,7 @@
 <?php
 
 use common\models\vk\CustomerWatermark;
-use common\utils\StringUtil;
+use common\widgets\watermark\WatermarkAsset;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\web\View;
@@ -11,6 +11,7 @@ use yii\widgets\DetailView;
 /* @var $model CustomerWatermark */
 
 ModuleAssets::register($this);
+WatermarkAsset::register($this);
 
 $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
     'Watermark' => Yii::t('app', 'Watermark'), 'Detail' => Yii::t('app', 'Detail')
@@ -55,7 +56,13 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
             'options' => ['class' => 'table table-bordered detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
-                'customer_id',
+                [
+                    'attribute' => 'customer_id',
+                    'label' => Yii::t('app', '{The}{Customer}', [
+                        'The' => Yii::t('app', 'The'), 'Customer' => Yii::t('app', 'Customer')
+                    ]),
+                    'value' => !empty($model->customer_id) ? $model->customer->name : null,
+                ],
                 [
                     'attribute' => 'name',
                     'label' => Yii::t('app', '{Watermark}{Name}', [
@@ -108,7 +115,7 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
                 [
                     'label' => Yii::t('app', 'Preview'),
                     'format' => 'raw',
-                    'value' => '<div id="preview" class="preview"><img class="watermark" /></div>',
+                    'value' => '<div id="preview" class="preview"></div>',
                 ],
             ],
         ]) ?>
@@ -116,65 +123,17 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
 </div>
 
 <?php
+$path = !empty($model->file_id) ? $model->file->path : '';
 $js = 
 <<<JS
-    /**
-     * 预览水印图位置
-     * @param object|json config
-     */
-    window.cw_pos = function(config){
-        config = $.extend({}, config);
-        //如果width不是整数，则乘底图width
-        if(!Wskeee.StringUtil.isInteger(Number(config.width))){
-            config.width = config.width * $("#preview").width();
-        }
-        //如果width为0的时候，水印图的width为底图width * 0.13
-        if(Number(config.width) == 0){
-            config.width = $("#preview").width() * 0.13;
-        }
-        //如果height不是整数，则乘底图height
-        if(!Wskeee.StringUtil.isInteger(Number(config.height))){
-            config.height = config.height * $("#preview").height();
-        }
-        //如果height为0的时候，水印图的height为底图height * 0.13
-        if(Number(config.height) == 0){
-            config.height = $("#preview").height() * 0.13;
-        }
-        $(".watermark").attr({src: Wskeee.StringUtil.completeFilePath(config.src)})     //水印图路径
-        //判断水印的位置
-        switch(config.refer_pos){
-            case 'TopRight':
-                $(".watermark").css({bottom: '', left: ''})
-                $(".watermark").css({
-                    top: config.shifting_Y + 'px',  right: config.shifting_X + 'px', 
-                    width: config.width + 'px',  height: config.height + 'px',
-                });
-                break;
-            case 'TopLeft':
-                $(".watermark").css({bottom: '', right: ''})
-                $(".watermark").css({
-                    top: config.shifting_Y + 'px', left: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-            case 'BottomRight':
-                $(".watermark").css({top: '', left: ''});
-                $(".watermark").css({
-                    bottom: config.shifting_Y + 'px', right: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-            case 'BottomLeft':
-                $(".watermark").css({top: '', right: ''});
-                $(".watermark").css({
-                    bottom: config.shifting_Y + 'px', left: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-        }
-    }
-    cw_pos({
-        refer_pos: "{$model->refer_pos}", src: "{$model->file->path}",
+    //初始化组件
+    window.watermark = new youxueba.Watermark({
+        container: '#preview'
+    });
+    
+    //添加一个水印
+    window.watermark.addWatermark('vkcw',{
+        refer_pos: "{$model->refer_pos}", path: "{$path}",
         width: "{$model->width}", height: "{$model->height}",
         shifting_X: "{$model->dx}", shifting_Y: "{$model->dy}"
     });
