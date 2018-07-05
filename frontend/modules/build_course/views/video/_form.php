@@ -352,6 +352,10 @@ $js =
     '</div>';
     var item = '';
     $.each($watermarksFiles, function(){
+        //如果id存在已选的水印里则this.is_selected = "checked"
+        if($.inArray(this.id, $wateSelected) != '-1'){
+            this.is_selected = "checked";
+        }
         item += Wskeee.StringUtil.renderDOM(item_dom, this);
         //添加水印
         if(this.is_selected != null){
@@ -359,19 +363,17 @@ $js =
         }
     });
     $('#video-mts_watermark_ids').html(item);
-     
+    /**
+     * 选中水印图
+     * @param object elem
+     */
     window.checkedWatermark = function(elem){
         if($(elem).is(":checked")){
-            $.post("../video/checked-watermark?cw_id=" + $(elem).val(), function(rel){
-                if(rel['code'] == '200'){
-                    var data = rel.data.result;
-                    window.watermark.addWatermark('vkcw' + data[0].id, data[0]);
-                }else{
-                    $.notify({
-                        message: rel['message'],    //提示消息
-                    },{
-                        type: "danger", //错误类型
-                    });
+            $.each($watermarksFiles, function(){
+                //添加水印
+                if(this.id == $(elem).val()){
+                    window.watermark.addWatermark('vkcw' + this.id, this);
+                    return false;
                 }
             });
         }else{

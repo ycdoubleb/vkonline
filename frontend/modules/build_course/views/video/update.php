@@ -2,6 +2,7 @@
 
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
+use yii\helpers\ArrayHelper;
 use yii\web\View;
 
 /* @var $this View */
@@ -27,7 +28,9 @@ $this->title = Yii::t('app', "{Update}{Video}：{$model->name}", [
         'model' => $model,
         'teacherMap' => $teacherMap,
         'videoFiles' => $videoFiles,
+        'watermarksFiles' => $watermarksFiles,
         'tagsSelected' => $tagsSelected,
+        'wateSelected' => $wateSelected
     ]) ?>
 
 </div>

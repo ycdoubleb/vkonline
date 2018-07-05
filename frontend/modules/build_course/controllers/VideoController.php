@@ -141,7 +141,7 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'videoFiles' => json_encode([]),
-                'watermarksFiles' => json_encode($this->getCustomerWatermark()),
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             ]);
         }
     }
@@ -163,7 +163,7 @@ class VideoController extends Controller
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-        
+    
         if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
@@ -172,7 +172,9 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
                 'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
+                'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
             ]);
         }
     }
@@ -198,46 +200,6 @@ class VideoController extends Controller
         if (Yii::$app->request->isPost) {
             return ActionUtils::getInstance()->deleteVideo($model);
         }
-    }
-    
-    /**
-     * 选中水印图。
-     * @param integer $cw_id    水印图id
-     * @return string|json
-     */
-    public function actionCheckedWatermark($cw_id)
-    {
-        $watermark = $this->getCustomerWatermark($cw_id);
-        //如果是ajax请求，返回json
-        if(\Yii::$app->request->isPost){
-            Yii::$app->getResponse()->format = 'json';
-            try
-            { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $watermark, 
-                    ],
-                    'message' => '请求成功！',
-                ];
-            }catch (Exception $ex) {
-                return [
-                    'code'=> 404,
-                    'data' => [
-                        'result' => ['id' => $cw_id],
-                    ],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
-            }
-        }
-        
-        return [
-            'code'=> 404,
-            'data' => [
-                'result' => ['id' => $cw_id],
-            ],
-            'message' => '请求失败::' . $ex->getMessage(),
-        ];
     }
     
     /**
@@ -300,9 +262,9 @@ class VideoController extends Controller
         //查询结果
         $watermarks = $query->all();
         //重置is_selected、path属性值
-        foreach ($watermarks as $index => $item) {
-            $watermarks[$index]['is_selected'] = $item['is_selected'] ? 'checked' : null;
-            $watermarks[$index]['path'] = StringUtil::completeFilePath($item['path']);
+        foreach ($watermarks as $id => $item) {
+            $watermarks[$id]['is_selected'] = $item['is_selected'] ? 'checked' : null;
+            $watermarks[$id]['path'] = StringUtil::completeFilePath($item['path']);
         }
         
         return $watermarks;
