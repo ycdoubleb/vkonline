@@ -43,6 +43,9 @@ class VideoAliyunAction {
         if (!$video) {
             throw new NotFoundHttpException('找不到对应资源！');
         }
+        if ($video->is_link) {
+            return;//外联视频无法转码
+        }
         //检查是否已经上传到OSS
         self::uploadVideoToOSS($video);
         //检查是否已经转码或者在转码中
@@ -236,6 +239,9 @@ class VideoAliyunAction {
         if (!$video) {
             throw new NotFoundHttpException('找不到对应资源！');
         }
+        if ($video->is_link) {
+            return;//外联视频无法上传到OSS
+        }
         try{
             $file = $video->videoFile->uploadfile;
             if ($file->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO || $force) {
@@ -259,6 +265,9 @@ class VideoAliyunAction {
         }
         if (!$video) {
             throw new NotFoundHttpException('找不到对应资源！');
+        }
+        if ($video->is_link) {
+            return;//外联视频无法截图
         }
         //查询源视频文件
         $file = $video->videoFile->uploadfile;
