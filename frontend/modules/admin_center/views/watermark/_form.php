@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\CustomerWatermark;
+use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use yii\helpers\Html;
 use yii\web\View;
@@ -9,6 +10,8 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model CustomerWatermark */
 /* @var $form ActiveForm */
+
+WatermarkAsset::register($this);
 
 ?>
 
@@ -48,16 +51,19 @@ use yii\widgets\ActiveForm;
     ])->label(Yii::t('app', '{Watermark}{Position}', [
         'Watermark' => Yii::t('app', 'Watermark'), 'Position' => Yii::t('app', 'Position')
     ])) ?>
+    
     <!--宽-->
     <?= $form->field($model, 'width')->textInput([
         'type' => 'number', 'min' => 0.00, 'max' => 4096,
         'onchange' => 'changeRefer_pos()'
     ]) ?>
+    
     <!--高-->
     <?= $form->field($model, 'height')->textInput([
         'type' => 'number', 'min' => 0.00, 'max' => 4096,
         'onchange' => 'changeRefer_pos()'
     ]) ?>
+    
     <!--水平偏移-->
     <?= $form->field($model, 'dx')->textInput([
         'type' => 'number', 'min' => 0.00,
@@ -182,6 +188,19 @@ $js =
     function tijiao() {
        return window.uploader.isFinish() //是否已经完成所有上传;
     }
+        
+    //初始化组件
+    window.watermark = new youxueba.Watermark({
+        bg:'#preview'
+    });
+    
+    //添加一个水印
+    window.watermark.addWatermark('w0',{
+        refer_pos: 'TopRight', src: '',
+        width: 0, height: 0, 
+        shifting_X: 0, shifting_Y: 0
+    });
+        
     /**
      * 变更数值，更改对应参数
      @param string path     水印图路径
@@ -192,11 +211,17 @@ $js =
             h = $('input[name="CustomerWatermark[height]"]').val(),
             dx = $('input[name="CustomerWatermark[dx]').val(),
             dy = $('input[name="CustomerWatermark[dy]').val();
-        cw_pos({
+        window.watermark.updateWatermark('w0',{
             refer_pos: pos, src: path,
             width: w, height: h, 
             shifting_X: dx, shifting_Y: dy
         });
+        /*
+        cw_pos({
+            refer_pos: pos, src: path,
+            width: w, height: h, 
+            shifting_X: dx, shifting_Y: dy
+        });*/
     }
     /**
      * 预览水印图位置
