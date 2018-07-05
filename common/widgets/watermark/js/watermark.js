@@ -114,6 +114,18 @@
             }
     }
     
+    /**
+     * 删除水印
+     * @param {string} waterId
+     * @return {void}
+     */
+    Watermark.prototype.removeWatermark = function(waterId){
+        //获取对应 watermark com
+        var tatermark = $('#' + waterId);
+        //删除元素
+        tatermark.remove();
+    }
+    
     window.youxueba = window.youxueba || {};
     window.youxueba.Watermark = Watermark;
     

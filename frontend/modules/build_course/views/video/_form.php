@@ -193,9 +193,8 @@ $this->registerJs($format, View::POS_HEAD);
         ]) ?>
         <div class="col-lg-11 col-md-11">
             <div id="video-mts_watermark_ids">
-                <div class="video-watermark">
-                    <input name="Video[mts_watermark_ids][]" type="checkbox" value="5" checked="true">
-                    <img src="/upload/webuploader/upload/774092f511fc1127be04595560606375.png" width="64" height="40"/>
+                <div class="loading-box">
+                    <span class="loading"></span>
                 </div>
             </div>
         </div>
@@ -301,6 +300,25 @@ $js =
         window.uploader.addCompleteFiles($videoFiles);
     });
     /**
+    * 上传文件完成才可以提交
+    * @return {uploader.isFinish}
+    */
+    function tijiao() {
+       return window.uploader.isFinish();   //是否已经完成所有上传
+    }
+    /**
+     * 判断视频文件是否存在
+     * @return boolean  
+     */
+    function isExist(){
+        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
+        if(len <= 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    /**
      * 添加外部链接
      */
     $("#outside_link").change(function(){
@@ -320,27 +338,46 @@ $js =
                 });
             }
         });
-    }); 
-    
+    });
+    //初始化水印组件
+    window.watermark = new youxueba.Watermark({
+        container: '#preview'
+    });
     /**
-    * 上传文件完成才可以提交
-    * @return {uploader.isFinish}
-    */
-    function tijiao() {
-       return window.uploader.isFinish();   //是否已经完成所有上传
-    }
-    /**
-     * 判断视频文件是否存在
-     * @return boolean  
+     * 显示客户下已启用的水印图
      */
-    function isExist(){
-        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
-        if(len <= 0){
-            return false;
-        }else{
-            return true;
+    var item_dom = '<div class="video-watermark">' +
+        '<input name="Video[mts_watermark_ids][]" type="checkbox" value="{%id%}" {%is_selected%} onchange="checkedWatermark($(this))">' + 
+        '<img src="{%path%}" width="64" height="40"/>' +
+    '</div>';
+    var item = '';
+    $.each($watermarksFiles, function(){
+        item += Wskeee.StringUtil.renderDOM(item_dom, this);
+        //添加水印
+        if(this.is_selected != null){
+            window.watermark.addWatermark('vkcw' + this.id, this);
         }
-    }    
+    });
+    $('#video-mts_watermark_ids').html(item);
+     
+    window.checkedWatermark = function(elem){
+        if($(elem).is(":checked")){
+            $.post("../video/checked-watermark?cw_id=" + $(elem).val(), function(rel){
+                if(rel['code'] == '200'){
+                    var data = rel.data.result;
+                    window.watermark.addWatermark('vkcw' + data[0].id, data[0]);
+                }else{
+                    $.notify({
+                        message: rel['message'],    //提示消息
+                    },{
+                        type: "danger", //错误类型
+                    });
+                }
+            });
+        }else{
+            window.watermark.removeWatermark('vkcw' + $(elem).val());
+        }
+    }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
