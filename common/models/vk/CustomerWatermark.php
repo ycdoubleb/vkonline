@@ -3,6 +3,7 @@
 namespace common\models\vk;
 
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\StringUtil;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -26,6 +27,7 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
+ * @property Customer $customer 客户
  * @property Uploadfile $file 实体文件
  */
 class CustomerWatermark extends ActiveRecord {
@@ -123,12 +125,13 @@ class CustomerWatermark extends ActiveRecord {
         ];
     }
     
-//    public function beforeSave($insert) {
-//        if (parent::beforeSave($insert)) {
-//            return true;
-//        }
-//        return false;
-//    }
+    /**
+     * 客户
+     * @return ActiveQuery Description
+     */
+    public function getCustomer(){
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
     
     /**
      * 实体文件
@@ -166,5 +169,4 @@ class CustomerWatermark extends ActiveRecord {
         
         return $cws;
     }
-
 }

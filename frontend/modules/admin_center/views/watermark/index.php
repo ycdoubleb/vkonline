@@ -8,6 +8,7 @@ use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -180,6 +181,7 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
                     'plugOptions' => [
                         'labels' => ['停用', '启用'],
                         'values' => [1, 0],
+                        'url' => Url::to(['enable'], true),
                     ],
                     'headerOptions' => [
                         'style' => [

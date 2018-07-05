@@ -25,6 +25,7 @@ $this->title = Yii::t('app', '{Add}{Watermark}', [
     <!--表单-->
     <?= $this->render('_form', [
         'model' => $model,
+        'files' => $files
     ]) ?>
 
 </div>

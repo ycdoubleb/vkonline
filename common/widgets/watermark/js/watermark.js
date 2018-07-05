@@ -2,20 +2,23 @@
     /**
      * 
      * @param {Object} config
-     *      bg String 背景ID
+     *      container string 容器id
+     *      background string 图片 or 颜色
+     *      watermark string 水印：图片或其他
      * @returns {void}
      */
     var Watermark = function(config){
         /* 配置 */
-        this.config = $.extends({
-            bg:'#bg',
+        this.config = $.extend({
             container:'#container',
+            background: '',
+            watermark: '<img />'
         },config);
         
         /* 容器 */
         this.container = $(this.config['container']);
         /* 背景 */
-        this.bg = null;
+        this.container.css({"background": this.config['background']});
         /* 所有水印 */
         this.watermarks = {};
     }
@@ -26,14 +29,13 @@
      * @param {type} waterConfig        水印配置
      * @returns {void}
      */
-    Watermark.property.addWatermark = function (waterId, waterConfig) {
+    Watermark.prototype.addWatermark = function (waterId, waterConfig) {
         this.watermarks [waterId] = waterConfig;
         //找到原先的 watermark com，如果没有新建
-        //...
-        //$('<img id="'+waterId+'"/>').appendTo(this.container);
+        if(this.container.find($(this.config['watermark'])).length <= 0){
+            $(this.config['watermark']).attr("id", waterId).addClass('watermark').appendTo(this.container);
+        }
         //更新水印
-        //...
-        
         this.updateWatermark(waterId, waterConfig);
     }
 
@@ -46,7 +48,7 @@
     Watermark.prototype.updateWatermark = function (waterId, waterConfig) {
         this.watermarks [waterId] = waterConfig;
         //获取对应 watermark com
-        var tatermark = null;//....
+        var tatermark = $('#' + waterId);
         
         //验证数据
         var config = waterConfig;
@@ -56,7 +58,7 @@
             //百份比
             config.width = config.width <= 0 ? config.width = 0.13 : config.width;
             config.width = config.width > 1 ? config.width = 1 : config.width;
-            config.width = config.width * this.bg.width();
+            config.width = config.width * this.container.width();
         }else if(config.width >= 8){
             //真实大小
             config.width = config.width > 4096 ? config.width = 4096 : config.width;
@@ -66,14 +68,16 @@
             //百份比
             config.height = config.height <= 0 ? config.height = 0.13 : config.height;
             config.height = config.height > 1 ? config.height = 1 : config.height;
-            config.height = config.height * this.bg.height();
+            config.height = config.height * this.container.height();
         }else if(config.height >= 8){
             //真实大小
             config.height = config.height > 4096 ? config.height = 4096 : config.height;
         }
         
         //更新水印图片
-        tatermark.attr({src: Wskeee.StringUtil.completeFilePath(config.src)})     //水印图路径
+        if(tatermark.get(0).tagName == 'IMG'){
+            tatermark.attr({src: Wskeee.StringUtil.completeFilePath(config.path)})
+        }
         
         //判断水印的位置
         switch (config.refer_pos) {

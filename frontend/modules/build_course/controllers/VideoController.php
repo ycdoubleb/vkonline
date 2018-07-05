@@ -4,14 +4,18 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
+use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -137,6 +141,7 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'videoFiles' => json_encode([]),
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),
             ]);
         }
     }
@@ -166,7 +171,7 @@ class VideoController extends Controller
             return $this->render('update', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'videoFiles' => json_encode(Video::getUploadfileByVideo($model->videoFile->file_id)),    //已存在的视频文件
+                'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             ]);
         }
@@ -228,5 +233,35 @@ class VideoController extends Controller
             ->andWhere(['id' => $courseIds])->all();
         
         return ArrayHelper::map($courses, 'id', 'name');
+    }
+    
+    /**
+     * 获取客户下的所有水印图
+     * @return array
+     */
+    protected function getCustomerWatermark()
+    {
+        //查询客户下的水印图
+        $query = (new Query())->select([
+            'Watermark.id', 'Watermark.width', 'Watermark.height', 
+            'Watermark.dx AS shifting_X', 'Watermark.dy AS shifting_X', 
+            'Watermark.refer_pos', 'Watermark.is_selected',
+            'Uploadfile.path'
+        ])->from(['Watermark' => CustomerWatermark::tabelName()]);
+        //关联实体文件
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Watermark.file_id');
+        //条件
+        $query->where([
+            'customer_id' => \Yii::$app->user->identity->customer_id,
+            'is_del' => 0,
+        ]);
+        
+        $watermarks = $query->all();
+        //重置path属性值
+        foreach ($watermarks as $index => $item) {
+            $watermarks[$index]['path'] = StringUtil::completeFilePath($item['path']);
+        }
+        
+        return $watermarks;
     }
 }

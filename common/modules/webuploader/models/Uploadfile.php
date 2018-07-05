@@ -4,11 +4,14 @@ namespace common\modules\webuploader\models;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
+use common\utils\StringUtil;
 use OSS\Core\OssException;
 use Yii;
 use yii\base\Exception;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 /**
  * This is the model class for table "{{%uploadfile}}".
@@ -182,5 +185,32 @@ class Uploadfile extends ActiveRecord {
             return ['success' => false, 'msg' => $ex->getMessage()];
         }
     }
-
+    
+    /**
+     * 获取已上传的实体文件信息
+     * @param string $fileId    文件id
+     * @return ActiveQuery  ['id', 'name', 'path', 'thumb_path', 'size']
+     */
+    public static function getUploadfileByFileId($fileId)
+    {
+        //查询实体文件
+        $uploadFile = (new Query())->select([
+            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.path', 
+            'Uploadfile.thumb_path', 'Uploadfile.size'
+        ])->from(['Uploadfile' => self::tableName()]);
+        //条件查询
+        $uploadFile->where([
+            'Uploadfile.id' => $fileId,
+            'Uploadfile.is_del' => 0
+        ]);
+        $file = $uploadFile->one();
+        if(!empty($file)){
+            //重置path、thumb_path
+            $file['path'] = StringUtil::completeFilePath($file['path']);
+            $file['thumb_path'] = StringUtil::completeFilePath($file['thumb_path']);
+            return [$file];
+        }else{
+            return [];
+        }
+    }
 }

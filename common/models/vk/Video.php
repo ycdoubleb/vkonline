@@ -267,33 +267,6 @@ class Video extends ActiveRecord
     {
         return $this->hasMany(VideoFile::className(), ['video_id' => 'id']);
     }
-            
-    /**
-     * 获取已上传的视频
-     * @return ActiveQuery
-     */
-    public static function getUploadfileByVideo($fileId)
-    {
-        //查询实体文件
-        $uploadFile = (new Query())->select([
-            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.path', 
-            'Uploadfile.thumb_path', 'Uploadfile.size'
-        ])->from(['Uploadfile' => Uploadfile::tableName()]);
-        //条件查询
-        $uploadFile->where([
-            'Uploadfile.id' => $fileId,
-            'Uploadfile.is_del' => 0
-        ]);
-        $videoFile = $uploadFile->one();
-        if(!empty($videoFile)){
-            //重置path、thumb_path
-            $videoFile['path'] = StringUtil::completeFilePath($videoFile['path']);
-            $videoFile['thumb_path'] = StringUtil::completeFilePath($videoFile['thumb_path']);
-            return [$videoFile];
-        }else{
-            return [];
-        }
-    }
     
     /**
      * 检查目标路径是否存在，不存即创建目标
