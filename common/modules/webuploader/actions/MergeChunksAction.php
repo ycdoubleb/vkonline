@@ -30,7 +30,7 @@ use yii\web\HttpException;
  *
  * @author Administrator
  */
-class MergeChunksAction extends Action{
+class MergeChunksAction extends Action {
 
     public function run() {
         //应用
@@ -140,6 +140,12 @@ class MergeChunksAction extends Action{
                     }
                     //删除数据库分片数据记录
                     Yii::$app->db->createCommand()->delete(UploadfileChunk::tableName(), ['file_id' => $fileMd5])->execute();
+                    //上传到OSS
+                    $result = $dbFile->uploadOSS();
+                    if(!$result['success']){
+                        return new UploadResponse(UploadResponse::CODE_UPLOAD_OSS_FAIL, null, $result['msg']);
+                    }
+                    
                     // Return Success JSON-RPC response
                     return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
                 } else {
@@ -149,7 +155,7 @@ class MergeChunksAction extends Action{
         }
         return new UploadResponse(UploadResponse::CODE_COMMON_UNKNOWN);
     }
-    
+
     /**
      * 创建文件缩略图，只会对视频和图片生成缩略图
      * @param string $filepath      文件路径
@@ -175,9 +181,9 @@ class MergeChunksAction extends Action{
         }
         if ($type == '') {
             //其它文件不创建缩略图，返回''
-            return "imgs/upload_filetype_icons/".$this->getExt($fileinfo['extension']).'.png';
+            return "imgs/upload_filetype_icons/" . $this->getExt($fileinfo['extension']) . '.png';
         }
-        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg?rand='. rand(0, 1000);
+        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg?rand=' . rand(0, 1000);
         $this->mkdir($fileinfo['dirname'] . '/thumbs/');
         Image::$thumbnailBackgroundColor = '000';
         switch ($type) {
@@ -224,7 +230,7 @@ class MergeChunksAction extends Action{
         }
         return $ext;
     }
-    
+
     /**
      * 创建目录
      * @param string $path
@@ -236,21 +242,20 @@ class MergeChunksAction extends Action{
             }
         }
     }
-    
-    
+
     /**
      * 只读文件起始到指定字节数
      * @param type $file
      * @return type
      */
     /*
-    private function md5($file) {
-        $fragment = 65536;
-        $rh = fopen($file, 'rb');
-        $size = filesize($file);
-        $part1 = fread($rh, $size > $fragment ? $fragment : $size);
-        fclose($rh);
-        return md5($part1);
-    }
-    */
+      private function md5($file) {
+      $fragment = 65536;
+      $rh = fopen($file, 'rb');
+      $size = filesize($file);
+      $part1 = fread($rh, $size > $fragment ? $fragment : $size);
+      fclose($rh);
+      return md5($part1);
+      }
+     */
 }

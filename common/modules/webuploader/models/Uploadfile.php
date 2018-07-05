@@ -36,7 +36,6 @@ use yii\db\Query;
  * @property string $oss_path       码率
  * @property string $oss_etag       ETag 在每个Object生成的时候被创建，用于标示一个Object的内容。
  * @property int $oss_upload_status        上传状态：0未上传，1上传中，2已上传
- * @property int $mts_status               转码状态：0未转码，1已转码
  * @property string $created_by 上传人
  * @property string $deleted_by 删除人ID
  * @property string $deleted_at 删除时间
@@ -54,15 +53,7 @@ class Uploadfile extends ActiveRecord {
     /* 未上传 */
     const OSS_UPLOAD_STATUS_NO = 0;
     /* 已上传 */
-    const OSS_UPLOAD_STATUS_YES = 2;
-    /* 未转码 */
-    const MTS_STATUS_NO = 0;
-    /* 转码中 */
-    const MTS_STATUS_DOING = 1;
-    /* 已转码 */
-    const MTS_STATUS_YES = 2;
-    /* 转码失败 */
-    const MTS_STATUS_FAIL = 5;
+    const OSS_UPLOAD_STATUS_YES = 1;
 
     /** 类型 */
     public static $TYPES = [
@@ -93,7 +84,7 @@ class Uploadfile extends ActiveRecord {
         return [
             [['id'], 'required'],
             [['download_count', 'del_mark', 'size', 'is_del', 'is_fixed', 'is_link', 'width', 'height', 'level', 'bitrate',
-            'oss_upload_status', 'mts_status', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
+            'oss_upload_status',  'deleted_at', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
             [['name', 'path', 'thumb_path', 'oss_key', 'oss_path', 'oss_etag'], 'string', 'max' => 255],
@@ -127,7 +118,6 @@ class Uploadfile extends ActiveRecord {
             'oss_path' => Yii::t('app', 'OSS Path'),
             'oss_etag' => Yii::t('app', 'OSS ETag'),
             'oss_upload_status' => Yii::t('app', 'OSS Upload Status'),
-            'mts_status' => Yii::t('app', 'Mts Status'),
             'created_by' => Yii::t('app', 'Created By'),
             'deleted_by' => Yii::t('app', 'Deleted By'),
             'deleted_at' => Yii::t('app', 'Deleted At'),
@@ -161,8 +151,6 @@ class Uploadfile extends ActiveRecord {
                 return ['success' => false, 'msg' => '用户未加入任何品牌！'];
             }
 
-            //设置上传到的OSS
-            $oss_bucket_input = Yii::$app->params['aliyun']['oss']['bucket-input'];
             //设置文件名
             $object_key = "{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
         }else{
@@ -170,7 +158,7 @@ class Uploadfile extends ActiveRecord {
         }
        
         try {
-            $result = Aliyun::getOss()->multiuploadFile($oss_bucket_input, $object_key, $this->path);
+            $result = Aliyun::getOss()->multiuploadFile($object_key, $this->path);
             //更新数据
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
             $this->oss_path = $result['oss-request-url'];

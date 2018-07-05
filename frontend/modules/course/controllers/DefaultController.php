@@ -2,8 +2,6 @@
 
 namespace frontend\modules\course\controllers;
 
-use common\components\aliyuncs\Aliyun;
-use common\components\aliyuncs\MtsService;
 use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\CommentPraise;
@@ -21,7 +19,7 @@ use common\models\vk\SearchLog;
 use common\models\vk\searchs\CourseListSearch;
 use common\models\vk\Teacher;
 use common\modules\webuploader\models\Uploadfile;
-use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\VideoAliyunAction;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -60,12 +58,12 @@ class DefaultController extends Controller {
     }
 
     public function actionIndex() {
-        Aliyun::getMts()->updatePipeline(MtsService::PIPE_STATE_PAUSED);
-        //做点什么...
-        Aliyun::getMts()->updatePipeline(MtsService::PIPE_STATE_ACTIVE);
-        return;
-        $result = ActionUtils::getInstance()->addVideoTranscode('e347b85a64dd765bf28aa6e958e60363');
-        echo json_encode($result['response']);
+        //测试视频
+        $result = VideoAliyunAction::addVideoTranscode('e347b85a64dd765bf28aa6e958e60363',true);
+        exit;
+        //测试长视频
+        $result = VideoAliyunAction::addVideoTranscode('0a254e1c7b0323ef5475d75540618d68');
+        exit;
     }
 
     /**
