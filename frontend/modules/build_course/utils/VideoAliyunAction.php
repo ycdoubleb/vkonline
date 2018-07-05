@@ -9,7 +9,6 @@ use common\models\vk\Video;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
-use yii\db\Exception;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
@@ -79,7 +78,7 @@ class VideoAliyunAction {
                     //批量添加记录
                     AliyunMtsService::batchInsertServiceForMts($video->id, $result['response']);
                     $tran->commit();
-                } catch (Exception $ex) {
+                } catch (\Exception $ex) {
                     $tran->rollBack();
                     //取消转码任务
                     Aliyun::getMts()->cancelJob(ArrayHelper::getColumn($rows, 1));
