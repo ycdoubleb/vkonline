@@ -41,7 +41,6 @@ class MtsService extends Component {
     private $templateIdKeys = ['LD', 'SD', 'HD', 'FD'];
     // 水印模板ID
     private $water_mark_template_id;
-    
     private $client;
 
     public function __construct($config = array()) {
@@ -71,7 +70,7 @@ class MtsService extends Component {
 
         //初始水印模板ID
         $this->water_mark_template_id = $params_mts['water_mark_template_id'];
-        
+
         // 创建DefaultAcsClient实例并初始化
         $this->clientProfile = DefaultProfile::getProfile(
                         $this->mps_region_id, //您的 Region ID
@@ -143,7 +142,7 @@ class MtsService extends Component {
                 'UserData' => array_merge(['level' => $index], $user_data), //用户自义数据[video_id,source_file_id]
             ];
         }
-
+        
         $request->setOUtputs(json_encode($outputs));
         $request->setOutputBucket($this->oss_bucket_output);
         $request->setOutputLocation($this->oss_location);
@@ -169,24 +168,21 @@ class MtsService extends Component {
         //暂时管道工作
         $this->updatePipeline(self::PIPE_STATE_PAUSED);
 
-        if(is_array($jobIds)){
-            foreach($jobIds as $jobId){
-                $this->_cancelJob($jobId);
-            }
-        }else{
-            $this->_cancelJob($jobIds);
-        }
+        $jobIds = is_array($jobIds) ? $jobIds : [$jobIds];
 
+        foreach ($jobIds as $jobId) {
+            $this->_cancelJob($jobId);
+        }
         //开始管理工作
         $this->updatePipeline(self::PIPE_STATE_ACTIVE);
     }
-    
+
     /**
      * 取消任务
      * 
      * @param array $jobId      相关任务id
      */
-    private function _cancelJob($jobId){
+    private function _cancelJob($jobId) {
         //取消任务
         $client = $this->client;
         //创建API请求并设置参数
@@ -194,7 +190,7 @@ class MtsService extends Component {
         $request->setAcceptFormat('JSON');
         //发起请求并处理返回
         $request->setJobId($jobId);
-        
+
         try {
             $response = $client->getAcsResponse($request);
             return ['success' => true, 'response' => $response];
@@ -213,7 +209,7 @@ class MtsService extends Component {
     public function updatePipeline($state) {
         //数值校证
         $state = $state == self::PIPE_STATE_ACTIVE ? $state : self::PIPE_STATE_PAUSED;
-        
+
         $client = $this->client;
         //创建API请求并设置参数
         $request = new Mts\UpdatePipelineRequest();
@@ -226,6 +222,127 @@ class MtsService extends Component {
         $request->setName('mts-service-pipeline');
 
         //发起请求并处理返回
+        try {
+            $response = $client->getAcsResponse($request);
+            return ['success' => true, 'response' => $response];
+        } catch (ServerException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        } catch (ClientException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * 查询任务详情
+     * 
+     * @param string|array $jobIds  任务ID 
+     */
+    public function queryJobList($jobIds) {
+        $jobIds = is_array($jobIds) ? $jobIds : [$jobIds];
+
+        $client = $this->client;
+        //创建API请求并设置参数
+        $request = new Mts\QueryJobListRequest();
+        $request->setAcceptFormat('JSON');
+
+        //发起请求并处理返回
+        $request->setJobIds(implode(',', $jobIds));
+
+        try {
+            $response = $client->getAcsResponse($request);
+            return ['success' => true, 'response' => $response];
+        } catch (ServerException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        } catch (ClientException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * 提交截图任务
+     * 
+     * @param string $oss_input_object      输入名称（输入Bucket下），输出名称（输出Bucket下），默认与输入文件同名，连接截图名称格式：input_00001.jpg
+     * @param int $start_time               开始时间
+     * @param int $snapshot_count           截图数量
+     * @param int $snapshot_interval        截图间隔
+     */
+    public function submitSnapshotJob($oss_input_object, $start_time = 3000, $snapshot_count = 1, $snapshot_interval = 0) {
+
+        $snapshot_count = $snapshot_count > 1 ? $snapshot_count : 1;
+        $snapshot_interval = $snapshot_interval < 0 ? 0 : $snapshot_interval;
+
+        //对象输入名、输入出名
+        $pathinfo = pathinfo($oss_input_object);
+        $oss_output_object_prefix = $pathinfo['dirname'] . '/' . $pathinfo['filename'];
+
+        $client = $this->client;
+        //创建API请求并设置参数
+        $request = new Mts\SubmitSnapshotJobRequest();
+        $request->setAcceptFormat('JSON');
+
+        //输入配置
+        $input = [
+            'Location' => $this->oss_location,
+            'Bucket' => $this->oss_bucket_input,
+            'Object' => urlencode($oss_input_object)
+        ];
+        $request->setInput(json_encode($input));
+
+        //输出配置
+        $output_name = $snapshot_count > 0 ? $oss_output_object_prefix . '_{Count}.jpg' : $oss_output_object_prefix . '.jpg';
+        $output = [
+            'Location' => $this->oss_location,
+            'Bucket' => $this->oss_bucket_output,
+            'Object' => urlencode($output_name)
+        ];
+
+        //截图配置
+        $snapshot_config = [
+            'OutputFile' => $output,
+            'Time' => $start_time,
+            'Num' => $snapshot_count,
+        ];
+        $snapshot_interval <= 0 ?: $snapshot_config['Interval'] = $snapshot_interval;
+
+        $request->setSnapshotConfig(json_encode($snapshot_config));
+
+        //设置管道
+        $request->setPipelineId($this->pipeline_id);
+
+        //截图路径
+        $snapshot_paths = [];
+        $host_output = \Yii::$app->params['aliyun']['oss']['host-output'];
+        for ($i = 1; $i <= $snapshot_count; $i++) {
+            $count = sprintf('%05s', $i);
+            $snapshot_paths [] = "http://{$host_output}/{$oss_output_object_prefix}_{$count}.jpg";
+        }
+
+        try {
+            $response = $client->getAcsResponse($request);
+            return ['success' => true, 'response' => $response, 'snapshot_paths' => $snapshot_paths];
+        } catch (ServerException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        } catch (ClientException $e) {
+            return ['success' => false, 'code' => $e->getErrorCode(), 'msg' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * 查询截图任务详情
+     * 
+     * @param string|array $jobIds  任务ID
+     */
+    public function querySnapshotJobList($jobIds) {
+        $jobIds = is_array($jobIds) ? $jobIds : [$jobIds];
+
+        $client = $this->client;
+        //创建API请求并设置参数
+        $request = new Mts\QuerySnapshotJobListRequest();
+        $request->setAcceptFormat('JSON');
+
+        //发起请求并处理返回
+        $request->setSnapshotJobIds(implode(',', $jobIds));
+
         try {
             $response = $client->getAcsResponse($request);
             return ['success' => true, 'response' => $response];

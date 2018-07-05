@@ -134,7 +134,7 @@ class CustomerWatermark extends ActiveRecord {
      */
     public static function findAllForMts($condition) {
         /* @var $cw CustomerWatermark */
-        $result = self::find($condition)->with('file')->all();
+        $result = self::find()->where($condition)->with('file')->all();
         $cws = [];
         foreach ($result as $cw) {
             $cw_t [] = [

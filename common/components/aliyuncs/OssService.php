@@ -34,14 +34,14 @@ class OssService extends Component {
     /**
      * multipart上传统一封装，从初始化到完成multipart，以及出错后中止动作
      *
-     * @param string $bucket bucket名称
      * @param string $object object名称
      * @param string $file 需要上传的本地文件的路径
      * @param array $options Key-Value数组
      * @return null
      * @throws OssException
      */
-    public function multiuploadFile($bucket, $object, $file, $options = null) {
+    public function multiuploadFile($object, $file, $options = null) {
+        $bucket = Yii::$app->params['aliyun']['oss']['bucket-input'];
         return $this->ossClient->multiuploadFile($bucket, $object, $file, $options);
     }
 
@@ -142,6 +142,28 @@ class OssService extends Component {
      */
     public function getObjectMeta($bucket, $object, $options = null) {
         return $this->ossClient->getObjectMeta($bucket, $object, $options);
+    }
+
+    /**
+     * 获取输入文件Object的Meta信息
+     *
+     * @param string $object object名称
+     * @param string $options 具体参考SDK文档
+     * @return array
+     */
+    public function getInputObjectMeta($object, $options = null) {
+        return $this->getObjectMeta(Yii::$app->params['aliyun']['oss']['bucket-input'], $object, $options);
+    }
+
+    /**
+     * 获取输出文件Object的Meta信息
+     *
+     * @param string $object object名称
+     * @param string $options 具体参考SDK文档
+     * @return array
+     */
+    public function getOutputObjectMeta($object, $options = null) {
+        return $this->getObjectMeta(Yii::$app->params['aliyun']['oss']['bucket-output'], $object, $options);
     }
 
 }

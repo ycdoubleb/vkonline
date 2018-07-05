@@ -781,6 +781,7 @@ class ActionUtils
      * 
      * @param string|Video $video       视频资源
      * @param bool $force               是否强制添加（【正在转码中】和【已完成转码】的资源在没有设置force情况不再触发转码操作）
+     * @author wskeee
      */
     public function addVideoTranscode($video, $force = false) {
         if (!($video instanceof Video)) {
@@ -790,28 +791,29 @@ class ActionUtils
             throw new NotFoundHttpException('找不到对应资源！');
         }
         //检查是否已经上传到OSS
-        if ($video->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO) {
-            $this->uploadVideoToOSS($video, $force);
-        }
-
+        $this->uploadVideoToOSS($video);
         //检查是否已经转码或者在转码中
-        if ($force || $video->mts_status == Uploadfile::MTS_STATUS_NO || $video->mts_status == Uploadfile::MTS_STATUS_FAIL) {
+        if ($force || $video->mts_status == Video::MTS_STATUS_NO || $video->mts_status == Video::MTS_STATUS_FAIL) {
             //源文件
             $source_file = $video->videoFile->uploadfile;
             //水印配置
-            $water_mark_options = CustomerWatermark::findAllForMts(['id' => explode(',', $video->mts_watermark_ids),'is_del' => 0]);
+            $water_mark_options = CustomerWatermark::findAllForMts(['id' => explode(',', $video->mts_watermark_ids), 'is_del' => 0]);
             //用户自定数据，转码后用于关联数据
             $user_data = [
-                'source_file_id' => $source_file->id,
+                'video_id' => $video->id,
+                'created_by' => $source_file->created_by,
             ];
             //获取已完成转码文件等级
-            $hasDoneLevels = AliyunMtsService::getFinishLevel($video->id);
-            //执行转码操作
+            $hasDoneLevels = [];//AliyunMtsService::getFinishLevel($video->id);
+            /**
+             * 执行转码操作
+             * 提交后等待转码完成回调 AliyunMtsController::actionTaskComplete()
+             */
             $result = Aliyun::getMts()->addTranscode($source_file->oss_key, $water_mark_options, $hasDoneLevels, $user_data);
             if ($result['success']) {
                 //修改视频为转码中状态
-                $video->mts_status = Uploadfile::MTS_STATUS_DOING;
-                $tran = \Yii::$app->db->beginTransaction();
+                $video->mts_status = Video::MTS_STATUS_DOING;
+                $tran = \Yii::$app->db->beginTransaction(); 
                 try {
                     //清旧任务记录
                     AliyunMtsService::updateAll(['is_del' => 1], ['video_id' => $video->id]);
@@ -824,7 +826,7 @@ class ActionUtils
                     Aliyun::getMts()->cancelJob(ArrayHelper::getColumn($rows, 1));
                 }
             } else {
-                $video->mts_status = Uploadfile::MTS_STATUS_FAIL;
+                $video->mts_status = Video::MTS_STATUS_FAIL;
             }
             $video->save(false, ['mts_status']);
         }
@@ -835,21 +837,57 @@ class ActionUtils
      * 
      * @param string|Video $video   视频资源
      * @param bool $force           是否强制上传，设置true时，已经上传的文件会重新上传一次
+     * @author wskeee
      */
-    public function uploadVideoToOSS($video, $force) {
+    public function uploadVideoToOSS($video, $force = false) {
         if (!($video instanceof Video)) {
             $video = Video::findOne(['id' => $video, 'is_del' => 0]);
         }
         if (!$video) {
             throw new NotFoundHttpException('找不到对应资源！');
         }
+        try{
+            $file = $video->videoFile->uploadfile;
+            if ($file->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO || $force) {
+                $result = $file->uploadOSS();
+            }
+        } catch (Exception $ex) {
+            throw new NotFoundHttpException('找不到对应实体文件！');
+        }
+    }
 
-        if ($video->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO || $force) {
-            $file = $video->videoFile;
-            if ($file) {
-                $result = $file->uploadfile->uploadOSS();
-            } else {
-                throw new NotFoundHttpException('找不到对应实体文件！');
+    /**
+     * 添加视频截图
+     * 
+     * @param string|Video $video       视频ID｜视频模型
+     * @param int $start_time           截图时间
+     * @author wskeee
+     */
+    public function addVideoSnapshot($video, $start_time = 3000) {
+        if (!($video instanceof Video)) {
+            $video = Video::findOne(['id' => $video, 'is_del' => 0]);
+        }
+        if (!$video) {
+            throw new NotFoundHttpException('找不到对应资源！');
+        }
+        //查询源视频文件
+        $file = $video->videoFile->uploadfile;
+        if (!$file) {
+            throw new NotFoundHttpException('视频未上传！');
+        }
+        //提交截图任务(异步)
+        $result = Aliyun::getMts()->submitSnapshotJob($file->oss_key);
+        if ($result['success']) {
+            try{
+                //获取截图路径
+                $snapshot_paths = $result['snapshot_paths'];
+                //更新Video和源文件图片路径
+                $file->thumb_path = $snapshot_paths[0];
+                $video->img = $snapshot_paths[0];
+                $file->save(false, ['thumb_path']);
+                $video->save(false, ['img']);
+            } catch (Exception $ex) {
+                \Yii::error("Vid= {$video->id},截图失败：{$ex->getMessage()}");
             }
         }
     }

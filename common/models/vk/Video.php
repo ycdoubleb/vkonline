@@ -70,6 +70,15 @@ class Video extends ActiveRecord
     /** 发布状态-已发布 */
     const YES_PUBLISH = 1;
     
+    /* 未转码 */
+    const MTS_STATUS_NO = 0;
+    /* 转码中 */
+    const MTS_STATUS_DOING = 1;
+    /* 已转码 */
+    const MTS_STATUS_YES = 2;
+    /* 转码失败 */
+    const MTS_STATUS_FAIL = 5;
+    
     /**
      * 可见范围
      * @var array 
