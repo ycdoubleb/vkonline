@@ -9,6 +9,7 @@ use Mts\Request\V20140618 as Mts;
 use ServerException;
 use Yii;
 use yii\base\Component;
+use yii\helpers\ArrayHelper;
 
 /**
  * 转码服务
@@ -108,15 +109,13 @@ class MtsService extends Component {
         $water_mark_options_new = [];
         if ($water_mark_options) {
             foreach ($water_mark_options as $index => $options) {
-                if ($index < 20 && isset($options['water_mark_object'])) {
-                    $water_mark_options_new [] = array_merge([
+                if ($index < 20) {
+                    $water_mark_options_new [] = ArrayHelper::merge([
                         'InputFile' => [
                             'Bucket' => $this->oss_bucket_input,
                             'Location' => $this->oss_location,
-                            'Object' => urlencode($options['water_mark_object']),
                         ],
-                        'WaterMarkTemplateId' => $this->water_mark_template_id,
-                            ], $options);
+                        'WaterMarkTemplateId' => $this->water_mark_template_id,], $options);
                 }
             }
         }
@@ -142,7 +141,6 @@ class MtsService extends Component {
                 'UserData' => array_merge(['level' => $index], $user_data), //用户自义数据[video_id,source_file_id]
             ];
         }
-        
         $request->setOUtputs(json_encode($outputs));
         $request->setOutputBucket($this->oss_bucket_output);
         $request->setOutputLocation($this->oss_location);
