@@ -148,12 +148,12 @@ class CustomerWatermark extends ActiveRecord {
         $result = self::find()->where($condition)->with('file')->all();
         $cws = [];
         foreach ($result as $cw) {
-            $cw_t [] = [
+            $cw_t = [
                 'InputFile' => [
                     'Object' => urldecode($cw->file->oss_key),      //水印输入文件名
                 ],
-                'Dx' => $cw->dx,                                    //水平偏移
-                'Dy' => $cw->dy,                                    //垂直偏移
+                'Dx' => $cw->dx > 1 ? intval($cw->dx) : $cw->dx,    //水平偏移
+                'Dy' => $cw->dy > 1 ? intval($cw->dy) : $cw->dy,    //垂直偏移
                 'ReferPos' => $cw->refer_pos,                       //位置
             ];
             if($cw->width != 0 && $cw->height != 0){
