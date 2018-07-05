@@ -3,6 +3,7 @@
 namespace common\models\vk;
 
 use Yii;
+use yii\base\Object;
 use yii\db\ActiveRecord;
 
 /**
@@ -88,18 +89,20 @@ class AliyunMtsService extends ActiveRecord {
         //保存调用记录，用于完成核实
         $rows = [];
         $time = time();
-        $request_id = $result['response']->RequestId;
-        foreach ($result['response']->JobResultList->JobResult as $JobResult) {
+        $request_id = $response->RequestId;
+        foreach ($response->JobResultList->JobResult as $JobResult) {
+            $userData = json_decode($JobResult->Job->Output->UserData);
             $rows [] = [
-                $request_id,
-                $JobResult->Job->JobId,
-                $video->id,
-                $JobResult->Success ? 0 : 1,
-                \Yii::$app->user->id,
-                $time, $time
+                $request_id,                        //请求ID
+                $JobResult->Job->JobId,             //任务ID
+                $video_id,                          //视频ID
+                $JobResult->Success ? 0 : 1,        //提交任务是否成功
+                $userData->level,                   //转码的等级
+                \Yii::$app->user->id,               //转码操作人，当前用户ID
+                $time, $time                        //创建、更新时间
             ];
         }
-        \Yii::$app->db->createCommand()->batchInsert(AliyunMtsService::tableName(), ['request_id', 'job_id', 'video_id', 'is_finish', 'created_by', 'created_at', 'updated_at'], $rows)->execute();
+        \Yii::$app->db->createCommand()->batchInsert(AliyunMtsService::tableName(), ['request_id', 'job_id', 'video_id', 'is_finish', 'level', 'created_by', 'created_at', 'updated_at'], $rows)->execute();
     }
 
 }
