@@ -1,8 +1,8 @@
 <?php
 
-use common\components\GridViewChangeSelfColumn;
 use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\CustomerWatermarkSearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -148,6 +148,9 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
                     'label' => Yii::t('app', '{Watermark}{Position}', [
                         'Watermark' => Yii::t('app', 'Watermark'), 'Position' => Yii::t('app', 'Position')
                     ]),
+                    'value' => function($model){
+                        return CustomerWatermark::$referPosMap[$model->refer_pos];
+                    },
                     'headerOptions' => [
                         'style' => [
                             'width' => '85px',

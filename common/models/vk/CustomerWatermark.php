@@ -88,7 +88,11 @@ class CustomerWatermark extends ActiveRecord {
      */
     public function rules() {
         return [
-            [['id'], 'required'],
+            [['name'], 'required', 'message' => Yii::t('app', "{Watermark}{Name}{Can't be empty}", [
+                'Watermark' => Yii::t('app', 'Watermark'), 'Name' => Yii::t('app', 'Name'), 
+                "Can't be empty" => \Yii::t('app', "Can't be empty.")
+            ])],
+            [['width', 'height', 'dx', 'dy'], 'required'],
             [['id', 'type', 'is_del', 'is_selected', 'created_at', 'updated_at'], 'integer'],
             [['width', 'height', 'dx', 'dy'], 'number'],
             [['customer_id', 'file_id'], 'string', 'max' => 32],
@@ -118,6 +122,13 @@ class CustomerWatermark extends ActiveRecord {
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
+    
+//    public function beforeSave($insert) {
+//        if (parent::beforeSave($insert)) {
+//            return true;
+//        }
+//        return false;
+//    }
     
     /**
      * 实体文件

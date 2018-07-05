@@ -126,6 +126,10 @@
         if(!(withStr instanceof Array)){
             withStr = [withStr];
         }
+        //如果参数path为空，默认为空字符串
+        if(path == 'undefined' || path == null){
+           path = '';
+        }
         //判断指定的字符串是否存在，若不存在则补全
         var isAppendStr = false;
         for(var str in withStr){
@@ -138,6 +142,36 @@
         }
         
         return isAppendStr ? appendStr + path : path;
+    }
+    
+    /**
+     * 拆分一个字符串,以大写字母作为标识
+     * @param {string} str  被拆分的字符串
+     * @return {array}
+     */
+//    StringUtil.splitStringToLetterSize = function(str){
+//        var splitChar = ',';
+//        var formatStr = str.search("/([A-Z])/", ",\\1");
+//        var strArray = str.split(formatStr);
+//        console.log(formatStr, strArray);
+//        for(var i = 0; i < strArray.length; i ++){
+//             System.out.println(strArray[i]);
+//        }
+//        
+//        return  strArray;
+//    }
+
+    /**
+     * 判断字符串对象是否是Integer类型
+     * @param {string} value
+     * @return {Boolean}
+     */
+    StringUtil.isInteger = function(value) {
+        if((/^(\+|-)?\d+$/.test( value ))){
+            return true;  
+        }else{  
+            return false;  
+        }  
     }
     
     win.Wskeee = win.Wskeee || {};
