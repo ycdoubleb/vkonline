@@ -96,12 +96,6 @@ class VideoAliyunAction {
     /**
      * 重试视频转码<br/>
      * 
-     * 1、为每一种格式添加对应的 Uploadfile 数据<br/>
-     * 2、删除旧的 Video 与 Uploadfile 的关联数据<br/>
-     * 3、添加新的 Video 与 Uploadfile 的关联数据<br/>
-     * 4、更改 Video 转码状态 成功<br/>
-     * 5、删除所有格式的 MtsService<br/>
-     * 
      * @param string $$video_id 
      * @author wskeee
      */
@@ -116,6 +110,12 @@ class VideoAliyunAction {
     /**
      * 整合视频转码 <br/>
      * 该满足 Aliyun 回调子任务时检查，同时满足 用户手动重试转码检查
+     * 
+     * 1、为每一种格式添加对应的 Uploadfile 数据<br/>
+     * 2、删除旧的 Video 与 Uploadfile 的关联数据<br/>
+     * 3、添加新的 Video 与 Uploadfile 的关联数据<br/>
+     * 4、更改 Video 转码状态 成功<br/>
+     * 5、删除所有格式的 MtsService<br/>
      * 
      * @param string $video_id    视频转码请求ID
      * @param bool $force         强制执行，一般发生在 Aliyun 在回调失败时导致转码服务挂起，用户可通过手动重新转码调用
