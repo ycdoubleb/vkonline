@@ -101,6 +101,7 @@
     {
         return value > 9 ? value : "0" + value;
     };
+    
     win.Wskeee = win.Wskeee || {};
     win.Wskeee.DateUtil = DateUtil;
     return DateUtil;    
