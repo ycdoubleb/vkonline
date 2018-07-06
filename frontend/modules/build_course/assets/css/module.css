@@ -195,6 +195,26 @@
 .video-index .vk-list .list-panel .list-header {
     height: 157px;
 }
+.video-form .video-watermark {
+    position: relative;
+    display: inline-block;
+    width: 92px;
+    height: 70px;
+    margin-right: 10px;
+    font-size: 0px;
+    line-height: 70px;
+    text-align: center;
+    border: 1px solid #e4e4e4;
+}
+.video-form .video-watermark > input[type="checkbox"] {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    margin-top: 0px;
+}
+.video-form .loading-box {
+    text-align: left;
+}
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/

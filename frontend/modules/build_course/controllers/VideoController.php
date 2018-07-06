@@ -4,14 +4,18 @@ namespace frontend\modules\build_course\controllers;
 
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
+use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -137,6 +141,7 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'videoFiles' => json_encode([]),
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             ]);
         }
     }
@@ -158,7 +163,7 @@ class VideoController extends Controller
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-        
+    
         if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
@@ -166,8 +171,10 @@ class VideoController extends Controller
             return $this->render('update', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'videoFiles' => json_encode(Video::getUploadfileByVideo($model->videoFile->file_id)),    //已存在的视频文件
+                'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
+                'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
             ]);
         }
     }
@@ -228,5 +235,38 @@ class VideoController extends Controller
             ->andWhere(['id' => $courseIds])->all();
         
         return ArrayHelper::map($courses, 'id', 'name');
+    }
+    
+    /**
+     * 获取客户下已启用的所有水印图
+     * @param integer|array $cw_id      水印图id
+     * @return array
+     */
+    protected function getCustomerWatermark($cw_id = null)
+    {
+        //查询客户下的水印图
+        $query = (new Query())->select([
+            'Watermark.id', 'Watermark.width', 'Watermark.height', 
+            'Watermark.dx AS shifting_X', 'Watermark.dy AS shifting_Y', 
+            'Watermark.refer_pos', 'Watermark.is_selected',
+            'Uploadfile.path'
+        ])->from(['Watermark' => CustomerWatermark::tableName()]);
+        //关联实体文件
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Watermark.file_id AND Uploadfile.is_del = 0)');
+        //条件
+        $query->where([
+            'Watermark.customer_id' => \Yii::$app->user->identity->customer_id,
+            'Watermark.is_del' => 0,
+        ]);
+        $query->andFilterWhere(['Watermark.id' => $cw_id]);
+        //查询结果
+        $watermarks = $query->all();
+        //重置is_selected、path属性值
+        foreach ($watermarks as $id => $item) {
+            $watermarks[$id]['is_selected'] = $item['is_selected'] ? 'checked' : null;
+            $watermarks[$id]['path'] = StringUtil::completeFilePath($item['path']);
+        }
+        
+        return $watermarks;
     }
 }

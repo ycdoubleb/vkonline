@@ -29,6 +29,7 @@ $this->title = Yii::t('app', '{Create}{Video}', [
         'model' => $model,
         'teacherMap' => $teacherMap,
         'videoFiles' => $videoFiles,
+        'watermarksFiles' => $watermarksFiles,
     ]) ?>
     
 </div>

@@ -4,6 +4,7 @@ use common\models\vk\Video;
 use common\utils\StringUtil;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\ueditor\UeditorAsset;
+use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
@@ -19,6 +20,7 @@ use yii\widgets\ActiveForm;
 GrowlAsset::register($this);
 TagsInputAsset::register($this);
 UeditorAsset::register($this);
+WatermarkAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
@@ -69,6 +71,8 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
+    
+    <!--主讲老师-->
     <?php
         $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
             'id' => 'refresh',  'class' => 'btn btn-primary'
@@ -95,12 +99,14 @@ $this->registerJs($format, View::POS_HEAD);
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
+    
     <!--视频名称-->
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...'
     ])->label(Yii::t('app', '{Video}{Name}', [
         'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
+    
      <!--标签-->
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -111,6 +117,7 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+     
     <!--视频描述-->
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
@@ -120,6 +127,7 @@ $this->registerJs($format, View::POS_HEAD);
     ])->label(Yii::t('app', '{Video}{Des}', [
         'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
     ])) ?>
+    
     <!--查看权限-->
     <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
         'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
@@ -132,9 +140,10 @@ $this->registerJs($format, View::POS_HEAD);
                 ]
             ]
         ],
-    ])->label(Yii::t('app', '{View}{Privilege}：', [
+    ])->label(Yii::t('app', '{View}{Privilege}', [
         'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
     ])) ?>
+    
     <!--视频文件-->
     <div class="form-group field-videofile-file_id">
         <?= Html::label(Yii::t('app', '{Video}{File}', [
@@ -143,6 +152,7 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    
     <!--外部链接-->
     <?php if(Yii::$app->user->identity->is_official): ?>
         <div class="form-group field-outside_link">
@@ -161,6 +171,45 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
         </div>
     <?php endif; ?>
+    
+    <!--转码-->
+    <?= $form->field($model, 'mts_need')->radioList([1 => '自动', 0 => '手动'], [
+        'value' => $model->isNewRecord ? 1 : $model->mts_need,
+        'itemOptions'=>[
+            'labelOptions'=>[
+                'style'=>[
+                    'margin'=>'10px 15px 10px 0',
+                    'color' => '#999',
+                    'font-weight' => 'normal',
+                ]
+            ]
+        ],
+    ])->label(Yii::t('app', 'Transcoding')) ?>
+    
+    <!--水印-->
+    <div class="form-group field-video-mts_watermark_ids">
+        <?= Html::label(Yii::t('app', 'Watermark'), 'video-mts_watermark_ids', [
+            'class' => 'col-lg-1 col-md-1 control-label form-label'
+        ]) ?>
+        <div class="col-lg-11 col-md-11">
+            <div id="video-mts_watermark_ids">
+                <div class="loading-box">
+                    <span class="loading"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+    </div>
+    
+    <!--预览-->
+    <div class="form-group">
+        <?= Html::label(Yii::t('app', 'Preview'), 'customerwatermark-is_selected', [
+            'class' => 'col-lg-1 col-md-1 control-label form-label'
+        ]) ?>
+        <div class="col-lg-7 col-md-7">
+            <div id="preview" class="preview"></div>
+        </div>
+    </div>
     
     <div class="form-group">
         <?= Html::label(null, null, ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -251,6 +300,25 @@ $js =
         window.uploader.addCompleteFiles($videoFiles);
     });
     /**
+    * 上传文件完成才可以提交
+    * @return {uploader.isFinish}
+    */
+    function tijiao() {
+       return window.uploader.isFinish();   //是否已经完成所有上传
+    }
+    /**
+     * 判断视频文件是否存在
+     * @return boolean  
+     */
+    function isExist(){
+        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
+        if(len <= 0){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    /**
      * 添加外部链接
      */
     $("#outside_link").change(function(){
@@ -270,27 +338,48 @@ $js =
                 });
             }
         });
-    }); 
-    
+    });
+    //初始化水印组件
+    window.watermark = new youxueba.Watermark({
+        container: '#preview'
+    });
     /**
-    * 上传文件完成才可以提交
-    * @return {uploader.isFinish}
-    */
-    function tijiao() {
-       return window.uploader.isFinish();   //是否已经完成所有上传
-    }
-    /**
-     * 判断视频文件是否存在
-     * @return boolean  
+     * 显示客户下已启用的水印图
      */
-    function isExist(){
-        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
-        if(len <= 0){
-            return false;
-        }else{
-            return true;
+    var item_dom = '<div class="video-watermark">' +
+        '<input name="Video[mts_watermark_ids][]" type="checkbox" value="{%id%}" {%is_selected%} onchange="checkedWatermark($(this))">' + 
+        '<img src="{%path%}" width="64" height="40"/>' +
+    '</div>';
+    var item = '';
+    $.each($watermarksFiles, function(){
+        //如果id存在已选的水印里则this.is_selected = "checked"
+        if($.inArray(this.id, $wateSelected) != '-1'){
+            this.is_selected = "checked";
         }
-    }    
+        item += Wskeee.StringUtil.renderDOM(item_dom, this);
+        //添加水印
+        if(this.is_selected != null){
+            window.watermark.addWatermark('vkcw' + this.id, this);
+        }
+    });
+    $('#video-mts_watermark_ids').html(item);
+    /**
+     * 选中水印图
+     * @param object elem
+     */
+    window.checkedWatermark = function(elem){
+        if($(elem).is(":checked")){
+            $.each($watermarksFiles, function(){
+                //添加水印
+                if(this.id == $(elem).val()){
+                    window.watermark.addWatermark('vkcw' + this.id, this);
+                    return false;
+                }
+            });
+        }else{
+            window.watermark.removeWatermark('vkcw' + $(elem).val());
+        }
+    }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

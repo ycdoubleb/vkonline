@@ -9,6 +9,7 @@ use Mts\Request\V20140618 as Mts;
 use ServerException;
 use Yii;
 use yii\base\Component;
+use yii\helpers\ArrayHelper;
 
 /**
  * 转码服务
@@ -29,6 +30,8 @@ class MtsService extends Component {
     private $mps_region_id;
     //管道ID
     private $pipeline_id;
+    //管道名称
+    private $pipeline_name;
     //输入
     private $oss_location;
     //输入bucket、输出bucket
@@ -57,6 +60,7 @@ class MtsService extends Component {
         $this->mps_region_id = $params_mts['region_id'];
         //管道ID
         $this->pipeline_id = $params_mts['pipeline_id'];
+        $this->pipeline_name = $params_mts['pipeline_name'];
         //输入
         $this->oss_location = $params_mts['oss_location'];
         //输入bucket、输出bucket
@@ -108,15 +112,13 @@ class MtsService extends Component {
         $water_mark_options_new = [];
         if ($water_mark_options) {
             foreach ($water_mark_options as $index => $options) {
-                if ($index < 20 && isset($options['water_mark_object'])) {
-                    $water_mark_options_new [] = array_merge([
+                if ($index < 20) {
+                    $water_mark_options_new [] = ArrayHelper::merge([
                         'InputFile' => [
                             'Bucket' => $this->oss_bucket_input,
                             'Location' => $this->oss_location,
-                            'Object' => urlencode($options['water_mark_object']),
                         ],
-                        'WaterMarkTemplateId' => $this->water_mark_template_id,
-                            ], $options);
+                        'WaterMarkTemplateId' => $this->water_mark_template_id,], $options);
                 }
             }
         }
@@ -142,7 +144,6 @@ class MtsService extends Component {
                 'UserData' => array_merge(['level' => $index], $user_data), //用户自义数据[video_id,source_file_id]
             ];
         }
-        
         $request->setOUtputs(json_encode($outputs));
         $request->setOutputBucket($this->oss_bucket_output);
         $request->setOutputLocation($this->oss_location);
@@ -219,7 +220,7 @@ class MtsService extends Component {
         //设置暂停状态
         $request->setState($state);
         //设置管道名称
-        $request->setName('mts-service-pipeline');
+        $request->setName($this->pipeline_name);
 
         //发起请求并处理返回
         try {
@@ -311,10 +312,9 @@ class MtsService extends Component {
 
         //截图路径
         $snapshot_paths = [];
-        $host_output = \Yii::$app->params['aliyun']['oss']['host-output'];
         for ($i = 1; $i <= $snapshot_count; $i++) {
             $count = sprintf('%05s', $i);
-            $snapshot_paths [] = "http://{$host_output}/{$oss_output_object_prefix}_{$count}.jpg";
+            $snapshot_paths [] = "{$oss_output_object_prefix}_{$count}.jpg";
         }
 
         try {

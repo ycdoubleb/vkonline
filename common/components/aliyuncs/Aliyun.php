@@ -39,6 +39,32 @@ class Aliyun extends Component {
         return self::$mts;
     }
 
+    /**
+     * 获取阿里 output 绝对路径，适用于转码后的视频、视频截图、水印
+     * 相对路径会加上 http://
+     * 
+     * @param string $path  
+     */
+    public static function absoluteOutputPath($path) {
+        if (strpos('http://') === false) {
+            $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-output'] . "/$path";
+        }
+        return $path;
+    }
+
+    /**
+     * 获取阿里 input 绝经路径，适用视频原始路径
+     * 
+     * @param string $path
+     * @return string
+     */
+    public static function absoluteInputPath($path) {
+        if (strpos('http://') === false) {
+            $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-input'] . "/$path";
+        }
+        return $path;
+    }
+
 }
 
 ?>

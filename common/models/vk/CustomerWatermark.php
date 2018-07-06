@@ -26,6 +26,7 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  * 
+ * @property Customer $customer 客户
  * @property Uploadfile $file 实体文件
  */
 class CustomerWatermark extends ActiveRecord {
@@ -123,12 +124,13 @@ class CustomerWatermark extends ActiveRecord {
         ];
     }
     
-//    public function beforeSave($insert) {
-//        if (parent::beforeSave($insert)) {
-//            return true;
-//        }
-//        return false;
-//    }
+    /**
+     * 客户
+     * @return ActiveQuery Description
+     */
+    public function getCustomer(){
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
     
     /**
      * 实体文件
@@ -148,23 +150,37 @@ class CustomerWatermark extends ActiveRecord {
         $result = self::find()->where($condition)->with('file')->all();
         $cws = [];
         foreach ($result as $cw) {
-            $cw_t [] = [
+            $cw_t = [
                 'InputFile' => [
                     'Object' => urldecode($cw->file->oss_key),      //水印输入文件名
                 ],
-                'Dx' => $cw->dx,                                    //水平偏移
-                'Dy' => $cw->dy,                                    //垂直偏移
+                'Dx' => self::valuable($cw->dx),    //水平偏移
+                'Dy' => self::valuable($cw->dy),    //垂直偏移
                 'ReferPos' => $cw->refer_pos,                       //位置
             ];
             if($cw->width != 0 && $cw->height != 0){
-                $cw_t['Width'] = $cw->width;        //宽;
-                $cw_t['Height'] = $cw->height;      //高
+                $cw_t['Width'] = self::valuable($cw->width);        //宽;
+                $cw_t['Height'] = self::valuable($cw->height);      //高
             }
             
             $cws []= $cw_t;
         }
         
         return $cws;
+    }
+    
+    /**
+     * 验证数字 (0,1)[8,4096]
+     * @param type $value
+     */
+    private static function valuable($value) {
+        if ($value < 8) {
+            $value = $value < 0 ? $value = 0.13 : $value;
+            $value = $value > 1 ? $value = 1 : $value;
+        } else {
+            $value = $value > 4096 ? $value = 4096 : intval($value);
+        }
+        return $value;
     }
 
 }

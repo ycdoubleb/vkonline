@@ -71,6 +71,7 @@ WatermarkAsset::register($this);
     ])->label(Yii::t('app', '{Level}{Shifting}', [
         'Level' => Yii::t('app', 'Level'), 'Shifting' => Yii::t('app', 'Shifting')
     ])) ?>
+    
     <!--垂直偏移-->
     <?= $form->field($model, 'dy')->textInput([
         'type' => 'number', 'min' => 0.00,
@@ -78,6 +79,7 @@ WatermarkAsset::register($this);
     ])->label(Yii::t('app', '{Vertical}{Shifting}', [
         'Vertical' => Yii::t('app', 'Vertical'), 'Shifting' => Yii::t('app', 'Shifting')
     ])) ?>
+    
     <!--水印文件-->
     <div class="form-group field-customerwatermark-file_id">
         <?= Html::label(Yii::t('app', '{Watermark}{File}', [
@@ -86,13 +88,14 @@ WatermarkAsset::register($this);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    
     <!--默认选中-->
     <div class="form-group field-customerwatermark-is_selected">
         <?= Html::label(Yii::t('app', '{Default}{Selected}', [
             'Default' => Yii::t('app', 'Default'), 'Selected' => Yii::t('app', 'Selected')
         ]), 'customerwatermark-is_selected', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-7 col-md-7">
-            <?= Html::checkbox('CustomerWatermark[is_selected]', null, [
+            <?= Html::checkbox('CustomerWatermark[is_selected]', $model->is_selected ? true : false, [
                 'id' => 'customerwatermark-is_selected', 'class' => 'form-control',
                 'style' => [
                     'width' => 'auto', 'margin' => '0px'
@@ -101,15 +104,14 @@ WatermarkAsset::register($this);
         </div>
         <div class="col-lg-7 col-md-7"><div class="help-block"></div></div>
     </div>
+    
     <!--预览-->
     <div class="form-group">
         <?= Html::label(Yii::t('app', 'Preview'), 'customerwatermark-is_selected', [
             'class' => 'col-lg-1 col-md-1 control-label form-label'
         ]) ?>
         <div class="col-lg-7 col-md-7">
-            <div id="preview" class="preview">
-                <img class="watermark" />
-            </div>
+            <div id="preview" class="preview"></div>
         </div>
     </div>
     
@@ -125,14 +127,14 @@ WatermarkAsset::register($this);
 </div>
 
 <?php
+$path = !$model->isNewRecord ? $model->file->path : '';
 //获取flash上传组件路径
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
-//获取已上传文件
-$attFiles = json_encode([]);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 $js = 
 <<<JS
+    window.paths = "$path";   //水印图路径
     /**
      * 加载文件上传
      */
@@ -175,9 +177,10 @@ $js =
 
         };
         window.uploader = new euploader.Uploader(config, euploader.TileView);
-        window.uploader.addCompleteFiles($attFiles);
+        window.uploader.addCompleteFiles($files);
         $(window.uploader).on('uploadComplete',function(evt,file){
-            changeRefer_pos(file['path'])
+            window.paths = file['path'];
+            changeRefer_pos();
         });
     });
     
@@ -191,94 +194,30 @@ $js =
         
     //初始化组件
     window.watermark = new youxueba.Watermark({
-        bg:'#preview'
+        container: '#preview'
     });
     
     //添加一个水印
-    window.watermark.addWatermark('w0',{
-        refer_pos: 'TopRight', src: '',
-        width: 0, height: 0, 
-        shifting_X: 0, shifting_Y: 0
+    window.watermark.addWatermark('vkcw',{
+        refer_pos: '{$model->refer_pos}', path: window.paths,
+        width: '{$model->width}', height: '{$model->height}', 
+        shifting_X: '{$model->dx}', shifting_Y: '{$model->dy}'
     });
         
     /**
      * 变更数值，更改对应参数
-     @param string path     水印图路径
      */
-    window.changeRefer_pos = function(path = ''){
+    window.changeRefer_pos = function(){
         var pos = $('input[name="CustomerWatermark[refer_pos]"]:checked').val(), 
             w = $('input[name="CustomerWatermark[width]"]').val(),
             h = $('input[name="CustomerWatermark[height]"]').val(),
             dx = $('input[name="CustomerWatermark[dx]').val(),
             dy = $('input[name="CustomerWatermark[dy]').val();
-        window.watermark.updateWatermark('w0',{
-            refer_pos: pos, src: path,
+        window.watermark.updateWatermark('vkcw',{
+            refer_pos: pos, path: window.paths,
             width: w, height: h, 
             shifting_X: dx, shifting_Y: dy
         });
-        /*
-        cw_pos({
-            refer_pos: pos, src: path,
-            width: w, height: h, 
-            shifting_X: dx, shifting_Y: dy
-        });*/
-    }
-    /**
-     * 预览水印图位置
-     * @param object|json config
-     */
-    window.cw_pos = function(config){
-        config = $.extend({}, config);
-        //如果width不是整数，则乘底图width
-        if(!Wskeee.StringUtil.isInteger(Number(config.width))){
-            config.width = config.width * $("#preview").width();
-        }
-        //如果width为0的时候，水印图的width为底图width * 0.13
-        if(Number(config.width) == 0){
-            config.width = $("#preview").width() * 0.13;
-        }
-        //如果height不是整数，则乘底图height
-        if(!Wskeee.StringUtil.isInteger(Number(config.height))){
-            config.height = config.height * $("#preview").height();
-        }
-        //如果height为0的时候，水印图的height为底图height * 0.13
-        if(Number(config.height) == 0){
-            config.height = $("#preview").height() * 0.13;
-        }
-        $(".watermark").attr({src: Wskeee.StringUtil.completeFilePath(config.src)})     //水印图路径
-        //判断水印的位置
-        switch(config.refer_pos){
-            case 'TopRight':
-                $(".watermark").css({bottom: '', left: ''})
-                $(".watermark").css({
-                    top: config.shifting_Y + 'px',  right: config.shifting_X + 'px', 
-                    width: config.width + 'px',  height: config.height + 'px',
-                });
-                break;
-            case 'TopLeft':
-                $(".watermark").css({bottom: '', right: ''})
-                $(".watermark").css({
-                    top: config.shifting_Y + 'px', left: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-            case 'BottomRight':
-                $(".watermark").css({top: '', left: ''});
-                $(".watermark").css({
-                    bottom: config.shifting_Y + 'px', right: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-            case 'BottomLeft':
-                $(".watermark").css({top: '', right: ''});
-                $(".watermark").css({
-                    bottom: config.shifting_Y + 'px', left: config.shifting_X + 'px',
-                    width: config.width + 'px', height: config.height + 'px',
-                });
-                break;
-            default:
-                $(".watermark").css({top: '0px', right: '0px'});
-        }
     }
 JS;
     $this->registerJs($js,  View::POS_READY);
