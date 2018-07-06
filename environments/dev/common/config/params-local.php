@@ -11,18 +11,19 @@ return [
         'accessKeyId' => 'LTAIUyDpZoTAN2zR',
         'accessKeySecret' => 'XC9HPzKIxNZqbZjntsJm7ZCcr8fsO1',
         'oss' => [
-            'bucket-input' => 'youxue-input',
-            'bucket-output' => 'youxue-output',
-            'host-input' => 'youxue-input.oss-cn-shenzhen.aliyuncs.com',
-            'host-output' => 'youxue-output.oss-cn-shenzhen.aliyuncs.com',
-            'host-input-internal' => 'youxue-input.oss-cn-shenzhen-internal.aliyuncs.com',
-            'host-output-internal' => 'youxue-output.oss-cn-shenzhen-internal.aliyuncs.com',
+            'bucket-input' => 'youxueba',
+            'bucket-output' => 'youxueba',
+            'host-input' => 'youxueba.oss-cn-shenzhen.aliyuncs.com',
+            'host-output' => 'youxueba.oss-cn-shenzhen.aliyuncs.com',
+            'host-input-internal' => 'youxueba.oss-cn-shenzhen-internal.aliyuncs.com',
+            'host-output-internal' => 'youxueba.oss-cn-shenzhen-internal.aliyuncs.com',
             'endPoint' => 'oss-cn-shenzhen.aliyuncs.com',
             'endPoint-internal' => 'oss-cn-shenzhen-internal.aliyuncs.com',
         ],
         'mts' => [
             'region_id' => 'cn-shenzhen',                               //区域
             'pipeline_id' => '3fc6537fb68c466fa13d28fdbf9f56b5',        //管道ID
+            'pipeline_name' => 'mts-service-pipeline',                  //管道名称
             'oss_location' => 'oss-cn-shenzhen',                        //作业输入，华南1
             'template_id_ld' => '455d949ceaca408e9796f7380e187e7c',     //流畅模板ID
             'template_id_sd' => 'ccef60ef5d4a494cafc74f75dbb9ea69',     //标清模板ID

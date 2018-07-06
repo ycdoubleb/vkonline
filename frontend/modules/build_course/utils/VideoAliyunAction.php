@@ -57,6 +57,7 @@ class VideoAliyunAction {
             //用户自定数据，转码后用于关联数据
             $user_data = [
                 'video_id' => $video->id,
+                'source_file_id' => $source_file->id,
                 'created_by' => $source_file->created_by,
             ];
             //获取已完成转码文件等级
@@ -153,7 +154,7 @@ class VideoAliyunAction {
             if ($mtsResult['success']) {
                 $jobs = $mtsResult['response']->JobList->Job;
                 //批量字段名
-                $uploadfileRowKeys = ['id', 'size', 'width', 'height', 'level', 'duration', 'bitrate', 'oss_upload_status', 'oss_key', 'oss_path', 'created_by', 'created_at', 'updated_at'];
+                $uploadfileRowKeys = ['id','name', 'size', 'width', 'height', 'level', 'duration', 'bitrate', 'oss_upload_status', 'oss_key', 'created_by', 'created_at', 'updated_at'];
                 //批量添加的 Uploadfile 数据
                 $uploadfileRows = [];
                 //字段名
@@ -178,6 +179,7 @@ class VideoAliyunAction {
                     $hostOutput = Yii::$app->params['aliyun']['oss']['host-output'];
                     $uploadfileRows [] = [
                         $jobId,                                         //id
+                        $userData->source_file_id,                      //源始文件ID
                         $format->Size,                                  //视频总大小 单位：B
                         $videoStream->Width,                            //宽
                         $videoStream->Height,                           //高
@@ -186,7 +188,6 @@ class VideoAliyunAction {
                         $format->Bitrate,                               //码率
                         Uploadfile::OSS_UPLOAD_STATUS_YES,              //OSS上传状态
                         $outputFile->Object,                            //OSS文件名
-                        $outputFile->Object,                            //OSS访问地址
                         $userData->created_by,                          //创建人
                         $time,                                          //创建时间
                         $time                                           //更新时间
