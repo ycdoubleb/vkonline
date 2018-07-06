@@ -204,13 +204,13 @@ class VideoAliyunAction {
                     Yii::$app->db->createCommand()->update(VideoFile::tableName(), ['is_del' => 1], ['video_id' => $video_id, 'is_source' => 0, 'is_del' => 0]);
                     //关联 Video To Uploadfile
                     Yii::$app->db->createCommand()->batchInsert(VideoFile::tableName(), $videoToFileRowKeys, $videoToFileRows)->execute();
-                    //更改 Video 转码状态 成功
-                    Yii::$app->db->createCommand()->update(Video::tableName(), ['mts_status' => Video::MTS_STATUS_YES], ['id' => $video_id])->execute();
-                    $tran->commit();
+                    //更改 Video 转码状态 成功,Video 时长
+                    Yii::$app->db->createCommand()->update(Video::tableName(), ['mts_status' => Video::MTS_STATUS_YES, 'duration' => $format->Duration], ['id' => $video_id])->execute();
                     if($force){
                         //如果为强制，即删除所有服务记录（前面未删除）
                         AliyunMtsService::updateAll(['is_del' => 1], ['video_id' => $video_id]);
                     }
+                    $tran->commit();
                     return ['success' => true ,'msg' => '转码服务已完成'];
                 } catch (Exception $ex) {
                     $tran->rollBack();
