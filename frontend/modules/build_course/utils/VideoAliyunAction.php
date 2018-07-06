@@ -186,7 +186,7 @@ class VideoAliyunAction {
                         $format->Bitrate,                               //码率
                         Uploadfile::OSS_UPLOAD_STATUS_YES,              //OSS上传状态
                         $outputFile->Object,                            //OSS文件名
-                        "http://{$hostOutput}/{$outputFile->Object}",   //OSS访问地址
+                        $outputFile->Object,                            //OSS访问地址
                         $userData->created_by,                          //创建人
                         $time,                                          //创建时间
                         $time                                           //更新时间

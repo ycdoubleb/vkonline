@@ -125,7 +125,7 @@ class Uploadfile extends ActiveRecord {
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-
+    
     /**
      * 获取文件后缀
      * @return string 后缀名
@@ -161,7 +161,7 @@ class Uploadfile extends ActiveRecord {
             $result = Aliyun::getOss()->multiuploadFile($object_key, $this->path);
             //更新数据
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
-            $this->oss_path = $result['oss-request-url'];
+            $this->oss_path = $object_key;
             $this->oss_key = $object_key;
             $this->oss_etag = $this->id;
 

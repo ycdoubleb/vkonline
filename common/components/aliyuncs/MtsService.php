@@ -309,10 +309,9 @@ class MtsService extends Component {
 
         //截图路径
         $snapshot_paths = [];
-        $host_output = \Yii::$app->params['aliyun']['oss']['host-output'];
         for ($i = 1; $i <= $snapshot_count; $i++) {
             $count = sprintf('%05s', $i);
-            $snapshot_paths [] = "http://{$host_output}/{$oss_output_object_prefix}_{$count}.jpg";
+            $snapshot_paths [] = "{$oss_output_object_prefix}_{$count}.jpg";
         }
 
         try {
