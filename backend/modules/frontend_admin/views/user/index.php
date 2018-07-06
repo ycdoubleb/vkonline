@@ -1,6 +1,6 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\searchs\UserSearch;
 use common\models\User;

@@ -1,9 +1,9 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;

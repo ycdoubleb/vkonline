@@ -1,8 +1,8 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use common\models\helpcenter\Post;
 use common\models\helpcenter\searchs\PostSearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;

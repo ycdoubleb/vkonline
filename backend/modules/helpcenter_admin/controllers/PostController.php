@@ -2,11 +2,11 @@
 
 namespace backend\modules\helpcenter_admin\controllers;
 
-use backend\components\BaseController;
 use common\models\helpcenter\Post;
 use common\models\helpcenter\PostCategory;
 use common\models\helpcenter\searchs\PostSearch;
 use common\models\User;
+use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -17,7 +17,7 @@ use yii\web\NotFoundHttpException;
 /**
  * PostController implements the CRUD actions for Post model.
  */
-class PostController extends BaseController
+class PostController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc
