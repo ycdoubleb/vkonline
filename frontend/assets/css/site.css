@@ -1,3 +1,28 @@
+/**发送手机验证码按钮**/
+.site-login .time_button,
+.site-signup .time_button, 
+.get-password .time_button {
+    display: inline-block;
+    width: 140px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #337ab7;
+    border: 1px solid #ccc;
+    box-sizing: border-box;	
+    vertical-align: middle;
+    cursor: pointer;
+    color: #fff;
+}
+
+.site-login .time_button.unabled,
+.site-signup .time_button.unabled, 
+.get-password .time_button.unabled {
+    background-color: lightblue;
+    color: #eee;
+    cursor: default;
+}
+
 /************************************登录页样式*********************************/
 .site-login .vkonline {
     width: 100%;
@@ -75,17 +100,48 @@
     padding-right: 20px !important;
 }
 
+.site-login .vkonline .platform .frame .attr-phone{
+    height: 69px;
+    margin-top: 41px;
+    padding-left: 15px;
+    padding-right: 20px !important;
+}
+
 .site-login .vkonline .platform .frame .attr-pass{
     height: 69px;
     padding-right: 20px !important;
 }
 
-.site-login .vkonline .platform .frame .btn-primary, #loginform-username, #loginform-password{
-    height: 40px;
-    border-radius: 0px;
+.site-login .vkonline .platform .frame .btn-primary,
+.form-control{
+    height: 40px  !important;
+    border-radius: 0px  !important;
 }
 
-.site-login .vkonline .platform .frame .checkbox, .platform .frame .forget a{
+.site-login .vkonline .field-user-code {
+    height: 69px;
+    margin-bottom: 0px;
+}
+
+/*验证码*/
+.site-login .field-user-code .icon-y {
+    position: absolute;
+    top: 14px;
+    left: 170px;
+    color: #5cb85c;
+}
+.site-login .field-user-code .icon-n {
+    position: absolute;
+    top: 14px;
+    left: 170px;
+    color: #d9534f;
+}
+.site-login #code-info.name-info {
+    padding-left: 15px;
+}
+
+.site-login .vkonline .platform .frame .checkbox,
+.platform .frame .forget a{
     color: #999999;
     text-decoration: none;
 }
@@ -161,6 +217,32 @@
 
 .site-login .vkonline .platform .frame .btn-signup .third-content .qq:hover {
     background-color: #3caae3;
+}
+
+/** 短信找回密码页面 **/
+.site-password .input-content {
+    height: 69px;
+}
+
+/*验证码*/
+.site-password .field-user-code .icon-y {
+    position: absolute;
+    bottom: 127px;
+    left: 257px;
+    color: #5cb85c;
+}
+
+.site-password .field-user-code .icon-n {
+    position: absolute;
+    bottom: 127px;
+    left: 257px;
+    color: #d9534f;
+}
+
+.site-password .name-info {
+    padding-left: 5px;
+    text-align: left;
+    padding-top: 5px;
 }
 
 /************************************平台首页************************************/

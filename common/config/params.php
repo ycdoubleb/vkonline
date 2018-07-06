@@ -27,4 +27,31 @@ return [
             'http://mconline.gzedu.net' => '14825',         //指向在线课程制作平台，生产机
         ]
     ],
+    /* WeiboAPI配置 */
+    'weiboLogin' => [
+        "WB_AKEY" => "3895484294",
+        "WB_SKEY" => "f8514c29dbbd04d6964480693a6878b3",
+        "WB_CALLBACK_URL" => WEB_ROOT."/callback/weibo-callback/index",
+    ],
+    /* QQAPI配置 */
+    'qqLogin' => [
+        "appid" => "101483864",
+        "appkey" => "c11cd3b881df1cb2306259b6dbe5b12c",
+        "callback" => WEB_ROOT."/callback/qq-callback/callback",
+        "scope" => "get_user_info,add_share,list_album,add_album,upload_pic,add_topic,add_one_blog,add_weibo,check_page_fans,add_t,add_pic_t,del_t,get_repost_list,get_info,get_other_info,get_fanslist,get_idolist,add_idol,del_idol,get_tenpay_addr",
+        'errorReport' => "true",
+        'storageType' => "file",
+        'host' => "localhost",  //感觉没用的配置（后面4个）
+        'user' => "root",
+        'password' => "root",
+        'database' => "test",
+    ],
+    /* 发送验证码配置 */
+    'sendYunSms' => [
+        'SMS_APP_ID' => '49917c0a7f0000017de534cb37de5f37',         //应用ID
+        'SMS_TEMPLATE_ID' => [
+            'BINGDING_PHONE' => '59f8a2537f00000131eb494e9101a537',    //注册绑定手机号码/密码登录短信模板ID
+            'RESET_PASSWORD' => '59f9202d7f0000017d6283032c3f6631',    //重置密码短信模板ID
+        ]
+    ]
 ];

@@ -2,6 +2,8 @@
 
 use common\models\User;
 use frontend\assets\SiteAssets;
+use frontend\assets\TimerButtonAssets;
+use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -12,6 +14,7 @@ use yii\widgets\ActiveForm;
 $this->title = Yii::t('app', 'Signup');
 
 SiteAssets::register($this);
+TimerButtonAssets::register($this);
 
 ?>
 
@@ -35,14 +38,14 @@ SiteAssets::register($this);
             <li>填写联系方式</li>
             <li>完成注册</li>
         </ul>
-	<!-- fieldsets -->
+	<!-- fieldsets 邀请码 -->
 	<fieldset>
             <h2 class="fs-title">邀请码</h2>
             <h3 class="fs-subtitle">若无邀请码则进入下一步操作</h3>
             <?= $form->field($model, 'customer_id')->textInput(['value' => $code,
                 'placeholder' => '邀请码...'])->label('')?>
             <!--客户名或注释信息-->
-            <div id="customer"><span></span></div>
+            <div id="customer" class="name-info"><span></span></div>
             <input type="button" name="next" class="next action-button" value="下一步" />
             <div class="third" id="third1">
                 <span class="third-login">使用社交账号注册</span>
@@ -53,6 +56,7 @@ SiteAssets::register($this);
                 </div>
             </div>
 	</fieldset>
+        <!-- fieldsets 账号密码 -->
 	<fieldset>
             <h2 class="fs-title">账号信息</h2>
             <h3 class="fs-subtitle">设置您的用户名和密码</h3>
@@ -66,17 +70,33 @@ SiteAssets::register($this);
             <input type="button" name="next" id="user-next" class="action-button" value="下一步" />
             <div class="third" id="third2"></div>
 	</fieldset>
+        <!-- fieldsets 联系方式 -->
 	<fieldset>
             <h2 class="fs-title">联系方式</h2>
-            <h3 class="fs-subtitle">填写您的联系方式</h3>
+            <h3 class="fs-subtitle">填写您的联系方式，用于重置密码</h3>
             <?= $form->field($model, 'nickname')->textInput(['maxlength' => true,
                 'placeholder' => '真实姓名...'])->label('') ?>
             <?= $form->field($model, 'phone')->textInput(['maxlength' => true,
                 'placeholder' => '手机号...'])->label('') ?>
+            <!--注释信息-->
+            <div id="user-phone-info" class="name-info"><span></span></div>
+            <div class="form-group field-user-code required">
+                <div class="col-lg-12 col-md-12">
+                    <?= Html::input('input', 'User[code]', '', [
+                        'placeholder' => '验证码...',
+                        'id' => 'code', 'class' => 'form-control',
+                        'style' => 'width:50%; float:left; display:inline-block'
+                    ])?>
+                    <div id="j_getVerifyCode" class="time_button disabled">获取手机验证码</div>
+                </div>
+                <!--注释信息-->
+                <div id="code-info" class="name-info"><span></span></div>
+            </div>
             <input type="button" name="previous" class="previous action-button" value="上一步" />
             <input type="button" name="next" id="info-next" class="action-button" value="下一步" />
             <div class="third" id="third3"></div>
 	</fieldset>
+        <!-- fieldsets 完成注册 -->
 	<fieldset>
             <h2 class="fs-title">完成注册</h2>
             <h3 class="fs-subtitle">点击“提交”完成注册</h3>
@@ -121,7 +141,7 @@ $js = <<<JS
                     $("#customer > span").html(rel['data']['name']);
                 }else{
                     $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
-                    $("#customer > span").html(rel['message']);
+                    $("#customer > span").html('<span style="color:#a94442">无效的邀请码</span>');
                 }
             })
         }
@@ -140,7 +160,41 @@ $js = <<<JS
                 window.location.href="/site/login";
             }
         });
-    })
+    });
+     
+    //检查号码是否已被注册
+    $("#user-phone").change(function(){
+        $.post("/site/chick-phone",{'phone': $("#user-phone").val()}, function(data){
+            if(data['code'] == 400){
+                $("#j_getVerifyCode").addClass('disabled');
+                $("#user-phone-info > span").html('该号码已被注册!请<a href="/site/login">直接登录</a>');
+            }else if($("#user-phone").val().length == 11){
+                $("#j_getVerifyCode").removeClass('disabled');
+            }
+        })
+    });
+    //检查验证码是否正确
+    $("#code").change(function(){
+        $.post("/site/proving-code",{'code': $("#code").val()},function(data){
+            if(data['code'] == 200){
+                $("#code").after('<i class="fa fa-check-circle icon-y"></i>');
+                $("#info-next").removeClass('disabled');
+            }else if(data['code'] == 400){
+                $("#code").after('<i class="fa fa-times-circle icon-n"></i>');
+                $("#code-info > span").html('验证码错误');
+            }
+        });
+    });
+    $("#user-phone").bind("input propertychange change",function(event){
+        $("#user-phone-info > span").empty();  //移除注释
+    });
+    $("#code").bind("input propertychange change",function(event){
+        $(".fa").remove();               //移除右侧图标
+        $("#code-info > span").empty();  //移除注释
+    });
+    //信息-下一步添加disabled
+    $("#info-next").addClass('disabled');
+    
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>

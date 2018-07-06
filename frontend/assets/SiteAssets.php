@@ -12,7 +12,7 @@ use yii\web\AssetBundle;
 use const YII_DEBUG;
 
 /**
- * Description of DemandAssets
+ * Description of SiteAssets
  *
  * @author Administrator
  */

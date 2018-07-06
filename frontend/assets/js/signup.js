@@ -58,9 +58,14 @@ $("#info-next").click(function(){
         alert("请输入真实姓名！");
         return false;
     }
-    var phone = $("#user-phone").val();
+    var phone = $("#user-phone").val(),
+        phoneReg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/,
+        flag = phoneReg.test(phone);
     if(phone === ""){
         alert("请输入手机号！");
+        return false;
+    }else if(!flag){
+        alert("电话号码填写不正确！");
         return false;
     }
     
