@@ -3,7 +3,6 @@
 namespace common\models\vk;
 
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\StringUtil;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -155,13 +154,13 @@ class CustomerWatermark extends ActiveRecord {
                 'InputFile' => [
                     'Object' => urldecode($cw->file->oss_key),      //水印输入文件名
                 ],
-                'Dx' => $this->valuable($cw->dx),    //水平偏移
-                'Dy' => $this->valuable($cw->dy),    //垂直偏移
+                'Dx' => self::valuable($cw->dx),    //水平偏移
+                'Dy' => self::valuable($cw->dy),    //垂直偏移
                 'ReferPos' => $cw->refer_pos,                       //位置
             ];
             if($cw->width != 0 && $cw->height != 0){
-                $cw_t['Width'] = $this->valuable($cw->width);        //宽;
-                $cw_t['Height'] = $this->valuable($cw->height);      //高
+                $cw_t['Width'] = self::valuable($cw->width);        //宽;
+                $cw_t['Height'] = self::valuable($cw->height);      //高
             }
             
             $cws []= $cw_t;
@@ -174,7 +173,7 @@ class CustomerWatermark extends ActiveRecord {
      * 验证数字 (0,1)[8,4096]
      * @param type $value
      */
-    private function valuable($value) {
+    private static function valuable($value) {
         if ($value < 8) {
             $value = $value < 0 ? $value = 0.13 : $value;
             $value = $value > 1 ? $value = 1 : $value;
