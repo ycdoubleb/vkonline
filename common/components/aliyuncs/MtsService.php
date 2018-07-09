@@ -30,6 +30,8 @@ class MtsService extends Component {
     private $mps_region_id;
     //管道ID
     private $pipeline_id;
+    //管道名称
+    private $pipeline_name;
     //输入
     private $oss_location;
     //输入bucket、输出bucket
@@ -58,6 +60,7 @@ class MtsService extends Component {
         $this->mps_region_id = $params_mts['region_id'];
         //管道ID
         $this->pipeline_id = $params_mts['pipeline_id'];
+        $this->pipeline_name = $params_mts['pipeline_name'];
         //输入
         $this->oss_location = $params_mts['oss_location'];
         //输入bucket、输出bucket
@@ -217,7 +220,7 @@ class MtsService extends Component {
         //设置暂停状态
         $request->setState($state);
         //设置管道名称
-        $request->setName('mts-service-pipeline');
+        $request->setName($this->pipeline_name);
 
         //发起请求并处理返回
         try {
@@ -309,10 +312,9 @@ class MtsService extends Component {
 
         //截图路径
         $snapshot_paths = [];
-        $host_output = \Yii::$app->params['aliyun']['oss']['host-output'];
         for ($i = 1; $i <= $snapshot_count; $i++) {
             $count = sprintf('%05s', $i);
-            $snapshot_paths [] = "http://{$host_output}/{$oss_output_object_prefix}_{$count}.jpg";
+            $snapshot_paths [] = "{$oss_output_object_prefix}_{$count}.jpg";
         }
 
         try {

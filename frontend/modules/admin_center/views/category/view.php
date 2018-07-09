@@ -94,7 +94,8 @@ $this->title = Yii::t('app', "{Category}{Detail}：{$model->name}",[
         ]) ?>
         
     </div>
-    <!--属性-->
+    <?php if($model->level != 1): ?>
+    <!--属性（如果不为顶级分类，则显示）-->
     <div class="vk-panel">
         <div class="title">
             <span>
@@ -189,4 +190,5 @@ $this->title = Yii::t('app', "{Category}{Detail}：{$model->name}",[
             ],
         ]); ?>
     </div>
+    <?php endif;?>
 </div>

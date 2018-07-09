@@ -1,9 +1,9 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\Category;
 use common\models\vk\searchs\CategorySearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use common\widgets\treegrid\TreegridAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;

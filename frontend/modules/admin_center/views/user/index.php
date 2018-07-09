@@ -1,9 +1,9 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use common\models\searchs\UserSearch;
 use common\models\User;
 use common\models\vk\CustomerAdmin;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
@@ -75,7 +75,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'width' => '75px',
+                            'width' => '80px',
                         ],
                     ],
                 ],
@@ -105,7 +105,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                     ]),
                     'headerOptions' => [
                         'style' => [
-                            'width' => '75px',
+                            'width' => '80px',
                         ],
                     ],
                 ],

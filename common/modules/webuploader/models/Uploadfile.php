@@ -33,8 +33,6 @@ use yii\db\Query;
  * @property string $duration 时长
  * @property string $bitrate 码率
  * @property string $oss_key        oss名称/文件名
- * @property string $oss_path       码率
- * @property string $oss_etag       ETag 在每个Object生成的时候被创建，用于标示一个Object的内容。
  * @property int $oss_upload_status        上传状态：0未上传，1上传中，2已上传
  * @property string $created_by 上传人
  * @property string $deleted_by 删除人ID
@@ -125,7 +123,7 @@ class Uploadfile extends ActiveRecord {
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-
+    
     /**
      * 获取文件后缀
      * @return string 后缀名
@@ -161,9 +159,7 @@ class Uploadfile extends ActiveRecord {
             $result = Aliyun::getOss()->multiuploadFile($object_key, $this->path);
             //更新数据
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
-            $this->oss_path = $result['oss-request-url'];
             $this->oss_key = $object_key;
-            $this->oss_etag = $this->id;
 
             $this->save(false, ['oss_upload_status', 'oss_path', 'oss_key', 'oss_etag']);
             return ['success' => true];

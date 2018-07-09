@@ -2,23 +2,21 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
-use backend\components\BaseController;
 use common\models\AdminUser;
 use common\models\Banner;
 use common\models\searchs\BannerSearch;
-use common\models\User;
+use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
  * BannerController implements the CRUD actions for Banner model.
  */
-class BannerController extends BaseController
+class BannerController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc

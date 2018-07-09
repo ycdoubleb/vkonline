@@ -1,9 +1,9 @@
  <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CategorySearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use common\widgets\treegrid\TreegridAssets;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\data\ActiveDataProvider;

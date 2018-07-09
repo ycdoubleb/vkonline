@@ -16,6 +16,7 @@ use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
 use frontend\OAuths\weiboAPI\SaeTOAuthV2;
+use linslin\yii2\curl\Curl;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\db\Query;
@@ -33,8 +34,9 @@ use const YII_ENV_TEST;
  */
 class SiteController extends Controller
 {
-    public static $weiboConfig = 'weiboLogin';
-
+    public static $weiboConfig = 'weiboLogin';      //微博登录的配置
+    public static $sendYunSmsConfig = 'sendYunSms'; //发送短信的配置
+    
     /**
      * {@inheritdoc}
      */
@@ -143,21 +145,47 @@ class SiteController extends Controller
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
-        
+        $post = Yii::$app->request->post();     //form表单提交上来的数据
         $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
         $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
 
         $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+        $isPass = !empty($post) ? array_key_exists('username', $post['LoginForm']) : true;  //是否为密码登录true
+        if($isPass){
+            $model->scenario = LoginForm::SCENARIO_PASS;    //设置密码登录场景
         } else {
-            $model->password = '';
-
-            return $this->render('login', [
-                'model' => $model,
-                'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
-            ]);
+            $model->scenario = LoginForm::SCENARIO_SMS;     //设置短信登录场景
         }
+        
+        if($isPass){
+            if ($model->load(Yii::$app->request->post()) && $model->login()) {
+                return $this->goBack();
+            } else {
+                $model->password = '';
+            }
+        } else {
+            $phone = ArrayHelper::getValue($post, 'LoginForm.phone');   //获取输入的号码
+            $code = ArrayHelper::getValue($post, 'LoginForm.code');     //获取输入的验证码
+            if(empty($phone)){
+                Yii::$app->getSession()->setFlash('error','手机号不能为空！');
+            }elseif (empty($code)) {
+                Yii::$app->getSession()->setFlash('error','验证码不能为空！');
+            }
+            //保存在sesson中的电话号码/验证码
+            $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
+            $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+            if($sessonPhone != $phone){
+                Yii::$app->getSession()->setFlash('error','手机号与验证码不匹配！');
+            } elseif ($code != $sessonCode) {
+                Yii::$app->getSession()->setFlash('error','验证码错误！');
+            } elseif ($model->smsLogin($phone)) {
+                return $this->goBack();
+            }
+        }
+        return $this->render('login', [
+            'model' => $model,
+            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+        ]);
     }
 
     /**
@@ -166,9 +194,9 @@ class SiteController extends Controller
      * @return mixed
      */
     public function actionLogout()
-    {
+    {        
         Yii::$app->user->logout();
-
+        
         return $this->goHome();
     }
 
@@ -214,13 +242,20 @@ class SiteController extends Controller
     {
         $model = new User();
         $model->scenario = User::SCENARIO_CREATE;
-        $params = \Yii::$app->request->queryParams;
+        $params = \Yii::$app->request->queryParams;     //参数
+        $post = \Yii::$app->request->post();            //post传值
+        $phone = ArrayHelper::getValue($post, 'User.phone');    //获取post传的号码
+        $code = ArrayHelper::getValue($post, 'User.code');      //获取post传的验证码
         
         $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
         $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
-        
-        if ($model->load(Yii::$app->request->post())) {
-            if ($user = $this->signup(Yii::$app->request->post())) {
+        //保存在sesson中的电话号码/验证码
+        $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
+        $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        if($sessonPhone != $phone || $sessonCode != $code){
+            Yii::$app->getSession()->setFlash('error','号码或验证码错误！');
+        } elseif ($model->load($post)) {
+            if ($user = $this->signup($post)) {
                 if (Yii::$app->getUser()->login($user)) {
                     return $this->goHome();
                 }
@@ -235,33 +270,61 @@ class SiteController extends Controller
     }
     
     /**
-     * 获取客户名
+     * 发送验证码的动作
      * @return array
      */
-    public function actionCustomer()
+    public function actionSendSms()
     {
+        $sendYunSmsConfig = Yii::$app->params[self::$sendYunSmsConfig];         //发送验证码配置
+        $BINGDING_PHONE_ID = $sendYunSmsConfig['SMS_TEMPLATE_ID']['BINGDING_PHONE'];  //注册绑定手机号码/短信登录短信模板ID
+        $RESET_PASSWORD_ID = $sendYunSmsConfig['SMS_TEMPLATE_ID']['RESET_PASSWORD'];  //重置密码短信模板ID
+        
         \Yii::$app->getResponse()->format = 'json';
         $post = \Yii::$app->request->post();
-        $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
-        $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
-        
-        if($customer != null){
+        $phone = ArrayHelper::getValue($post, 'MOBILE');   //获取输入的电话号码
+        $pathName = ArrayHelper::getValue($post, 'pathname');   //获取点击发送验证码时的路径
+        $name = trim(strrchr($pathName, '/'),'/');
+       
+        //检查提交的号码是否存在
+        $hasPhone = (new Query())->select(['id'])->from(['User' => User::tableName()])
+                ->where(['status' => User::STATUS_ACTIVE,'phone' => $phone])
+                ->one(); 
+        if($name == 'signup'){      //注册页面
+            if(empty($hasPhone)){
+                $xmlResult = $this->sendSms($phone, $BINGDING_PHONE_ID);    //发送验证码功能
+            } else {
+                Yii::$app->session->setFlash('error', '号码错误或已存在！不能继续注册！！');
+                return $this->goHome();
+            }
+        } elseif ($name == 'login') {   //登录页面
+            if(!empty($hasPhone)){
+                $xmlResult = $this->sendSms($phone, $BINGDING_PHONE_ID);    //发送验证码功能
+            } else {
+                Yii::$app->session->setFlash('error', '号码错误或不存在！');
+                return $this->goHome();   
+            }
+        } elseif ($name == 'get-password') {    //重置密码页面
+            if(!empty($hasPhone)){
+                $xmlResult = $this->sendSms($phone, $RESET_PASSWORD_ID);    //发送验证码功能
+            } else {
+                Yii::$app->session->setFlash('error', '号码错误或不存在！');
+                return $this->goHome();
+            }
+        }
+
+        if($xmlResult == 1){
             return [
                 'code' => 200,
-                'data' => [
-                    'name' => ArrayHelper::getValue($customer, 'name'),
-                ],
-                'message' => ''
+                'message' => '发送成功'
             ];
         } else {
             return [
-                'code' => 404,
-                'data' => [],
-                'message' => '<span style="color:#a94442">无效的邀请码</span>'
+                'code' => 400,
+                'message' => '发送失败'
             ];
         }
     }
-    
+        
     /**
      * 分享浏览入口
      */
@@ -310,6 +373,216 @@ class SiteController extends Controller
     }
 
     /**
+     * 重置密码请求（短信验证）
+     * @return mix
+     */
+    public function actionGetPassword()
+    {
+        return $this->render('get-password');
+    }
+
+    /**
+     * 重置密码（短信验证）
+     * @return mix
+     */
+    public function actionSetPassword()
+    {
+        $sessonPhone = Yii::$app->session['code_timeOut']['phone'];
+        if(empty($sessonPhone)){
+            return $this->goHome();
+        }
+        $model = User::findOne(['phone' => $sessonPhone]);        
+        $model->password_hash = '';
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $model->setPassword($model->password_hash);
+            if($model->save(false)){
+                Yii::$app->session->setFlash('success', Yii::t('app', 'New password saved.'));
+                unset(Yii::$app->session['code_timeOut']);  //销毁sesson
+                return $this->goHome();
+            }
+        }
+        
+        return $this->render('set-password',[
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Requests password reset.
+     *
+     * @return mixed
+     */
+    public function actionRequestPasswordReset()
+    {
+        $model = new PasswordResetRequestForm();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            if ($model->sendEmail()) {
+                Yii::$app->session->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
+
+                return $this->goHome();
+            } else {
+                Yii::$app->session->setFlash('error', Yii::t('app', 'Sorry, we are unable to reset password for the provided email address.'));
+            }
+        }
+
+        return $this->render('request-password-reset', [
+            'model' => $model,
+        ]);
+    }
+
+    /**
+     * Resets password.
+     *
+     * @param string $token
+     * @return mixed
+     * @throws BadRequestHttpException
+     */
+    public function actionResetPassword($token)
+    {
+        try {
+            $model = new ResetPasswordForm($token);
+        } catch (InvalidParamException $e) {
+            throw new BadRequestHttpException($e->getMessage());
+        }
+        
+        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
+            Yii::$app->session->setFlash('success', Yii::t('app', 'New password saved.'));
+
+            return $this->goHome();
+        }
+
+        return $this->render('reset-password', [
+            'model' => $model,
+        ]);
+    }
+    
+    /**
+     * 获取客户名
+     * @return array
+     */
+    public function actionCustomer()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
+        $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
+        
+        if($customer != null){
+            return [
+                'code' => 200,
+                'data' => [
+                    'name' => ArrayHelper::getValue($customer, 'name'),
+                ],
+                'message' => ''
+            ];
+        } else {
+            return [
+                'code' => 404,
+                'data' => [],
+                'message' => '无效的邀请码'
+            ];
+        }
+    }
+    
+    /**
+     * 检查号码是否已被注册
+     * @return array
+     */
+    public function actionChickPhone()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $phone = ArrayHelper::getValue($post, 'phone');   //获取输入的邀请码
+        
+        $hasPhone = (new Query())->select(['id'])->from(['User' => User::tableName()])
+                ->where(['status' => User::STATUS_ACTIVE,'phone' => $phone])
+                ->one();
+        
+        if(empty($hasPhone)){
+            return [
+                'code' => 200,
+                'message' => '该号码未被注册'
+            ];
+        } else {
+            return [
+                'code' => 400,
+                'message' => '该号码已被注册'
+            ];
+        }
+    }
+    
+    /**
+     * 验证输入的邀请码是否正确
+     * @return array
+     */
+    public function actionProvingCode()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $code = ArrayHelper::getValue($post, 'code');   //获取输入的邀请码
+        
+        //保存在sesson中的邀请码
+        $params_code = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        //保存在sesson中的过期时间
+        $time_out = isset(Yii::$app->session['code_timeOut']['timeOut']) ? Yii::$app->session['code_timeOut']['timeOut']: '';
+        $now_time = time();      //当前时间
+        
+        if($time_out >= $now_time){
+            if($params_code == $code){
+                return [
+                    'code' => 200,
+                    'message' => '验证码正确'
+                ];
+            } else {
+                return [
+                    'code' => 400,
+                    'message' => '验证码错误'
+                ];
+            }
+        } else {
+            return [
+                'code' => 400,
+                'message' => '验证码失效'
+            ];
+        }
+    }
+    
+    /**
+     * 检查手机号码和验证码是否匹配(重置密码)
+     * @return array
+     */
+    public function actionCheckPhoneCode()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $phone = ArrayHelper::getValue($post, 'phone');        //联系方式
+        $code = ArrayHelper::getValue($post, 'code');  //验证码
+        
+        if(empty($phone)){
+            Yii::$app->getSession()->setFlash('error','手机号不能为空！');
+        }elseif (empty ($code)) {
+            Yii::$app->getSession()->setFlash('error','验证码不能为空！');
+        }
+        //保存在sesson中的电话号码
+        $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
+        $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        if($sessonPhone != $phone){
+            Yii::$app->getSession()->setFlash('error','手机号与验证码不匹配！');
+        } elseif ($code != $sessonCode) {
+            Yii::$app->getSession()->setFlash('error','验证码错误！');
+        } else {
+            return [
+                'code' => 200,
+                'message' => '验证成功'
+            ];
+        }
+        return [
+            'code' => 400,
+            'message' => '验证失败'
+        ];
+    }
+    
+    /**
      * 注册
      * @param type $post
      * @return type
@@ -352,57 +625,47 @@ class SiteController extends Controller
     }
     
     /**
-     * Requests password reset.
-     *
-     * @return mixed
+     * 发送验证码
+     * @param integer $phone    电话号码
+     * @param string $SMS_TEMPLATE_ID   短信模板
+     * @return array
      */
-    public function actionRequestPasswordReset()
+    public function sendSms($phone, $SMS_TEMPLATE_ID)
     {
-        $model = new PasswordResetRequestForm();
-        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            if ($model->sendEmail()) {
-                Yii::$app->session->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
-
-                return $this->goHome();
-            } else {
-                Yii::$app->session->setFlash('error', Yii::t('app', 'Sorry, we are unable to reset password for the provided email address.'));
-            }
-        }
-
-        return $this->render('request-password-reset', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Resets password.
-     *
-     * @param string $token
-     * @return mixed
-     * @throws BadRequestHttpException
-     */
-    public function actionResetPassword($token)
-    {
-        try {
-            $model = new ResetPasswordForm($token);
-        } catch (InvalidParamException $e) {
-            throw new BadRequestHttpException($e->getMessage());
-        }
-
-        if ($model->load(Yii::$app->request->post()) && $model->validate() && $model->resetPassword()) {
-            Yii::$app->session->setFlash('success', Yii::t('app', 'New password saved.'));
-
-            return $this->goHome();
-        }
-
-        return $this->render('reset-password', [
-            'model' => $model,
-        ]);
-    }
-    
-    public function ActionGetRecommend(){
+        $sendYunSmsConfig = Yii::$app->params[self::$sendYunSmsConfig];         //发送验证码配置
+        $SMS_APP_ID = $sendYunSmsConfig['SMS_APP_ID'];                          //应用ID
         
-    }
+        $str='0123456789876543210';  
+        $randStr = str_shuffle($str);           //打乱字符串  
+        //把生成的验证码和到期时间保存到sesson中
+        Yii::$app->session['code_timeOut'] = [
+            'phone' => $phone,
+            'code' => substr($randStr, 0, 4),   //验证码【substr(string,start,length);返回字符串的一部分】
+            'timeOut' => time() + 30*60,
+        ];
+        
+        $PARAMS = Yii::$app->session['code_timeOut']['code'];
+        //传递的参数【必须是以下xml格式】
+        $xmlDatas = '<?xml version="1.0" encoding="UTF-8"?>' .
+                '<tranceData>' .
+                    "<MOBILE><![CDATA[$phone]]></MOBILE>" .
+                    "<SMS_TEMPLATE_ID><![CDATA[$SMS_TEMPLATE_ID]]></SMS_TEMPLATE_ID>" .
+                    "<SMS_APP_ID><![CDATA[$SMS_APP_ID]]></SMS_APP_ID>" .
+                    '<PARAMS>' .
+                        "<![CDATA[$PARAMS]]>" .
+                    '</PARAMS>' .
+                '</tranceData>';
+
+        $url = 'http://eesms.gzedu.com/sms/sendYunSms.do';  //发送短信的请求地址
+        $curl = new Curl();
+        $response = $curl
+                ->setOption(CURLOPT_HTTPHEADER, Array("Content-Type:text/xml; charset=utf-8"))
+                ->setOption(CURLOPT_POSTFIELDS, $xmlDatas)->post($url); //提交发送
+        //转换为simplexml对象
+        $xmlResult = simplexml_load_string($response);//XML 字符串载入对象中
+        
+        return (string)$xmlResult->result;
+    } 
     
     /**
      * 获取点赞排行靠前的课程

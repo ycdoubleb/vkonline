@@ -2,9 +2,9 @@
 
 namespace backend\modules\helpcenter_admin\controllers;
 
-use backend\components\BaseController;
 use common\models\helpcenter\PostCategory;
 use common\models\helpcenter\searchs\PostCategorySearch;
+use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -14,7 +14,7 @@ use yii\web\NotFoundHttpException;
 /**
  * CategoryController implements the CRUD actions for PostCategory model.
  */
-class CategoryController extends BaseController
+class CategoryController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc

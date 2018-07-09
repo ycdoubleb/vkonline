@@ -69,7 +69,7 @@ BaseAssets::register($this);
             </ul>
             <ul>
                 <li class="contacts-left title">帮助与反馈</li>
-                <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/?app_id=app-frontend&id=1') ?></li>
+                <li class="contacts-left"><?= Html::a('帮助中心', '/help_center/default/index?app_id=app-frontend&id=1') ?></li>
                 <li class="contacts-left"><?= Html::a('意见反馈', '/other/default/feedback') ?></li>
             </ul>
             <ul>

@@ -2,19 +2,18 @@
 
 namespace frontend\modules\admin_center\controllers;
 
-use backend\components\BaseController;
 use common\models\searchs\UserSearch;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
-use common\models\vk\Customer;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
+use common\widgets\grid\GridViewChangeSelfController;
 use frontend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -27,7 +26,7 @@ use yii\web\NotFoundHttpException;
 /**
  * UserController implements the CRUD actions for User model.
  */
-class UserController extends BaseController
+class UserController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc

@@ -1,9 +1,9 @@
 <?php
 
-use backend\components\GridViewChangeSelfColumn;
 use common\models\helpcenter\PostCategory;
 use common\models\helpcenter\searchs\PostCategorySearch;
-use backend\widgets\treegrid\TreegridAssets;
+use common\widgets\grid\GridViewChangeSelfColumn;
+use common\widgets\treegrid\TreegridAssets;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -71,8 +71,8 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'app_id',
                 'header' => Yii::t('app', '{App}{ID}',[
-                        'App' => \Yii::t('app', 'App'),
-                        'ID' => \Yii::t('app', 'ID'),
+                        'App' => Yii::t('app', 'App'),
+                        'ID' => Yii::t('app', 'ID'),
                     ]),
                 'filter' => Select2::widget([
                     'model' => $searchModel,

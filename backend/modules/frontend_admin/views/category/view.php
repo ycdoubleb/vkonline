@@ -70,6 +70,8 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </div>
+    <?php if($model->level != 1): ?>
+    <!--属性（如果不为顶级分类，则显示）-->
     <p>
         <?= Html::a(Yii::t(null, '{Create}{Course}{Attribute}', [
             'Create' => Yii::t('app', 'Create'),
@@ -164,6 +166,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]); ?>
     </div>
+    <?php endif;?>
 </div>
 <?php
     $js = <<<JS

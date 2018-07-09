@@ -1,7 +1,7 @@
 /* 
     前台注册页样式
     Created on : 2018-6-26, 10:45:01
-    Author     : 刘文俊
+    Author     : Vito Cover muzimila(www.jq22.com/jquery-info4418)
 */
 /************************************注册页样式*********************************/
 @media (min-height: 800px){
@@ -19,10 +19,10 @@
     background-color: #fff;
 }
 
-/*basic reset*/
+/*基本设置*/
 * {margin: 0; padding: 0;}
 
-/*form styles*/
+/*form表单样式*/
 .site-signup #msform {
     width: 700px;
     margin: 0px auto;
@@ -30,13 +30,14 @@
     position: relative;
 }
 
-/*progressbar*/
+/*控件-样式*/
 .site-signup #msform #progressbar {
     margin-bottom: 30px;
     overflow: hidden;
-    /*CSS counters to number the steps*/
+    /*CSS计数器的步骤数*/
     counter-reset: step;
 }
+
 .site-signup #msform #progressbar li {
     list-style-type: none;
     color: #333;
@@ -46,6 +47,7 @@
     float: left;
     position: relative;
 }
+
 .site-signup #msform #progressbar li:before {
     content: counter(step);
     counter-increment: step;
@@ -58,7 +60,8 @@
     border-radius: 3px;
     margin: 0 auto 5px auto;
 }
-/*progressbar connectors*/
+
+/*进度条连接线-样式*/
 .site-signup #msform #progressbar li:after {
     content: '';
     width: 88%;
@@ -67,14 +70,16 @@
     position: absolute;
     left: -44%;
     top: 9px;
-    z-index: 0; /*put it behind the numbers*/
+    z-index: 0; /*设置在它后面的数*/
 }
+
 .site-signup #msform #progressbar li:first-child:after {
-    /*connector not needed before the first step*/
+    /*第一步之前不需要连接线*/
     content: none; 
 }
-/*marking active/completed steps green*/
-/*The number of the step and the connector before it = green*/
+
+/*标记活动/完成步骤为绿色*/
+/*步骤和连接线之前的数量都设置为绿色*/
 .site-signup #msform #progressbar li.active:before,
 .site-signup #msform #progressbar li.active:after{
     background: #27AE60;
@@ -90,7 +95,7 @@
     box-sizing: border-box;
     width: 80%;
     margin: 0 10%;
-    /*stacking fieldsets above each other*/
+    /*堆叠fieldsets*/
     position: absolute;
 }
 
@@ -107,18 +112,28 @@
     margin-bottom: 0px;
 }
 
-.site-signup #customer {
+.site-signup .name-info {
     height: 15px;
     bottom: 135px;
-    color: #3d3d3d;
+    color: #666666;
     position: absolute;
 }
+/*号码提示*/
+.site-signup #user-phone-info.name-info {
+    top: 220px;
+}
 
-/*Hide all except first fieldset*/
+/*验证码提示*/
+.site-signup #code-info.name-info {
+    padding-left: 15px;
+}
+
+/*除了第一个fieldset，其他都隐藏*/
 .site-signup #msform fieldset:not(:first-of-type) {
 	display: none;
 }
-/*inputs*/
+
+/*所有输入框的样式*/
 .site-signup #msform input, .site-signup #msform textarea {
     /*padding: 15px;*/
     border: 1px solid #ccc;
@@ -129,7 +144,8 @@
     color: #2C3E50;
     font-size: 13px;
 }
-/*buttons*/
+
+/*按钮样式*/
 .site-signup #msform .action-button {
     width: 100px;
     background: #27AE60;
@@ -137,12 +153,11 @@
     color: white;
     border: 0 none;
     border-radius: 1px;
-    cursor: pointer;
     padding: 10px 5px;
     margin: 5px 5px;
 }
 
-/*headings*/
+/*标题样式*/
 .site-signup #msform .fs-title {
     font-size: 16px;
     text-transform: uppercase;
@@ -156,6 +171,7 @@
     margin-bottom: 20px;
 }
 
+/**邀请码正确或错误图标**/
 .site-signup #msform .icon-y{
     position: absolute;
     top: 15px;
@@ -170,6 +186,17 @@
     color: #d9534f;
 }
 
+/*验证码*/
+.site-signup .field-user-code .icon-y {
+    right: 275px !important;
+}
+
+.site-signup .field-user-code .icon-n {
+    right: 275px !important;
+}
+
+
+/**第三方登录按钮图标**/
 .site-signup .third {
     margin-top: 20px;
     margin-bottom: 10px;

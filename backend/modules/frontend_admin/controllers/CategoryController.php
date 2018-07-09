@@ -2,10 +2,10 @@
 
 namespace backend\modules\frontend_admin\controllers;
 
-use backend\components\BaseController;
 use common\models\vk\Category;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CategorySearch;
+use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -17,7 +17,7 @@ use yii\web\NotFoundHttpException;
 /**
  * CategoryController implements the CRUD actions for Category model.
  */
-class CategoryController extends BaseController
+class CategoryController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc
@@ -180,7 +180,7 @@ class CategoryController extends BaseController
         
         return $path;
     }
-    
+
     /**
      * 查找客户
      * @return array

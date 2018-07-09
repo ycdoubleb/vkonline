@@ -51,11 +51,16 @@ class TeacherController extends Controller
     public function actionIndex()
     {
         $searchModel = new TeacherSearch();
-        $dataProvider = $searchModel->searchTeacher(Yii::$app->request->queryParams);
-        
+        $result = $searchModel->searchTeacher(Yii::$app->request->queryParams);
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => $result['data']
+        ]);
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider->models,
+            'totalCount' => $result['total'],       //总数量
+            'filters' => $result['filter'],         //过滤条件
             'customer' => $this->getCustomer(),     //客户
         ]);
     }

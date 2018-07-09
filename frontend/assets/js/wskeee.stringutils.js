@@ -2,9 +2,10 @@
  * 字符工具
  * Created by Administrator on 2018-03-23 .
  */
-(function(win){
+(function (win) {
 
-    function StringUtil(){};
+    function StringUtil() {}
+    ;
     /**
      * 渲染DOM
      * @param renderer      DOM模板
@@ -14,8 +15,8 @@
     StringUtil.renderDOM = function (renderer, data)
     {
         var daName = [],
-            daVal = [],
-            efn = [];
+                daVal = [],
+                efn = [];
         for (var i in data) {
             daName.push(i);
             daVal.push("data." + i);
@@ -32,18 +33,18 @@
         efn.push(")");
         return eval(efn.join(""));
     };
-    
+
     /**
      * 数字转换成时间格式
      * @param integer $value
      * @param boolean $default [true(hh:mm:ss), false(mm:ss)]
      */
-    StringUtil.intToTime = function($value, $default = false)
+    StringUtil.intToTime = function ($value, $default)
     {
         var $h = Math.floor($value / 3600);
         var $m = Math.floor($value % 3600 / 60);
         var $s = Math.floor($value % 60);
-        
+
         return ($default ? StringUtil.zeor($h) + ':' : '') + StringUtil.zeor($m) + ':' + StringUtil.zeor($s);
     }
     /**
@@ -52,29 +53,29 @@
      * @param string $strTime     12:20:21
      * @return int 长度
      */
-    StringUtil.timeToInt = function($strTime){
+    StringUtil.timeToInt = function ($strTime) {
         /*
-        if(!typeof($strTime) == 'number')  
-        {  
-            var $times = [];
-            if(strpos($strTime ,":"))  
-            {  
-                $times =  explode(":", $strTime);  
-            }else if(strpos($strTime ,'：')){  
-                $times =  explode(":", $strTime);  
-            }else  
-            {  
-                return 0;  
-            }  
-            var $h = (number)$times[0] ;  
-            var $m = (number)$times[1];  
-            var $s = count($times) == 3 ? (int)$times[2] : 0;  
-            return $h * 3600 + $m * 60 + $s;  
-        }else{
-            return 0;
-        } */
+         if(!typeof($strTime) == 'number')  
+         {  
+         var $times = [];
+         if(strpos($strTime ,":"))  
+         {  
+         $times =  explode(":", $strTime);  
+         }else if(strpos($strTime ,'：')){  
+         $times =  explode(":", $strTime);  
+         }else  
+         {  
+         return 0;  
+         }  
+         var $h = (number)$times[0] ;  
+         var $m = (number)$times[1];  
+         var $s = count($times) == 3 ? (int)$times[2] : 0;  
+         return $h * 3600 + $m * 60 + $s;  
+         }else{
+         return 0;
+         } */
     }
-    
+
     /**
      * 删除左右两端的空格
      * @param {string} str
@@ -100,16 +101,16 @@
      */
     StringUtil.rtrim = function (str) {
         return str.replace(/(\s*$)/g, "");
-    }   
-    
+    }
+
     /**
      * 小于9自动在数字前添加0
      * @param int $value
      */
-    StringUtil.zeor = function($value){
-        return $value > 9 ? ""+$value :"0"+$value;
+    StringUtil.zeor = function ($value) {
+        return $value > 9 ? "" + $value : "0" + $value;
     }
-    
+
     /**
      * 补全文件路径
      * @param srting path  路径
@@ -117,33 +118,34 @@
      * @param srting appendStr  补全的字符，默认‘/’
      * @return srting
      */
-    StringUtil.completeFilePath = function(path, withStr = '', appendStr = '/'){
+    StringUtil.completeFilePath = function (path, withStr, appendStr) {
+        appendStr = appendStr || '/';
         //如果withStr为空的，默认['http://', 'https://', '/']
-        if(withStr == '' || withStr == null){
+        if (withStr == '' || withStr == null) {
             withStr = ['http://', 'https://', '/'];
         }
         //如果withStr不是数组，默认转为数组
-        if(!(withStr instanceof Array)){
+        if (!(withStr instanceof Array)) {
             withStr = [withStr];
         }
         //如果参数path为空，默认为空字符串
-        if(path == 'undefined' || path == null){
-           path = '';
+        if (path == 'undefined' || path == null) {
+            path = '';
         }
         //判断指定的字符串是否存在，若不存在则补全
         var isAppendStr = false;
-        for(var str in withStr){
-            if(path.indexOf(withStr[str]) !== 0){
+        for (var str in withStr) {
+            if (path.indexOf(withStr[str]) !== 0) {
                 isAppendStr = true;
-            }else{
+            } else {
                 isAppendStr = false;
                 break;
             }
         }
-        
+
         return isAppendStr ? appendStr + path : path;
     }
-    
+
     /**
      * 拆分一个字符串,以大写字母作为标识
      * @param {string} str  被拆分的字符串
@@ -166,14 +168,14 @@
      * @param {string} value
      * @return {Boolean}
      */
-    StringUtil.isInteger = function(value) {
-        if((/^(\+|-)?\d+$/.test( value ))){
-            return true;  
-        }else{  
-            return false;  
-        }  
+    StringUtil.isInteger = function (value) {
+        if ((/^(\+|-)?\d+$/.test(value))) {
+            return true;
+        } else {
+            return false;
+        }
     }
-    
+
     win.Wskeee = win.Wskeee || {};
     win.Wskeee.StringUtil = StringUtil;
     return StringUtil;
