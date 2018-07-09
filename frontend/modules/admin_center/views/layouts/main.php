@@ -1,7 +1,5 @@
 <?php
 
-use frontend\modules\admin_center\assets\MainAssets;
-use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */

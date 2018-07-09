@@ -83,7 +83,7 @@ $this->registerJs($format, View::POS_HEAD);
                 'pluginOptions' => [
                     'url' => Url::to('/admin_center/category/search-children', false),
                     'max_level' => 3,
-                    'onChangeEvent' => new JsExpression('function(){$("#course-form").submit();}')
+                    'onChangeEvent' => new JsExpression('function(){$("#admin-center-form").submit();}')
                 ],
                 'items' => Category::getSameLevelCats($searchModel->category_id, true),
                 'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),

@@ -53,29 +53,30 @@ class TeacherSearch extends Teacher
      */
     public function searchTeacher($params)
     {
+        $page = ArrayHelper::getValue($params, 'page', 1); //分页
+        $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
+        
         $query = Teacher::find();
 
-        // add conditions that should always apply here
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-        ]);
-
         $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
 
         // grid filtering conditions
         $query->andFilterWhere(['is_certificate' => $this->is_certificate]);
         $query->andFilterWhere(['customer_id' => $this->customer_id]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);
-
-        return $dataProvider;
+        //查询总数
+        $totalCount = $query->count('id');
+        //显示数量
+        $query->offset(($page - 1) * $limit)->limit($limit);
+        //查询结果
+        $result = $query->asArray()->all();
+        
+        return [
+            'filter' => $params,
+            'total' => $totalCount,
+            'data' => $result,
+        ];
     }
 
     //我的资源师资搜索

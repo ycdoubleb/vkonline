@@ -10,7 +10,6 @@ use common\models\helpcenter\searchs\PostCommentSearch;
 use Yii;
 use yii\db\Exception;
 use yii\db\Query;
-use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
@@ -247,7 +246,7 @@ class DefaultController extends Controller
         return $categoryName;
     }
 
-        /**
+    /**
      * 查询上/下篇文章
      * @param string $app_id    应用ID
      * @param integer $id       文章ID
