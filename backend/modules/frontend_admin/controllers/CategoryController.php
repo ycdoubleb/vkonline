@@ -180,7 +180,7 @@ class CategoryController extends GridViewChangeSelfController
         
         return $path;
     }
-    
+
     /**
      * 查找客户
      * @return array

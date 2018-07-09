@@ -3,9 +3,11 @@
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\searchs\TeacherSearch;
 use yii\data\ActiveDataProvider;
+use yii\data\Pagination;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
+use yii\widgets\LinkPager;
 
 /* @var $this View */
 /* @var $searchModel TeacherSearch */
@@ -40,7 +42,20 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     
     <div class="total-num">
-        <span>共 <?= count($dataProvider)?> 条记录</span>
+        <!--总结-->
+        <?php
+            $page = !isset($filters['page']) ? 1 : $filters['page'];
+            $pageCount = ceil($totalCount / 20);
+            if($pageCount > 0){
+                echo '<div class="summary">第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。</div>';
+            }
+        ?>
+        <!--分页-->
+        <?= LinkPager::widget([  
+            'pagination' => new Pagination([
+                'totalCount' => $totalCount,  
+            ]),  
+        ]) ?>
     </div>
     
 </div>
