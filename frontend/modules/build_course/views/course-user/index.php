@@ -31,7 +31,7 @@ GrowlAsset::register($this);
         <div class="right-panel-height">
             <?= GridView::widget([
                 'dataProvider' => $dataProvider,
-                'tableOptions' => ['class' => 'table table-list vk-table'],
+                'tableOptions' => ['class' => 'table table-list vk-table', 'style' => 'table-layout: auto;'],
                 'layout' => "{items}\n{summary}\n{pager}",
                 'summaryOptions' => [
                     'class' => 'hidden',

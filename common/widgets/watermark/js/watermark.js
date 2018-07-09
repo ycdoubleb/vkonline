@@ -42,7 +42,7 @@
     /**
      * 更新水印
      * @param {string} waterId      水印ID
-     * @param {type} waterConfig    水印配置
+     * @param {type} waterConfig    水印配置{width, height, shifting_X, shifting_Y}    
      * @returns {void}
      */
     Watermark.prototype.updateWatermark = function (waterId, waterConfig) {
@@ -52,27 +52,10 @@
         
         //验证数据
         var config = waterConfig;
-        config.width = Number(config.width);
-        config.height = Number(config.height);
-        if(config.width <= 8){
-            //百份比
-            config.width = config.width <= 0 ? config.width = 0.13 : config.width;
-            config.width = config.width > 1 ? config.width = 1 : config.width;
-            config.width = config.width * this.container.width();
-        }else if(config.width >= 8){
-            //真实大小
-            config.width = config.width > 4096 ? config.width = 4096 : config.width;
-        }
-        
-        if(config.height <= 8){
-            //百份比
-            config.height = config.height <= 0 ? config.height = 0.13 : config.height;
-            config.height = config.height > 1 ? config.height = 1 : config.height;
-            config.height = config.height * this.container.height();
-        }else if(config.height >= 8){
-            //真实大小
-            config.height = config.height > 4096 ? config.height = 4096 : config.height;
-        }
+        config.width = this.valuableWatermark(config.width, this.container.width());
+        config.height = this.valuableWatermark(config.height, this.container.height());
+        config.shifting_X = this.valuableWatermark(config.shifting_X, this.container.width());
+        config.shifting_Y = this.valuableWatermark(config.shifting_Y, this.container.height());
         
         //更新水印图片
         if(tatermark.get(0).tagName == 'IMG'){
@@ -116,7 +99,7 @@
     
     /**
      * 删除水印
-     * @param {string} waterId
+     * @param {string} waterId  水印ID
      * @return {void}
      */
     Watermark.prototype.removeWatermark = function(waterId){
@@ -124,6 +107,26 @@
         var tatermark = $('#' + waterId);
         //删除元素
         tatermark.remove();
+    }
+    
+    /**
+     * 验证数字 (0,1)[8,4096]
+     * @param {Number} value    验证的数值
+     * @param {Number} bgsize   背景宽高大小
+     * @return {Number|@var;value}
+     */
+    Watermark.prototype.valuableWatermark = function(value, bgsize){
+        value = Number(value);  //转为数字
+        bgsize = Number(bgsize);//转为数字
+        if (value < 8) {
+            value = value <= 0 ? value = 0.13 : value;
+            value = value > 1 ? value = 1 : value;
+            value = value * bgsize;
+        } else {
+            value = value > 4096 ? value = 4096 : parseInt(value);
+        }
+        
+        return value;
     }
     
     window.youxueba = window.youxueba || {};

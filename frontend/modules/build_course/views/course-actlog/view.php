@@ -31,7 +31,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
             <div class="modal-body">
                 <?= DetailView::widget([
                     'model' => $model,
-                    'options' => ['class' => 'table table-bordered detail-view vk-table'],
+                    'options' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'border: 1px solid #e4e4e4;'],
                     'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                     'attributes' => [
                         'action',

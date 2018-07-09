@@ -18,7 +18,12 @@ ModuleAssets::register($this);
 
 $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
     'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
-])
+]);
+//组装视频下关联的水印图
+$watermarks = '';
+foreach ($watermarksFiles as $watermark) {
+    $watermarks .= Html::img($watermark['path'], ['width' => 32, 'height' => 20]);
+}
 
 ?>
 
@@ -28,6 +33,22 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
         <span>
             <?= $this->title ?>
         </span>
+        <div class="btngroup pull-right">
+            <?php if($model->created_by == Yii::$app->user->id && $model->mts_status !== Video::MTS_STATUS_YES){
+                echo Html::a($model->mts_status == Video::MTS_STATUS_NO ? Yii::t('app', 'Transcoding') : Yii::t('app', 'Retry'), [
+                    'transcoding', 'id' => $model->id], [
+                    'class' => 'btn btn-flat ' . ($model->mts_status == Video::MTS_STATUS_NO ? 'btn-success' : 'btn-danger'), 
+                    'data' => [
+                        'pjax' => 0, 
+                        'confirm' => Yii::t('app', "{Are you sure}{Transcoding}【{$model->name}】{Video}", [
+                            'Are you sure' => Yii::t('app', 'Are you sure '), 'Transcoding' => Yii::t('app', 'Transcoding'), 
+                            'Video' => Yii::t('app', 'Video')
+                        ]),
+                        'method' => 'post',
+                    ],
+                ]);
+            }?>
+        </div>
     </div>
     
     <div class="vk-panel">
@@ -91,6 +112,15 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
                     'label' => Yii::t('app', 'Tag'),
                     'value' => count($model->tagRefs) > 0 ? 
                         implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->tagRefs, 'tags'), 'name'))) : null,
+                ],
+                [
+                    'attribute' => 'mts_status',
+                    'value' => Video::$mtsStatusName[$model->mts_status],
+                ],
+                [
+                    'label' => Yii::t('app', 'Watermark'),
+                    'format' => 'raw',
+                    'value' => !empty($model->mts_watermark_ids) ? $watermarks : null,
                 ],
                 [
                     'attribute' => 'created_by',

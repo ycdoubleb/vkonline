@@ -70,13 +70,13 @@ class Video extends ActiveRecord
     /** 发布状态-已发布 */
     const YES_PUBLISH = 1;
     
-    /* 未转码 */
+    /** 未转码 */
     const MTS_STATUS_NO = 0;
-    /* 转码中 */
+    /** 转码中 */
     const MTS_STATUS_DOING = 1;
-    /* 已转码 */
+    /** 已转码 */
     const MTS_STATUS_YES = 2;
-    /* 转码失败 */
+    /** 转码失败 */
     const MTS_STATUS_FAIL = 5;
     
     /**
@@ -99,6 +99,17 @@ class Video extends ActiveRecord
         self::YES_PUBLISH => '已发布',
     ];
     
+    /**
+     * 转码状态名
+     * @var array 
+     */
+    public static $mtsStatusName = [
+        self::MTS_STATUS_NO => '未转码',
+        self::MTS_STATUS_DOING => '转码中',
+        self::MTS_STATUS_YES => '已转码',
+        self::MTS_STATUS_FAIL => '转码失败',
+    ];
+
     /**
      * @inheritdoc
      */
@@ -125,11 +136,10 @@ class Video extends ActiveRecord
     {
         return [
             //[['id'], 'required'],
-            /*
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],*/
+            ])],
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")

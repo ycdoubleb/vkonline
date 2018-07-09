@@ -30,12 +30,14 @@ WatermarkAsset::register($this);
             ],  
         ], 
     ]); ?>
+    
     <!--水印名称-->
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...', 'maxlength' => true
     ])->label(Yii::t('app', '{Watermark}{Name}', [
         'Watermark' => Yii::t('app', 'Watermark'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
+    
     <!--水印位置-->
     <?= $form->field($model, 'refer_pos')->radioList(CustomerWatermark::$referPosMap, [
         'itemOptions'=>[
@@ -53,32 +55,78 @@ WatermarkAsset::register($this);
     ])) ?>
     
     <!--宽-->
-    <?= $form->field($model, 'width')->textInput([
-        'type' => 'number', 'min' => 0.00, 'max' => 4096,
-        'onchange' => 'changeRefer_pos()'
-    ]) ?>
+    <?php 
+        $selection = $model->width > 1 ? 1 : 0;
+        //下拉选择
+        $downList = Html::dropDownList(null, $selection, ['百分比', '像素'], [
+            'class' => 'form-control', 'onchange' => 'changeInputMode($(this))'
+        ]);
+        echo $form->field($model, 'width', [
+            'template' => "{label}\n<div class=\"col-lg-3 col-md-3\" style=\"padding-right: 0px;\">{input}</div>"
+                . "<div class=\"clear-padding pull-left\">{$downList}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput([
+            'type' => 'number', 'min' => $selection ? 8 : 0, 'max' => $selection ? 4096 : 1, 
+            'step' => $selection ? 1 : 0.01, 'onchange' => 'changeRefer_pos()',
+        ]);
+    ?>
     
     <!--高-->
-    <?= $form->field($model, 'height')->textInput([
-        'type' => 'number', 'min' => 0.00, 'max' => 4096,
-        'onchange' => 'changeRefer_pos()'
-    ]) ?>
+    <?php
+        $selection = $model->height > 1 ? 1 : 0;
+        //下拉选择
+        $downList = Html::dropDownList(null, $selection, ['百分比', '像素'], [
+            'class' => 'form-control', 'onchange' => 'changeInputMode($(this))'
+        ]);
+        echo $form->field($model, 'height', [
+            'template' => "{label}\n<div class=\"col-lg-3 col-md-3\" style=\"padding-right: 0px;\">{input}</div>"
+                . "<div class=\"clear-padding pull-left\">{$downList}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput([
+            'type' => 'number', 'min' => $selection ? 8 : 0, 'max' => $selection ? 4096 : 1, 
+            'step' => $selection ? 1 : 0.01, 'onchange' => 'changeRefer_pos()',
+        ]);
+    ?>
     
     <!--水平偏移-->
-    <?= $form->field($model, 'dx')->textInput([
-        'type' => 'number', 'min' => 0.00,
-        'onchange' => 'changeRefer_pos()'
-    ])->label(Yii::t('app', '{Level}{Shifting}', [
-        'Level' => Yii::t('app', 'Level'), 'Shifting' => Yii::t('app', 'Shifting')
-    ])) ?>
+    <?php
+        $selection = $model->isNewRecord || $model->dx > 1 ? 1 : 0;
+        //下拉选择
+        $downList = Html::dropDownList(null, $selection, ['百分比', '像素'], [
+            'class' => 'form-control', 'onchange' => 'changeInputMode($(this))'
+        ]);
+        echo $form->field($model, 'dx', [
+            'template' => "{label}\n<div class=\"col-lg-3 col-md-3\" style=\"padding-right: 0px;\">{input}</div>"
+                . "<div class=\"clear-padding pull-left\">{$downList}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput([
+            'type' => 'number', 'value' => $model->isNewRecord ? 10 : $model->dx, 
+            'min' => $selection ? 8 : 0, 'max' => $selection ? 4096 : 1, 
+            'step' => $selection ? 1 : 0.01, 'onchange' => 'changeRefer_pos()',
+        ])->label(Yii::t('app', '{Level}{Shifting}', [
+            'Level' => Yii::t('app', 'Level'), 'Shifting' => Yii::t('app', 'Shifting')
+        ]));
+    ?>
     
     <!--垂直偏移-->
-    <?= $form->field($model, 'dy')->textInput([
-        'type' => 'number', 'min' => 0.00,
-        'onchange' => 'changeRefer_pos()'
-    ])->label(Yii::t('app', '{Vertical}{Shifting}', [
-        'Vertical' => Yii::t('app', 'Vertical'), 'Shifting' => Yii::t('app', 'Shifting')
-    ])) ?>
+    <?php 
+        $selection = $model->isNewRecord || $model->dy > 1 ? 1 : 0;
+        //下拉选择
+        $downList = Html::dropDownList(null, $selection, ['百分比', '像素'], [
+            'class' => 'form-control', 'onchange' => 'changeInputMode($(this))'
+        ]);
+        echo $form->field($model, 'dy', [
+            'template' => "{label}\n<div class=\"col-lg-3 col-md-3\" style=\"padding-right: 0px;\">{input}</div>"
+                . "<div class=\"clear-padding pull-left\">{$downList}</div>\n"
+                . "<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput([
+            'type' => 'number', 'value' => $model->isNewRecord ? 10 : $model->dy, 
+            'min' => $selection ? 8 : 0, 'max' => $selection ? 4096 : 1, 
+            'step' => $selection ? 1 : 0.01, 'onchange' => 'changeRefer_pos()',
+        ])->label(Yii::t('app', '{Vertical}{Shifting}', [
+            'Vertical' => Yii::t('app', 'Vertical'), 'Shifting' => Yii::t('app', 'Shifting')
+        ])); 
+    ?>
     
     <!--水印文件-->
     <div class="form-group field-customerwatermark-file_id">
@@ -127,7 +175,11 @@ WatermarkAsset::register($this);
 </div>
 
 <?php
+//水印图路径
 $path = !$model->isNewRecord ? $model->file->path : '';
+//设置偏移默认值
+$model->dx = $model->isNewRecord ? 10 : $model->dx;
+$model->dy = $model->isNewRecord ? 10 : $model->dy;
 //获取flash上传组件路径
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
 $csrfToken = Yii::$app->request->csrfToken;
@@ -203,7 +255,6 @@ $js =
         width: '{$model->width}', height: '{$model->height}', 
         shifting_X: '{$model->dx}', shifting_Y: '{$model->dy}'
     });
-        
     /**
      * 变更数值，更改对应参数
      */
@@ -219,6 +270,21 @@ $js =
             shifting_X: dx, shifting_Y: dy
         });
     }
+    /**
+     * 更换输入方式
+     * @param elem 触发事件的对象
+     */
+    window.changeInputMode = function(elem){
+        var inputMode = elem.parent().prev().children();
+        if(elem.find("option:selected").val() == 1){
+            $(inputMode).attr({min: 8, max: 4096, step: 1});
+            $(inputMode).val(8);
+        }else{
+            $(inputMode).attr({min: 0, max: 1, step: 0.01});
+            $(inputMode).val(0);
+        }
+        changeRefer_pos();
+   }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

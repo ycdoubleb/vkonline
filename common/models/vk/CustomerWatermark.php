@@ -34,9 +34,9 @@ class CustomerWatermark extends ActiveRecord {
     /** 状态-全部 */
     const STATUS_ALL = '';
     /** 状态-启用 */
-    const STATUS_ENABLE = 1;
+    const STATUS_ENABLE = 0;
     /** 状态-停用 */
-    const STATUS_STOP = 0;
+    const STATUS_STOP = 1;
     /** 位置-右上 */
     const POSITION_TOPRIGHT = 'TopRight';
     /** 位置-左上 */
@@ -124,6 +124,14 @@ class CustomerWatermark extends ActiveRecord {
         ];
     }
     
+    public function afterFind()
+    {
+        $this->width = self::valuable($this->width);
+        $this->height = self::valuable($this->height);
+        $this->dx = self::valuable($this->dx);
+        $this->dy = self::valuable($this->dy);
+    }
+    
     /**
      * 客户
      * @return ActiveQuery Description
@@ -175,7 +183,7 @@ class CustomerWatermark extends ActiveRecord {
      */
     private static function valuable($value) {
         if ($value < 8) {
-            $value = $value < 0 ? $value = 0.13 : $value;
+            $value = $value <= 0 ? $value = 0.13 : $value;
             $value = $value > 1 ? $value = 1 : $value;
         } else {
             $value = $value > 4096 ? $value = 4096 : intval($value);

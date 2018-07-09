@@ -2,6 +2,7 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CustomerWatermark;
@@ -9,6 +10,7 @@ use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
+use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
@@ -117,6 +119,7 @@ class VideoController extends Controller
         return $this->render('view', [
             'model' => $model,  //video模型
             'dataProvider' => $searchModel->relationSearch($model->id),    //相关课程数据
+            'watermarksFiles' => $this->getCustomerWatermark(explode(',', $model->mts_watermark_ids)),    //客户下已启用的水印
         ]);
     }
    
@@ -141,7 +144,8 @@ class VideoController extends Controller
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
                 'videoFiles' => json_encode([]),
-                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
+                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印,
+                'wateSelected' => json_encode([]),
             ]);
         }
     }
@@ -199,6 +203,33 @@ class VideoController extends Controller
         
         if (Yii::$app->request->isPost) {
             return ActionUtils::getInstance()->deleteVideo($model);
+        }
+    }
+    
+    /**
+     * 转码 现有的 Video。
+     * 如果转码成功，浏览器将被重定向到“查看”页面。
+     * @param string $id
+     * @return mixed
+     */
+    public function actionTranscoding($id)
+    {
+        $model = $this->findModel($id);
+        
+        if($model->created_by == Yii::$app->user->id){
+            if($model->is_del){
+                throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+            }
+            if($model->mts_status == Video::MTS_STATUS_YES){
+                throw new NotFoundHttpException(Yii::t('app', 'The video has been transcoding without repeating the transcoding.'));
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
+        if (Yii::$app->request->isPost) {
+            ActionUtils::getInstance()->transcodingVideo($model);
+            return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
         }
     }
     

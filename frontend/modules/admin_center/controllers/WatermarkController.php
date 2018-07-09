@@ -53,7 +53,7 @@ class WatermarkController extends GridViewChangeSelfController
         return $this->render('index', [
             'searchModel' => $searchModel,      //搜索模型
             'dataProvider' => $dataProvider,    //所有水印数据
-            'filters' => [],                    //过滤条件
+            'filters' => Yii::$app->request->queryParams,  //过滤条件
         ]);
     }
 

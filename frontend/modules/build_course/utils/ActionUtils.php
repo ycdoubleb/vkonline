@@ -2,9 +2,7 @@
 
 namespace frontend\modules\build_course\utils;
 
-use common\components\aliyuncs\Aliyun;
 use common\models\User;
-use common\models\vk\AliyunMtsService;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
@@ -12,7 +10,6 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
-use common\models\vk\CustomerWatermark;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\RecentContacts;
@@ -27,6 +24,7 @@ use Yii;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 
 
@@ -687,10 +685,22 @@ class ActionUtils
      */
     public function createVideo($model, $post)
     {
-        $uploadFile = $this->findUploadfileModel(ArrayHelper::getValue($post, 'VideoFile.file_id.0'));
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids'));    //水印id
+        $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
+        //如果上传的视频文件已经被使用过, 则返回使用者的信息
+        $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+        if($userInfo['results']){
+            throw new NotFoundHttpException($userInfo['message']);
+        }
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($fileId);
+        //需保存的Video属性
         $model->duration = $uploadFile->duration;
         $model->img = $uploadFile->thumb_path;
         $model->is_link = $uploadFile->is_link;
+        $model->mts_watermark_ids = $watermarkIds;
         $model->is_publish = 1;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
@@ -698,10 +708,13 @@ class ActionUtils
         {  
             if($model->save()){
                 $videoFile = new VideoFile([
-                    'video_id' => $model->id, 'is_source' => 1, 'file_id' => $uploadFile->id,
+                    'video_id' => $model->id, 'is_source' => 1, 'file_id' => $fileId,
                 ]);
-                $videoFile->save();
-                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
+                if($videoFile->save() && $mts_need){
+                    VideoAliyunAction::addVideoTranscode($model->id);
+                    VideoAliyunAction::addVideoSnapshot($model->id);
+                }
+                $this->saveObjectTags($model->id, $tagIds, 2);
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -721,19 +734,37 @@ class ActionUtils
      */
     public function updateVideo($model, $post)
     {
-        $uploadFile = $this->findUploadfileModel(ArrayHelper::getValue($post, 'VideoFile.file_id.0'));
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids'));    //水印id
+        $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
+        //如果上传的视频文件已经被使用过, 则返回使用者的信息
+        $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+        if($userInfo['results']){
+            throw new NotFoundHttpException($userInfo['message']);
+        }
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($fileId);
+        //需保存的Video属性
         $model->duration = $uploadFile->duration;
         $model->img = $uploadFile->thumb_path;
         $model->is_link = $uploadFile->is_link;
+        $model->mts_watermark_ids = $watermarkIds;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
                 $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
-                $videoFile->file_id = $uploadFile->id;
-                $videoFile->save(false, ['file_id']);
-                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')), 2);
+                if($videoFile->file_id != $fileId){
+                    $model->mts_status = Video::MTS_STATUS_NO;
+                    $videoFile->file_id = $fileId;
+                    if($videoFile->save(false, ['file_id']) && $mts_need){
+                        VideoAliyunAction::addVideoTranscode($model->id);
+                        VideoAliyunAction::addVideoSnapshot($model->id);
+                    }
+                }
+                $this->saveObjectTags($model->id, $tagIds, 2);
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -776,8 +807,32 @@ class ActionUtils
         }
     }
     
+    /**
+     * 转码视频操作
+     * @param Video $model
+     * @throws Exception
+     */
+    public function transcodingVideo($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->mts_status == Video::MTS_STATUS_NO){
+                VideoAliyunAction::addVideoTranscode($model->id);
+                VideoAliyunAction::addVideoSnapshot($model->id);
+            }else{
+                VideoAliyunAction::retryVideoTrancode($model->id);
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+    }
     
-
     /**
      * 创建老师操作
      * @param Teacher $model
@@ -1186,5 +1241,41 @@ class ActionUtils
         //添加
         Yii::$app->db->createCommand()->batchInsert(CourseAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
+    }
+    
+    /**
+     * 获取上传的视频文件著作者信息。
+     * 如果上传的视频文件已经被使用过, 则返回著作者的信息
+     * @param string $fileId    实体文件id
+     * @return array
+     */
+    protected function getUploadVideoFileUserInfo($fileId)
+    {
+        //查询视频关联实体文件
+        $videoFile = (new Query())->select([
+            'VideoFile.video_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
+        ])->from(['VideoFile' => VideoFile::tableName()]);
+        //查询视频
+        $videoFile->leftJoin(['Video' => Video::tableName()], 'Video.id = VideoFile.video_id');
+        //查询用户
+        $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        //条件
+        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.file_id' => $fileId]);
+        //结果
+        $userInfo = $videoFile->one();
+        //$userInfo是否非空
+        if(!empty($userInfo)){
+            return [
+                'results' => 1,
+                'data' => $userInfo,
+                'message' => '该视频文件已有著作者，请与该视频的著作者沟通使用。'
+            ];
+        }
+        
+        return [
+            'results' => 0,
+            'data' => [],
+            'message' => '尚未发现有著作者，请放心使用。'
+        ];
     }
 }

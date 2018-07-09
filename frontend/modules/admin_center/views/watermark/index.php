@@ -43,7 +43,7 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
             'action' => ['index'],
             'method' => 'get',
             'options'=>[
-                'id' => 'build-course-form',
+                'id' => 'admin-center-form',
                 'class'=>'form-horizontal',
             ],
             'fieldConfig' => [  
@@ -217,3 +217,15 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
         ]); ?>
     </div>
 </div>
+
+<?php
+$js = 
+<<<JS
+    //提交表单 
+    window.submitForm = function(){
+        $('#admin-center-form').submit();
+    }
+   
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

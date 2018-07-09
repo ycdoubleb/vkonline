@@ -342,7 +342,8 @@ class CourseController extends Controller
     protected function getCourseAttributeByCategoryId($categoryId)
     {
         $attributes = (new Query())->select(['id', 'name', 'values', 'sort_order'])
-            ->from(CourseAttribute::tableName())->where(['category_id' => $categoryId])
+            ->from(CourseAttribute::tableName())
+            ->where(['category_id' => $categoryId, 'is_del' => 0])
             ->orderBy(['sort_order' => SORT_ASC])->all();
         
         $attrs = [];

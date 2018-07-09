@@ -116,6 +116,7 @@ return [
     'Apply' => '申请',
     'Request' => '请求',
     'Send' => '发送',
+    'Retry' => '重试',
     
     //公共-属性
     'ID' => 'ID',
@@ -198,6 +199,7 @@ return [
     'Check your email for further instructions.' => '检查您的电子邮件以获得进一步的说明。',
     'Sorry, we are unable to reset password for the provided email address.' => '对不起，我们无法为所提供的电子邮件地址重置密码。',
     'New password saved.' => '新密码已成功保存。',
+    'The video has been transcoding without repeating the transcoding.' => '该视频已经转码，无需重复转码。',
     
     //后台-公共配置
     'Config' => '配置',
