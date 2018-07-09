@@ -65,7 +65,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                     ],
                 ],
                 'symbol' => '',
-                'conditions' => $model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
+                'conditions' => $model->is_publish && !$model->is_del && $haveAllPrivilege,
                 'adminOptions' => true,
             ],
             [
@@ -74,7 +74,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 'icon' => null,
                 'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => !Yii::$app->user->identity->is_official ? 'showModal($(this));return false;' : null],
                 'symbol' => '&nbsp;',
-                'conditions' => !$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
+                'conditions' => !$model->is_publish && !$model->is_del && $haveAllPrivilege,
                 'adminOptions' => true,
             ],
             [
@@ -93,7 +93,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                     ],
                 ],
                 'symbol' => '',
-                'conditions' => !$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id,
+                'conditions' => !$model->is_publish && !$model->is_del && $haveAllPrivilege,
                 'adminOptions' => true,
             ],
         ];
@@ -119,7 +119,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 ]) ?>
             </span>
             <div class="btngroup pull-right">
-                <?php if(!$model->is_publish && !$model->is_del && $model->created_by === Yii::$app->user->id){
+                <?php if(!$model->is_publish && !$model->is_del && $haveAllPrivilege){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']);
                 }?>
@@ -177,7 +177,8 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
     <div id="help_man">
         <?= $this->render('/course-user/index', [
             'model' => $model,
-            'dataProvider' => $courseUsers
+            'dataProvider' => $courseUsers,
+            'haveAllPrivilege' => $haveAllPrivilege,
         ]) ?>
     </div>
     <!--课程框架-->
@@ -185,7 +186,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
         <?= $this->render('/course-node/index', [
             'model' => $model,
             'dataProvider' => $courseNodes,
-            'is_hasEditNode' => $is_hasEditNode,
+            'haveEditPrivilege' => $haveEditPrivilege,
         ]) ?>
     </div>
     <!--操作记录-->

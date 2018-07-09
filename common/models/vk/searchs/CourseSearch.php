@@ -6,7 +6,7 @@ use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
-use common\models\vk\CourseProgress;
+use common\models\vk\CourseUser;
 use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
@@ -94,11 +94,16 @@ class CourseSearch extends Course
         
         self::getInstance();
         $this->load($params);
+        self::$query->leftJoin(['CourseUser' => CourseUser::tableName()], '(CourseUser.course_id = Course.id AND CourseUser.is_del = 0)');
+        
         //条件查询
         self::$query->andFilterWhere([
-            'Course.created_by' => \Yii::$app->user->id,
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
+        ]);
+        self::$query->andFilterWhere(['OR', 
+            ['Course.created_by' => \Yii::$app->user->id],
+            ['CourseUser.user_id' => \Yii::$app->user->id]
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
