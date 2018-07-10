@@ -47,6 +47,7 @@ use yii\web\UploadedFile;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
+ * @property UserCategory $userCategory 获取用户自定义分类
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
  * @property Teacher $teacher 获取老师
@@ -219,6 +220,14 @@ class Video extends ActiveRecord
     public function afterFind()
     {
         $this->des = Html::decode($this->des);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getUserCategory()
+    {
+        return $this->hasOne(UserCategory::class, ['id' => 'user_cat_id']);
     }
     
     /**
