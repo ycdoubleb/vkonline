@@ -85,7 +85,7 @@ class Uploadfile extends ActiveRecord {
             'oss_upload_status',  'deleted_at', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
-            [['name', 'path', 'thumb_path', 'oss_key', 'oss_path', 'oss_etag'], 'string', 'max' => 255],
+            [['name', 'path', 'thumb_path', 'oss_key'], 'string', 'max' => 255],
             [['app_id'], 'string', 'max' => 50],
             [['id'], 'unique'],
         ];
@@ -113,8 +113,6 @@ class Uploadfile extends ActiveRecord {
             'duration' => Yii::t('app', 'Duration'),
             'bitrate' => Yii::t('app', 'Bitrate'),
             'oss_key' => Yii::t('app', 'OSS Key'),
-            'oss_path' => Yii::t('app', 'OSS Path'),
-            'oss_etag' => Yii::t('app', 'OSS ETag'),
             'oss_upload_status' => Yii::t('app', 'OSS Upload Status'),
             'created_by' => Yii::t('app', 'Created By'),
             'deleted_by' => Yii::t('app', 'Deleted By'),
@@ -161,7 +159,7 @@ class Uploadfile extends ActiveRecord {
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
             $this->oss_key = $object_key;
 
-            $this->save(false, ['oss_upload_status', 'oss_path', 'oss_key', 'oss_etag']);
+            $this->save(false, ['oss_upload_status', 'oss_key']);
             return ['success' => true];
         } catch (OssException $ex) {
             return ['success' => false, 'msg' => $ex->getMessage()];
