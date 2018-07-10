@@ -7,6 +7,7 @@ use common\models\vk\Course;
 use common\models\vk\searchs\CategorySearch;
 use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -134,6 +135,24 @@ class CategoryController extends GridViewChangeSelfController
     }
 
     /**
+     * 自定义更新分类层级
+     * @param string $categoryIds
+     * @return mixed
+     */
+    public function actionUpdatePath($categoryIds)
+    {
+        //切割字符串为数组并过滤空值
+        $cat_ids = array_filter(explode(',',$categoryIds));
+        //获取到当前客户下和去除已选择的分类
+        $dataProvider = $this->getAllCategory($cat_ids);
+
+//        var_dump($category->models);exit;
+        return $this->renderAjax('update-path',[
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+
+        /**
      * Deletes an existing Category model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
@@ -198,5 +217,32 @@ class CategoryController extends GridViewChangeSelfController
         }
         
         return $path;
+    }
+    
+    /**
+     * 获取到当前客户下和去除已选择的分类
+     * @param srray $cat_ids 已选择的分类id
+     * @return array
+     */
+    protected function getAllCategory($cat_ids){
+        //公共的分类和属于客户的分类
+        $filter = [' ', Yii::$app->user->identity->customer_id];
+
+        $query = Category::find()
+                ->select(['id', 'name', 'parent_id', 'path'])
+                ->where(['is_show' => 1])
+                ->andFilterWhere(['IN', 'customer_id', $filter])    //过滤非当前客户下的分类
+                ->andFilterWhere(['NOT IN', 'id', $cat_ids]);       //过滤已选择的分类
+
+        $query->orderBy(['path' => SORT_ASC]);
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => [
+                'pageSize' => 1000,
+            ],
+        ]);
+        
+        return $dataProvider;
     }
 }
