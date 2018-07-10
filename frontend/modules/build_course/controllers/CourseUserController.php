@@ -57,8 +57,9 @@ class CourseUserController extends Controller
         $dataProvider = $searchModel->search(['course_id' => $course_id]);
         
         return $this->renderAjax('index', [
-            'model' => $searchModel->course,
-            'dataProvider' => $dataProvider,
+            'model' => $searchModel->course,    //课程模型
+            'dataProvider' => $dataProvider,    //所有协作人员
+            'haveAllPrivilege' => ActionUtils::getInstance()->getIsHavePermission($course_id),  //只有全部权限
         ]);
     }
 
@@ -73,7 +74,7 @@ class CourseUserController extends Controller
         $model = new CourseUser(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if($model->course->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($course_id)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -92,9 +93,9 @@ class CourseUserController extends Controller
             return ActionUtils::getInstance()->createCourseUser($model, Yii::$app->request->post());
         }else{
             return $this->renderAjax('create', [
-                'model' => $model,
-                'courseUsers' => $this->getHelpManList($course_id),
-                'userRecentContacts' => $this->getUserRecentContacts(),
+                'model' => $model,      //CourseUser
+                'courseUsers' => $this->getHelpManList($course_id),     //课程下的所有协作人员
+                'userRecentContacts' => $this->getUserRecentContacts(), //用户关联的最近联系人
             ]);
         }
     }
@@ -109,7 +110,7 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->course_id)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -128,7 +129,7 @@ class CourseUserController extends Controller
             return ActionUtils::getInstance()->updateCourseUser($model);
         } else {
             return $this->renderAjax('update', [
-                'model' => $model,
+                'model' => $model,  //CourseUser
             ]);
         }
     }
@@ -143,7 +144,7 @@ class CourseUserController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->course->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->course_id)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),

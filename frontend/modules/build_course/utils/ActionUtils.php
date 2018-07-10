@@ -966,20 +966,33 @@ class ActionUtils
     }
     
     /**
-     * 获取是否拥有编辑权限
+     * 获取是否拥有权限
      * @param string $course_id
+     * @param boolean $includeEditPrivilege     是否包含编辑权限，默认false
      * @return boolean
      */
-    public function getIsHasEditNodePermission($course_id)
+    public function getIsHavePermission($course_id, $includeEditPrivilege = false)
     {
         //查询该课程下的所有协作用户
         $courseUsers = CourseUser::findAll([
-            'course_id' => $course_id, 'privilege' => [CourseUser::EDIT, CourseUser::ALL]
+            'course_id' => $course_id, 'privilege' => [CourseUser::EDIT, CourseUser::ALL],
+            'is_del' => 0
         ]);
-        //拿到拥有编辑权限的用户
         $userIds = ArrayHelper::getColumn($courseUsers, 'user_id');
+        $allUsers = [];
+        //获取所有权限是【全部】的用户
+        foreach ($courseUsers as $user) {
+            if($user->privilege == CourseUser::ALL){
+                $allUsers[] = $user->user_id;
+            }
+        }
+        
         //如果当前用户存在数组里，则返回true
         if(in_array(Yii::$app->user->id, $userIds)){
+            //如果当前用户在权限是【全部】组里，并且不包含有【编辑】的权限，则返回false
+            if(!in_array(Yii::$app->user->id, $allUsers) && !$includeEditPrivilege){
+                return false;
+            }
             return true;
         }
         

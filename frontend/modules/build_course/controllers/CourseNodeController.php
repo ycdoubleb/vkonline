@@ -68,7 +68,7 @@ class CourseNodeController extends Controller
         $model = new CourseNode(['course_id' => $course_id]);
         $model->loadDefaultValues();
         
-        if(ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+        if(ActionUtils::getInstance()->getIsHavePermission($course_id, true)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -102,7 +102,7 @@ class CourseNodeController extends Controller
     {
         $model = $this->findModel($id);
         
-        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->course_id, true)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -136,7 +136,7 @@ class CourseNodeController extends Controller
     {
         $model = $this->findModel($id);
         
-        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->course_id)){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->course_id, true)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -166,7 +166,7 @@ class CourseNodeController extends Controller
         $post = Yii::$app->request->post();
         $course_id = ArrayHelper::getValue($post, 'course_id');
        
-        if(!ActionUtils::getInstance()->getIsHasEditNodePermission($course_id)){
+        if(!ActionUtils::getInstance()->getIsHavePermission($course_id, true)){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
                 
