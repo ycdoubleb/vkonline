@@ -59,8 +59,8 @@ class KnowledgeController extends Controller
     {
         $model = new Knowledge(['node_id' => $node_id, 'created_by' => \Yii::$app->user->id]);
         $model->loadDefaultValues();
-
-        if(ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
+        
+        if(ActionUtils::getInstance()->getIsHavePermission($model->node->course_id, true)){
             if($model->node->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Add}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -95,10 +95,7 @@ class KnowledgeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if($model->created_by == \Yii::$app->user->id){
-            if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
-                throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-            }
+        if(ActionUtils::getInstance()->getIsHavePermission($model->node->course_id, true)){
             if($model->node->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -135,10 +132,7 @@ class KnowledgeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if($model->created_by == \Yii::$app->user->id){
-            if(!ActionUtils::getInstance()->getIsHasEditNodePermission($model->node->course_id)){
-                throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-            }
+        if(ActionUtils::getInstance()->getIsHavePermission($model->node->course_id, true)){
             if($model->node->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),

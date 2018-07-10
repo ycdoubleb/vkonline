@@ -25,6 +25,7 @@ use yii\web\UploadedFile;
  * @property string $id
  * @property string $teacher_id 老师ID
  * @property string $customer_id 所属客户ID
+ * @property string $user_cat_id 用户目录ID
  * @property string $name 视频名称
  * @property string $duration 时长
  * @property int $is_link 是否为外链：0否 1是
@@ -46,6 +47,7 @@ use yii\web\UploadedFile;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
+ * @property UserCategory $userCategory 获取用户自定义分类
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
  * @property Teacher $teacher 获取老师
@@ -135,7 +137,6 @@ class Video extends ActiveRecord
     public function rules()
     {
         return [
-            //[['id'], 'required'],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
@@ -145,7 +146,7 @@ class Video extends ActiveRecord
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
             [['duration'], 'number'],
-            [['is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 
+            [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 
                 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at','mts_status' ,'mts_need'], 'integer'],
             [['des'], 'string'],
             [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
@@ -164,6 +165,7 @@ class Video extends ActiveRecord
             'id' => Yii::t('app', 'ID'),
             'teacher_id' => Yii::t('app', 'Teacher ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
+            'user_cat_id' => Yii::t('app', 'User Cat ID'),
             'name' => Yii::t('app', 'Name'),
             'duration' => Yii::t('app', 'Duration'),
             'is_link' => Yii::t('app', 'Is Link'),
@@ -218,6 +220,14 @@ class Video extends ActiveRecord
     public function afterFind()
     {
         $this->des = Html::decode($this->des);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getUserCategory()
+    {
+        return $this->hasOne(UserCategory::class, ['id' => 'user_cat_id']);
     }
     
     /**

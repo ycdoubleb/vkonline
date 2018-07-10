@@ -18,7 +18,6 @@ use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -124,7 +123,8 @@ class CourseController extends Controller
             'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
             'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id), //该课程下的所有操作记录
             'path' => $this->getCategoryFullPath($model->category_id),  //分类全路径
-            'is_hasEditNode' => ActionUtils::getInstance()->getIsHasEditNodePermission($model->id), //是否拥有编辑节点的权限
+            'haveAllPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id),  //只有全部权限
+            'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id, true), //包含编辑权限
         ]);
     }
    
@@ -164,7 +164,7 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->id)){
             if($model->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -203,7 +203,7 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->id)){
             if($model->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -234,7 +234,7 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->id)){
             if(!$model->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{notPublished}{canNot}{Down}{Shelves}', [
                     'notPublished' => Yii::t('app', 'The course is not published,'),
@@ -265,7 +265,7 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if(ActionUtils::getInstance()->getIsHavePermission($model->id)){
             if($model->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Publish}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),

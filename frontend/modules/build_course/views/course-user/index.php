@@ -22,7 +22,7 @@ GrowlAsset::register($this);
         <div class="title">
             <span><?= Yii::t('app', 'Help Man') ?></span>
             <div class="btngroup pull-right">
-                <?php if($model->created_by == Yii::$app->user->id && !$model->is_publish && !$model->is_del){
+                <?php if($haveAllPrivilege && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-user/create', 'course_id' => $model->id], 
                         ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));']);
                 }?>
@@ -80,7 +80,7 @@ GrowlAsset::register($this);
                     [
                         'class' => 'yii\grid\ActionColumn',
                         'buttons' => [
-                            'update' => function ($url, $model, $key) {
+                            'update' => function ($url, $model, $key) use($haveAllPrivilege) {
                                 /* @var $model CourseUser */
                                  $options = [
                                     'title' => Yii::t('yii', 'Update'),
@@ -95,13 +95,12 @@ GrowlAsset::register($this);
                                     'symbol' => '&nbsp;',
                                     'adminOptions' => true,
                                 ];
-                                if($model->user_id != $model->course->created_by 
-                                    && $model->course->created_by == Yii::$app->user->id 
+                                if($model->user_id != Yii::$app->user->id  && $haveAllPrivilege 
                                     && !$model->course->is_publish && !$model->course->is_del){
                                     return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                                 }
                             },
-                            'delete' => function ($url, $model, $key) {
+                            'delete' => function ($url, $model, $key) use($haveAllPrivilege) {
                                 /* @var $model CourseUser */
                                 $options = [
                                     'title' => Yii::t('yii', 'Delete'),
@@ -125,8 +124,7 @@ GrowlAsset::register($this);
                                     'symbol' => '&nbsp;',
                                     'adminOptions' => true,
                                 ];
-                                if($model->user_id != $model->course->created_by 
-                                    && $model->course->created_by == Yii::$app->user->id 
+                                if($model->user_id != Yii::$app->user->id  && $haveAllPrivilege 
                                     && !$model->course->is_publish && !$model->course->is_del){
                                     return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']) . $buttonHtml['symbol'];
                                 }

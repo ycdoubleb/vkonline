@@ -29,7 +29,7 @@ GrowlAsset::register($this);
                 ]) ?>
             </span>
             <div class="btngroup pull-right">
-                <?php if($is_hasEditNode && !$model->is_publish && !$model->is_del){
+                <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
                         'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
@@ -54,7 +54,7 @@ GrowlAsset::register($this);
                     <?= Html::a("<div><i class=\"fa fa-caret-right\"></i></div><span class=\"name\">{$courseNodes->name}</span>", "#toggle_{$courseNodes->id}", [
                         'data-toggle'=>'collapse','aria-expanded'=> 'false','onclick'=>'replace($(this))']) ?>
                     <div class="icongroup">
-                        <?php if($is_hasEditNode && !$model->is_publish){
+                        <?php if($haveEditPrivilege && !$model->is_publish){
                             echo Html::a('<i class="fa fa-plus"></i>', ['knowledge/create', 'node_id' => $courseNodes->id], [
                                 'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
                             echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $courseNodes->id], [
@@ -86,7 +86,7 @@ GrowlAsset::register($this);
                                 <div class="icongroup">
                                     <?php 
                                         echo Html::a('<i class="fa fa-eye"></i>', ['/study_center/default/view', 'id'=> $knowledge->id], ['target' => '_blank']) . '&nbsp;';
-                                        if($is_hasEditNode && !$model->is_publish){
+                                        if($haveEditPrivilege && !$model->is_publish){
                                             echo Html::a('<i class="fa fa-pencil"></i>', ['knowledge/update','id' => $knowledge->id], [
                                                 'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
                                             echo Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
