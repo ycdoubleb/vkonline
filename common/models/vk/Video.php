@@ -18,7 +18,6 @@ use yii\db\Query;
 use yii\helpers\Html;
 use yii\web\UploadedFile;
 
-
 /**
  * This is the model class for table "{{%video}}".
  *
@@ -55,31 +54,41 @@ use yii\web\UploadedFile;
  * @property Knowledge[] $knowledges    获取所有知识点
  * @property VideoFile[] $videoFiles     获取所有视频与实体文件关联表
  */
-class Video extends ActiveRecord
-{
+class Video extends ActiveRecord {
+
+    /** 上传工具场景 */
+    const SCENARIO_TOOL_UPLOAD = 'toolUpload';
+    
     /** 可见范围-公开 */
     const PUBLIC_LEVEL = 2;
+
     /** 可见范围-内网 */
     const INTRANET_LEVEL = 1;
+
     /** 可见范围-私有 */
     const PRIVATE_LEVEL = 0;
-    
+
     /** 发布状态 全部 */
     const ALL_SATUS = '';
+
     /** 发布状态-未发布 */
     const NO_PUBLISH = 0;
+
     /** 发布状态-已发布 */
     const YES_PUBLISH = 1;
-    
+
     /** 未转码 */
     const MTS_STATUS_NO = 0;
+
     /** 转码中 */
     const MTS_STATUS_DOING = 1;
+
     /** 已转码 */
     const MTS_STATUS_YES = 2;
+
     /** 转码失败 */
     const MTS_STATUS_FAIL = 5;
-    
+
     /**
      * 可见范围
      * @var array 
@@ -89,7 +98,7 @@ class Video extends ActiveRecord
         self::INTRANET_LEVEL => '内网',
         self::PRIVATE_LEVEL => '私有',
     ];
-    
+
     /**
      * 发布状态
      * @var array 
@@ -99,7 +108,7 @@ class Video extends ActiveRecord
         self::NO_PUBLISH => '未发布',
         self::YES_PUBLISH => '已发布',
     ];
-    
+
     /**
      * 转码状态名
      * @var array 
@@ -114,43 +123,49 @@ class Video extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return '{{%video}}';
     }
 
-    
     /**
      * @inheritdoc
      */
-    public function behaviors() 
-    {
+    public function behaviors() {
         return [
             TimestampBehavior::class
         ];
     }
-    
+
+    public function scenarios() {
+        return [
+            self::SCENARIO_TOOL_UPLOAD =>
+            ['id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
+            self::SCENARIO_DEFAULT =>
+            ['id', 'teacher_id', 'customer_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+                'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
+        ];
+    }
+
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
-                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
-                "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],
+                    'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                    "Can't be empty" => Yii::t('app', "Can't be empty.")
+                ]), 'on' => [self::SCENARIO_DEFAULT]],
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
-                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
-                "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ])],
+                    'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
+                    "Can't be empty" => Yii::t('app', "Can't be empty.")
+                ])],
             [['duration'], 'number'],
-            [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 
-                'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at','mts_status' ,'mts_need'], 'integer'],
+            [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+            'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
             [['des'], 'string'],
             [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
-            [['img','mts_watermark_ids'], 'string', 'max' => 255],
+            [['img', 'mts_watermark_ids'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
     }
@@ -158,8 +173,7 @@ class Video extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => Yii::t('app', 'ID'),
             'teacher_id' => Yii::t('app', 'Teacher ID'),
@@ -187,9 +201,8 @@ class Video extends ActiveRecord
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-    
-    public function beforeSave($insert) 
-    {
+
+    public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
@@ -205,80 +218,72 @@ class Video extends ActiveRecord
                 $this->img = '/upload/video/screenshots/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
             }
             //都没做修改的情况下保存旧数据
-            if(trim($this->img) == ''){
+            if (trim($this->img) == '') {
                 $this->img = $this->getOldAttribute('img');
             }
             $this->des = Html::encode($this->des);
-            
+
             return true;
         }
-        
+
         return false;
     }
-    
-    public function afterFind()
-    {
+
+    public function afterFind() {
         $this->des = Html::decode($this->des);
     }
-    
+
     /**
      * @return ActiveQuery
      */
-    public function getCustomer()
-    {
+    public function getCustomer() {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
 
     /**
      * @return ActiveQuery
      */
-    public function getCreatedBy()
-    {
+    public function getCreatedBy() {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
-    
+
     /**
      * @return ActiveQuery
      */
-    public function getTeacher()
-    {
+    public function getTeacher() {
         return $this->hasOne(Teacher::class, ['id' => 'teacher_id']);
     }
-        
+
     /**
      * @return ActiveQuery
      */
-    public function getVideoFile()
-    {
+    public function getVideoFile() {
         return $this->hasOne(VideoFile::className(), ['video_id' => 'id'])
-            ->where(['is_source' => 1, 'is_del' => 0]);
+                        ->where(['is_source' => 1, 'is_del' => 0]);
     }
-    
+
     /**
      * @return ActiveQuery
      */
-    public function getTagRefs()
-    {
+    public function getTagRefs() {
         return $this->hasMany(TagRef::class, ['object_id' => 'id'])
-            ->where(['is_del' => 0])->with('tags');
+                        ->where(['is_del' => 0])->with('tags');
     }
-    
+
     /**
      * @return ActiveQuery
      */
-    public function getKnowledges()
-    {
+    public function getKnowledges() {
         return $this->hasMany(Knowledge::className(), ['video_id' => 'id']);
     }
 
     /**
      * @return ActiveQuery
      */
-    public function getVideoFiles()
-    {
+    public function getVideoFiles() {
         return $this->hasMany(VideoFile::className(), ['video_id' => 'id']);
     }
-    
+
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径
@@ -291,4 +296,5 @@ class Video extends ActiveRecord
         }
         return $uploadpath;
     }
+
 }

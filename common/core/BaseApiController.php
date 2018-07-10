@@ -93,7 +93,7 @@ class BaseApiController extends Controller {
                 //请求错误时数据为  {"success":false,"data":{"name":"Not Found","message":"页面未找到。","code":0,"status":404}}
                 $response->data = [
                     'name'=> 'valide error',
-                    'message'=> implode("  ", $messages),
+                    'msg'=> implode("  ", $messages),
                     'info'=>$response->data
                 ];
             }
@@ -133,7 +133,7 @@ class BaseApiController extends Controller {
         }
         $array = [
             'name' => ($exception instanceof Exception2 || $exception instanceof ErrorException) ? $exception->getName() : 'Exception',
-            'message' => $exception->getMessage(),
+            'msg' => $exception->getMessage(),
             'code' => $exception->getCode(),
         ];
         if ($exception instanceof HttpException) {

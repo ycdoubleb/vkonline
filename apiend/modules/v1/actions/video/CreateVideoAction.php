@@ -56,11 +56,13 @@ class CreateVideoAction extends Action{
                 'customer_id' => $user->customer_id,
                 'name' => $file->name,
                 'duration' => $file->duration,
-                'level' => Video::PUBLIC_LEVEL,
+                'level' => Video::PRIVATE_LEVEL,
                 'img' => $file->thumb_path,
                 'is_official' => $user->customer->is_official,
+                'mts_need' => 0,
                 'created_by' => $user->id,
             ]);
+            $video->setScenario(Video::SCENARIO_TOOL_UPLOAD);
             if($video->save()){
                 /* 关联Video与实体文件file */
                 $video_file = new VideoFile([

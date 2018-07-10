@@ -98,7 +98,7 @@ class MergeChunksAction extends Action {
                  */
                 $makeThumb = isset($_REQUEST["makeThumb"]) ? (integer) $_REQUEST["makeThumb"] : 1;
                 $thumbPath = '';
-                if ($makeThumb) {
+                if (false && $makeThumb) {
                     try {
                         $thumbPath = $this->createThumb(
                                 $uploadPath, 
@@ -113,7 +113,7 @@ class MergeChunksAction extends Action {
                  * 记录视频 width,height,duration,level,bitrate
                  */
                 $file_media_info = [];
-                if (in_array(strtolower(pathinfo($uploadPath)['extension']), ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'])) {
+                if (false && in_array(strtolower(pathinfo($uploadPath)['extension']), ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'])) {
                     try {
                         $file_media_info = FfmpegUtil::getVideoInfoByUfileId($uploadPath);
                     } catch (Exception $e) {
