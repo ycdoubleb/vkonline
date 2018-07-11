@@ -117,9 +117,10 @@ $shareLink = Url::to([
                     <li data-sort="course_comment">
                         <?= Html::a('学员评价', null, ['href' => 'javascript:', 'onclick' => new JsExpression("loadContent({id:'course_comment',url:'/course/default/get-comment'},true)")]) ?>
                     </li>
+                    <!--
                     <li data-sort="course_task">
                         <?= Html::a('课程作业', null, ['href' => 'javascript:', 'onclick' => new JsExpression("loadContent({id:'course_task',url:'/course/default/get-task'},true)")]) ?>
-                    </li>
+                    </li>-->
                     <li data-sort="course_attachment">
                         <?= Html::a('资源下载', null, ['href' => 'javascript:', 'onclick' => new JsExpression("loadContent({id:'course_attachment',url:'/course/default/get-attachment'},true)")]) ?>
                     </li>

@@ -36,6 +36,8 @@ use yii\web\Controller;
  */
 class DefaultController extends Controller
 {
+    public $defaultAction = 'history';
+    
     /**
      * @inheritdoc
      */

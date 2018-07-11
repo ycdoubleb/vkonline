@@ -22,12 +22,13 @@ $menuHtml = '';
 $actionId = Yii::$app->controller->action->id;  //当前actionID
 //导航
 $menuItems = [
+    /*
     [
         'label' => '我的任务',
         'url' => ['index'],
         'icons' => null, 
         'options' => ['class' => 'links']
-    ],
+    ],*/
     [
         'label' => '参与的课程',
         'url' => ['history'],
