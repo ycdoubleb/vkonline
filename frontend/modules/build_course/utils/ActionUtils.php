@@ -738,11 +738,6 @@ class ActionUtils
         $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
         $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids'));    //水印id
         $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
-        //如果上传的视频文件已经被使用过, 则返回使用者的信息
-        $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-        if($userInfo['results']){
-            throw new NotFoundHttpException($userInfo['message']);
-        }
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($fileId);
         //需保存的Video属性
@@ -757,6 +752,11 @@ class ActionUtils
             if($model->save()){
                 $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
                 if($videoFile->file_id != $fileId){
+                    //如果上传的视频文件已经被使用过, 则返回使用者的信息
+                    $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+                    if($userInfo['results']){
+                        throw new NotFoundHttpException($userInfo['message']);
+                    }
                     $model->mts_status = Video::MTS_STATUS_NO;
                     $videoFile->file_id = $fileId;
                     if($videoFile->save(false, ['file_id']) && $mts_need){
@@ -1277,7 +1277,7 @@ class ActionUtils
         //结果
         $userInfo = $videoFile->one();
         //$userInfo是否非空
-        if(!empty($userInfo) && $userInfo['file_id'] != $fileId){
+        if(!empty($userInfo)){
             return [
                 'results' => 1,
                 'data' => $userInfo,
