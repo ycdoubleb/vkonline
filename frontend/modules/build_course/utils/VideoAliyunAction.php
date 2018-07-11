@@ -44,6 +44,7 @@ class VideoAliyunAction {
             throw new NotFoundHttpException('找不到对应资源！');
         }
         if ($video->is_link) {
+            self::addLinkTrancode($video);
             return;//外联视频无法转码
         }
         //检查是否已经上传到OSS
@@ -223,6 +224,52 @@ class VideoAliyunAction {
             }
         }else{
             return ['success' => true ,'msg' => '转码进行中...'];
+        }
+    }
+    
+    /**
+     * 添加外链转码，该方法只作其它质量关联，没有做真正的转码
+     * 1、找出视频的其它质量
+     * 2、删除旧的关联
+     * 3、添加新的关联
+     * 
+     * @param string|Video $video
+     */
+    private static function addLinkTrancode($video) {
+        if (!($video instanceof Video)) {
+            $video = Video::findOne(['id' => $video, 'is_del' => 0]);
+        }
+        if (!$video) {
+            throw new NotFoundHttpException('找不到对应资源！');
+        }
+        if (!$video->is_link) {
+            return; //非外联视频请使用AddTrancode
+        }
+
+        //找出质量，外链视频其它质量的UFile文件的name记录着该视频的id，所以以该条件找出所有质量视频
+        $videos = Uploadfile::findAll(['name' => $video->videoFile->uploadfile->id, 'is_del' => 0]);
+        
+        if ($videos && count($videos) > 0) {
+            $videoToFileRows = [];
+            $videoToFileRowKeys = ['video_id', 'file_id', 'created_at', 'updated_at'];
+            $time = time();
+            /* @var $v Video */
+            foreach ($videos as $v) {
+                $videoToFileRows [] = [$video->id, $v->id, $time, $time];
+            }
+            $tran = \Yii::$app->db->beginTransaction();
+            try {
+                //删除旧关联
+                Yii::$app->db->createCommand()->update(VideoFile::tableName(), ['is_del' => 1], ['video_id' => $video->id, 'is_source' => 0, 'is_del' => 0]);
+                //关联 Video To Uploadfile
+                Yii::$app->db->createCommand()->batchInsert(VideoFile::tableName(), $videoToFileRowKeys, $videoToFileRows)->execute();
+                //更改 Video 转码状态
+                Yii::$app->db->createCommand()->update(Video::tableName(), ['mts_status' => Video::MTS_STATUS_YES], ['id' => $video->id])->execute();
+                $tran->commit();
+            } catch (Exception $ex) {
+                $tran->rollBack();
+                Yii::error("外链转码关系失败：{$ex->getMessage()}", __FUNCTION__);
+            }
         }
     }
 
