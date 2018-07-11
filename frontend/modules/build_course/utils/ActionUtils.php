@@ -1266,18 +1266,18 @@ class ActionUtils
     {
         //查询视频关联实体文件
         $videoFile = (new Query())->select([
-            'VideoFile.video_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
+            'VideoFile.video_id', 'VideoFile.file_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
         ])->from(['VideoFile' => VideoFile::tableName()]);
         //查询视频
-        $videoFile->leftJoin(['Video' => Video::tableName()], 'Video.id = VideoFile.video_id');
+        $videoFile->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoFile.video_id AND Video.is_del = 0)');
         //查询用户
         $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
         //条件
-        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.file_id' => $fileId]);
+        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.is_del' => 0, 'VideoFile.file_id' => $fileId]);
         //结果
         $userInfo = $videoFile->one();
         //$userInfo是否非空
-        if(!empty($userInfo)){
+        if(!empty($userInfo) && $userInfo['file_id'] != $fileId){
             return [
                 'results' => 1,
                 'data' => $userInfo,
