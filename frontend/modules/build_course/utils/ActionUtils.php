@@ -738,11 +738,6 @@ class ActionUtils
         $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
         $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids'));    //水印id
         $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
-        //如果上传的视频文件已经被使用过, 则返回使用者的信息
-        $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-        if($userInfo['results']){
-            throw new NotFoundHttpException($userInfo['message']);
-        }
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($fileId);
         //需保存的Video属性
@@ -757,6 +752,11 @@ class ActionUtils
             if($model->save()){
                 $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
                 if($videoFile->file_id != $fileId){
+                    //如果上传的视频文件已经被使用过, 则返回使用者的信息
+                    $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+                    if($userInfo['results']){
+                        throw new NotFoundHttpException($userInfo['message']);
+                    }
                     $model->mts_status = Video::MTS_STATUS_NO;
                     $videoFile->file_id = $fileId;
                     if($videoFile->save(false, ['file_id']) && $mts_need){
@@ -1266,14 +1266,14 @@ class ActionUtils
     {
         //查询视频关联实体文件
         $videoFile = (new Query())->select([
-            'VideoFile.video_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
+            'VideoFile.video_id', 'VideoFile.file_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
         ])->from(['VideoFile' => VideoFile::tableName()]);
         //查询视频
-        $videoFile->leftJoin(['Video' => Video::tableName()], 'Video.id = VideoFile.video_id');
+        $videoFile->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoFile.video_id AND Video.is_del = 0)');
         //查询用户
         $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
         //条件
-        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.file_id' => $fileId]);
+        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.is_del' => 0, 'VideoFile.file_id' => $fileId]);
         //结果
         $userInfo = $videoFile->one();
         //$userInfo是否非空

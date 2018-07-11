@@ -59,13 +59,14 @@ class DefaultController extends Controller {
 
     public function actionIndex() {
         //测试视频
-        $result = VideoAliyunAction::addVideoTranscode('e347b85a64dd765bf28aa6e958e60363',true);
+        $result = VideoAliyunAction::addVideoTranscode('e347b85a64dd765bf28aa6e958e60363', true);
         exit;
         //测试长视频
-        $result = VideoAliyunAction::addVideoTranscode('0a254e1c7b0323ef5475d75540618d68');
+        $result = VideoAliyunAction::addVideoTranscode('0a254e1c7b0323ef5475d75540618d68', true);
         exit;
+       
     }
-
+    
     /**
      * 搜索课程
      * 添加到搜索记录，再跳转到显示列表

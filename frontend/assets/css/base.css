@@ -89,6 +89,13 @@
     -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+/**
+ * 禁止textarea框横向拉动
+ */
+textarea {
+    overflow: auto;
+    resize: vertical;
+}
 
 /*******************************************************************************
  * 页面标题
@@ -402,6 +409,11 @@
 .vk-modal .modal-body, 
 .modal-body .vk-form {
     background-color: #F2F2F2;
+}
+.update-path.vk-modal .modal-body, 
+.modal-body .vk-form {
+    background-color: #ffffff;
+    padding-left: 10px;
 }
 .vk-modal .modal-width {
     min-width: 1150px;
