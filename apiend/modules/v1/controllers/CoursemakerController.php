@@ -4,6 +4,7 @@ namespace apiend\modules\v1\controllers;
 
 use apiend\controllers\ApiController;
 use apiend\modules\v1\actions\coursemaker\AddRegister;
+use apiend\modules\v1\actions\coursemaker\Login;
 use yii\filters\VerbFilter;
 
 /**
@@ -17,13 +18,13 @@ class CoursemakerController extends ApiController {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = array_merge($behaviors['authenticator'], [
             'optional' => [
-                'add-register',
+                'login',
             ],
         ]);
         $behaviors['verbs'] = [
             'class' => VerbFilter::className(),
             'actions' => [
-                'add-register' => ['post'],
+                'login' => ['post'],
             ],
         ];
         return $behaviors;
@@ -32,6 +33,7 @@ class CoursemakerController extends ApiController {
     public function actions() {
         return array_merge(parent::actions(), [
             'add-register' => ['class' => AddRegister::class],
+            'login' => ['class' => Login::class],
         ]);
     }
 
