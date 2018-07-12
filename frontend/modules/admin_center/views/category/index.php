@@ -28,8 +28,10 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                 <?= $this->title ?>
             </span>
             <div class="btngroup pull-right">
-                <?= Html::a(Yii::t('app', '移动分类'), 'javascript:;', ['id' => 'update-path', 'class' => 'btn btn-success btn-flat']) ?>
-                <?= Html::a(Yii::t('app', '确定'), 'javascript:;', ['id' => 'save-path', 'class' => 'hidden btn btn-success btn-flat']) ?>
+                <?= Html::a(Yii::t('app', '{Move}{Category}',[
+                    'Move' => Yii::t('app', 'Move'), 'Category' => Yii::t('app', 'Category')
+                ]), 'javascript:;', ['id' => 'update-path', 'class' => 'btn btn-unimportant btn-flat']) ?>
+                <?= Html::a(Yii::t('app', 'Confirm'), 'javascript:;', ['id' => 'save-path', 'class' => 'hidden btn btn-success btn-flat']) ?>
             </div>
         </div>
         <?= GridView::widget([
@@ -205,59 +207,59 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
 <?php
     TreegridAssets::register($this);
     
-    $js = <<<JS
-        /**
-         * 初始化树状网格插件
-         */
-        $('.table').treegrid({
-            //initialState: 'collapsed',
-        });
-            
-        //点击更新层级
-        $("#update-path").click(function(){
-            if($('input[name="vehicle"]').hasClass("hidden")){
-                $('input[name="vehicle"]').removeClass("hidden");
-                $("#save-path").removeClass("hidden");
-            } else {
-                $('input[name="vehicle"]').addClass("hidden");
-                $("#save-path").addClass("hidden");
-            }
-        })
-        //选中时把子级也选中
-        $('input[name="vehicle"]').click(function(){
-            var obj = $(this);  //选中的对象
-            $.each($('input[name="vehicle"]'),function(){
-                if(obj.val() == $(this).attr('id')){
-                    if(obj.is(":checked")){
-                        $(this).attr("checked", true);
-                    }else{
-                        $(this).attr("checked", false);
-                    }
+$js = <<<JS
+    /**
+     * 初始化树状网格插件
+     */
+    $('.table').treegrid({
+        //initialState: 'collapsed',
+    });
+
+    //点击更新层级
+    $("#update-path").click(function(){
+        if($('input[name="vehicle"]').hasClass("hidden")){
+            $('input[name="vehicle"]').removeClass("hidden");
+            $("#save-path").removeClass("hidden");
+        } else {
+            $('input[name="vehicle"]').addClass("hidden");
+            $("#save-path").addClass("hidden");
+        }
+    })
+    //选中时把子级也选中
+    $('input[name="vehicle"]').click(function(){
+        var obj = $(this);  //选中的对象
+        $.each($('input[name="vehicle"]'),function(){
+            if(obj.val() == $(this).attr('id')){
+                if(obj.is(":checked")){
+                    $(this).attr("checked", true);
+                }else{
+                    $(this).attr("checked", false);
                 }
-            });
-            
+            }
         });
-        //有值且点击确定时弹出模态框
-        $("#save-path").click(function(){
-            if($('input[name="vehicle"]:checked').length > 0){
-                showElemModal($(this));
-                return false;
-            }else{
-                alert("请选择要更改的分类");
-            };
-        })
-        /**
-         * 显示模态框
-         */
-        window.showElemModal = function(elem){
-            var value = "";
-            $.each($('input[name="vehicle"]:checked'),function(){
-                value += $(this).val()+',';
-            })
-            $(".myModal").html("");
-            $('.myModal').modal("show").load("/admin_center/category/update-level?categoryIds="+value);
+
+    });
+    //有值且点击确定时弹出模态框
+    $("#save-path").click(function(){
+        if($('input[name="vehicle"]:checked').length > 0){
+            showElemModal($(this));
             return false;
+        }else{
+            alert("请选择要更改的分类");
         };
+    })
+    /**
+     * 显示模态框
+     */
+    window.showElemModal = function(elem){
+        var value = "";
+        $.each($('input[name="vehicle"]:checked'),function(){
+            value += $(this).val()+',';
+        })
+        $(".myModal").html("");
+        $('.myModal').modal("show").load("/admin_center/category/update-level?categoryIds="+value);
+        return false;
+    };
 JS;
     $this->registerJs($js, View::POS_READY);
     ModuleAssets::register($this);

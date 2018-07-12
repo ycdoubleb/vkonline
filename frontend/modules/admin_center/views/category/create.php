@@ -24,6 +24,5 @@ $this->title = Yii::t('app', '{Create}{Category}',[
     <!-- 表单 -->
     <?= $this->render('_form', [
         'model' => $model,
-        'parentModel' => $parentModel,
     ]) ?>
 </div>
