@@ -1,11 +1,14 @@
 <?php
 
+use common\models\vk\UserCategory;
 use common\utils\StringUtil;
+use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -61,9 +64,17 @@ $this->registerJs($format, View::POS_HEAD);
             <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
-            <?= Html::a(Yii::t('app', '{Create}{Video}', [
-                'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
-            ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+            <?php
+                echo Html::a(Yii::t('app', '{Create}{Video}', [
+                        'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
+                    ]), ['create'], ['class' => 'btn btn-success btn-flat']) . '&nbsp;';
+                echo Html::a(Yii::t('app', '{Catalog}{Admin}', [
+                        'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
+                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat', 'target' => '_blank']) . '&nbsp;';
+                echo Html::a(Yii::t('app', '{Move}{Video}', [
+                        'Move' => Yii::t('app', 'Move'), 'Video' => Yii::t('app', 'Video')
+                    ]), ['move'], ['class' => 'btn btn-unimportant btn-flat']);
+            ?>
         </div>
     </div>
     
@@ -86,6 +97,21 @@ $this->registerJs($format, View::POS_HEAD);
         ]); ?>
         
         <div class="col-lg-6 col-md-6">
+            
+            <!--所属目录-->
+            <?= $form->field($searchModel, 'user_cat_id')->widget(DepDropdown::class, [
+                'pluginOptions' => [
+                    'url' => Url::to('/admin_center/category/search-children', false),
+                    'max_level' => 3,
+                    'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
+                ],
+                'items' => UserCategory::getSameLevelCats($searchModel->user_cat_id, 1, true),
+                'values' => $searchModel->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($searchModel->user_cat_id)->path))),
+                'itemOptions' => [
+                    'style' => 'width: 115px; display: inline-block;',
+                ],
+            ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')]) . '：') ?>
+            
             <!--主讲老师-->
             <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
@@ -101,6 +127,7 @@ $this->registerJs($format, View::POS_HEAD);
             ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
                 'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
             ])) ?>
+            
             <!--查看权限-->
             <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
                 'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
@@ -117,6 +144,7 @@ $this->registerJs($format, View::POS_HEAD);
             ])->label(Yii::t('app', '{View}{Privilege}：', [
                 'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
             ])) ?>
+            
             <!--视频名称-->
             <?= $form->field($searchModel, 'name')->textInput([
                 'placeholder' => '请输入...', 'maxlength' => true,
@@ -125,6 +153,7 @@ $this->registerJs($format, View::POS_HEAD);
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
             ])) ?>
         </div>
+        
         <?php ActiveForm::end(); ?>
         
     </div>

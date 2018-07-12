@@ -52,7 +52,7 @@ $menuItems = [
         ],
         [
             'module' => 'build_course',
-            'controller' => 'video',
+            'controller' => ['video', 'user-category'],
             'action' => 'index',
             'label' => Yii::t('app', 'Video'),
             'url' => ['/build_course/video/index'],
@@ -183,7 +183,9 @@ $lastIndex = key($menuItems['admin']);  //获取数组最后一个的index
 //循环组装子菜单导航
 foreach ($menuItems as $index => $items) {
     foreach ($items as $key => $value) {
-        $is_select = $value['module'] == $moduleId && $value['controller'] == $controllerId;
+        $is_select = $value['module'] == $moduleId 
+            && ($value['controller'] == $controllerId 
+               || (is_array($value['controller']) ? in_array($controllerId, $value['controller']) : false));
         if($value['condition']){
             $menuHtml[$index][] = ($is_select ? '<li class="active">' : ($lastIndex == $key ? '<li class="remove">' : '<li class="">')).
                 Html::a($value['icons'] . $value['label'], $value['url'], $value['options']).'</li>';
