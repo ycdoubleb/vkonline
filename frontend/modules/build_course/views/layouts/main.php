@@ -150,16 +150,16 @@ $menuItems = [
             'condition' => true,
             'options' => ['class' => 'links']
         ],
-        [
-            'module' => 'admin_center',
-            'controller' => 'task',
-            'action' => 'index',
-            'label' => Yii::t('app', 'Task'),
-            'url' => ['/admin_center/task/index'],
-            'icons' => null, 
-            'condition' => $hidden,
-            'options' => ['class' => "links"]
-        ]
+//        [
+//            'module' => 'admin_center',
+//            'controller' => 'task',
+//            'action' => 'index',
+//            'label' => Yii::t('app', 'Task'),
+//            'url' => ['/admin_center/task/index'],
+//            'icons' => null, 
+//            'condition' => $hidden,
+//            'options' => ['class' => "links"]
+//        ]
     ]
 ];
 //制作工具
