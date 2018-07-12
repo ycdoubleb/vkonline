@@ -1,8 +1,9 @@
 <?php
 
+use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
-use common\utils\DateUtil;
+use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
@@ -55,6 +56,21 @@ $this->title = Yii::t('app', '{My}{Course}', [
             ], 
         ]); ?>
         <div class="col-log-6 col-md-6">
+            
+            <!--分类-->
+            <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
+                'pluginOptions' => [
+                    'url' => Url::to('/admin_center/category/search-children', false),
+                    'max_level' => 3,
+                    'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
+                ],
+                'items' => Category::getSameLevelCats($searchModel->category_id, true),
+                'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
+                'itemOptions' => [
+                    'style' => 'width: 115px; display: inline-block;',
+                ],
+            ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
+            
             <!--状态-->
             <?= $form->field($searchModel, 'is_publish')->radioList(['' => '全部', 1 => '已发布', 0 => '未发布'], [
                 'value' => ArrayHelper::getValue($filters, 'CourseSearch.is_publish', ''),
@@ -69,6 +85,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
                     ]
                 ],
             ])->label(Yii::t('app', '{Status}：', ['Status' => Yii::t('app', 'Status')])) ?>
+            
             <!--查看权限-->
             <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
                 'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
@@ -85,6 +102,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
             ])->label(Yii::t('app', '{View}{Privilege}：', [
                 'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
             ])) ?>
+            
             <!--课程名称-->
             <?= $form->field($searchModel, 'name')->textInput([
                 'placeholder' => '请输入...', 'maxlength' => true, 
@@ -92,7 +110,9 @@ $this->title = Yii::t('app', '{My}{Course}', [
             ])->label(Yii::t('app', '{Course}{Name}：', [
                 'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
             ])) ?>
+            
         </div>
+        
         <?php ActiveForm::end(); ?>
         
     </div>

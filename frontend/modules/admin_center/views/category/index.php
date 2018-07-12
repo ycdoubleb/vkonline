@@ -255,7 +255,7 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                 value += $(this).val()+',';
             })
             $(".myModal").html("");
-            $('.myModal').modal("show").load("/admin_center/category/update-path?categoryIds="+value);
+            $('.myModal').modal("show").load("/admin_center/category/update-level?categoryIds="+value);
             return false;
         };
 JS;

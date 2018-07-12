@@ -117,6 +117,7 @@ return [
     'Request' => '请求',
     'Send' => '发送',
     'Retry' => '重试',
+    'Move' => '移动',
     
     //公共-属性
     'ID' => 'ID',

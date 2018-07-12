@@ -363,6 +363,23 @@ a.desc:after {
     border-color: #2CC098; 
 }
 
+/* 不要紧 */
+.btn-unimportant { 
+    color: #fff; 
+    background-color: #999999; 
+    border-color: #999999; 
+}
+.btn-unimportant:hover,
+.btn-unimportant:active:hover, 
+.btn-unimportant:focus, 
+.btn-unimportant:active, 
+.btn-unimportant:active:focus, 
+.btn-unimportant.active { 
+    color: #fff; 
+    background-color: #999999; 
+    border-color: #999999; 
+}
+
 /*****************************************************
 *
 * 进度条

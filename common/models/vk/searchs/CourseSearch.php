@@ -94,10 +94,15 @@ class CourseSearch extends Course
         
         self::getInstance();
         $this->load($params);
+        
+        $categoryId = Category::getCatChildrenIds($this->category_id, true);    //获取分类的子级ID
+        //关联CourseUser
         self::$query->leftJoin(['CourseUser' => CourseUser::tableName()], '(CourseUser.course_id = Course.id AND CourseUser.is_del = 0)');
         
         //条件查询
         self::$query->andFilterWhere([
+            'Course.category_id' => !empty($categoryId) ? 
+                ArrayHelper::merge([$this->category_id], $categoryId) : $this->category_id,
             'Course.is_publish' => $this->is_publish,
             'Course.level' => $this->level,
         ]);
