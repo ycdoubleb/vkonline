@@ -50,7 +50,7 @@ class CategoryController extends GridViewChangeSelfController
      * @return mixed
      */
     public function actionIndex()
-    {
+    {     
         $searchModel = new CategorySearch();
         $dataProvider = $searchModel->searchCustomerCategory(Yii::$app->request->queryParams);
 
@@ -139,20 +139,80 @@ class CategoryController extends GridViewChangeSelfController
      * @param string $categoryIds
      * @return mixed
      */
-    public function actionUpdatePath($categoryIds)
+    public function actionUpdateLevel($categoryIds)
     {
         //切割字符串为数组并过滤空值
         $cat_ids = array_filter(explode(',',$categoryIds));
         //获取到当前客户下和去除已选择的分类
         $dataProvider = $this->getAllCategory($cat_ids);
 
-//        var_dump($category->models);exit;
-        return $this->renderAjax('update-path',[
+        return $this->renderAjax('update-level',[
             'dataProvider' => $dataProvider,
+            'categoryIds' => $categoryIds
         ]);
     }
 
-        /**
+    /**
+     * 保存自定义更新分类层级
+     * @return array
+     */
+    public function actionSaveLevel()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $catId = ArrayHelper::getValue(Yii::$app->request->post(), 'cat_id');   //移动到的目标分类ID
+        $childrenIds = ArrayHelper::getValue(Yii::$app->request->post(), 'children_id');    //需要移动的所有分类ID
+        
+        $catQuery = Category::getCatById($catId);   //目标分类模型
+        //分割字符串为数组并过滤空值
+        $chil_ids = array_filter(explode(',', $childrenIds));
+        //获取移动的分类模型（数组）
+        $chilQuerys = Category::find()->select(['id', 'name', 'parent_id', 'path', 'level'])
+                ->where(['is_show' => 1])->andFilterWhere(['IN', 'id', $chil_ids])
+                ->all();
+        //获取移动的分类的所有等级
+        foreach ($chilQuerys as $chilQuery) {
+            $level[] = $chilQuery->level;
+        }
+        //计算移动后的总层级（移动的层级+目标层级）
+        $countLevel = max($level) - min($level) + 1 + $catQuery->level; 
+
+        if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
+            foreach ($chilQuerys as $chilQuery) {
+                //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
+                if(in_array($chilQuery->parent_id, $chil_ids)){
+                    if($chilQuery->level == 4){     //移动的层级为4时 (移动的分类存在3个层级级一起移动的情况 true)
+                        $parQuery = Category::getCatById($chilQuery->parent_id);
+                        $chilQuery->path = "$catQuery->path" . ",$parQuery->parent_id,$chilQuery->parent_id,$chilQuery->id";
+                    } else {    //移动的层级不为4 （移动的分类存在2个层级一起移动的情况）
+                        $chilQuery->path = "$catQuery->path" . ",$chilQuery->parent_id,$chilQuery->id";
+                    }
+                    $chilQuery->parent_id = $chilQuery->parent_id;
+                    $chilQuery->level = substr_count($chilQuery->path, ',');
+                } else {        //移动的分类不存多级一起移动的情况
+                    $chilQuery->parent_id = $catId;
+                    $chilQuery->path = "$catQuery->path" . ",$chilQuery->id";
+                    $chilQuery->level = $catQuery->level + 1;
+                }
+                $chilQuery->update(false, ['parent_id', 'path', 'level']);
+            }
+            $result = [
+                'code' => 200,
+                'message' => 'success',
+            ];
+            Category::invalidateCache();        //取消缓存
+            Yii::$app->getSession()->setFlash('success', '操作成功！');
+        } else {
+            $result = [
+                'code' => 400,
+                'message' => 'error',
+            ];
+            Yii::$app->getSession()->setFlash('error', '操作失败!移动后的分类层级不能超过4级');
+        }
+
+        return $result;
+    }
+
+    /**
      * Deletes an existing Category model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id

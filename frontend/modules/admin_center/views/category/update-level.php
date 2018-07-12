@@ -24,7 +24,7 @@ $this->title = '选择要移动到哪个分类';
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body customer-activity" style="padding:15px 0px">
+            <div class="modal-body customer-activity">
                 <div class="vk-form clear-shadow">
                     <?= GridView::widget([
                         'dataProvider' => $dataProvider,
@@ -37,12 +37,13 @@ $this->title = '选择要移动到哪个分类';
                         'columns' => [
                             [
                                 'header' => null,
-                                'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
+                                'headerOptions' => ['class' => 'header-css'],
                                 'format' => 'raw',
                                 'value' => function ($model){
-                                    return Html::a(' ' . $model->name, 'javascript:;', ['class' => 'sc']);
+                                    return ' ' . $model->name . 
+                                            Html::input('radio', 'radiobox', $model->id, ['class' => 'radio-value']);
                                 },
-                                'contentOptions' => ['style' => 'text-align:left;border-bottom:1px solid #f2f2f2'],
+                                'contentOptions' => ['class' => 'content-value'],
                             ],
                         ],
                     ]); ?>
@@ -66,12 +67,19 @@ $this->title = '选择要移动到哪个分类';
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-       //initialState: 'collapsed',
+       initialState: 'collapsed',   //默认折叠
     });        
             
     /** 提交表单 */
     $("#submitsave").click(function(){
-        
+        if($('input[name="radiobox"]:checked').length > 0){
+            var catId = $('input[name="radiobox"]:checked').val();
+            $.post("/admin_center/category/save-level", {'cat_id': catId, 'children_id': '$categoryIds'}, function(data){
+//                if(data['code'] == 200){
+                    location.reload();
+//                }
+            });
+        }
     });   
     
 JS;
