@@ -145,7 +145,7 @@ textarea {
 .vk-table .filters .select2-selection,
 .vk-form .form-group .bootstrap-tagsinput {
     min-height: 40px;
-    padding: 10px 24px 10px 12px;
+    padding: 10px;
     border-radius: 0px;
     box-shadow: none;
 }
@@ -409,11 +409,6 @@ textarea {
 .vk-modal .modal-body, 
 .modal-body .vk-form {
     background-color: #F2F2F2;
-}
-.update-path.vk-modal .modal-body, 
-.modal-body .vk-form {
-    background-color: #ffffff;
-    padding-left: 10px;
 }
 .vk-modal .modal-width {
     min-width: 1150px;

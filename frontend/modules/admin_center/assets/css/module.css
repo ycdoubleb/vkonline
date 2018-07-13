@@ -115,3 +115,9 @@
     float: right;
     cursor: pointer;
 }
+
+.update-path.vk-modal .modal-body, 
+.update-path.modal-body .vk-form {
+    background-color: #ffffff;
+    padding-left: 10px;
+}

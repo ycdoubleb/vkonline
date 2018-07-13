@@ -2,15 +2,15 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CustomerWatermark;
+use common\models\vk\searchs\UserCategorySearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
-use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
@@ -119,6 +119,7 @@ class VideoController extends Controller
         return $this->render('view', [
             'model' => $model,  //video模型
             'dataProvider' => $searchModel->relationSearch($model->id),    //相关课程数据
+            'path' => $this->getCategoryFullPath($model->user_cat_id),  //所属目录全路径
             'watermarksFiles' => $this->getCustomerWatermark(explode(',', $model->mts_watermark_ids)),    //客户下已启用的水印
         ]);
     }
@@ -234,6 +235,42 @@ class VideoController extends Controller
     }
     
     /**
+     * 移动 现有的视频到指定的目录。
+     * 如果移动成功，浏览器将被重定向到“列表”页。
+     * @param string $move_ids   移动id
+     * @param string $target_id  目标id
+     * @return mixed
+     * @throws NotFoundHttpException
+     */
+    public function actionMove($move_ids = null, $target_id = null)
+    {
+        $searchModel = new UserCategorySearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        
+        if (Yii::$app->request->isPost) {
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            {  
+                $move_ids = explode(',', $move_ids);
+                Video::updateAll(['user_cat_id' => $target_id], ['id' => $move_ids]);
+                $trans->commit();  //提交事务
+                Yii::$app->getSession()->setFlash('success','操作成功！');
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
+                Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+            }
+            
+            return $this->redirect(['index']);
+        }
+
+        return $this->renderAjax('move', [
+            'move_ids' => $move_ids,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
+    /**
      * 基于其主键值找到 Video 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
@@ -299,5 +336,21 @@ class VideoController extends Controller
         }
         
         return $watermarks;
+    }
+    
+    /**
+     * 获取分类全路径
+     * @param integer $categoryId
+     * @return string
+     */
+    protected function getCategoryFullPath($categoryId) 
+    {
+        $parentids = array_values(array_filter(explode(',', UserCategory::getCatById($categoryId)->path)));
+        $path = '';
+        foreach ($parentids as $index => $id) {
+            $path .= ($index == 0 ? '' : ' \ ') . UserCategory::getCatById($id)->name;
+        }
+        
+        return $path;
     }
 }

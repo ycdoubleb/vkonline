@@ -70,20 +70,25 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
+    
     <!--课程分类-->
     <?= $form->field($model, 'category_id',[
         'template' => "{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>", 
     ])->widget(DepDropdown::class, [
         'pluginOptions' => [
             'url' => Url::to('/admin_center/category/search-children', false),
-            'max_level' => 3,
+            'max_level' => 4,
             'onChangeEvent' => new JsExpression('function(value){ getAttr(value); }')
         ],
         'items' => Category::getSameLevelCats($model->category_id, true),
         'values' => $model->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($model->category_id)->path))),
+        'itemOptions' => [
+            'style' => 'width: 150px; display: inline-block;',
+        ],
     ])->label(Yii::t('app', '{Course}{Category}', [
         'Course' => Yii::t('app', 'Course'), 'Category' => Yii::t('app', 'Category')
     ])) ?>
+    
     <!--属性-->
     <div id="courseattribute">
         <?php if(!$model->isNewRecord): ?>
@@ -104,12 +109,14 @@ $this->registerJs($format, View::POS_HEAD);
             <?php endforeach;?>
         <?php endif;?>
     </div>
+    
     <!--课程名称-->
     <?= $form->field($model, 'name')->textInput([
         'placeholder' => '请输入...', 'maxlength' => true
     ])->label(Yii::t('app', '{Course}{Name}', [
         'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
     ])) ?>
+    
     <!--主讲老师-->
     <?php
         $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
@@ -137,6 +144,7 @@ $this->registerJs($format, View::POS_HEAD);
             'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
         ]));
     ?>
+    
     <!--封面图片-->
     <?= $form->field($model, 'cover_img')->widget(FileInput::class, [
         'options' => [
@@ -159,6 +167,7 @@ $this->registerJs($format, View::POS_HEAD);
             'overwriteInitial' => true,
         ],
     ]);?>
+    
     <!--标签-->
     <div class="form-group field-tagref-tag_id required">
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -169,10 +178,12 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    
     <!--描述-->
     <?= $form->field($model, 'des', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
     ])->textarea(['value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 6, 'placeholder' => '请输入...']) ?>
+    
     <!--课程资源-->
     <div class="form-group field-courseattachment-file_id">
         <?= Html::label(Yii::t('app', '{Course}{Resources}', [
@@ -181,6 +192,7 @@ $this->registerJs($format, View::POS_HEAD);
         <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
+    
     <!--课程简介-->
     <?= $form->field($model, 'content', [
         'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"

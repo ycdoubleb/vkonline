@@ -59,23 +59,14 @@ class UserCategorySearch extends UserCategory
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'id' => $this->id,
             'type' => $this->type,
-            'level' => $this->level,
-            'parent_id' => $this->parent_id,
             'sort_order' => $this->sort_order,
             'is_show' => $this->is_show,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'created_by' => \Yii::$app->user->id,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'mobile_name', $this->mobile_name])
-            ->andFilterWhere(['like', 'path', $this->path])
-            ->andFilterWhere(['like', 'image', $this->image])
-            ->andFilterWhere(['like', 'des', $this->des])
-            ->andFilterWhere(['like', 'created_by', $this->created_by]);
-
+        $query->andFilterWhere(['like', 'name', $this->name]);
+    
         $query->orderBy(['path' => SORT_ASC]);
         
         return $dataProvider;

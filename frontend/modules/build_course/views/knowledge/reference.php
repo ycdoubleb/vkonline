@@ -1,12 +1,12 @@
 <?php
 
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
-use common\utils\DateUtil;
-use common\utils\StringUtil;
-use kartik\growl\GrowlAsset;
+use common\widgets\depdropdown\DepDropdown;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -36,12 +36,14 @@ $actionId = Yii::$app->controller->action->id; //当前action
                     'onkeydown' => 'if(event.keyCode == 13) return false;'
                 ],
             ]); ?>
+            
             <!--返回按钮-->
             <div class="pull-left" style="padding: 5px 15px 0 0">
                 <?= Html::a(Yii::t('app', 'Back'), 'javascript:;', ['class' => 'btn btn-default', 'onclick' => 'clickBackEvent();']) ?>
             </div>
+            
             <!--搜索类型-->
-            <div class="col-lg-4 col-md-4 clear-padding">
+            <div class="col-lg-3 col-md-3 clear-padding">
                 <div class="form-group field-knowledgereference-type">
                     <div class="col-lg-12 col-md-12 clear-padding">
                         <?= Html::radioList('KnowledgeReference[type]', $actionId, [
@@ -60,30 +62,38 @@ $actionId = Yii::$app->controller->action->id; //当前action
                     </div>
                 </div>
             </div>
+            
             <!--关键字搜索-->
-            <div class="col-lg-7 col-md-7 clear-padding">
+            <div class="col-lg-3 col-md-3 clear-padding">
                 <?= $form->field($searchModel, 'name', [
                     'template' => "<div class=\"col-lg-12 col-md-12 clear-padding\">{input}</div>\n",  
                 ])->textInput([
-                    'id' => $actionId . '-name', 'placeholder' => '请输入...', 'maxlength' => true
+                    'placeholder' => '请输入...', 'maxlength' => true, 'onchange' => 'submitForm();'
                 ])->label('') ?>
-            </div>     
+            </div>    
+            
+            <!--所属目录-->
+            <?php if(isset($type) && $type == 1): ?>
+            <div class="col-lg-5 col-md-5" style="padding-right: 0px">
+                <?= $form->field($searchModel, 'user_cat_id', [
+                    'template' => "{label}\n<div class=\"col-lg-12 col-md-12 clear-padding\">{input}</div>\n",  
+                ])->widget(DepDropdown::class, [
+                    'pluginOptions' => [
+                        'url' => Url::to('../user-category/search-children', false),
+                        'max_level' => 4,
+                        'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
+                    ],
+                    'items' => UserCategory::getSameLevelCats($searchModel->user_cat_id, $type, true),
+                    'values' => $searchModel->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($searchModel->user_cat_id)->path))),
+                    'itemOptions' => [
+                        'style' => 'width: 105px; display: inline-block;',
+                    ],
+                ])->label('') ?>
+            </div>
+            <?php endif;?>
             
             <?php ActiveForm::end(); ?>
         </div>
-        <!-- 排序 -->
-        <ul class="list-unstyled pull-right">
-            <li id="created_at">
-                <?= Html::a('按时间排序', array_merge([$actionId], array_merge($filters, ['sort' => 'created_at'])), [
-                    'onclick' => 'clickSortEvent($(this)); return false;'
-                ]) ?>
-            </li>
-            <li id="is_publish">
-                <?= Html::a('按状态排序', array_merge([$actionId], array_merge($filters, ['sort' => 'is_publish'])), [
-                    'onclick' => 'clickSortEvent($(this)); return false;'
-                ]) ?>
-            </li>
-        </ul>
     </div>
     <!--列表-->
     <div class="vk-list" style="display: table;">
@@ -109,23 +119,6 @@ $ref_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
     $this->renderFile('@frontend/modules/build_course/views/knowledge/_list.php')));
 $js = 
 <<<JS
-    //排序选中效果
-    $(".vk-tabs ul li[id=$tabs]").addClass('active');
-    //失去焦点提交表单
-    $("#$actionId-name").change(function(){
-        $("#reference-video-list").load("../knowledge/$actionId", $('#knowledge-reference-form').serialize());
-    }); 
-    //单击选中radio提交表单
-    $('input[name="KnowledgeReference[type]"]').click(function(){
-        $("#reference-video-list").load("../knowledge/" + $(this).val());
-    });
-    /**
-     * 单击排序事件
-     * @param object elem 指定对象
-     */
-    window.clickSortEvent = function(elem){
-        $("#reference-video-list").load(elem.attr("href"));
-    }    
     /**
      * 单击返回事件
      */
@@ -137,6 +130,14 @@ $js =
             $("#fill").removeClass("hidden");
         }
     }
+    //单击选中radio提交表单
+    $('input[name="KnowledgeReference[type]"]').click(function(){
+        $("#reference-video-list").load("../knowledge/" + $(this).val());
+    });
+    //更改提交表单
+    window.submitForm = function(){
+        $("#reference-video-list").load("../knowledge/$actionId", $('#knowledge-reference-form').serialize());
+    }  
     /**
      * 滚屏自动换页
      */

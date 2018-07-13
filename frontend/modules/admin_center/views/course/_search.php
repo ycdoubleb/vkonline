@@ -77,12 +77,17 @@ $this->registerJs($format, View::POS_HEAD);
                 ],  
             ], 
         ]); ?>
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-12 col-md-12">
             <!--分类-->
-            <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
+            <?= $form->field($searchModel, 'category_id', [
+                'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
+                'labelOptions' => [
+                    'class' => 'col-lg-1 col-md-1 control-label form-label',
+                ],  
+            ])->widget(DepDropdown::class, [
                 'pluginOptions' => [
                     'url' => Url::to('/admin_center/category/search-children', false),
-                    'max_level' => 3,
+                    'max_level' => 4,
                     'onChangeEvent' => new JsExpression('function(){$("#admin-center-form").submit();}')
                 ],
                 'items' => Category::getSameLevelCats($searchModel->category_id, true),
@@ -91,6 +96,8 @@ $this->registerJs($format, View::POS_HEAD);
                     'style' => 'width: 115px; display: inline-block;',
                 ],
             ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
+        </div>
+        <div class="col-lg-6 col-md-6">
             <!--主讲老师-->
             <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
