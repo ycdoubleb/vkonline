@@ -241,7 +241,7 @@ $js = <<<JS
             showElemModal($(this));
             return false;
         }else{
-            alert("请选择要更改的分类");
+            alert("请选择需要移动的分类");
         };
     })
     /**
