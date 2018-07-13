@@ -7,6 +7,7 @@ use common\models\vk\searchs\VideoFavoriteSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
@@ -192,6 +193,7 @@ class KnowledgeController extends Controller
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,      //搜索模型
+            'type' => UserCategory::TYPE_MYCOLLECT,
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);
@@ -237,6 +239,7 @@ class KnowledgeController extends Controller
         
         return $this->renderAjax('reference', [
             'searchModel' => $searchModel,      //搜索模型
+            'type' => UserCategory::TYPE_MYVIDOE,
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);

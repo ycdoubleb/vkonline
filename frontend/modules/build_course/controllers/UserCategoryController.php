@@ -75,7 +75,7 @@ class UserCategoryController extends GridViewChangeSelfController
      */
     public function actionCreate($id = null)
     {
-        $model = new UserCategory(['type' => 1, 'created_by' => \Yii::$app->user->id]);
+        $model = new UserCategory(['type' => UserCategory::TYPE_MYVIDOE, 'created_by' => \Yii::$app->user->id]);
         $model->loadDefaultValues();
         //如果设置了id，则parent_id = id
         if(isset($id)){
@@ -107,8 +107,9 @@ class UserCategoryController extends GridViewChangeSelfController
             $trans = Yii::$app->db->beginTransaction();
             try
             {  
-                $targetLevel = !empty($model->parent_id) ? UserCategory::getCatById($model->parent_id)->level : 0;  //目标分类等级
-                $moveCatChildrens  = UserCategory::getCatChildren($model->id, 1, false, true);  //移动分类下所有子级
+                $type = UserCategory::TYPE_MYVIDOE;
+                $targetLevel = $model->parent_id == 0 ? UserCategory::getCatById($model->parent_id)->level : 1;  //目标分类等级
+                $moveCatChildrens  = UserCategory::getCatChildren($model->id, $type, false, true);  //移动分类下所有子级
                 $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens, 'level');    //所有移动分类下子级的等级
                 $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $model->level ;    //移动分类下子级最大的等级
                 $moveLevel = $moveMaxChildrenLevel - $model->level + 1;;    //移动分类等级
@@ -117,7 +118,7 @@ class UserCategoryController extends GridViewChangeSelfController
                     UserCategory::invalidateCache();    //清除缓存
                     foreach($moveCatChildrens as $moveChildren){
                         //获取修改子集的UserCategory模型
-                        $childrenModel = UserCategory::findOne($moveChildren['id']);
+                        $childrenModel = $this->findModel($moveChildren['id']);
                         $childrenModel->updateParentPath(); //修改子集路径
                         UserCategory::invalidateCache();    //清除缓存
                     }
@@ -158,7 +159,6 @@ class UserCategoryController extends GridViewChangeSelfController
         return $this->redirect(['index']);
     }
 
-    
     /**
      * 移动 现有的目录结构。
      * 如果移动成功，浏览器将被重定向到“列表”页。
@@ -169,22 +169,29 @@ class UserCategoryController extends GridViewChangeSelfController
      */
     public function actionMove($moveIds = null, $targetId = null)
     {
-        $moveIds = [68,66,65,77];
+        $moveIds = [68,66,65,77,78,79];
         $targetId = 69;
         $targetLevel = UserCategory::getCatById($targetId)->level;  //目标分类等级
-        $moveAfter = UserCategory::find()->where(['id' => $moveIds])->asArray()->all();
-        var_dump($moveAfter);
-        exit;
+        $moveCatChildrens = [];
         foreach ($moveIds as $id) {
-            $moveModel = UserCategory::findOne($id);
-            if($moveModel->level + $targetLevel <= 4){
-                $moveModel->updateParentPath(); //修改路径
-                UserCategory::invalidateCache();    //清除缓存
-            }else{
-                break;
+            $moveModel = $this->findModel($id);
+            $moveCatChildrens[$id] = UserCategory::getCatChildren($id, 1, false, true);
+            $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens[$id], 'level');
+            $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $moveModel->level;
+            $moveLevel = ($moveMaxChildrenLevel - $moveModel->level + 1) + $targetLevel;
+            foreach ($moveCatChildrens[$id] as $catChildrens) {
+//                var_dump($catChildrens['parent_id']);
+                
+//                var_dump($id.':'.$moveLevel);
+//                if($moveLevel <= 4){
+//                    $moveModel->updateParentPath(); //修改路径
+//                    UserCategory::invalidateCache();    //清除缓存
+//                }else{
+//                    break;
+//                }
             }
         }
-        
+        exit;
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
@@ -194,7 +201,7 @@ class UserCategoryController extends GridViewChangeSelfController
             try
             {  
                 $model = $this->findModel($targetId);
-                $targetLevel = !empty($model->parent_id) ? UserCategory::getCatById($model->parent_id)->level : 0;  //目标分类等级
+                $targetLevel = $model->parent_id == 0 ? UserCategory::getCatById($model->parent_id)->level : 1;  //目标分类等级
                 $moveCatChildrens  = UserCategory::getCatChildren($model->id, 1, false, true);  //移动分类下所有子级
                 $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens, 'level');    //所有移动分类下子级的等级
                 $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $model->level ;    //移动分类下子级最大的等级

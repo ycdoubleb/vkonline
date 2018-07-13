@@ -11,6 +11,7 @@ use common\models\vk\KnowledgeVideo;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use Yii;
 use yii\base\Model;
@@ -36,9 +37,8 @@ class VideoSearch extends Video
     public function rules()
     {
         return [
-            [['id', 'node_id', 'teacher_id', 'customer_id', 'ref_id', 'name', 'source_level', 'source_wh',
-                'source_bitrate', 'content_level', 'des', 'level', 'img', 'is_ref', 'is_recommend', 'is_publish',
-                'is_official', 'sort_order', 'created_by'], 'safe'],
+            [['id', 'teacher_id', 'customer_id', 'user_cat_id', 'name', 'duration', 'is_link', 'content_level', 'des', 
+                'level', 'img', 'is_recommend', 'is_publish', 'is_official', 'sort_order', 'created_by'], 'safe'],
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
         ];
     }
@@ -91,8 +91,12 @@ class VideoSearch extends Video
         
         self::getInstance();
         $this->load($params);
+        //获取分类的子级ID    
+        $categoryId = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
         //条件查询
         self::$query->andFilterWhere([
+            'Video.user_cat_id' => !empty($categoryId) ? 
+                ArrayHelper::merge([$this->user_cat_id], $categoryId) : $this->user_cat_id,
             'Video.teacher_id' => $this->teacher_id,
             'Video.level' => $this->level,
             'Video.created_by' => \Yii::$app->user->id,

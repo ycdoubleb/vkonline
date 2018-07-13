@@ -142,7 +142,6 @@
     line-height: 0px;
 }
 .knowledge-reference .vk-tabs .vk-form {
-    width: 80%;
     margin-top: 5px;
     background-color: transparent;
     box-shadow: none;
@@ -194,6 +193,12 @@
 .knowledge-form .vk-list .list-panel .list-header,
 .video-index .vk-list .list-panel .list-header {
     height: 157px;
+}
+.video-index .vk-list .list-panel .list-header > input {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    margin-top: 0px;
 }
 .video-form .video-watermark {
     position: relative;

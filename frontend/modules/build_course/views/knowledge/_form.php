@@ -86,7 +86,7 @@ use yii\widgets\ActiveForm;
 $videoDetail = json_encode(isset($videoDetail) ? $videoDetail : []);
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/layouts/_video.php')));
+    $this->renderFile('@frontend/modules/build_course/views/knowledge/_video.php')));
 $js = 
 <<<JS
     

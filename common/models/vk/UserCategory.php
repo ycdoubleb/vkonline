@@ -39,9 +39,12 @@ class UserCategory extends ActiveRecord
     
     /** 显示状态-不显示 */
     const NO_SHOW = 0;
-
     /** 显示状态-显示 */
     const YES_SHOW = 1;
+    /** 我的视频 */
+    const TYPE_MYVIDOE = 1;
+    /** 我的收藏 */
+    const TYPE_MYCOLLECT = 2;
 
     /**
      * 显示状态
@@ -280,12 +283,16 @@ class UserCategory extends ActiveRecord
      * 
      * @return array(array|Array) 
      */
-    public static function getCatsByLevel($level = 1, $type = 1, $key_to_value = false, $include_unshow = false) {
+    public static function getCatsByLevel($level = 1, $created_by, $type = 1, $key_to_value = false, $include_unshow = false) {
         self::initCache();
+        //不传created_by,默认使用当前用户的ID
+        if (!isset($created_by) || empty($created_by)) {
+            $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
+        }
         $userCategorys = [];
-        
         foreach (self::$userCategorys as $id => $category) {
-            if ($category['level'] == $level && $category['type'] == $type && ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['level'] == $level && $category['created_by'] == $created_by && $category['type'] == $type 
+                    && ($include_unshow || $category['is_show'] == 1)) {
                 $userCategorys[] = $category;
             }
         }
@@ -311,7 +318,6 @@ class UserCategory extends ActiveRecord
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
         $childrens = [];
-        
         foreach (self::$userCategorys as $c_id => $category) {
             if ($category['parent_id'] == $id && $category['type'] == $type &&
                     (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by)) &&
@@ -362,7 +368,7 @@ class UserCategory extends ActiveRecord
                     ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $c_id;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getCustomerCatChildrenIds($c_id, $created_by, $type, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $type, $recursion, $include_unshow));
                 }
             }
         }
@@ -411,7 +417,7 @@ class UserCategory extends ActiveRecord
         do {
             if ($catgegory == null) {
                 //当前分类为空时返回顶级分类
-                $userCategorys [] = self::getCatsByLevel(1, $type, true);
+                $userCategorys [] = self::getCatsByLevel(1, $created_by, $type, true);
                 break;
             } else {
                 array_unshift($userCategorys, self::getUserCatChildren($catgegory->parent_id, $created_by, $type, true, false, $include_unshow));

@@ -109,3 +109,8 @@
 .vk-modal .modal-content .modal-body .vk-form .radio-value {
     float: right;
 }
+.update-path.vk-modal .modal-body, 
+.update-path.modal-body .vk-form {
+    background-color: #ffffff;
+    padding-left: 10px;
+}
