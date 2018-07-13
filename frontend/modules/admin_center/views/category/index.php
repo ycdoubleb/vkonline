@@ -50,9 +50,9 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                     'headerOptions' => ['style' => 'width:300px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::input($model->parent_id == 0 ? 'hidden' : 'checkbox', 'vehicle', $model->id, [
-                            'id' => $model->parent_id, 'class' => 'hidden'
-                        ]) . ' ' . $model->name;
+                        return '<label class="check-label">' . Html::input($model->parent_id == 0 ? 'hidden' : 'checkbox', 'vehicle', $model->id, [
+                            'id' => $model->path, 'class' => 'hidden'
+                        ]) . ' ' . $model->name . '</label>';
                     },
                     'contentOptions' => ['style' => 'text-align:left;'],
                 ],
@@ -217,27 +217,23 @@ $js = <<<JS
 
     //点击更新层级
     $("#update-path").click(function(){
-        if($('input[name="vehicle"]').hasClass("hidden")){
-            $('input[name="vehicle"]').removeClass("hidden");
-            $("#save-path").removeClass("hidden");
-        } else {
-            $('input[name="vehicle"]').addClass("hidden");
-            $("#save-path").addClass("hidden");
-        }
+        $('input[name="vehicle"]').toggleClass("hidden");
+        $("#save-path").toggleClass("hidden");
+        $('.check-label').toggleClass("cursor");
     })
     //选中时把子级也选中
     $('input[name="vehicle"]').click(function(){
         var obj = $(this);  //选中的对象
         $.each($('input[name="vehicle"]'),function(){
-            if(obj.val() == $(this).attr('id')){
+            var pathArray = $(this).attr('id').split(",");  //子级（ID为路径）分割为数组
+            if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
                 if(obj.is(":checked")){
-                    $(this).attr("checked", true);
+                    $(this).prop("checked", true);
                 }else{
-                    $(this).attr("checked", false);
+                    $(this).prop("checked", false);
                 }
             }
         });
-
     });
     //有值且点击确定时弹出模态框
     $("#save-path").click(function(){
