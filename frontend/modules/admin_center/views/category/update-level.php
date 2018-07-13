@@ -40,7 +40,7 @@ $this->title = '选择要移动到哪个分类';
                                 'headerOptions' => ['class' => 'header-css'],
                                 'format' => 'raw',
                                 'value' => function ($model){
-                                    return ' <label>' . $model->name . 
+                                    return ' <label class="radio-label">' . $model->name . 
                                             Html::input('radio', 'radiobox', $model->id, ['class' => 'radio-value']) .'</label>';
                                 },
                                 'contentOptions' => ['class' => 'content-value'],

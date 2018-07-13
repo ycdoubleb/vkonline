@@ -84,7 +84,7 @@
  * 批量更新分类层级的模态框
  */
 /*单选框点击范围扩大到分类名整正行*/
-.vk-modal .modal-body .vk-form label {
+.vk-modal .modal-body .vk-form .radio-label {
     padding: 16px 775px 16px 0px;
     display: unset;
     margin-bottom: 0px;
