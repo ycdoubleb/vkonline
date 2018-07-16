@@ -352,7 +352,7 @@ textarea {
  * table样式
  *******************************************************************************/
 .vk-table {
-    margin: -1px 0px 0px;
+    margin: 0px;
     color: #666;
     border: none;
     table-layout:fixed;
@@ -375,6 +375,7 @@ textarea {
     vertical-align:middle; 
 }
 .vk-table > thead > tr > th,
+.vk-table > thead > tr > td,
 .vk-table > tbody > tr > th,
 .vk-table > tbody > tr > td {
     height: 48px;
@@ -385,6 +386,7 @@ textarea {
     border-top-width: 0px;
     border-right-width: 1px;
     border-left-width: 0px;
+    border-bottom: 1px solid #eee;
 }
 .vk-table > thead > tr > th {
     background-color: #f9f9f9;

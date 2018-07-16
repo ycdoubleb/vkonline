@@ -229,17 +229,25 @@ $js = <<<JS
     //选中时把子级也选中
     $('input[name="vehicle"]').click(function(){
         var obj = $(this);  //选中的对象
-        $.each($('input[name="vehicle"]'),function(){
-            var pathArray = $(this).attr('id').split(",");  //子级（ID为路径）分割为数组
-            if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
-                if(obj.is(":checked")){
+        if(obj.is(":checked")){ //选中时
+            $.each($('input[name="vehicle"]'),function(){
+                var pathArray = $(this).attr('id').split(",");  //子级（ID为路径）分割为数组
+                if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
                     $(this).prop("checked", true);
-                }else{
+                }
+            });
+        }else{  //取消选中时
+            $.each($('input[name="vehicle"]'),function(){
+                var pathArray = $(this).attr('id').split(","),  //子级（ID为路径）分割为数组
+                    objArray = obj.attr('id').split(",");       //选中对象（ID为路径）分割为数组
+                //判断 点击的ID是否在路径中（在返回大于0 不在返回-1） 
+                if(pathArray.indexOf(obj.val()) > 0 || objArray.indexOf($(this).val()) > 0){
                     $(this).prop("checked", false);
                 }
-            }
-        });
+            });
+        }
     });
+        
     //有值且点击确定时弹出模态框
     $("#save-path").click(function(){
         if($('input[name="vehicle"]:checked').length > 0){
