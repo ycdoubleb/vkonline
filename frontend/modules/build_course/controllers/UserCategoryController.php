@@ -86,9 +86,11 @@ class UserCategoryController extends GridViewChangeSelfController
             $trans = Yii::$app->db->beginTransaction();
             try
             { 
-                if($model->save() && $model->level > 4){
+                if($model->save()){
                     $model->updateParentPath();
                     UserCategory::invalidateCache();
+                }
+                if($model->level <= 4){
                     $trans->commit();  //提交事务
                     Yii::$app->getSession()->setFlash('success','操作成功！');
                     return $this->redirect(['view', 'id' => $model->id]);
@@ -123,7 +125,7 @@ class UserCategoryController extends GridViewChangeSelfController
             try
             {  
                 $type = UserCategory::TYPE_MYVIDOE;
-                $targetLevel = $model->parent_id == 0 ? UserCategory::getCatById($model->parent_id)->level : 1;  //目标分类等级
+                $targetLevel = $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->level : 1;  //目标分类等级
                 $moveCatChildrens  = UserCategory::getCatChildren($model->id, $type, false, true);  //移动分类下所有子级
                 $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens, 'level');    //所有移动分类下子级的等级
                 $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $model->level ;    //移动分类下子级最大的等级
@@ -135,6 +137,9 @@ class UserCategoryController extends GridViewChangeSelfController
                         //获取修改子集的UserCategory模型
                         $childrenModel = $this->findModel($moveChildren['id']);
                         $childrenModel->updateParentPath(); //修改子集路径
+                        //计算 "," 在字符串中出现的次数,
+                        $childrenModel->level = substr_count($childrenModel->path, ',');
+                        $childrenModel->update(false, ['level']);
                         UserCategory::invalidateCache();    //清除缓存
                     }
                 }else{
@@ -182,58 +187,50 @@ class UserCategoryController extends GridViewChangeSelfController
      * @return mixed
      * @throws NotFoundHttpException
      */
-    public function actionMove($move_ids = null, $target_id = null)
+    public function actionMove($move_ids = null, $target_id = 0)
     {
         $move_ids = explode(',', $move_ids);
         $searchModel = new UserCategorySearch();
-        $dataProvider = $searchModel->search(['id' => $move_ids]);
+        $dataProvider = $searchModel->search(['id' => $move_ids]); 
         
         if (Yii::$app->request->isPost) {
-            $targetCatQuery = UserCategory::getCatById($target_id);   //目标分类模型
-            //获取移动的分类模型（数组）
-            $moveCatQuerys = UserCategory::find()->select(['id', 'name', 'parent_id', 'path', 'level'])
-                    ->where(['is_show' => 1])->andFilterWhere(['id' => $move_ids])->all();
-            //获取移动的分类的所有等级
-            foreach ($moveCatQuerys as $moveCatQuery) {
-                $level[] = $moveCatQuery->level;
-            }
-            //需要移动的层级
-            $moveLevel = max($level) - min($level) + 1;
-            //计算移动后的总层级（移动的层级+目标层级）
-            $countLevel = $moveLevel + $targetCatQuery->level; 
-            if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
-                foreach ($moveCatQuerys as $moveCatQuery) {
-                    //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
-                    if(in_array($moveCatQuery->parent_id, $move_ids)){
-                        $moveCatQuery->parent_id = $moveCatQuery->parent_id;
-                        //移动的分类存在3个层级一起移动 且 分类的层级为4时
-                        if($moveLevel == 3 && $moveCatQuery->level == 4){
-                            $moveParCatQuery = UserCategory::getCatById($moveCatQuery->parent_id);
-                            $moveCatQuery->path = "$targetCatQuery->path" . ",$moveParCatQuery->parent_id,$moveCatQuery->parent_id,$moveCatQuery->id";
-                            $moveCatQuery->level = 4;
-                        } else {
-                            $moveCatQuery->path = "$targetCatQuery->path" . ",$moveCatQuery->parent_id,$moveCatQuery->id";
-                            //判断移动后分类的总层级 （为4时） 判断移动中分类的总层级 （为3时 层级为3）
-                            $moveCatQuery->level = $countLevel == 4 ? ($moveLevel == 3 ? 3 : 4) : 3;
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            { 
+                $is_submit = false;
+                $targetLevel = $target_id > 0 ? UserCategory::getCatById($target_id)->level : 1;  //目标分类等级        
+                $moveCateorys = UserCategory::find()->where(['id' => $move_ids])
+                    ->orderBy(['path' => SORT_ASC])->all();   //获取所要移动的分类
+                $moveCateogyLevels = ArrayHelper::getColumn($moveCateorys, 'level');    //获取所要移动的分类等级
+                //获取所要移动分类的总层次（移动分类的最大层次 - 移动分类的最小层次） + 1 + 目标分类的层次
+                $moveCategoryCountLevel = max($moveCateogyLevels) - min($moveCateogyLevels) + 1 + $targetLevel;
+                if($moveCategoryCountLevel <= 4){
+                    foreach ($moveCateorys as $moveModel) {
+                        /* @var $moveModel UserCategory */
+                        //如果移动的分类父级id不在所要移动的id数组里，则设置所要移动的父级id为目标id
+                        if(!in_array($moveModel->parent_id, $move_ids)){
+                            $moveModel->parent_id = $target_id;
                         }
-                    } else {        //移动的分类不存多级一起移动的情况
-                        $moveCatQuery->parent_id = $target_id;
-                        $moveCatQuery->path = "$targetCatQuery->path" . ",$moveCatQuery->id";
-                        $moveCatQuery->level = $targetCatQuery->level + 1;
+                        //计算 "," 在字符串中出现的次数,
+                        $moveModel->level = substr_count($moveModel->path, ',');
+                        $moveModel->update(false, ['parent_id', 'level']);
+                        $moveModel->updateParentPath(); //修改子集路径
+                        UserCategory::invalidateCache();    //清除缓存
                     }
-                    $value = [
-                        'parent_id' => $moveCatQuery->parent_id,
-                        'path' => $moveCatQuery->path,
-                        'level' => $moveCatQuery->level,
-                    ];
-                    Yii::$app->db->createCommand()->update(UserCategory::tableName(), $value, ['id' => $moveCatQuery->id])->execute();
+                    $is_submit = true;
                 }
-                UserCategory::invalidateCache();        //取消缓存
-                Yii::$app->getSession()->setFlash('success','操作成功！');
-            }else{
-                Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
+                if($is_submit){
+                    $trans->commit();  //提交事务
+                    Yii::$app->getSession()->setFlash('success','操作成功！');
+                }else{
+                    Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
+                }
+                return $this->redirect(['index']);
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
+                Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
-            return $this->redirect(['index']);
         }
 
         return $this->renderAjax('move', [

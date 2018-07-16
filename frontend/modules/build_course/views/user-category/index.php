@@ -234,16 +234,23 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
         //选中时把子级也选中
         $('input[name="UserCategory[id]"]').click(function(){
             var obj = $(this);  //选中的对象
-            $.each($('input[name="UserCategory[id]"]'),function(){
-                var pathArray = $(this).attr('data-path').split(",");  //子级（ID为路径）分割为数组
-                if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
-                    if(obj.is(":checked")){
+            if(obj.is(":checked")){ //选中时
+                $.each($('input[name="UserCategory[id]"]'),function(){
+                    var pathArray = $(this).attr('data-path').split(",");  //子级（ID为路径）分割为数组
+                    if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
                         $(this).prop("checked", true);
-                    }else{
+                    }
+                });
+            }else{  //取消选中时
+                $.each($('input[name="UserCategory[id]"]'),function(){
+                    var pathArray = $(this).attr('data-path').split(","),  //子级（ID为路径）分割为数组
+                        objArray = obj.attr('data-path').split(",");       //选中对象（ID为路径）分割为数组
+                    //判断 点击的ID是否在路径中（在返回大于0 不在返回-1） 
+                    if(pathArray.indexOf(obj.val()) > 0 || objArray.indexOf($(this).val()) > 0){
                         $(this).prop("checked", false);
                     }
-                }
-            });
+                });
+            }
         });
         //显示模态框
         window.showModal = function(elem){

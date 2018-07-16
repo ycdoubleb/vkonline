@@ -24,6 +24,11 @@ $this->title = '选择移动到哪个目录';
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body clear-padding">
+                <div class="top-level">
+                    <?= Html::a('&nbsp;顶级目录', ['move', 'move_ids' => implode(',', $move_ids)], [
+                        'onclick' => 'moveCatalog($(this)); return false;'
+                    ]) ?>
+                </div>
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
                     'tableOptions' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
@@ -67,7 +72,7 @@ $this->title = '选择移动到哪个目录';
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-       //initialState: 'collapsed',
+//       initialState: 'collapsed',   //默认折叠
     });        
             
     //移动视频到指定目录
