@@ -138,6 +138,9 @@ class CategoryController extends GridViewChangeSelfController
                             //获取修改子集的Category模型
                             $childrenModel = Category::findOne($moveChildren['id']);
                             $childrenModel->updateParentPath(); //修改子集路径
+                            //计算路径中','出现的次数，确定为自身等级
+                            $childrenModel->level = substr_count($childrenModel->path, ',');
+                            $childrenModel->update(false, ['level']);
                             Category::invalidateCache();    //清除缓存
                         }
                     }else{

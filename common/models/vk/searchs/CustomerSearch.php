@@ -147,7 +147,7 @@ class CustomerSearch extends Customer
         //课程数
         $courseQuery = $this->getCustomerCourseNumber($id);
         //视频数
-        $videoQuery = $this->getCustomerVideoNodeNumber($id);
+        $videoQuery = $this->getCustomerVideoNumber($id);
         //视频播放数
         $playQuery = $this->getVideoPlayNumber($id);
         
@@ -353,15 +353,17 @@ class CustomerSearch extends Customer
      * @param type $id      客户ID
      * @return Query
      */
-    protected function getCustomerVideoNodeNumber($id)
+    protected function getCustomerVideoNumber($id)
     {
-        $query = CourseSearch::findVideoByCourseNode();
-        $query->andWhere(['Video.customer_id' => $id]);
-        
-        $query->addSelect(['Video.customer_id']);
-        
-        $query->groupBy('Video.customer_id');
-        
+        $query = Video::find()
+                ->select(['COUNT(id) AS node_num','Video.customer_id'])
+                ->from(['Video' => Video::tableName()])
+                ->andFilterWhere([
+                    'Video.is_del' => 0,
+                    'Video.customer_id' => $id
+                    ])
+                ->groupBy(['Video.customer_id']);
+
         return $query;
     }
     
