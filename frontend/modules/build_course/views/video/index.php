@@ -175,7 +175,7 @@ $this->registerJs($format, View::POS_HEAD);
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a('确认', ['move'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['move'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
                         'onclick' => 'showModal($(this)); return false;'
                     ]) ?>
@@ -183,7 +183,7 @@ $this->registerJs($format, View::POS_HEAD);
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a('取消', 'javascript:;', ['id' => 'cancel', 'class' => 'btn btn-default btn-flat']) ?>
+                    <?= Html::a(Yii::t('app', 'Cancel'), 'javascript:;', ['id' => 'cancel', 'class' => 'btn btn-default btn-flat']) ?>
                 </span>
             </li>
         </ul>
@@ -230,7 +230,7 @@ $js =
     $("#cancel").click(function(){
         is_arrange = false;
         $(".vk-tabs .pull-right").addClass("hidden");
-        $('input[name="Video[id]"]').addClass("hidden");
+        $('input[name="Video[id]"]').addClass("hidden").prop("checked", false);
     });
     //单击全选
     $("#allChecked").click(function(){
@@ -251,8 +251,12 @@ $js =
                val.push(checkObject[i].value);
             }
         }
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+        if(val.length > 0){
+            $(".myModal").html("");
+            $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+        }else{
+            alert("请选择移动的视频");
+        }
         return false;
     }   
     

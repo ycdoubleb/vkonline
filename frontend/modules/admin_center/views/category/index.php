@@ -50,9 +50,14 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                     'headerOptions' => ['style' => 'width:300px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return '<label class="check-label">' . Html::input($model->parent_id == 0 ? 'hidden' : 'checkbox', 'vehicle', $model->id, [
-                            'id' => $model->path, 'class' => 'hidden'
-                        ]) . ' ' . $model->name . '</label>';
+                        if($model->parent_id > 0){
+                            return '<label class="check-label">' . Html::checkbox('vehicle', false, [
+                                'id' => $model->path, 'class' => 'hidden',
+                                'value' => $model->id, 'style' => 'margin: 4px;'
+                            ]) . $model->name . '</label>';
+                        }else{
+                            return $model->name;
+                        }
                     },
                     'contentOptions' => ['style' => 'text-align:left;'],
                 ],

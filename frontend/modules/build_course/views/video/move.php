@@ -13,7 +13,7 @@ TreegridAssets::register($this);
 
 $this->title = Yii::t('app', 'Select the mobile video to the directory');
 ?>
-<div class="update-path main vk-modal">
+<div class="video-move main vk-modal">
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -23,32 +23,38 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body customer-activity" style="padding:15px 0px">
-                <div class="vk-form clear-shadow">
-                    <?= GridView::widget([
-                        'dataProvider' => $dataProvider,
-                        'tableOptions' => ['class' => 'table table-bordered detail-view vk-table'],
-                        'layout' => "{items}\n{summary}\n{pager}",
-                        'rowOptions' => function($model, $key, $index, $this){
-                            return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
-                        },
-                        'columns' => [
-                            [
-                                'header' => null,
-                                'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
-                                'format' => 'raw',
-                                'value' => function ($model) use($move_ids){
-                                    return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => $move_ids, 'target_id' => $model->id], [
-                                        'onclick' => 'moveVideo($(this)); return false;'
-                                    ]);
-                                },
-                                'contentOptions' => ['style' => 'text-align:left;border-bottom:1px solid #f2f2f2'],
-                            ],
+            <div class="modal-body clear-padding">
+                <?= GridView::widget([
+                    'dataProvider' => $dataProvider,
+                    'tableOptions' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
+                    'layout' => "{items}\n{summary}\n{pager}",
+                    'summaryOptions' => [
+                        'class' => 'hidden',
+                    ],
+                    'pager' => [
+                        'options' => [
+                            'class' => 'hidden',
+                        ]
+                    ],
+                    'rowOptions' => function($model, $key, $index, $this){
+                        return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
+                    },
+                    'columns' => [
+                        [
+                            'header' => null,
+                            'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
+                            'format' => 'raw',
+                            'value' => function ($model) use($move_ids){
+                                return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => $move_ids, 'target_id' => $model->id], [
+                                    'onclick' => 'moveVideo($(this)); return false;'
+                                ]);
+                            },
+                            'contentOptions' => ['style' => 'text-align:left;'],
                         ],
-                    ]); ?>
-                </div>
+                    ],
+                ]); ?>
             </div>
-            <div class="modal-footer"></div>
+            <!--<div class="modal-footer"></div>-->
        </div>
     </div>
     

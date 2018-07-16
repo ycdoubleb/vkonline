@@ -265,8 +265,8 @@ class VideoController extends Controller
         }
 
         return $this->renderAjax('move', [
-            'move_ids' => $move_ids,
-            'dataProvider' => $dataProvider,
+            'move_ids' => $move_ids,    //所选的视频id
+            'dataProvider' => $dataProvider,    //用户自定义的目录结构
         ]);
     }
     

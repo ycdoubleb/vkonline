@@ -410,14 +410,6 @@ textarea {
 .modal-body .vk-form {
     background-color: #F2F2F2;
 }
-.vk-modal .modal-width {
-    min-width: 1150px;
-}
-.vk-modal .modal-height {
-    min-height: 720px;
-    max-height: 720px;
-    overflow-y: auto;
-}
 /*******************************************************************************
  * 最近联系
  *******************************************************************************/

@@ -68,10 +68,11 @@
 .video-statistics .vk-panel .chart {
     min-height: 500px;
 }
+/*******************************************************************************
+ * 分类页面
+ *******************************************************************************/
 /*复选框的点击范围扩大到分类名*/
 .main.category-index .vk-panel .check-label {
-    padding: 17px 200px 17px 0px;
-    display: unset;
     margin-bottom: 0px;
     font-weight: normal;
 }
@@ -86,7 +87,7 @@
 /*单选框点击范围扩大到分类名整正行*/
 .vk-modal .modal-body .vk-form .radio-label {
     padding: 16px 775px 16px 0px;
-    display: unset;
+    display: inline;
     margin-bottom: 0px;
     font-weight: normal;
     cursor: pointer;

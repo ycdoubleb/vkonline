@@ -13,6 +13,17 @@
 /**
  * 公共部分
  */
+.vk-modal .modal-width {
+    min-width: 1150px;
+}
+.vk-modal .modal-height {
+    min-height: 720px;
+    max-height: 720px;
+    overflow-y: auto;
+}
+/**
+ * 模块共用样式
+ */
 .course-index .vk-list,
 .video-index .vk-list {
     margin-right: -80px;
@@ -25,6 +36,11 @@
 .video-view .vk-panel .summary,
 .teacher-view .vk-panel .summary {
     padding-left: 20px;
+}
+.coutse_actlog-view .modal-body,
+.video-move .modal-body,
+.user-category-move .modal-body {
+    background-color: #fff !important;
 }
 /*******************************************************************************
  * 我的课程列表
@@ -181,12 +197,6 @@
     display: none;
     margin: 5px 0;
 }
-/**
- * 课程操作记录 
- */
-.coutse_actlog-view .modal-body {
-    background-color: #fff !important;
-}
 /*******************************************************************************
  * 我的视频
  *******************************************************************************/
@@ -219,6 +229,27 @@
 }
 .video-form .loading-box {
     text-align: left;
+}
+/**
+ * 移动视频
+ */
+.user-category-move .modal-body .vk-table tr:hover,
+.video-move .modal-body .vk-table tr:hover {
+    background-color: #f2f2f2;
+}
+.video-move .modal-body .vk-table a,
+.user-category-move .modal-body .vk-table a{
+    display: inline-block;
+    width: 100%;
+    line-height: 48px;
+    text-decoration: none;
+    margin: -8px 0px;
+}
+/**
+ * 用户自定义目录
+ */
+.user-category-index .vk-panel .pointer{
+    cursor: pointer;
 }
 .user-category-index .summary {
     padding-left: 20px;

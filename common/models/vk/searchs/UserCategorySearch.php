@@ -2,10 +2,10 @@
 
 namespace common\models\vk\searchs;
 
-use Yii;
+use common\models\vk\UserCategory;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\vk\UserCategory;
+use yii\helpers\ArrayHelper;
 
 /**
  * UserCategorySearch represents the model behind the search form of `common\models\vk\UserCategory`.
@@ -40,7 +40,9 @@ class UserCategorySearch extends UserCategory
      * @return ActiveDataProvider
      */
     public function search($params)
-    {
+    {        
+        $this->id = ArrayHelper::getValue($params, 'id');
+                
         $query = UserCategory::find();
 
         // add conditions that should always apply here
@@ -50,14 +52,9 @@ class UserCategorySearch extends UserCategory
         ]);
 
         $this->load($params);
-
-        if (!$this->validate()) {
-            // uncomment the following line if you do not want to return any records when validation fails
-            // $query->where('0=1');
-            return $dataProvider;
-        }
-
+        
         // grid filtering conditions
+        $query->andFilterWhere(['NOT IN', 'id', $this->id]);
         $query->andFilterWhere([
             'type' => $this->type,
             'sort_order' => $this->sort_order,

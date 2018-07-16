@@ -28,10 +28,10 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body">
+            <div class="modal-body clear-padding">
                 <?= DetailView::widget([
                     'model' => $model,
-                    'options' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'border: 1px solid #e4e4e4;'],
+                    'options' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
                     'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                     'attributes' => [
                         'action',
