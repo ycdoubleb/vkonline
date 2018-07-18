@@ -71,9 +71,9 @@ $this->registerJs($format, View::POS_HEAD);
                 echo Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
                     ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat', 'target' => '_blank']) . '&nbsp;';
-                echo Html::a(Yii::t('app', '{Move}{Video}', [
-                        'Move' => Yii::t('app', 'Move'), 'Video' => Yii::t('app', 'Video')
-                    ]), ['move'], ['class' => 'btn btn-unimportant btn-flat']);
+                echo Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
+                    'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
+                ]);
             ?>
         </div>
     </div>
@@ -89,23 +89,25 @@ $this->registerJs($format, View::POS_HEAD);
                 'class'=>'form-horizontal',
             ],
             'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
+                'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n",  
                 'labelOptions' => [
-                    'class' => 'col-lg-2 col-md-2 control-label form-label',
+                    'class' => 'col-lg-1 col-md-1 control-label form-label',
                 ],  
             ], 
         ]); ?>
         
-        <div class="col-lg-6 col-md-6">
+        <div class="col-lg-12 col-md-12">
             
             <!--所属目录-->
-            <?= $form->field($searchModel, 'user_cat_id')->widget(DepDropdown::class, [
+            <?= $form->field($searchModel, 'user_cat_id', [
+                'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
+            ])->widget(DepDropdown::class, [
                 'pluginOptions' => [
-                    'url' => Url::to('/admin_center/category/search-children', false),
-                    'max_level' => 3,
+                    'url' => Url::to('../user-category/search-children', false),
+                    'max_level' => 6,
                     'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
                 ],
-                'items' => UserCategory::getSameLevelCats($searchModel->user_cat_id, 1, true),
+                'items' => UserCategory::getSameLevelCats($searchModel->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
                 'values' => $searchModel->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($searchModel->user_cat_id)->path))),
                 'itemOptions' => [
                     'style' => 'width: 115px; display: inline-block;',
@@ -159,9 +161,30 @@ $this->registerJs($format, View::POS_HEAD);
     </div>
     <!-- 排序 -->
     <div class="vk-tabs">
-        <ul class="list-unstyled">
+        <ul class="list-unstyled pull-left">
             <li id="created_at">
                 <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at']))) ?>
+            </li>
+        </ul>
+        <ul class="list-unstyled pull-right hidden">
+            <li>
+                <?= Html::a('全选', 'javascript:;', ['id' => 'allChecked', 'style' => 'padding: 0px 10px']) ?>
+            </li>
+            <li>
+                <?= Html::a('全不选', 'javascript:;', ['id' => 'noAllChecked', 'style' => 'padding: 0px 10px']) ?>
+            </li>
+            <li>
+                <span style="padding: 0px 5px; line-height: 54px;">
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['move'], [
+                        'id' => 'move', 'class' => 'btn btn-primary btn-flat',
+                        'onclick' => 'showModal($(this)); return false;'
+                    ]) ?>
+                </span>
+            </li>
+            <li>
+                <span style="padding: 0px 5px; line-height: 54px;">
+                    <?= Html::a(Yii::t('app', 'Cancel'), 'javascript:;', ['id' => 'cancel', 'class' => 'btn btn-default btn-flat']) ?>
+                </span>
             </li>
         </ul>
     </div>
@@ -183,22 +206,66 @@ $this->registerJs($format, View::POS_HEAD);
     
 </div>
 
+<?= $this->render('/layouts/model') ?>
+
 <?php
 $tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');   //排序
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/layouts/_video.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
 $js = 
 <<<JS
     //排序选中效果
     $(".vk-tabs ul li[id=$tabs]").addClass('active');   
+    var is_arrange = false;   //是否在整理状态
+    var is_checked = false;   //是否选中状态
+    //单击整理视频
+    $("#arrange").click(function(){
+        is_arrange = true;
+        $(".vk-tabs .pull-right").removeClass("hidden");
+        $('input[name="Video[id]"]').removeClass("hidden");
+    });
+    //单击取消
+    $("#cancel").click(function(){
+        is_arrange = false;
+        $(".vk-tabs .pull-right").addClass("hidden");
+        $('input[name="Video[id]"]').addClass("hidden").prop("checked", false);
+    });
+    //单击全选
+    $("#allChecked").click(function(){
+        is_checked = true;
+        $('input[name="Video[id]"]').prop("checked", true);
+    });
+    //单机全不选
+    $("#noAllChecked").click(function(){
+        is_checked = false;
+        $('input[name="Video[id]"]').prop("checked", false);
+    });
+    //显示模态框
+    window.showModal = function(elem){
+        var checkObject = $("input[name='Video[id]']");  
+        var val = [];
+        for(i in checkObject){
+            if(checkObject[i].checked){
+               val.push(checkObject[i].value);
+            }
+        }
+        if(val.length > 0){
+            $(".myModal").html("");
+            $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+        }else{
+            alert("请选择移动的视频");
+        }
+        return false;
+    }   
+    
     /**
      * 提交表单
      */
     window.submitForm = function(){
         $('#build-course-form').submit();
-    }  
+    }
     /**
      * 滚屏自动换页
      */
@@ -238,6 +305,14 @@ $js =
                 if(rel['code'] == '200'){
                     for(var i in data.result){
                         var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
+                        //是否在整理状态，如果是，则换页时显示input
+                        if(is_arrange){
+                            var checkboxItem = item.find($('input[name="Video[id]"]'));
+                            checkboxItem.removeClass("hidden");
+                            if(is_checked){
+                                checkboxItem.attr("checked", true);
+                            }
+                        }
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');

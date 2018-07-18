@@ -11,9 +11,9 @@ use yii\web\View;
 
 TreegridAssets::register($this);
 
-$this->title = '选择移动到哪个目录';
+$this->title = Yii::t('app', 'Select the mobile video to the directory');
 ?>
-<div class="user-category-move main vk-modal">
+<div class="video-move main vk-modal">
 
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -24,11 +24,6 @@ $this->title = '选择移动到哪个目录';
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body clear-padding">
-                <div class="top-level">
-                    <?= Html::a('&nbsp;顶级目录', ['move', 'move_ids' => implode(',', $move_ids)], [
-                        'onclick' => 'moveCatalog($(this)); return false;'
-                    ]) ?>
-                </div>
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
                     'tableOptions' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
@@ -50,11 +45,11 @@ $this->title = '选择移动到哪个目录';
                             'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
                             'format' => 'raw',
                             'value' => function ($model) use($move_ids){
-                                return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => implode(',', $move_ids), 'target_id' => $model->id], [
-                                    'onclick' => 'moveCatalog($(this)); return false;'
+                                return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => $move_ids, 'target_id' => $model->id], [
+                                    'onclick' => 'moveVideo($(this)); return false;'
                                 ]);
                             },
-                            'contentOptions' => ['style' => 'text-align:left'],
+                            'contentOptions' => ['style' => 'text-align:left;'],
                         ],
                     ],
                 ]); ?>
@@ -72,11 +67,11 @@ $this->title = '选择移动到哪个目录';
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-//       initialState: 'collapsed',   //默认折叠
+       //initialState: 'collapsed',
     });        
             
     //移动视频到指定目录
-    window.moveCatalog = function(elem){
+    window.moveVideo = function(elem){
         $.post(elem.attr("href"));
     };
     

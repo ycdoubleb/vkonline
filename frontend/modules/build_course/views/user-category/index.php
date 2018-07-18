@@ -36,8 +36,12 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     echo Html::a(Yii::t('app', 'Add'),  ['create'], [
                         'class' => 'btn btn-success btn-flat', 'target' => '_blank'
                     ]) . '&nbsp;';
-                    echo Html::a(Yii::t('app', 'Move'), ['move'], [
-                        'class' => 'btn btn-unimportant btn-flat', 'onclick' => 'showModal($(this)); return false;'
+                    echo Html::a(Yii::t('app', '{Move}{Catalog}', [
+                        'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')
+                    ]), 'javascript:;', ['id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat']);
+                    echo '&nbsp;' . Html::a(Yii::t('app', 'Confirm'), ['move'], [
+                        'id' => 'move', 'class' => 'btn btn-primary btn-flat hidden', 
+                        'onclick' => 'showModal($(this)); return false;'
                     ]);
                 ?>
             </div>
@@ -58,12 +62,12 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     'header' => Yii::t('app', 'Name'),
                     'format' => 'raw',
                     'value' => function($model){
-                        return Html::checkbox('UserCategory[id]', false, [
+                        return '<label style="font-weight: normal;margin-bottom:0px">'. Html::checkbox('UserCategory[id]', false, [
+                            'class' => 'hidden',
                             'value' => $model->id,
-                            'style' => [
-                                'margin' => '4px',
-                            ],
-                        ]) . $model->name;
+                            'style' => ['margin' => '4px',],
+                            'data-path' => $model->path,
+                        ]) . $model->name . '</label>';
                     },
                     'headerOptions' => [
                         'style' => [
@@ -221,6 +225,33 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
         $('.table').treegrid({
             //initialState: 'collapsed',
         });
+        //单击移动目录
+        $("#arrange").click(function(){
+            $("input[name='UserCategory[id]']").toggleClass("hidden");
+            $("#move").toggleClass("hidden");
+            $('.vk-table').find("label").toggleClass("pointer");
+        })
+        //选中时把子级也选中
+        $('input[name="UserCategory[id]"]').click(function(){
+            var obj = $(this);  //选中的对象
+            if(obj.is(":checked")){ //选中时
+                $.each($('input[name="UserCategory[id]"]'),function(){
+                    var pathArray = $(this).attr('data-path').split(",");  //子级（ID为路径）分割为数组
+                    if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
+                        $(this).prop("checked", true);
+                    }
+                });
+            }else{  //取消选中时
+                $.each($('input[name="UserCategory[id]"]'),function(){
+                    var pathArray = $(this).attr('data-path').split(","),  //子级（ID为路径）分割为数组
+                        objArray = obj.attr('data-path').split(",");       //选中对象（ID为路径）分割为数组
+                    //判断 点击的ID是否在路径中（在返回大于0 不在返回-1） 
+                    if(pathArray.indexOf(obj.val()) > 0 || objArray.indexOf($(this).val()) > 0){
+                        $(this).prop("checked", false);
+                    }
+                });
+            }
+        });
         //显示模态框
         window.showModal = function(elem){
             var checkObject = $("input[name='UserCategory[id]']");  
@@ -230,8 +261,12 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                    val.push(checkObject[i].value);
                 }
             }
-            $(".myModal").html("");
-            $('.myModal').modal("show").load(elem.attr("href") + "?moveIds=" + val);
+            if(val.length > 0){
+                $(".myModal").html("");
+                $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+            }else{
+                alert("请选择移动的目录");
+            }
             return false;
         }   
 JS;

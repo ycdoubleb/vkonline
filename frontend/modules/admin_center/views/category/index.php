@@ -28,8 +28,10 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                 <?= $this->title ?>
             </span>
             <div class="btngroup pull-right">
-                <?= Html::a(Yii::t('app', '移动分类'), 'javascript:;', ['id' => 'update-path', 'class' => 'btn btn-success btn-flat']) ?>
-                <?= Html::a(Yii::t('app', '确定'), 'javascript:;', ['id' => 'save-path', 'class' => 'hidden btn btn-success btn-flat']) ?>
+                <?= Html::a(Yii::t('app', '{Move}{Category}',[
+                    'Move' => Yii::t('app', 'Move'), 'Category' => Yii::t('app', 'Category')
+                ]), 'javascript:;', ['id' => 'update-path', 'class' => 'btn btn-unimportant btn-flat']) ?>
+                <?= Html::a(Yii::t('app', 'Confirm'), 'javascript:;', ['id' => 'save-path', 'class' => 'hidden btn btn-success btn-flat']) ?>
             </div>
         </div>
         <?= GridView::widget([
@@ -48,9 +50,14 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                     'headerOptions' => ['style' => 'width:300px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::input($model->parent_id == 0 ? 'hidden' : 'checkbox', 'vehicle', $model->id, [
-                            'id' => $model->parent_id, 'class' => 'hidden'
-                        ]) . ' ' . $model->name;
+                        if($model->parent_id > 0){
+                            return '<label class="check-label">' . Html::checkbox('vehicle', false, [
+                                'id' => $model->path, 'class' => 'hidden',
+                                'value' => $model->id, 'style' => 'margin: 4px;'
+                            ]) . $model->name . '</label>';
+                        }else{
+                            return $model->name;
+                        }
                     },
                     'contentOptions' => ['style' => 'text-align:left;'],
                 ],
@@ -205,59 +212,63 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
 <?php
     TreegridAssets::register($this);
     
-    $js = <<<JS
-        /**
-         * 初始化树状网格插件
-         */
-        $('.table').treegrid({
-            //initialState: 'collapsed',
-        });
-            
-        //点击更新层级
-        $("#update-path").click(function(){
-            if($('input[name="vehicle"]').hasClass("hidden")){
-                $('input[name="vehicle"]').removeClass("hidden");
-                $("#save-path").removeClass("hidden");
-            } else {
-                $('input[name="vehicle"]').addClass("hidden");
-                $("#save-path").addClass("hidden");
-            }
-        })
-        //选中时把子级也选中
-        $('input[name="vehicle"]').click(function(){
-            var obj = $(this);  //选中的对象
+$js = <<<JS
+    /**
+     * 初始化树状网格插件
+     */
+    $('.table').treegrid({
+        //initialState: 'collapsed',
+    });
+
+    //点击更新层级
+    $("#update-path").click(function(){
+        $('input[name="vehicle"]').toggleClass("hidden");
+        $("#save-path").toggleClass("hidden");
+        $('.check-label').toggleClass("cursor");
+    })
+    //选中时把子级也选中
+    $('input[name="vehicle"]').click(function(){
+        var obj = $(this);  //选中的对象
+        if(obj.is(":checked")){ //选中时
             $.each($('input[name="vehicle"]'),function(){
-                if(obj.val() == $(this).attr('id')){
-                    if(obj.is(":checked")){
-                        $(this).attr("checked", true);
-                    }else{
-                        $(this).attr("checked", false);
-                    }
+                var pathArray = $(this).attr('id').split(",");  //子级（ID为路径）分割为数组
+                if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
+                    $(this).prop("checked", true);
                 }
             });
-            
-        });
-        //有值且点击确定时弹出模态框
-        $("#save-path").click(function(){
-            if($('input[name="vehicle"]:checked').length > 0){
-                showElemModal($(this));
-                return false;
-            }else{
-                alert("请选择要更改的分类");
-            };
-        })
-        /**
-         * 显示模态框
-         */
-        window.showElemModal = function(elem){
-            var value = "";
-            $.each($('input[name="vehicle"]:checked'),function(){
-                value += $(this).val()+',';
-            })
-            $(".myModal").html("");
-            $('.myModal').modal("show").load("/admin_center/category/update-level?categoryIds="+value);
+        }else{  //取消选中时
+            $.each($('input[name="vehicle"]'),function(){
+                var pathArray = $(this).attr('id').split(","),  //子级（ID为路径）分割为数组
+                    objArray = obj.attr('id').split(",");       //选中对象（ID为路径）分割为数组
+                //判断 点击的ID是否在路径中（在返回大于0 不在返回-1） 
+                if(pathArray.indexOf(obj.val()) > 0 || objArray.indexOf($(this).val()) > 0){
+                    $(this).prop("checked", false);
+                }
+            });
+        }
+    });
+        
+    //有值且点击确定时弹出模态框
+    $("#save-path").click(function(){
+        if($('input[name="vehicle"]:checked').length > 0){
+            showElemModal($(this));
             return false;
+        }else{
+            alert("请选择需要移动的分类");
         };
+    })
+    /**
+     * 显示模态框
+     */
+    window.showElemModal = function(elem){
+        var value = "";
+        $.each($('input[name="vehicle"]:checked'),function(){
+            value += $(this).val()+',';
+        })
+        $(".myModal").html("");
+        $('.myModal').modal("show").load("/admin_center/category/update-level?categoryIds="+value);
+        return false;
+    };
 JS;
     $this->registerJs($js, View::POS_READY);
     ModuleAssets::register($this);

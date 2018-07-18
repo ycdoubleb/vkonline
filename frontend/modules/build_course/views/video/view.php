@@ -82,6 +82,12 @@ foreach ($watermarksFiles as $watermark) {
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
+                    'attribute' => 'user_cat_id',
+                    'label' => Yii::t('app', 'Catalog'),
+                    'format' => 'raw',
+                    'value' => !empty($model->user_cat_id) ? $path : null,
+                ],
+                [
                     'attribute' => 'level',
                     'label' => Yii::t('app', '{Visible}{Range}', [
                         'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')

@@ -49,19 +49,21 @@ $this->title = Yii::t('app', '{My}{Course}', [
                 'class'=>'form-horizontal',
             ],
             'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
+                'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n",  
                 'labelOptions' => [
-                    'class' => 'col-lg-2 col-md-2 control-label form-label',
+                    'class' => 'col-lg-1 col-md-1 control-label form-label',
                 ],  
             ], 
         ]); ?>
-        <div class="col-log-6 col-md-6">
+        <div class="col-log-12 col-md-12">
             
             <!--分类-->
-            <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
+            <?= $form->field($searchModel, 'category_id', [
+                'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
+            ])->widget(DepDropdown::class, [
                 'pluginOptions' => [
                     'url' => Url::to('/admin_center/category/search-children', false),
-                    'max_level' => 3,
+                    'max_level' => 4,
                     'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
                 ],
                 'items' => Category::getSameLevelCats($searchModel->category_id, true),

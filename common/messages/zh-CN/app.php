@@ -201,6 +201,7 @@ return [
     'Sorry, we are unable to reset password for the provided email address.' => '对不起，我们无法为所提供的电子邮件地址重置密码。',
     'New password saved.' => '新密码已成功保存。',
     'The video has been transcoding without repeating the transcoding.' => '该视频已经转码，无需重复转码。',
+    'Select the mobile video to the directory' => '选择移动视频到目录',
     
     //后台-公共配置
     'Config' => '配置',

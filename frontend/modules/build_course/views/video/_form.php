@@ -1,7 +1,9 @@
 <?php
 
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\utils\StringUtil;
+use common\widgets\depdropdown\DepDropdown;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\ueditor\UeditorAsset;
 use common\widgets\watermark\WatermarkAsset;
@@ -10,6 +12,7 @@ use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -71,6 +74,22 @@ $this->registerJs($format, View::POS_HEAD);
             ],  
         ], 
     ]); ?>
+    
+    <!--所属目录-->
+    <?= $form->field($model, 'user_cat_id', [
+        'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
+    ])->widget(DepDropdown::class, [
+        'pluginOptions' => [
+            'url' => Url::to('../user-category/search-children', false),
+            'max_level' => 4,
+//            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
+        ],
+        'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
+        'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
+        'itemOptions' => [
+            'style' => 'width: 150px; display: inline-block;',
+        ],
+    ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')]) . '：') ?>
     
     <!--主讲老师-->
     <?php

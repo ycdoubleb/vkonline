@@ -145,7 +145,7 @@ textarea {
 .vk-table .filters .select2-selection,
 .vk-form .form-group .bootstrap-tagsinput {
     min-height: 40px;
-    padding: 10px 24px 10px 12px;
+    padding: 10px;
     border-radius: 0px;
     box-shadow: none;
 }
@@ -352,7 +352,7 @@ textarea {
  * table样式
  *******************************************************************************/
 .vk-table {
-    margin: -1px 0px 0px;
+    margin: 0px;
     color: #666;
     border: none;
     table-layout:fixed;
@@ -375,6 +375,7 @@ textarea {
     vertical-align:middle; 
 }
 .vk-table > thead > tr > th,
+.vk-table > thead > tr > td,
 .vk-table > tbody > tr > th,
 .vk-table > tbody > tr > td {
     height: 48px;
@@ -385,6 +386,7 @@ textarea {
     border-top-width: 0px;
     border-right-width: 1px;
     border-left-width: 0px;
+    border-bottom: 1px solid #eee;
 }
 .vk-table > thead > tr > th {
     background-color: #f9f9f9;
@@ -409,19 +411,6 @@ textarea {
 .vk-modal .modal-body, 
 .modal-body .vk-form {
     background-color: #F2F2F2;
-}
-.update-path.vk-modal .modal-body, 
-.modal-body .vk-form {
-    background-color: #ffffff;
-    padding-left: 10px;
-}
-.vk-modal .modal-width {
-    min-width: 1150px;
-}
-.vk-modal .modal-height {
-    min-height: 720px;
-    max-height: 720px;
-    overflow-y: auto;
 }
 /*******************************************************************************
  * 最近联系

@@ -102,7 +102,6 @@ class CategoryController extends GridViewChangeSelfController
                 $model->loadDefaultValues();
                 return $this->render('create', [
                     'model' => $model,
-                    'parentModel' => $parentModel,
                 ]);
             }
         }
@@ -122,15 +121,49 @@ class CategoryController extends GridViewChangeSelfController
         if($model->parent_id == 0){
             throw new NotAcceptableHttpException('不能更改顶级分类！');
         } else {
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                $model->updateParentPath();
-                Category::invalidateCache();
-                return $this->redirect(['view', 'id' => $model->id]);
-            } else {
-                return $this->render('update', [
-                    'model' => $model,
-                ]);
+            if ($model->load(Yii::$app->request->post())) {
+                /** 开启事务 */
+                $trans = Yii::$app->db->beginTransaction();
+                try
+                {
+                    $targetLevel = Category::getCatById($model->parent_id)->level;  //目标分类等级
+                    $moveCatChildrens  = Category::getCatChildren($model->id, false, true);     //移动分类下所有子级
+                    $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens, 'level');    //所有移动分类下子级的等级
+                    $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $model->level ;//移动分类下子级最大的等级
+                    $moveLevel = $moveMaxChildrenLevel - $model->level + 1;;    //移动分类等级
+                    if($model->save()){
+                        $model->updateParentPath();     //修改路径
+                        Category::invalidateCache();    //清除缓存
+                        foreach($moveCatChildrens as $moveChildren){
+                            //获取修改子集的Category模型
+                            $childrenModel = Category::findOne($moveChildren['id']);
+                            $childrenModel->updateParentPath(); //修改子集路径
+                            //计算路径中','出现的次数，确定为自身等级
+                            $childrenModel->level = substr_count($childrenModel->path, ',');
+                            $childrenModel->update(false, ['level']);
+                            Category::invalidateCache();    //清除缓存
+                        }
+                    }else{
+                        throw new Exception($model->getErrors());
+                    }
+                    //如果目标分类等级 + 移动分类等级 <= 4，则提交修改移动分类所有子级的path
+                    if($targetLevel + $moveLevel <= 4){
+                        $trans->commit();  //提交事务
+                        Yii::$app->getSession()->setFlash('success','操作成功！');
+                        return $this->redirect(['view', 'id' => $model->id]);
+                    }else{
+                        Yii::$app->getSession()->setFlash('error', '操作失败::分类结构不能超过4级');
+                        return $this->redirect(['update', 'id' => $model->id]);
+                    }
+                }catch (Exception $ex) {
+                    $trans ->rollBack(); //回滚事务
+                    Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+                }
             }
+
+            return $this->render('update', [
+                'model' => $model,
+            ]);
         }
     }
 
@@ -159,56 +192,52 @@ class CategoryController extends GridViewChangeSelfController
     public function actionSaveLevel()
     {
         \Yii::$app->getResponse()->format = 'json';
-        $catId = ArrayHelper::getValue(Yii::$app->request->post(), 'cat_id');   //移动到的目标分类ID
-        $childrenIds = ArrayHelper::getValue(Yii::$app->request->post(), 'children_id');    //需要移动的所有分类ID
+        $targetCatId = ArrayHelper::getValue(Yii::$app->request->post(), 'cat_id');   //移动到的目标分类ID
+        $moveCatIds = ArrayHelper::getValue(Yii::$app->request->post(), 'children_id');    //需要移动的所有分类ID
         
-        $catQuery = Category::getCatById($catId);   //目标分类模型
+        $targetCatQuery = Category::getCatById($targetCatId);   //目标分类模型
         //分割字符串为数组并过滤空值
-        $chil_ids = array_filter(explode(',', $childrenIds));
+        $move_cat_ids = array_filter(explode(',', $moveCatIds));
         //获取移动的分类模型（数组）
-        $chilQuerys = Category::find()->select(['id', 'name', 'parent_id', 'path', 'level'])
-                ->where(['is_show' => 1])->andFilterWhere(['IN', 'id', $chil_ids])
-                ->all();
+        $moveCatQuerys = Category::find()->select(['id', 'name', 'parent_id', 'path', 'level'])
+                ->where(['is_show' => 1])->andFilterWhere(['id' => $move_cat_ids])->all();
         //获取移动的分类的所有等级
-        foreach ($chilQuerys as $chilQuery) {
-            $level[] = $chilQuery->level;
-        }
+        $moveLevels = ArrayHelper::getColumn($moveCatQuerys, 'level');
         //计算移动后的总层级（移动的层级+目标层级）
-        $countLevel = max($level) - min($level) + 1 + $catQuery->level; 
+        $countLevel = max($moveLevels) - min($moveLevels) + 1 + $targetCatQuery->level; 
 
-        if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
-            foreach ($chilQuerys as $chilQuery) {
-                //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
-                if(in_array($chilQuery->parent_id, $chil_ids)){
-                    if($chilQuery->level == 4){     //移动的层级为4时 (移动的分类存在3个层级级一起移动的情况 true)
-                        $parQuery = Category::getCatById($chilQuery->parent_id);
-                        $chilQuery->path = "$catQuery->path" . ",$parQuery->parent_id,$chilQuery->parent_id,$chilQuery->id";
-                    } else {    //移动的层级不为4 （移动的分类存在2个层级一起移动的情况）
-                        $chilQuery->path = "$catQuery->path" . ",$chilQuery->parent_id,$chilQuery->id";
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        { 
+            $is_submit = false;
+            if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
+                foreach ($moveCatQuerys as $moveCatQuery) {
+                    //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
+                    if(!in_array($moveCatQuery->parent_id, $move_cat_ids)){
+                        $moveCatQuery->parent_id = $targetCatId;
                     }
-                    $chilQuery->parent_id = $chilQuery->parent_id;
-                    $chilQuery->level = substr_count($chilQuery->path, ',');
-                } else {        //移动的分类不存多级一起移动的情况
-                    $chilQuery->parent_id = $catId;
-                    $chilQuery->path = "$catQuery->path" . ",$chilQuery->id";
-                    $chilQuery->level = $catQuery->level + 1;
+                    //计算 "," 在字符串中出现的次数,
+                    $moveCatQuery->level = substr_count($moveCatQuery->path, ',');
+                    $moveCatQuery->update(false, ['parent_id', 'level']);
+                    $moveCatQuery->updateParentPath(); //修改子集路径
+                    Category::invalidateCache();    //清除缓存
                 }
-                $chilQuery->update(false, ['parent_id', 'path', 'level']);
+                $is_submit = true;
             }
-            $result = [
-                'code' => 200,
-                'message' => 'success',
-            ];
-            Category::invalidateCache();        //取消缓存
-            Yii::$app->getSession()->setFlash('success', '操作成功！');
-        } else {
-            $result = [
-                'code' => 400,
-                'message' => 'error',
-            ];
-            Yii::$app->getSession()->setFlash('error', '操作失败!移动后的分类层级不能超过4级');
+            if($is_submit){
+                $trans->commit();  //提交事务
+                $result = ['code' => 200, 'message' => 'success'];
+                Yii::$app->getSession()->setFlash('success','操作成功！');
+            }else{
+                $result = ['code' => 400, 'message' => 'error'];
+                Yii::$app->getSession()->setFlash('error', '操作失败::分类结构不能超过4级');
+            }
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
-
+           
         return $result;
     }
 

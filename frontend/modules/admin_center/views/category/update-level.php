@@ -16,7 +16,7 @@ $this->title = '选择要移动到哪个分类';
 ?>
 <div class="update-path main vk-modal">
 
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -40,8 +40,8 @@ $this->title = '选择要移动到哪个分类';
                                 'headerOptions' => ['class' => 'header-css'],
                                 'format' => 'raw',
                                 'value' => function ($model){
-                                    return ' ' . $model->name . 
-                                            Html::input('radio', 'radiobox', $model->id, ['class' => 'radio-value']);
+                                    return ' <label class="radio-label">' . $model->name . 
+                                            Html::input('radio', 'radiobox', $model->id, ['class' => 'radio-value']) .'</label>';
                                 },
                                 'contentOptions' => ['class' => 'content-value'],
                             ],
