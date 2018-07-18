@@ -272,6 +272,20 @@ class UserCategoryController extends GridViewChangeSelfController
     }
     
     /**
+     * 更新表值
+     * @param integer $id
+     * @param string $fieldName
+     * @param integer $value
+     */
+    public function actionChangeValue($id, $fieldName, $value)
+    {
+        
+        UserCategory::invalidateCache();    //清除缓存
+        
+        parent::actionChangeValue($id, $fieldName, $value);
+    }
+
+    /**
      * 基于其主键值查找 UserCategory 模型。
      * 如果找不到模型，将抛出404个HTTP异常。
      * @param string $id
