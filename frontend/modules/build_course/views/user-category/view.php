@@ -42,8 +42,8 @@ $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
                      * 1、分类下所有视频数量为 0
                      * 2、分类下的所有子级分类数量为 0
                      */
-                    $catChildren  = UserCategory::getCatChildren($model->id);
-                    if(count($model->videos) <= 0 && count($catChildren) <= 0){
+                    $catChildrens  = UserCategory::getCatChildren($model->id);
+                    if(count($model->videos) <= 0 && count($catChildrens) <= 0){
                         echo '&nbsp;' . Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
                             'class' => 'btn btn-danger btn-flat',
                             'data' => [

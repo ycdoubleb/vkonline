@@ -187,9 +187,9 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                             ];
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']) . '&nbsp;';
                         },
-                        'delete' => function ($url, $model, $key){
+                        'delete' => function ($url, $model, $key) use($catChildrens){
                             $options = [
-                                'class' => '',
+                                'class' => count($catChildrens[$model->id]) > 0 || count($model->videos) > 0 ? 'disabled' : '',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
