@@ -131,6 +131,40 @@ class OssService extends Component {
         }
         var_dump(__FUNCTION__ . ": completeMultipartUpload OK\n");
     }
+    
+    /**
+     * 获得Object内容
+     *
+     * @param string $bucket bucket名称
+     * @param string $object object名称
+     * @param array $options 该参数中必须设置ALIOSS::OSS_FILE_DOWNLOAD，ALIOSS::OSS_RANGE可选，可以根据实际情况设置；如果不设置，默认会下载全部内容
+     * @return string
+     */
+    public function getObject($bucket, $object, $options = null){
+        return $this->ossClient->getObject($bucket, $object, $options);
+    }
+    
+    /**
+     * 获取输入文件Object
+     *
+     * @param string $object object名称
+     * @param string $options 具体参考SDK文档
+     * @return array
+     */
+    public function getInputObject($object, $options = null) {
+        return $this->getObject(Yii::$app->params['aliyun']['oss']['bucket-input'], $object, $options);
+    }
+
+    /**
+     * 获取输出文件Object
+     *
+     * @param string $object object名称
+     * @param string $options 具体参考SDK文档
+     * @return array
+     */
+    public function getOutputObject($object, $options = null) {
+        return $this->getObject(Yii::$app->params['aliyun']['oss']['bucket-output'], $object, $options);
+    }
 
     /**
      * 获取Object的Meta信息

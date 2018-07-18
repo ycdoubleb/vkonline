@@ -2,6 +2,7 @@
 
 namespace frontend\modules\course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\Category;
 use common\models\vk\CommentPraise;
@@ -58,6 +59,8 @@ class DefaultController extends Controller {
     }
 
     public function actionIndex() {
+        var_dump(Aliyun::getOss()->getInputObjectMeta('ebac30a5ccf50e6568c0cf88060f78eb%2Fc8ed14d56e36d57a1b69786f883f21e3%2F8ae725d0581634002dde70d2966c1885.mp4'));
+        exit;
         //测试视频
         $result = VideoAliyunAction::addVideoTranscode('e347b85a64dd765bf28aa6e958e60363', true);
         exit;

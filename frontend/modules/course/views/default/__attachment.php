@@ -23,7 +23,7 @@ use yii\web\View;
                         <span class="size"><?= Yii::$app->formatter->asShortSize($attchment['size']) ?></span>
                         <i class="glyphicon glyphicon-save"></i>
                     </div>
-                    <a class="btn btn-highlight btn-flat download" href="/webuploader/default/download?file_id=<?= $attchment['id'] ?>" target="_black">
+                    <a class="btn btn-highlight btn-flat download" href="/webuploader/file/download?file_id=<?= $attchment['id'] ?>" target="_black">
                         <i class="glyphicon glyphicon-save"></i>下载</a>
                 </li>
                 <?php endforeach; ?>

@@ -310,8 +310,8 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public static function findIdentityByAccessToken($token, $type = null) {
         $identity = self::find()
-                ->where(['access_token' => $token , 'status' => self::STATUS_ACTIVE ])
-                ->andWhere(['>=','access_token_expire_time',time()])->one();
+                ->where(['access_token' => $token , 'status' => self::STATUS_ACTIVE ])->one();
+                //->andWhere(['>=','access_token_expire_time',time()])->one();
         return $identity;
     }
 
