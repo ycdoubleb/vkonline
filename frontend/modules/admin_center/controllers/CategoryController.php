@@ -126,7 +126,7 @@ class CategoryController extends GridViewChangeSelfController
                 $trans = Yii::$app->db->beginTransaction();
                 try
                 {
-                    $targetLevel = $model->parent_id != 0 ? Category::getCatById($model->parent_id)->level : 1;  //目标分类等级
+                    $targetLevel = Category::getCatById($model->parent_id)->level;  //目标分类等级
                     $moveCatChildrens  = Category::getCatChildren($model->id, false, true);     //移动分类下所有子级
                     $moveChildrenLevel = ArrayHelper::getColumn($moveCatChildrens, 'level');    //所有移动分类下子级的等级
                     $moveMaxChildrenLevel = !empty($moveChildrenLevel) ? max($moveChildrenLevel) : $model->level ;//移动分类下子级最大的等级
@@ -202,55 +202,42 @@ class CategoryController extends GridViewChangeSelfController
         $moveCatQuerys = Category::find()->select(['id', 'name', 'parent_id', 'path', 'level'])
                 ->where(['is_show' => 1])->andFilterWhere(['id' => $move_cat_ids])->all();
         //获取移动的分类的所有等级
-        foreach ($moveCatQuerys as $moveCatQuery) {
-            $level[] = $moveCatQuery->level;
-        }
-        //需要移动的层级
-        $moveLevel = max($level) - min($level) + 1;
+        $moveLevels = ArrayHelper::getColumn($moveCatQuerys, 'level');
         //计算移动后的总层级（移动的层级+目标层级）
-        $countLevel = $moveLevel + $targetCatQuery->level; 
+        $countLevel = max($moveLevels) - min($moveLevels) + 1 + $targetCatQuery->level; 
 
-        if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
-            foreach ($moveCatQuerys as $moveCatQuery) {
-                //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
-                if(in_array($moveCatQuery->parent_id, $move_cat_ids)){
-                    $moveCatQuery->parent_id = $moveCatQuery->parent_id;
-                    //移动的分类存在3个层级一起移动 且 分类的层级为4时
-                    if($moveLevel == 3 && $moveCatQuery->level == 4){
-                        $moveParCatQuery = Category::getCatById($moveCatQuery->parent_id);
-                        $moveCatQuery->path = "$targetCatQuery->path" . ",$moveParCatQuery->parent_id,$moveCatQuery->parent_id,$moveCatQuery->id";
-                        $moveCatQuery->level = 4;
-                    } else {
-                        $moveCatQuery->path = "$targetCatQuery->path" . ",$moveCatQuery->parent_id,$moveCatQuery->id";
-                        //判断移动后分类的总层级 （为4时） 判断移动中分类的总层级 （为3时 层级为3）
-                        $moveCatQuery->level = $countLevel == 4 ? ($moveLevel == 3 ? 3 : 4) : 3;
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        { 
+            $is_submit = false;
+            if($countLevel <= 4){   //移动后的总层级小于等于4才能保存 否则不保存
+                foreach ($moveCatQuerys as $moveCatQuery) {
+                    //移动的分类的父级ID是否存在于需要移动的ID中（存在多级一起移动的情况 true）
+                    if(!in_array($moveCatQuery->parent_id, $move_cat_ids)){
+                        $moveCatQuery->parent_id = $targetCatId;
                     }
-                } else {        //移动的分类不存多级一起移动的情况
-                    $moveCatQuery->parent_id = $targetCatId;
-                    $moveCatQuery->path = "$targetCatQuery->path" . ",$moveCatQuery->id";
-                    $moveCatQuery->level = $targetCatQuery->level + 1;
+                    //计算 "," 在字符串中出现的次数,
+                    $moveCatQuery->level = substr_count($moveCatQuery->path, ',');
+                    $moveCatQuery->update(false, ['parent_id', 'level']);
+                    $moveCatQuery->updateParentPath(); //修改子集路径
+                    Category::invalidateCache();    //清除缓存
                 }
-                $value = [
-                    'parent_id' => $moveCatQuery->parent_id,
-                    'path' => $moveCatQuery->path,
-                    'level' => $moveCatQuery->level,
-                ];
-                Yii::$app->db->createCommand()->update(Category::tableName(), $value, ['id' => $moveCatQuery->id])->execute();
+                $is_submit = true;
             }
-            $result = [
-                'code' => 200,
-                'message' => 'success',
-            ];
-            Category::invalidateCache();        //取消缓存
-            Yii::$app->getSession()->setFlash('success', '操作成功！');
-        } else {
-            $result = [
-                'code' => 400,
-                'message' => 'error',
-            ];
-            Yii::$app->getSession()->setFlash('error', '操作失败::分类结构不能超过4级');
+            if($is_submit){
+                $trans->commit();  //提交事务
+                $result = ['code' => 200, 'message' => 'success'];
+                Yii::$app->getSession()->setFlash('success','操作成功！');
+            }else{
+                $result = ['code' => 400, 'message' => 'error'];
+                Yii::$app->getSession()->setFlash('error', '操作失败::分类结构不能超过4级');
+            }
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
-
+           
         return $result;
     }
 
