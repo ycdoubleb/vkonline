@@ -66,6 +66,8 @@ class UserCategorySearch extends UserCategory
     
         $query->orderBy(['path' => SORT_ASC]);
         
+        $query->with('videos');
+        
         return $dataProvider;
     }
 }

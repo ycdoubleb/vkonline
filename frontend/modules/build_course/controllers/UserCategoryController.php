@@ -49,9 +49,16 @@ class UserCategoryController extends GridViewChangeSelfController
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $catIds = ArrayHelper::getColumn($dataProvider->models, 'id');
+        $catChildrens = [];
+        foreach ($catIds as $id) {
+            $catChildrens[$id] = ArrayHelper::index(UserCategory::getCatChildren($id), 'id');
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'catChildrens' => $catChildrens,
         ]);
     }
 
@@ -174,8 +181,21 @@ class UserCategoryController extends GridViewChangeSelfController
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        
+        if($model->created_by == \Yii::$app->user->id){
+            $catChildrens  = UserCategory::getCatChildren($model->id);
+            if(count($catChildrens) > 0 || count($model->videos) > 0){
+                Yii::$app->getSession()->setFlash('error', '操作失败::该目录存在子目录或存在视频。');
+            }else{
+                $model->delete();
+                UserCategory::invalidateCache();    //清除缓存
+                Yii::$app->getSession()->setFlash('success','操作成功！');
+            }
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         return $this->redirect(['index']);
     }
 
@@ -251,6 +271,20 @@ class UserCategoryController extends GridViewChangeSelfController
         ];
     }
     
+    /**
+     * 更新表值
+     * @param integer $id
+     * @param string $fieldName
+     * @param integer $value
+     */
+    public function actionChangeValue($id, $fieldName, $value)
+    {
+        
+        UserCategory::invalidateCache();    //清除缓存
+        
+        parent::actionChangeValue($id, $fieldName, $value);
+    }
+
     /**
      * 基于其主键值查找 UserCategory 模型。
      * 如果找不到模型，将抛出404个HTTP异常。
