@@ -223,7 +223,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
          * 初始化树状网格插件
          */
         $('.table').treegrid({
-            //initialState: 'collapsed',
+            initialState: 'collapsed',
         });
         //单击移动目录
         $("#arrange").click(function(){

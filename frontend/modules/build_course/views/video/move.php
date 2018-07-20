@@ -67,7 +67,7 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-       //initialState: 'collapsed',
+        initialState: 'collapsed',
     });        
             
     //移动视频到指定目录

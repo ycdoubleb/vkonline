@@ -75,7 +75,7 @@ $js=
     //统计选中效果
     $(".vk-tabs > ul > li[id=$filterChart]").addClass('active');
     //饼图统计结果显示
-    var categoryChart = new ccoacharts.PicChart({title:"",itemLabelFormatter:'{b} ( {c} 门) {d}%',tooltipFormatter:'{a} <br/>{b} : {c}门 ({d}%)'},document.getElementById('chartCanvas'),$results);
+    var categoryChart = new ccoacharts.PicChart({title:"",itemLabelFormatter:'{b} ( {c} 个) {d}%',tooltipFormatter:'{a} <br/>{b} : {c}门 ({d}%)'},document.getElementById('chartCanvas'),$results);
         
 JS;
     $this->registerJs($js,  View::POS_READY);
