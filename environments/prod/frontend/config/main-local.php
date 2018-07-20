@@ -31,6 +31,10 @@ return [
         'admin_center' => [
             'class' => 'frontend\modules\admin_center\Module',
         ],
+        //个人中心
+        'user' => [
+            'class' => 'frontend\modules\user\Module',
+        ],
         //帮助中心
         'help_center' => [
             'class' => 'frontend\modules\help_center\Module',

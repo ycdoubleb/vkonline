@@ -4,11 +4,14 @@ use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
+
+$name = urlencode('何阳超');
 ?>
 
 <div class="test-default-index">
     <?= Html::a('清除所有文件', Url::to(['default/clear-file']) ,['class' => 'btn btn-default']) ?>
     <?= Html::a('清除所有分片', Url::to(['default/clear-chunk']) ,['class' => 'btn btn-default']) ?>
+    <?= Html::a('打开CourseMarke', Url::to("CourseMaker.Mconline://1cf3a6b67d44d1bf5785147014894ce8/EUvZcoIlx6XpegFyfbty1K9xyMulT9T0/$name"), ['class' => 'btn btn-default']) ?>
     <h3>已上传文件</h3>
     <div>
         <?=
