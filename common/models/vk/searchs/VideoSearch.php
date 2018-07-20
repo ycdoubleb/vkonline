@@ -91,12 +91,19 @@ class VideoSearch extends Video
         
         self::getInstance();
         $this->load($params);
-        //获取分类的子级ID    
-        $categoryId = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
+        if(!empty($this->user_cat_id)){
+            //获取分类的子级ID    
+            $categoryId = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
+            self::$query->andFilterWhere([
+                'Video.user_cat_id' => !empty($categoryId) ? 
+                     ArrayHelper::merge([$this->user_cat_id], $categoryId) : $this->user_cat_id,
+            ]);
+        }else{
+            self::$query->andFilterWhere(['Video.user_cat_id' => 0]);
+        }
+        
         //条件查询
         self::$query->andFilterWhere([
-            'Video.user_cat_id' => !empty($categoryId) ? 
-                ArrayHelper::merge([$this->user_cat_id], $categoryId) : $this->user_cat_id,
             'Video.teacher_id' => $this->teacher_id,
             'Video.level' => $this->level,
             'Video.created_by' => \Yii::$app->user->id,

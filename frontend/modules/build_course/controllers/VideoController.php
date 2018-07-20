@@ -115,11 +115,11 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         $searchModel = new VideoSearch();
-        
+
         return $this->render('view', [
             'model' => $model,  //video模型
             'dataProvider' => $searchModel->relationSearch($model->id),    //相关课程数据
-            'path' => $this->getCategoryFullPath($model->user_cat_id),  //所属目录全路径
+            'path' => !empty($model->user_cat_id) ? $this->getCategoryFullPath($model->user_cat_id) : '',  //所属目录全路径
             'watermarksFiles' => $this->getCustomerWatermark(explode(',', $model->mts_watermark_ids)),    //客户下已启用的水印
         ]);
     }

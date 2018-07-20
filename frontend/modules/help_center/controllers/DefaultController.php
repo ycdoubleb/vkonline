@@ -225,11 +225,12 @@ class DefaultController extends Controller
     public function getPostContents($categoryId) 
     {
         $postContents = (new Query())
-                    ->from(['Post' => Post::tableName()])
-                    ->where([
-                        'is_show' => true,
-                        'category_id' => $categoryId,
-                    ])->all();
+            ->from(['Post' => Post::tableName()])
+            ->where([
+                'is_show' => true,
+                'category_id' => $categoryId,
+            ])
+            ->orderBy(['sort_order' => SORT_ASC])->all();
         
         return $postContents;
     }
