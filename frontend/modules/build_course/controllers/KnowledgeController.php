@@ -167,7 +167,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] !== Video::MTS_STATUS_YES ? 'disabled' : '';
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -214,7 +214,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] !== Video::MTS_STATUS_YES ? 'disabled' : '';
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -261,7 +261,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] !== Video::MTS_STATUS_YES ? 'disabled' : '';
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -305,7 +305,7 @@ class KnowledgeController extends Controller
             Yii::$app->getResponse()->format = 'json';
             try
             { 
-                if($results['mts_status'] == Video::MTS_STATUS_YES){
+                if($results[0]['mts_status'] == Video::MTS_STATUS_YES){
                     return [
                         'code'=> 200,
                         'data' => [
@@ -316,7 +316,7 @@ class KnowledgeController extends Controller
                 }else{
                     return [
                         'code'=> 404,
-                        'data' => $results['mts_status'],
+                        'data' => $results[0]['mts_status'],
                         'message' => '请求失败::引用的视频必须为已转码。' ,
                     ];
                 }
