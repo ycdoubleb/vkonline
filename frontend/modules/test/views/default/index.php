@@ -5,7 +5,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-$name = urlencode('何阳超');
+$name =  urlencode('何阳超');
 ?>
 
 <div class="test-default-index">
