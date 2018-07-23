@@ -132,11 +132,12 @@ a.desc:after {
 .nav li .customer-box{
     background-color: #ccc;
     border-bottom: 2px solid #ccc;
-    margin: -6px 0 0;
+    margin: -5px 0 0;
     -webkit-transition: all 0.2s linear;
     -o-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
     transition: all 0.2s linear;
+    width: 128px;
 }
 .nav li .customer-box:hover,
 .nav li.active .customer-box{
@@ -146,7 +147,9 @@ a.desc:after {
 /* 课工坊 */
 .nav li .m_name{
     background-color: #f8f8f8;
-    padding: 4px 5px 3px;
+    padding: 3px 5px 1px;
+    position: absolute;
+    width: 58px;
 }
 .nav li .m_name:hover,active{
     
