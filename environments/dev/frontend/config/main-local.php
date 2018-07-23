@@ -56,6 +56,10 @@ $config = [
         'api' => [
             'class' => 'frontend\modules\api\Module',
         ],
+        //
+        'test' => [
+            'class' => 'frontend\modules\test\Module',
+        ],
     ],
     'as access' => [
         'allowActions' => [

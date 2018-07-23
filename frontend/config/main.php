@@ -60,6 +60,7 @@ return [
             'other/*',
             'callback/*',
             'api/*',
+            'test/*',
         ]
     ],
     'params' => $params,

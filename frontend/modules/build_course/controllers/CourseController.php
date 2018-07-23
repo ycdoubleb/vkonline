@@ -122,7 +122,7 @@ class CourseController extends Controller
             'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),  //所有课程操作记录
             'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
             'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id), //该课程下的所有操作记录
-            'path' => $this->getCategoryFullPath($model->category_id),  //分类全路径
+            'path' => !empty($model->category_id) ? $this->getCategoryFullPath($model->category_id) : '',  //分类全路径
             'haveAllPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id),  //只有全部权限
             'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id, true), //包含编辑权限
         ]);

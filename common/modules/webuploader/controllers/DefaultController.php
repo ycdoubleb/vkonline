@@ -5,7 +5,6 @@ namespace common\modules\webuploader\controllers;
 use common\core\BaseApiController;
 use common\modules\webuploader\actions\CheckChunkAction;
 use common\modules\webuploader\actions\CheckFileAction;
-use common\modules\webuploader\actions\DownloadAction;
 use common\modules\webuploader\actions\MergeChunksAction;
 use common\modules\webuploader\actions\UploadAction;
 use common\modules\webuploader\actions\UploadLinkAction;
@@ -22,7 +21,6 @@ class DefaultController extends BaseApiController {
             'upload' => ['class' => UploadAction::class],
             'merge-chunks' => ['class' => MergeChunksAction::class],
             'check-chunk' => ['class' => CheckChunkAction::class],
-            'download' => ['class' => DownloadAction::class],
         ]);
     }
 }

@@ -2,9 +2,13 @@
 
 namespace common\modules\webuploader\actions;
 
+use common\components\aliyuncs\Aliyun;
 use common\modules\webuploader\models\Uploadfile;
 use Exception;
+use OSS\OssClient;
 use Yii;
+use yii\base\Action;
+use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -12,9 +16,11 @@ use yii\web\NotFoundHttpException;
  *
  * @author Administrator
  */
-class DownloadAction {
+class DownloadAction extends Action{
 
     public function run() {
+        
+        $file_id = ArrayHelper::getValue(Yii::$app->request->getQueryParams(), 'file_id', '');
         /* @var $file Uploadfile */
         $file = Uploadfile::findOne(['id' => $file_id, 'is_del' => 0]);
         if ($file) {
@@ -22,8 +28,13 @@ class DownloadAction {
             //保存
             $file->save();
             try {
-                //$this->download($file->path, $file->name,true);
-                Yii::$app->getResponse()->sendFile($file->path, $file->name);
+                
+//                Yii::$app->getResponse()->sendContentAsFile(Aliyun::getOss()->getInputObject($file->oss_key, [
+//                    OssClient::OSS_RANGE => Yii::$app->getRequest()->getHeaders()->get('range'),
+//                    OssClient::OSS_FILE_DOWNLOAD => 'aaaaaaaaaa.mp4',
+//                ]), $file->name );
+                //Yii::$app->getResponse()->sendFile($file->path, $file->name);
+                return $this->controller->redirect(Aliyun::absoluteInputPath($file->oss_key));
             } catch (Exception $ex) {
                 throw new NotFoundHttpException($ex->getMessage());
             }

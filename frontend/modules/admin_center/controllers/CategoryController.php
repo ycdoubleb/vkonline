@@ -76,7 +76,7 @@ class CategoryController extends GridViewChangeSelfController
         return $this->render('view', [
             'model' => $model,
             'dataProvider' => $dataProvider,
-            'path' => $this->getCategoryFullPath($model->id),
+            'path' => !empty($model->id) ? $this->getCategoryFullPath($model->id) : '',
         ]);
     }
 

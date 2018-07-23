@@ -217,7 +217,7 @@ $js = <<<JS
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-        //initialState: 'collapsed',
+        initialState: 'collapsed',
     });
 
     //点击更新层级

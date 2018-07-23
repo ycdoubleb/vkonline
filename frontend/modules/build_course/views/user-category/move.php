@@ -72,7 +72,7 @@ $this->title = '选择移动到哪个目录';
      * 初始化树状网格插件
      */
     $('.table').treegrid({
-//       initialState: 'collapsed',   //默认折叠
+        initialState: 'collapsed',   //默认折叠
     });        
             
     //移动视频到指定目录

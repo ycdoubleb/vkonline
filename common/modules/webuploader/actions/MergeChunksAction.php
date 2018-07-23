@@ -141,10 +141,11 @@ class MergeChunksAction extends Action {
                     //删除数据库分片数据记录
                     Yii::$app->db->createCommand()->delete(UploadfileChunk::tableName(), ['file_id' => $fileMd5])->execute();
                     //上传到OSS
+                    /*
                     $result = $dbFile->uploadOSS();
                     if(!$result['success']){
                         return new UploadResponse(UploadResponse::CODE_UPLOAD_OSS_FAIL, null, $result['msg']);
-                    }
+                    }*/
                     
                     // Return Success JSON-RPC response
                     return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
