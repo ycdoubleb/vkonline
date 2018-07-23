@@ -167,6 +167,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -213,6 +214,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -259,6 +261,7 @@ class KnowledgeController extends Controller
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -302,13 +305,21 @@ class KnowledgeController extends Controller
             Yii::$app->getResponse()->format = 'json';
             try
             { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $results, 
-                    ],
-                    'message' => '请求成功！',
-                ];
+                if($results[0]['mts_status'] == Video::MTS_STATUS_YES){
+                    return [
+                        'code'=> 200,
+                        'data' => [
+                            'result' => $results, 
+                        ],
+                        'message' => '请求成功！',
+                    ];
+                }else{
+                    return [
+                        'code'=> 404,
+                        'data' => Video::$mtsStatusName[$results[0]['mts_status']],
+                        'message' => '请求失败::引用的视频必须为已转码。' ,
+                    ];
+                }
             }catch (Exception $ex) {
                 return [
                     'code'=> 404,
@@ -350,7 +361,8 @@ class KnowledgeController extends Controller
         $tagRefQuery = TagRef::getTagsByObjectId($copyVideo, 2, false);
         $tagRefQuery->addSelect(["GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR '、') AS tags"]);
         $query->addSelect([
-            'Video.name', 'Video.img', 'Video.duration', 'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Video.name', 'Video.img', 'Video.duration', 'Video.des', 
+            'Video.created_at', 'Video.is_publish', 'Video.level', 'Video.mts_status',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ]);
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
