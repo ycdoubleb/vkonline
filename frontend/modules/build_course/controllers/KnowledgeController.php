@@ -316,7 +316,7 @@ class KnowledgeController extends Controller
                 }else{
                     return [
                         'code'=> 404,
-                        'data' => $results[0]['mts_status'],
+                        'data' => Video::$mtsStatusName[$results[0]['mts_status']],
                         'message' => '请求失败::引用的视频必须为已转码。' ,
                     ];
                 }
