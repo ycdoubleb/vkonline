@@ -62,7 +62,7 @@ class VideoAliyunAction {
                 'created_by' => $source_file->created_by,
             ];
             //获取已完成转码文件等级
-            $hasDoneLevels = AliyunMtsService::getFinishLevel($video->id);
+            $hasDoneLevels = [];//AliyunMtsService::getFinishLevel($video->id);
             if(count($hasDoneLevels) >= 4){
                 //4种格式都已完成
                 self::integrateVideoTrancode($video->id, $force);

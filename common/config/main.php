@@ -38,6 +38,21 @@ return [
             ]
         ],
     ],
+    'modules' => [
+        //上传组件
+        'webuploader' => [
+            'class' => 'common\modules\webuploader\Module',
+        ],
+        //百度富文本编辑
+        'ueditor' => [
+            'class' => 'common\modules\ueditor\Module',
+        ],
+        //日期控制组件
+        'datecontrol' =>  [
+            'class' => '\kartik\datecontrol\Module',
+        ],
+    ],
+    
     'as access' => [
         'class' => 'common\modules\rbac\components\AccessControl',
         'allowActions' => [

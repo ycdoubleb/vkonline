@@ -148,7 +148,7 @@ class Uploadfile extends ActiveRecord {
             }
 
             //设置文件名
-            $object_key = "{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
+            $object_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
         }else{
             $object_key = $key;
         }
