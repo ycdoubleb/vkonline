@@ -22,4 +22,9 @@ return [
     'modules' => [
        
     ],
+    'as access' => [
+        'allowActions' => [
+            'debug/*',
+        ]
+    ],
 ];
