@@ -162,11 +162,14 @@ $menuItems = [
 //        ]
     ]
 ];
+$id = Yii::$app->user->id;
+$token = Yii::$app->user->identity->access_token;
+$name = urlencode(Yii::$app->user->identity->nickname);
 //制作工具
 $toolItems = [
     [
         'label' => null,
-        'url' => 'CourseMaker.Mconline://open',
+        'url' => "CourseMaker.Mconline://{$id}/{$token}/{$name}",
         'icons' => '<i class="icon bs-icon"></i>', 
         'options' => ['class' => 'links']
     ],
