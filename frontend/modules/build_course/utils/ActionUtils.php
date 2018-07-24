@@ -736,7 +736,7 @@ class ActionUtils
     {
         $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
         $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
-        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids'));    //水印id
+        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids', []));    //水印id
         $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($fileId);
