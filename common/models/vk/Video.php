@@ -143,7 +143,7 @@ class Video extends ActiveRecord {
             ['id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
             self::SCENARIO_DEFAULT =>
             ['id', 'teacher_id', 'customer_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
-                'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
+                'des', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
         ];
     }
 
@@ -223,7 +223,7 @@ class Video extends ActiveRecord {
                 $this->img = $this->getOldAttribute('img');
             }
             $this->des = Html::encode($this->des);
-
+            
             return true;
         }
 
