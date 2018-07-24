@@ -8,6 +8,6 @@
     </div>
     <div class="list-body">
         <span class="title single-clamp pull-left">{%name%}</span>
-        <a class="btn btn-primary btn-sm choice pull-right" href="../knowledge/choice?video_id={%id%}" onclick="clickChoiceEvent($(this)); return false;">选择</a>
+        <a class="btn btn-primary btn-sm {%is_disabled%} choice pull-right" href="../knowledge/choice?video_id={%id%}" onclick="clickChoiceEvent($(this)); return false;">选择</a>
     </div>
 </li>

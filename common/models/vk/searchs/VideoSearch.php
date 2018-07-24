@@ -113,7 +113,8 @@ class VideoSearch extends Video
         
         //添加字段
         $addArrays = [
-            'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 'Video.is_publish', 'Video.level',
+            'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 
+            'Video.is_publish', 'Video.level', 'Video.mts_status', 
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
@@ -142,7 +143,7 @@ class VideoSearch extends Video
         }
         //添加字段
         $addArrays = [
-            'Video.duration', 'Video.img'
+            'Video.duration', 'Video.img', 'Video.mts_status'
         ];
         
         return $this->backendSearch($params, $addArrays);
