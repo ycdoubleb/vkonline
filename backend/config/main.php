@@ -9,7 +9,6 @@ return [
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
-    'modules' => [],
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
@@ -41,6 +40,29 @@ return [
             'showScriptName' => false,
             'rules' => [
             ],
+        ],
+    ],
+    'modules' => [
+        //权限控制
+        'rbac' => [
+            'class' => 'common\modules\rbac\Module',
+        ],
+        
+        //权限控制
+        'user_admin' => [
+            'class' => 'backend\modules\user_admin\Module',
+        ],
+        //系统管理
+        'system_admin' => [
+            'class' => 'backend\modules\system_admin\Module',
+        ],
+        //帮助中心管理
+        'helpcenter_admin' => [
+            'class' => 'backend\modules\helpcenter_admin\Module',
+        ],
+        //前台管理
+        'frontend_admin' => [
+            'class' => 'backend\modules\frontend_admin\Module',
         ],
     ],
     'params' => $params,

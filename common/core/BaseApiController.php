@@ -13,7 +13,6 @@ use Yii;
 use yii\base\Controller;
 use yii\base\ErrorException;
 use yii\base\Event;
-use yii\base\Object;
 use yii\base\UserException;
 use yii\db\Exception as Exception2;
 use yii\web\ForbiddenHttpException;
