@@ -692,7 +692,15 @@ class ActionUtils
         //如果上传的视频文件已经被使用过, 则返回使用者的信息
         $userInfo = $this->getUploadVideoFileUserInfo($fileId);
         if($userInfo['results']){
-            throw new NotFoundHttpException($userInfo['message']);
+            throw new NotFoundHttpException(
+                "{$userInfo['message']}\n\r"
+                . "以下是该视频文件著作者的信息：\n\r"
+                . "著作者：{$userInfo['data']['nickname']}\n\r"
+                . "手机号：{$userInfo['data']['phone']}\n\r"
+                . "视频id：{$userInfo['data']['video_id']}\n\r"
+                . "视频名：{$userInfo['data']['video_name']}\n\r"
+                . "文件名：{$userInfo['data']['file_name']}"
+            );
         }
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($fileId);
@@ -755,7 +763,15 @@ class ActionUtils
                     //如果上传的视频文件已经被使用过, 则返回使用者的信息
                     $userInfo = $this->getUploadVideoFileUserInfo($fileId);
                     if($userInfo['results']){
-                        throw new NotFoundHttpException($userInfo['message']);
+                        throw new NotFoundHttpException(
+                            "{$userInfo['message']}\n\r"
+                            . "以下是该视频文件著作者的信息：\n\r"
+                            . "著作者：{$userInfo['data']['nickname']}\n\r"
+                            . "手机号：{$userInfo['data']['phone']}\n\r"
+                            . "视频id：{$userInfo['data']['video_id']}\n\r"
+                            . "视频名：{$userInfo['data']['video_name']}\n\r"
+                            . "文件名：{$userInfo['data']['file_name']}"
+                        );
                     }
                     $model->mts_status = Video::MTS_STATUS_NO;
                     $videoFile->file_id = $fileId;
@@ -1266,12 +1282,16 @@ class ActionUtils
     {
         //查询视频关联实体文件
         $videoFile = (new Query())->select([
-            'VideoFile.video_id', 'VideoFile.file_id', 'User.nickname', 'User.sex', 'User.phone', 'User.email'
+            'VideoFile.video_id', 'VideoFile.file_id', 
+            'Video.name AS video_name', 'Uploadfile.name AS file_name',
+            'User.nickname', 'User.sex', 'User.phone', 'User.email'
         ])->from(['VideoFile' => VideoFile::tableName()]);
         //查询视频
         $videoFile->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoFile.video_id AND Video.is_del = 0)');
         //查询用户
         $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        //查询文件
+        $videoFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = VideoFile.file_id AND Uploadfile.is_del = 0)');
         //条件
         $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.is_del' => 0, 'VideoFile.file_id' => $fileId]);
         //结果
