@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Video;
 use common\models\vk\VisitLog;
 use common\utils\StringUtil;
@@ -36,7 +37,7 @@ $shareLink = Url::to([
         ]) ?>
     </div>
     <div class="player">
-        <video id="myVideo" src="<?= StringUtil::completeFilePath($model['path']) ?>" controls autoplay poster="<?= StringUtil::completeFilePath($model['img']) ?>" width="100%" height="500"></video>
+        <video id="myVideo" src="<?= Aliyun::absolutePath($model['path']) ?>" controls autoplay poster="<?= Aliyun::absolutePath($model['img']) ?>" width="100%" height="500"></video>
         <?= $this->render('_node', ['nodes' => $nodes, 'params' => $params]) ?>
     </div>
     <div class="operation">
@@ -261,7 +262,7 @@ JS;
      */
     function initShare(){
         //添加分享图片到第一位置，以便在微信分享时可以被微信捕捉到作为分享缩略图
-        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= StringUtil::completeFilePath($model['img']) ?>"></div>');
+        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= Aliyun::absolutePath($model['img']) ?>"></div>');
         //设置二维码容器大小
         $('.share-panel .wx-qrcode').attr({width:150,height:150});
         //初始微信二维码

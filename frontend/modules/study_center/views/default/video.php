@@ -34,7 +34,7 @@ GrowlAsset::register($this);
                         <?php if(empty($model['img'])): ?>
                         <div class="title"><?= $model['name'] ?></div>
                         <?php else: ?>
-                        <img src="<?= StringUtil::completeFilePath($model['img']) ?>" width="100%" height="100%" />
+                        <img src="<?= $model['img'] ?>" width="100%" height="100%" />
                         <?php endif; ?>
                     </a>
                     <div class="duration"><?= DateUtil::intToTime($model['duration']) ?></div>
@@ -126,7 +126,7 @@ $js =
                             id: data['result'][i].video_id,
                             isExist: data['result'][i].img == null || data['result'][i].img == '' ? 
                                 '<div class="title">' + video_name + '</div>' : 
-                                '<img src="' + Wskeee.StringUtil.completeFilePath(data['result'][i].img) + '" width="100%" height="100%" />',
+                                '<img src="' + data['result'][i].img + '" width="100%" height="100%" />',
                             name: data['result'][i].name,
                             duration: Wskeee.DateUtil.intToTime(data['result'][i].duration),
                             tags: data['result'][i].tags != undefined ? data['result'][i].tags : 'null',

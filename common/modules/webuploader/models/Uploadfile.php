@@ -160,6 +160,8 @@ class Uploadfile extends ActiveRecord {
             $this->oss_key = $object_key;
 
             $this->save(false, ['oss_upload_status', 'oss_key']);
+            //删除本地文件
+            @unlink($this->path);
             return ['success' => true];
         } catch (OssException $ex) {
             return ['success' => false, 'msg' => $ex->getMessage()];

@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\utils\StringUtil;
@@ -9,6 +10,7 @@ use common\widgets\ueditor\UeditorAsset;
 use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\growl\GrowlAsset;
+use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -90,6 +92,29 @@ $this->registerJs($format, View::POS_HEAD);
             'style' => 'width: 150px; display: inline-block;',
         ],
     ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')]) . '：') ?>
+    
+    
+    <!--封面-->
+    <?= $form->field($model, 'img')->widget(FileInput::class, [
+            'options' => [
+                'accept' => 'image/*',
+                'multiple' => false,
+            ],
+            'pluginOptions' => [
+                'resizeImages' => true,
+                'showCaption' => false,
+                'showRemove' => false,
+                'showUpload' => false,
+                'browseClass' => 'btn btn-primary btn-block',
+                'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+                'browseLabel' => '选择图片...',
+                'initialPreview' => [
+                    Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
+                ],
+                'overwriteInitial' => true,
+            ],
+        ]); ?>
+    
     
     <!--主讲老师-->
     <?php

@@ -45,7 +45,7 @@ class Aliyun extends Component {
      * 
      * @param string $path  
      */
-    public static function absoluteOutputPath($path) {
+    private static function absoluteOutputPath($path) {
         if (strpos($path, 'http://') === false) {
             $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-output'] . "/$path";
         }
@@ -58,7 +58,20 @@ class Aliyun extends Component {
      * @param string $path
      * @return string
      */
-    public static function absoluteInputPath($path) {
+    private static function absoluteInputPath($path) {
+        if (strpos($path, 'http://') === false) {
+            $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-input'] . "/$path";
+        }
+        return $path;
+    }
+    
+    /**
+     * 获取阿里绝经路径，适用视频原始路径
+     * 
+     * @param string $path
+     * @return string
+     */
+    public static function absolutePath($path) {
         if (strpos($path, 'http://') === false) {
             $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-input'] . "/$path";
         }

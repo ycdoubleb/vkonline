@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
 use FFMpeg\Media\Video;
@@ -22,7 +23,7 @@ VideoInfoAssets::register($this);
         <span class="title-name"><?= $model['name'] ?></span>
     </div>
     <div class="player">
-        <video id="myVideo" src="<?= StringUtil::completeFilePath($model['path']) ?>" controls poster="<?= StringUtil::completeFilePath($model['img']) ?>" width="100%" height="500"></video>
+        <video id="myVideo" src="<?= Aliyun::absolutePath($model['path']) ?>" controls poster="<?= Aliyun::absolutePath($model['img']) ?>" width="100%" height="500"></video>
     </div>
     
     <div class="left-box">
