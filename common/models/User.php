@@ -3,8 +3,9 @@
 namespace common\models;
 
 use common\models\vk\Customer;
+use common\utils\SecurityUtil;
+use linslin\yii2\curl\Curl;
 use Yii;
-use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
@@ -284,6 +285,28 @@ class User extends ActiveRecord implements IdentityInterface {
         }
         return false;
     }
+    /**
+     * 保存完成
+     * @param bool $insert                  是否为插入数据
+     * @param array $changedAttributes      更改的字段
+     */
+    public function afterSave($insert, $changedAttributes) {
+        //保存后同步到 res.studying8.com 站点
+        $url = Yii::$app->params['res']['host'] . Yii::$app->params['res']['synchronization_user_action'];
+        $curl = new Curl();
+        $curl->setPostParams([
+            'encrypt' => SecurityUtil::encryption(['User' => $this->toArray(['id', 'username', 'nickname', 'password_hash', "sex", "phone", "email", "avatar", "status", "des"])]),
+        ]);
+
+        $response = $curl->post($url, false);
+        if ($response['success'] && $response['data']['code'] == "0") {
+            Yii::info("同步用户 {$this->id} 成功！",__FUNCTION__);
+        } else {
+            Yii::info("同步用户 {$this->id} 失败！\n原因：{$response['data']['msg']}",__FUNCTION__);
+        }
+        
+        parent::afterSave($insert, $changedAttributes);
+    }
     
     /**
      * 检查目标路径是否存在，不存即创建目标
@@ -409,8 +432,11 @@ class User extends ActiveRecord implements IdentityInterface {
     /**
      * 生成访问令牌
      */
-    public function generateAccessToken() {
-        $this->access_token = Yii::$app->security->generateRandomString();
+    public function generateAccessToken($new_force = false) {
+        /* 强制或者过期 */
+        if ($new_force || $this->access_token == "" || (time() - $this->access_token_expire_time > Yii::$app->params['user.passwordAccessTokenExpire'])) {
+            $this->access_token = Yii::$app->security->generateRandomString();
+        }
         $this->access_token_expire_time = time() + Yii::$app->params['user.passwordAccessTokenExpire'];
     }
 
