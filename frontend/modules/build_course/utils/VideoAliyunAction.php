@@ -270,6 +270,9 @@ class VideoAliyunAction {
                 $tran->rollBack();
                 Yii::error("外链转码关系失败：{$ex->getMessage()}", __FUNCTION__);
             }
+        }else{
+            //更改 Video 转码状态
+            Yii::$app->db->createCommand()->update(Video::tableName(), ['mts_status' => Video::MTS_STATUS_YES], ['id' => $video->id])->execute();
         }
     }
 

@@ -34,7 +34,7 @@ class DownloadAction extends Action{
 //                    OssClient::OSS_FILE_DOWNLOAD => 'aaaaaaaaaa.mp4',
 //                ]), $file->name );
                 //Yii::$app->getResponse()->sendFile($file->path, $file->name);
-                return $this->controller->redirect(Aliyun::absoluteInputPath($file->oss_key));
+                return $this->controller->redirect(Aliyun::absolutePath($file->oss_key));
             } catch (Exception $ex) {
                 throw new NotFoundHttpException($ex->getMessage());
             }

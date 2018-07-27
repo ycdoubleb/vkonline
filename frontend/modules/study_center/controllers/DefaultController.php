@@ -2,6 +2,7 @@
 
 namespace frontend\modules\study_center\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
@@ -181,6 +182,10 @@ class DefaultController extends Controller
     {
         $searchModel = new VideoFavoriteSearch();
         $results = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        
+        foreach($results['data']['video'] as &$video){
+            $video['img'] = Aliyun::absolutePath($video['img']);
+        }
         
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($results['data']['video']),

@@ -2,19 +2,17 @@
 
 namespace common\models\vk;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\models\vk\VideoFile;
-use common\modules\webuploader\models\Uploadfile;
-use common\utils\StringUtil;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use yii\db\Query;
 use yii\helpers\Html;
 use yii\web\UploadedFile;
 
@@ -210,13 +208,13 @@ class Video extends ActiveRecord {
             }
             $upload = UploadedFile::getInstance($this, 'img');
             if ($upload != null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
                 //获取后缀名，默认为 jpg 
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/video/screenshots/'));
-                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
-                $this->img = '/upload/video/screenshots/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $user = Yii::$app->user->identity;
+                $img_path = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->img = $img_path;
             }
             //都没做修改的情况下保存旧数据
             if (trim($this->img) == '') {

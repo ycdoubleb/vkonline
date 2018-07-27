@@ -16,7 +16,7 @@
         <div class="tuip single-clamp">
             <span>已完成 {%percent%}%</span>
             <div class="progress">
-                <div class="progress-bar" style="width: {%percent%}%;"></div>
+                <div class="progress-bar" style="width:{%percent%}%;"></div>
             </div>
             <span class="font-success">上次观看至&nbsp;
                 {%nodeName%}-{%knowledgeName%}&nbsp;{%data%}

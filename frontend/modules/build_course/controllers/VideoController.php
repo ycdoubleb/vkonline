@@ -2,6 +2,7 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CustomerWatermark;
@@ -67,7 +68,7 @@ class VideoController extends Controller
         $videos = array_values($results['data']['video']);    //视频数据
         //重修课程数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
             $videos[$index]['des'] = Html::decode($item['des']);
             $videos[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);

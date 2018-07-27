@@ -34,7 +34,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
             <div class="btngroup pull-right">
                 <?php
                     echo Html::a(Yii::t('app', 'Add'),  ['create'], [
-                        'class' => 'btn btn-success btn-flat', 'target' => '_blank'
+                        'class' => 'btn btn-success btn-flat'
                     ]) . '&nbsp;';
                     echo Html::a(Yii::t('app', '{Move}{Catalog}', [
                         'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')

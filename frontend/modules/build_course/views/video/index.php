@@ -70,7 +70,7 @@ $this->registerJs($format, View::POS_HEAD);
                     ]), ['create'], ['class' => 'btn btn-success btn-flat']) . '&nbsp;';
                 echo Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
-                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat', 'target' => '_blank']) . '&nbsp;';
+                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']) . '&nbsp;';
                 echo Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
                     'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
                 ]);

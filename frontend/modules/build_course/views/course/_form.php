@@ -179,11 +179,6 @@ $this->registerJs($format, View::POS_HEAD);
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
     
-    <!--描述-->
-    <?= $form->field($model, 'des', [
-        'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
-    ])->textarea(['value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 6, 'placeholder' => '请输入...']) ?>
-    
     <!--课程资源-->
     <div class="form-group field-courseattachment-file_id">
         <?= Html::label(Yii::t('app', '{Course}{Resources}', [

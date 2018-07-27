@@ -53,5 +53,15 @@ return [
             'BINGDING_PHONE' => '59f8a2537f00000131eb494e9101a537',    //注册绑定手机号码/密码登录短信模板ID
             'RESET_PASSWORD' => '59f9202d7f0000017d6283032c3f6631',    //重置密码短信模板ID
         ]
+    ],
+    
+    /* 加密安全认证 */
+    'secret_auth' =>[
+        //密钥 认证数据完整性
+        'secret' => 'studying8_youxueba',
+        //加密数据密钥
+        'key' => 'studying8_youxueba_content',
+        //起时检测
+        'timeout' => 60 * 10,
     ]
 ];

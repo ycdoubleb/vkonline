@@ -32,10 +32,11 @@ GrowlAsset::register($this);
                 <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
                         'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
+                    /*
                     echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
                         'class' => 'btn btn-info btn-flat']) . '&nbsp;';
                     echo Html::a(Yii::t('app', '导出'), 'javascript:;', [
-                        'class' => 'btn btn-info btn-flat']);
+                        'class' => 'btn btn-info btn-flat']);*/
                 } ?>
             </div>
         </div>
