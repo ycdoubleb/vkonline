@@ -85,8 +85,13 @@ class VideoAliyunAction {
                     $tran->commit();
                 } catch (\Exception $ex) {
                     $tran->rollBack();
+                    $rows = [];
+                    $JobResult = $result['response']->JobResultList->JobResult;
+                    foreach ($JobResult as $JobResult) {
+                        $rows [] = $JobResult->Job->JobId;             //任务ID;
+                    }
                     //取消转码任务
-                    Aliyun::getMts()->cancelJob(ArrayHelper::getColumn($rows, 1));
+                    Aliyun::getMts()->cancelJob($rows);
                 }
             } else {
                 $video->mts_status = Video::MTS_STATUS_FAIL;
