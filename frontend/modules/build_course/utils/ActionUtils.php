@@ -1285,15 +1285,15 @@ class ActionUtils
             'VideoFile.video_id', 'VideoFile.file_id', 
             'Video.name AS video_name', 'Uploadfile.name AS file_name',
             'User.nickname', 'User.sex', 'User.phone', 'User.email'
-        ])->from(['VideoFile' => VideoFile::tableName()]);
+        ])->from(['Video' => Video::tableName()]);
         //查询视频
-        $videoFile->leftJoin(['Video' => Video::tableName()], '(Video.id = VideoFile.video_id AND Video.is_del = 0)');
+        $videoFile->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1 AND VideoFile.is_del = 0)');
         //查询用户
         $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
         //查询文件
         $videoFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = VideoFile.file_id AND Uploadfile.is_del = 0)');
         //条件
-        $videoFile->where(['VideoFile.is_source' => 1, 'VideoFile.is_del' => 0, 'VideoFile.file_id' => $fileId]);
+        $videoFile->where(['Video.is_del' => 0, 'VideoFile.file_id' => $fileId]);
         //结果
         $userInfo = $videoFile->one();
         //$userInfo是否非空
