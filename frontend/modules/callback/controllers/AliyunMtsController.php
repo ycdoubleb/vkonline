@@ -19,10 +19,14 @@ class AliyunMtsController extends Controller {
     public $enableCsrfValidation = false;
 
     public function actionTaskComplete() {
-        $post = json_decode(\Yii::$app->request->getRawBody());
-
-        $topicName = $post->TopicName;
-        if ($topicName != "youxue-transcode") {
+        try{
+            $post = json_decode(\Yii::$app->request->getRawBody());
+            $topicName = $post->TopicName;
+        } catch (Exception $ex) {
+            $topicName = "";
+        }
+        
+        if ($topicName != Yii::$app->params['aliyun']['mts']['topic_name']) {
             return; //过滤无用信息
         }
         switch (json_decode($post->Message)->Type) {
