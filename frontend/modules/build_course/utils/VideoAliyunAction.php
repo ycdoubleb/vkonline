@@ -68,6 +68,7 @@ class VideoAliyunAction {
                 self::integrateVideoTrancode($video->id, $force);
                 return;
             }
+            var_dump($source_file);exit;
             /**
              * 执行转码操作
              * 提交后等待转码完成回调 AliyunMtsController::actionTaskComplete()
@@ -302,6 +303,9 @@ class VideoAliyunAction {
             $file = $video->videoFile->uploadfile;
             if ($file->oss_upload_status == Uploadfile::OSS_UPLOAD_STATUS_NO || $force) {
                 $result = $file->uploadOSS();
+                if(!$result['success']){
+                    throw new NotFoundHttpException($result['msg']);
+                }
             }
         } catch (Exception $ex) {
             throw new NotFoundHttpException('找不到对应实体文件！');

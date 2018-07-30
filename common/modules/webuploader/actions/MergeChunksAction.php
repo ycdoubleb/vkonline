@@ -98,33 +98,17 @@ class MergeChunksAction extends Action {
                  */
                 $makeThumb = isset($_REQUEST["makeThumb"]) ? (integer) $_REQUEST["makeThumb"] : 1;
                 $thumbPath = '';
-                if (false && $makeThumb) {
-                    try {
-                        $thumbPath = $this->createThumb(
-                                $uploadPath, 
-                                ArrayHelper::getValue($_REQUEST, 'thumbWidth', 128), 
-                                ArrayHelper::getValue($_REQUEST, 'thumbHeight', null), 
-                                ArrayHelper::getValue($_REQUEST, 'thumbMode', ManipulatorInterface::THUMBNAIL_OUTBOUND));
-                    } catch (Exception $ex) {
-                        Yii::error('fail make thumb!' . $ex->getMessage());
-                    }
-                }
                 /**
                  * 记录视频 width,height,duration,level,bitrate
                  */
                 $file_media_info = [];
-                if (false && in_array(strtolower(pathinfo($uploadPath)['extension']), ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'])) {
-                    try {
-                        $file_media_info = FfmpegUtil::getVideoInfoByUfileId($uploadPath);
-                    } catch (Exception $e) {
-                        
-                    };
-                }
-
                 /*
                  * 写入数据库
                  */
-                $dbFile = new Uploadfile(array_merge($file_media_info, ['id' => $fileMd5]));
+                $dbFile = Uploadfile::findOne(['id' => $fileMd5]);
+                if($dbFile == null){
+                    $dbFile = new Uploadfile(['id' => $fileMd5]);
+                }
                 $dbFile->name = $fileName;
                 $dbFile->path = $uploadPath;
                 $dbFile->del_mark = 0;          //重置删除标志
@@ -133,6 +117,7 @@ class MergeChunksAction extends Action {
                 $dbFile->thumb_path = $thumbPath;
                 $dbFile->size = $fileSize;
                 $dbFile->app_id = $app_id;
+                $dbFile->is_del = 0;
                 if ($dbFile->save()) {
                     //删除临时文件
                     foreach ($fileChunks as $fileChunk) {
