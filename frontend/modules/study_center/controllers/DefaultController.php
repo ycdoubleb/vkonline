@@ -287,7 +287,7 @@ class DefaultController extends Controller
                 'Course.id AS course_id', 'Course.name AS course_name', 'CourseNode.name AS node_name',
                 'Knowledge.id AS knowledge_id', 'Knowledge.name', 'Knowledge.des', 
                 'Video.id AS video_id', 'Video.img', 'Video.duration',
-                'Uploadfile.path', 'Teacher.id AS teacher_id', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
+                'Uploadfile.oss_key as path', 'Teacher.id AS teacher_id', 'Teacher.avatar', 'Teacher.name AS teacher_name', 
                 'Teacher.des AS teacher_des', 'Progress.data', 'Progress.is_finish', 
                 '(Favorite.is_del = 0) as is_favorite'
             ])->from(['Knowledge' => Knowledge::tableName()]);
@@ -397,7 +397,7 @@ class DefaultController extends Controller
     {
         $videoQuery = (new Query())
                 ->select(['Video.id AS video_id', 'Video.name', 'User.nickname', 'Video.img', 'Video.des AS video_des',
-                    'Uploadfile.path', 'Teacher.id AS teacher_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags",
+                    'Uploadfile.oss_key as path', 'Teacher.id AS teacher_id', "GROUP_CONCAT(Tags.`name` ORDER BY TagRef.id ASC SEPARATOR ',') AS tags",
                     'Teacher.avatar', 'Teacher.name AS teacher_name', 'Teacher.des AS teacher_des',])
                 ->from(['Video' => Video::tableName()])
                 ->andFilterWhere(['Video.id' => $id])

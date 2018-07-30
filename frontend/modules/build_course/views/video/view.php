@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\Video;
 use common\utils\StringUtil;
@@ -147,7 +148,7 @@ foreach ($watermarksFiles as $watermark) {
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => !empty($model->videoFile) ? 
-                        '<video src="' . StringUtil::completeFilePath($model->videoFile->uploadfile->path) . '" class="vk-video" controls poster="' . StringUtil::completeFilePath($model->img) . '"></video>' : null,
+                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . Aliyun::absolutePath($model->img) . '"></video>' : null,
                 ],
             ],
         ]) ?>
