@@ -106,8 +106,25 @@ class UploadfileController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+          
+        $filePath = '';
+        if($model->path){
+            $filePath = Yii::getAlias('@frontend/web/' . $model->path); //文件路径
+        }
+        
+        //检测文件是否存在
+        if(file_exists($filePath)){
+            //删除实体文件
+            if(@unlink($filePath)){
+                $model->delete();
+            } else {
+                Yii::$app->session->setFlash('error', '删除失败！');
+            }
+        } else {
+            $model->delete();
+        }
+        
         return $this->redirect(['index']);
     }
 
