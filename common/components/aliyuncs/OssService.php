@@ -27,7 +27,7 @@ class OssService extends Component {
         $accessKeyId = Yii::$app->params['aliyun']['accessKeyId'];                 //获取阿里云账号的accessKeyId
         $accessKeySecret = Yii::$app->params['aliyun']['accessKeySecret'];         //获取阿里云账号的accessKeySecret
 
-        $endpoint = Yii::$app->params['aliyun']['oss']['endPoint'];                //获取阿里云oss的endPoint
+        $endpoint = Yii::$app->params['aliyun']['oss']['endPoint-internal'];                //获取阿里云oss的endPoint
         $this->ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);           //实例化OssClient对象
     }
 
