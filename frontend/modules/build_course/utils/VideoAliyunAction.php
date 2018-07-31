@@ -68,7 +68,6 @@ class VideoAliyunAction {
                 self::integrateVideoTrancode($video->id, $force);
                 return;
             }
-            var_dump($source_file);exit;
             /**
              * 执行转码操作
              * 提交后等待转码完成回调 AliyunMtsController::actionTaskComplete()
@@ -309,6 +308,38 @@ class VideoAliyunAction {
             }
         } catch (Exception $ex) {
             throw new NotFoundHttpException('找不到对应实体文件！');
+        }
+    }
+    
+    /**
+     * 从oss上删除视频资源(包括其转码视频)
+     * @param string|Video $video   视频资源
+     */
+    public static function removeVideoFromOSS($video){
+        if (!($video instanceof Video)) {
+            $video = Video::findOne(['id' => $video, 'is_del' => 0]);
+        }
+        if (!$video) {
+            throw new NotFoundHttpException('找不到对应资源！');
+        }
+        if ($video->is_link) {
+            return;//外联视频删除
+        }
+        
+        $vids = ArrayHelper::getColumn($video->videoFiles, 'file_id');
+        $oss_keys = Uploadfile::find()->select(['oss_key'])->where(['id' => $vids])->column();
+        
+        //删除阿里云文件
+        if($oss_keys && count($oss_keys) > 0){
+            //var_dump(Aliyun::getOss()->deleteObject($oss_keys[1]));
+            foreach($oss_keys as &$oss_key){
+                $oss_key = urlencode($oss_key);
+            }
+            Aliyun::getOss()->deleteObjects($oss_keys);
+        }
+        //设置逻辑删除
+        if($vids && count($vids) > 0){
+            Uploadfile::updateAll(['is_del' => 1, ''], ['id' => $vids]);
         }
     }
 

@@ -14,6 +14,8 @@ use common\modules\webuploader\actions\UploadLinkAction;
  */
 class DefaultController extends BaseApiController {
 
+    public $enableCsrfValidation = false;
+    
     public function actions() {
         return array_merge(parent::actions(),[
             'upload-link' => ['class' => UploadLinkAction::class],

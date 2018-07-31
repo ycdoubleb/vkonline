@@ -199,5 +199,21 @@ class OssService extends Component {
     public function getOutputObjectMeta($object, $options = null) {
         return $this->getObjectMeta(Yii::$app->params['aliyun']['oss']['bucket-output'], $object, $options);
     }
+    
+    /**
+     * 删除多个文件
+     * @param array $objects
+     */
+    public function deleteObjects($objects){
+        return $this->ossClient->deleteObjects(Yii::$app->params['aliyun']['oss']['bucket-output'], $objects );
+    }
+    
+    /**
+     * 删除单个文件
+     * @param string $object
+     */
+    public function deleteObject($object){
+        return $this->ossClient->deleteObject(Yii::$app->params['aliyun']['oss']['bucket-output'], $object);
+    }
 
 }

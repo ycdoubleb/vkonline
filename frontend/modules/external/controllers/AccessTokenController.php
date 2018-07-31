@@ -17,6 +17,11 @@ use yii\filters\auth\QueryParamAuth;
  * @author Administrator
  */
 class AccessTokenController extends BaseApiController{
+    public function init() {
+        parent::init();
+        //默认API禁用会话
+        Yii::$app->user->enableSession = false;
+    }
     /**
      * 使用令牌认证
      * @return type

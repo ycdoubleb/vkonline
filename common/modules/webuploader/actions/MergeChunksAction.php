@@ -12,11 +12,9 @@ use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
 use common\modules\webuploader\models\UploadResponse;
 use common\utils\FfmpegUtil;
-use Exception;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
 use yii\base\Action;
-use yii\helpers\ArrayHelper;
 use yii\imagine\Image;
 use yii\web\HttpException;
 
@@ -118,6 +116,7 @@ class MergeChunksAction extends Action {
                 $dbFile->size = $fileSize;
                 $dbFile->app_id = $app_id;
                 $dbFile->is_del = 0;
+                $dbFile->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_NO;
                 if ($dbFile->save()) {
                     //删除临时文件
                     foreach ($fileChunks as $fileChunk) {

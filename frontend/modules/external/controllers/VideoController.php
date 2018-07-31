@@ -22,7 +22,7 @@ use frontend\modules\external\actions\video\CreateVideoAction;
  * @author Administrator
  */
 class VideoController extends AccessTokenController {
-    
+    public $enableCsrfValidation = false;
     public function actions() {
         return array_merge(parent::actions(),[
             'upload-link' => ['class' => UploadLinkAction::class],

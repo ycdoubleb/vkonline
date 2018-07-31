@@ -26,11 +26,6 @@ use yii\web\Response;
  */
 class BaseApiController extends Controller {
     
-    public function init() {
-        parent::init();
-        //无状态认证
-        Yii::$app->user->enableSession = false;
-    }
     /**
      * 不使用令牌认证
      * @return type

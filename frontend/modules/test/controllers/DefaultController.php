@@ -2,9 +2,12 @@
 
 namespace frontend\modules\test\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
+use Yii;
 use yii\web\Controller;
+use yii\web\UploadedFile;
 
 /**
  * Default controller for the `test` module
@@ -47,5 +50,14 @@ class DefaultController extends Controller
     public function actionClearChunk(){
         UploadfileChunk::deleteAll();
         $this->redirect('index');
+    }
+    
+    public function actionUploadFile(){
+        $post = Yii::$app->request->post();
+        if(count($post) >0){
+            $upload = UploadedFile::getInstanceByName('img');
+            Aliyun::getOss()->multiuploadFile('test.jpg', $upload->tempName);
+        }
+        return $this->render('upload-file');
     }
 }
