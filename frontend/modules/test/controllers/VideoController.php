@@ -4,8 +4,10 @@ namespace frontend\modules\test\controllers;
 
 use common\models\vk\Video;
 use frontend\modules\build_course\utils\VideoAliyunAction;
+use linslin\yii2\curl\Curl;
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 use yii\web\Controller;
 
 /**
@@ -27,7 +29,14 @@ class VideoController extends Controller {
     }
 
     public function actionTranscode($vid) {
-        VideoAliyunAction::addVideoTranscode($vid);
+        $video = Video::findOne(['id' => $vid]);
+        if($video->is_link){
+            //先转码
+            $path = 'webuploader/upload-link?video_path='.$video->videoFile->uploadfile->path;
+            $curl = new Curl();
+            $curl->get(Url::to('webuploader/default/upload-link', true)."?video_path=".$video->videoFile->uploadfile->path);
+        }
+        VideoAliyunAction::addVideoTranscode($video);
     }
 
     public function actionCheckTranscodeStatus() {
