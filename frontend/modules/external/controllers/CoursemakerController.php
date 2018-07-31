@@ -6,7 +6,7 @@ use frontend\modules\external\actions\coursemaker\Login;
 use yii\filters\VerbFilter;
 
 /**
- * Description of CoursemakerController
+ * 负责与 coursemarker 工具通信，包括登录等操作
  *
  * @author Administrator
  */

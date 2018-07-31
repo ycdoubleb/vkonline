@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace frontend\modules\external\controllers;
 
 use common\modules\webuploader\actions\CheckChunkAction;
@@ -17,7 +11,7 @@ use common\modules\webuploader\actions\UploadLinkAction;
 use frontend\modules\external\actions\video\CreateVideoAction;
 
 /**
- * Description of VideoController
+ * 负责接收 coursemaker 上传来的文件，包括文件检查，分片上传，文件下载，创建视频资源等操作
  *
  * @author Administrator
  */

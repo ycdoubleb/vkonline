@@ -9,6 +9,7 @@
 namespace frontend\modules\external\controllers;
 
 use common\core\BaseApiController;
+use Yii;
 use yii\filters\auth\QueryParamAuth;
 
 /**

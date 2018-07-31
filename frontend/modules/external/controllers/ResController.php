@@ -8,7 +8,7 @@ use yii\filters\auth\QueryParamAuth;
 use yii\web\Controller;
 
 /**
- * Default controller for the `external` module
+ * 主要负责与res.studying8.com的通信，起桥接作用。
  */
 class ResController extends Controller
 {
