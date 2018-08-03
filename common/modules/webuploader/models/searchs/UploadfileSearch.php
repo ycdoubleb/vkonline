@@ -75,13 +75,12 @@ class UploadfileSearch extends Uploadfile {
             'is_del' => $this->is_del,
             'is_fixed' => $this->is_fixed,
             'size' => $this->size,
-            'created_by' => $this->created_by,
+            'Uploadfile.id' => $this->id,
         ]);
 
-        $query->andFilterWhere(['like', 'Uploadfile.id', $this->id])
-                ->andFilterWhere(['like', 'name', $this->name])
+        $query->andFilterWhere(['like', 'name', $this->name])
                 ->andFilterWhere(['like', 'path', $this->path])
-                ->andFilterWhere(['like', 'thumb_path', $this->thumb_path]);
+                ->andFilterWhere(['like', 'nickname', $this->created_by]);
 
         return $dataProvider;
     }
