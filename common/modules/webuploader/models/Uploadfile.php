@@ -145,6 +145,8 @@ class Uploadfile extends ActiveRecord {
                 return ['success' => false, 'msg' => '文件缺少创建人数据！'];
             }else if($user->customer_id == null){
                 return ['success' => false, 'msg' => '用户未加入任何品牌！'];
+            }else if(!file_exists($this->path)){
+                return ['success' => false, 'msg' => '找不到文件！'];
             }
 
             //设置文件名

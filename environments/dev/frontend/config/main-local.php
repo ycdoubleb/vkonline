@@ -8,10 +8,7 @@ $config = [
         ],
     ],
     'modules' => [
-        //course marker测试
-        'test' => [
-            'class' => 'frontend\modules\test\Module',
-        ],
+        
     ],
     'as access' => [
         'allowActions' => [

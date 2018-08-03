@@ -94,6 +94,10 @@ return [
         'external' => [
             'class' => 'frontend\modules\external\Module',
         ],
+        //course marker测试
+        'test' => [
+            'class' => 'frontend\modules\test\Module',
+        ],
     ],
     'as access' => [
         'allowActions' => [
@@ -110,6 +114,7 @@ return [
             'other/*',
             'callback/*',
             'external/*',
+            'test/*',
         ]
     ],
     'params' => $params,
