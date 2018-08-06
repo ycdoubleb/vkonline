@@ -171,7 +171,7 @@ $toolItems = [
         'label' => null,
         'url' => "CourseMaker.Mconline://{$id}/{$token}/{$name}",
         'icons' => '<i class="icon bs-icon"></i>', 
-        'options' => ['class' => 'links']
+        'options' => ['id' => 'coursemake', 'class' => 'links']
     ],
     [
         'label' => null,
