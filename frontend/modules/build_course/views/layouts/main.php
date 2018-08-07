@@ -171,7 +171,7 @@ $toolItems = [
         'label' => null,
         'url' => "CourseMaker.Mconline://{$id}/{$token}/{$name}",
         'icons' => '<i class="icon bs-icon"></i>', 
-        'options' => ['class' => 'links']
+        'options' => ['id' => 'coursemake', 'class' => 'links']
     ],
     [
         'label' => null,
@@ -238,4 +238,22 @@ Html;
 
     $content = $html . $content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
+?>
+
+<?php
+$js = 
+<<<JS
+   
+//    function checkClient(obj){
+//        try{
+//            var a = new ActiveXObject("suncloud.app");
+//            obj.href = obj.path;
+//        }catch(e){
+//            alert("请先安装客户端");
+            obj.href="http://xxxx/client.zip";
+//        }
+//    }
+                
+JS;
+//    $this->registerJs($js,  View::POS_READY);
 ?>
