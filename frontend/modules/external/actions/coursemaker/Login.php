@@ -2,10 +2,10 @@
 
 namespace frontend\modules\external\actions\coursemaker;
 
-use frontend\modules\external\models\coursemaker\CoursemakerResponse;
 use common\models\User;
 use common\models\vk\CourseToolActLog;
 use common\models\vk\CourseToolUser;
+use frontend\modules\external\models\coursemaker\CoursemakerResponse;
 use Yii;
 use yii\base\Action;
 use yii\helpers\ArrayHelper;
@@ -20,10 +20,12 @@ class Login extends Action {
     public function run() {
         ;
         $post = Yii::$app->request->post();
+        $user_id = \Yii::$app->user->id;
+        /*
         $user_id = ArrayHelper::getValue($post, 'user_id', null);
         if ($user_id == null) {
             return new CoursemakerResponse(CoursemakerResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'user_id']);
-        }
+        }*/
         
         /* 检查用户是否存在 */
         $user = User::findOne(['id' => $user_id, 'status' => User::STATUS_ACTIVE]);

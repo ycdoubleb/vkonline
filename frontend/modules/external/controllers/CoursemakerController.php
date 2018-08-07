@@ -12,6 +12,7 @@ use yii\filters\VerbFilter;
  */
 class CoursemakerController extends AccessTokenController {
 
+    public $enableCsrfValidation = false;
     public function behaviors() {
         $behaviors = parent::behaviors();
         $behaviors['authenticator'] = array_merge($behaviors['authenticator'], [
@@ -22,7 +23,7 @@ class CoursemakerController extends AccessTokenController {
         $behaviors['verbs'] = [
             'class' => VerbFilter::className(),
             'actions' => [
-                'login' => ['post'],
+                'login' => ['post','get'],
             ],
         ];
         
