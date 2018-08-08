@@ -61,6 +61,7 @@ $js = <<<JS
                     type: "success",
                 });
                 $("#binding").addClass("disabled");
+                Signup();   //直接登录
             }else if(data['code'] == '417'){
                 $.notify({
                     message: data['message'],
@@ -70,16 +71,20 @@ $js = <<<JS
             }
         });
     });
-      
+              
     //直接提交注册
     $("#signup").click(function(){
+        Signup();
+    })
+       
+    //注册登录
+    function Signup(){
         if($("binding").hasClass("disabled")){
             $.post("/callback/weibo-callback/signup?type=1");
         }else{
             $.post("/callback/weibo-callback/signup?type=2");
         }
-    })
-        
+    }
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>

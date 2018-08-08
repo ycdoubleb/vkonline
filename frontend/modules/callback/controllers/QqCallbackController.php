@@ -40,7 +40,25 @@ class QqCallbackController extends Controller
             $qc = new QC($access_token, $open_id);
             $user_data = $qc->get_user_info(); //get_user_info()为获得该用户的信息，
             
-            $userAuths = UserAuths::findOne(['identifier' => $open_id]);
+            $userAuths = UserAuths::findOne(['identifier' => $open_id]);     //是否已绑定
+            if(!empty(\Yii::$app->user->id)){
+                $userModel = User::findOne(['id' => \Yii::$app->user->id]);
+                if(!empty($userAuths)){
+                    \Yii::$app->getSession()->setFlash('error', '绑定失败！一个QQ账号只能绑定一个用户');
+                    return $this->goBack();
+                } else {
+                    //保存Qq用户数据
+                    $results = $this->bindingQqUser($userModel, $open_id, $access_token);
+                    if($results['code'] == 400){
+                        throw new NotAcceptableHttpException('绑定出错！请重新绑定');
+                    } else {
+                        $user = new User(['id' => $userModel->id]);
+                        Yii::$app->getUser()->login($user);
+                        \Yii::$app->getSession()->setFlash('success', '绑定成功！');
+                        return $this->goHome();
+                    }
+                }
+            }
             if($userAuths == null){
                 $model = new User();
                 return $this->render('callback', [
@@ -78,7 +96,7 @@ class QqCallbackController extends Controller
         if($userModel != null){
             if(Yii::$app->security->validatePassword($password, $userModel->password_hash)){
                 //保存微博用户数据
-                $results = $this->bindingWeiboUser($userModel, $open_id, $access_token);
+                $results = $this->bindingQqUser($userModel, $open_id, $access_token);
                 if($results['code'] == 400){
                     throw new NotAcceptableHttpException('绑定出错！请重新登录');
                 }
@@ -130,10 +148,11 @@ class QqCallbackController extends Controller
             $user = new User(['id' => $userAuths->user_id]);
             Yii::$app->getUser()->login($user);
             return $this->goHome();
+        } elseif ($type == 1) {
+            $user = new User(['id' => $userAuths->user_id]);
+            Yii::$app->getUser()->login($user);
+            return $this->goHome();
         }
-        $user = new User(['id' => $userAuths->user_id]);
-        Yii::$app->getUser()->login($user);
-        return $this->goHome();
     }
 
     /**
@@ -143,7 +162,7 @@ class QqCallbackController extends Controller
      * @param string $access_token      qq用户密钥
      * @return array
      */
-    public function bindingWeiboUser($userModel, $open_id, $access_token)
+    public function bindingQqUser($userModel, $open_id, $access_token)
     {
         $authValues = [
             'user_id' => $userModel->id,
