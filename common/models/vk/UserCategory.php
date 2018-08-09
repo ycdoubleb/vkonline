@@ -24,6 +24,7 @@ use yii\web\UploadedFile;
  * @property int $sort_order 排序
  * @property string $image 图标路径
  * @property int $is_show 是否显示
+ * @property int $is_public 是否是公共目录：1是，0否
  * @property string $des 描述
  * @property string $created_by 创建者
  * @property string $created_at 创建时间
@@ -93,7 +94,7 @@ class UserCategory extends ActiveRecord
     public function rules()
     {
         return [
-            [['type', 'level', 'parent_id', 'sort_order', 'is_show', 'created_at', 'updated_at'], 'integer'],
+            [['type', 'level', 'parent_id', 'sort_order', 'is_show', 'is_public', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
             [['path', 'image', 'des'], 'string', 'max' => 255],
             [['created_by'], 'string', 'max' => 32],
@@ -116,6 +117,7 @@ class UserCategory extends ActiveRecord
             'sort_order' => Yii::t('app', 'Sort Order'),
             'image' => Yii::t('app', 'Image'),
             'is_show' => Yii::t('app', 'Is Show'),
+            'is_public' => Yii::t('app', 'Is Public'),
             'des' => Yii::t('app', 'Des'),
             'created_by' => Yii::t('app', 'Created By'),
             'created_at' => Yii::t('app', 'Created At'),
@@ -148,6 +150,10 @@ class UserCategory extends ActiveRecord
             if (empty($this->parent_id)) {
                 $this->parent_id = 0;
             }
+            //设置排序
+//            if(empty($this->sort_order)){
+//                $this->sort_order = self::find()->orderBy(['sort_order' => SORT_DESC])->one()->sort_order + 1;
+//            }
             $this->level = $this->parent_id == 0 ? 1 : self::getCatById($this->parent_id)->level + 1;
             return true;
         }
@@ -291,8 +297,8 @@ class UserCategory extends ActiveRecord
         }
         $userCategorys = [];
         foreach (self::$userCategorys as $id => $category) {
-            if ($category['level'] == $level && $category['created_by'] == $created_by && $category['type'] == $type 
-                    && ($include_unshow || $category['is_show'] == 1)) {
+            if ($category['level'] == $level && ($category['created_by'] == $created_by || $category['is_public'] == 1) 
+                    && $category['type'] == $type && ($include_unshow || $category['is_show'] == 1)) {
                 $userCategorys[] = $category;
             }
         }

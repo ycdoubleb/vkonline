@@ -126,6 +126,11 @@ class UserCategoryController extends GridViewChangeSelfController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        
+        if($model->is_public){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
+        
         if ($model->load(Yii::$app->request->post())) {
             /** 开启事务 */
             $trans = Yii::$app->db->beginTransaction();
@@ -182,6 +187,10 @@ class UserCategoryController extends GridViewChangeSelfController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        
+        if($model->is_public){
+            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }
         
         if($model->created_by == \Yii::$app->user->id){
             $catChildrens  = UserCategory::getCatChildren($model->id);

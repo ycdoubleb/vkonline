@@ -62,12 +62,16 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     'header' => Yii::t('app', 'Name'),
                     'format' => 'raw',
                     'value' => function($model){
-                        return '<label style="font-weight: normal;margin-bottom:0px">'. Html::checkbox('UserCategory[id]', false, [
-                            'class' => 'hidden',
-                            'value' => $model->id,
-                            'style' => ['margin' => '4px',],
-                            'data-path' => $model->path,
-                        ]) . $model->name . '</label>';
+                        if(!$model->is_public){
+                            return '<label style="font-weight: normal;margin-bottom:0px">'. Html::checkbox('UserCategory[id]', false, [
+                                'class' => 'hidden',
+                                'value' => $model->id,
+                                'style' => ['margin' => '4px',],
+                                'data-path' => $model->path,
+                            ]) . $model->name . '</label>';
+                        }else{
+                            return $model->name;
+                        }
                     },
                     'headerOptions' => [
                         'style' => [
@@ -102,6 +106,9 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                         return UserCategory::$showStatus[$model->is_publish];
                     },
                     'disabled' => function($model) {
+                        if($model->is_public){
+                            return true;
+                        }
                         return null;
                     },
                     'headerOptions' => [
@@ -171,7 +178,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                         },
                         'update' => function ($url, $model, $key) {
                              $options = [
-//                                'class' => $model->parent_id == 0 ? 'disabled' : '',
+                                'class' => $model->is_public == 1 ? 'disabled' : '',
                                 'title' => Yii::t('app', 'Update'),
                                 'aria-label' => Yii::t('app', 'Update'),
                                 'data-pjax' => '0',
@@ -189,7 +196,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                         },
                         'delete' => function ($url, $model, $key) use($catChildrens){
                             $options = [
-                                'class' => count($catChildrens[$model->id]) > 0 || count($model->videos) > 0 ? 'disabled' : '',
+                                'class' => count($catChildrens[$model->id]) > 0 || count($model->videos) > 0  || $model->is_public == 1 ? 'disabled' : '',
                                 'title' => Yii::t('app', 'Delete'),
                                 'aria-label' => Yii::t('app', 'Delete'),
                                 'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
