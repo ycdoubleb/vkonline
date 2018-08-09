@@ -164,7 +164,7 @@ $menuItems = [
 ];
 $id = Yii::$app->user->id;
 $token = Yii::$app->user->identity->access_token;
-$name = urlencode(Yii::$app->user->identity->nickname);
+$name = base64_encode(Yii::$app->user->identity->nickname);
 //制作工具
 $toolItems = [
     [

@@ -22,8 +22,8 @@ class MainAssets extends AssetBundle {
        'css/main.css'
     ];
     public $js = [
-        'js/protocolcheck.js',
-        'js/gloudDetect.js',
+        //'js/protocolcheck.js',
+        //'js/gloudDetect.js',
     ];
     public $depends = [
         'yii\web\YiiAsset'

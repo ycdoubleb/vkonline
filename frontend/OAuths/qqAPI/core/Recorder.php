@@ -24,7 +24,7 @@ class Recorder{
         //$incFileContents = $incFileContents[1];
         //$this->inc = json_decode($incFileContents);
         
-        //-------获取配置信息（common/config/params.php 里面获取）
+        //-------获取配置信息（从frontend/config/params.php 里面获取）
         $qqConfig = json_encode(Yii::$app->params[self::$qqConfig]);
         $this->inc = json_decode($qqConfig);    //保证得到的结果为对象object
         if(empty($this->inc)){

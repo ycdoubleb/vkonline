@@ -37,6 +37,7 @@ class VideoController extends Controller {
             $curl->get(Url::to('webuploader/default/upload-link', true)."?video_path=".$video->videoFile->uploadfile->path);
         }
         VideoAliyunAction::addVideoTranscode($video);
+        VideoAliyunAction::addVideoSnapshot($video);
     }
 
     public function actionCheckTranscodeStatus() {

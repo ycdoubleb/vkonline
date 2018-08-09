@@ -45,7 +45,7 @@ use yii\helpers\Html;
             $keys.push($(this).attr('data-key'));
         });
 
-        setTimeout(function () {
+        setInterval(function () {
             $.ajax({
                 type: "POST",
                 url: "check-transcode-status",

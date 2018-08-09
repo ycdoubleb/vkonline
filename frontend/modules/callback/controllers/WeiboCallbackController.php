@@ -47,8 +47,30 @@ class WeiboCallbackController extends Controller
             $_SESSION['token'] = $token;
             setcookie('weibojs_'.$weibo->client_id, http_build_query($token));
             $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
+            if($user_message['error_code'] == 10023){
+                \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
+                return $this->goHome();
+            }
             
-            $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);
+            $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);     //是否已绑定
+            if(!empty(\Yii::$app->user->id)){
+                $userModel = User::findOne(['id' => \Yii::$app->user->id]);
+                if(!empty($userAuths)){
+                    \Yii::$app->getSession()->setFlash('error', '绑定失败！一个微博账号只能绑定一个用户');
+                    return $this->goBack();
+                } else {
+                    //保存微博用户数据
+                    $results = $this->bindingWeiboUser($userModel, $user_message, $_SESSION['token']['access_token']);
+                    if($results['code'] == 400){
+                        throw new NotAcceptableHttpException('绑定出错！请重新绑定');
+                    } else {
+                        $user = new User(['id' => $userModel->id]);
+                        Yii::$app->getUser()->login($user);
+                        \Yii::$app->getSession()->setFlash('success', '绑定成功！');
+                        return $this->goHome();
+                    }
+                }
+            }
             if($userAuths == null){
                 $model = new User();
                 return $this->render('index', [
@@ -93,6 +115,10 @@ class WeiboCallbackController extends Controller
         if($userModel != null){
             if(Yii::$app->security->validatePassword($password,$userModel->password_hash)){
                 $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
+                if($user_message['error_code'] == 10023){
+                    \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
+                    return $this->goHome();
+                }
                 //保存微博用户数据
                 $results = $this->bindingWeiboUser($userModel, $user_message, $_SESSION['token']['access_token']);
                 if($results['code'] == 400){
@@ -125,9 +151,13 @@ class WeiboCallbackController extends Controller
         $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
         $params = Yii::$app->request->queryParams;
         $type = ArrayHelper::getValue($params, 'type');
+        if($user_message['error_code'] == 10023){
+            \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
+            return $this->goHome();
+        }
         
         $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);
-        if($type == 1){
+        if($type == 2){
             if($userAuths == null){
                 //保存微博用户数据
                 $results = $this->saveWeiboUser($user_message, $_SESSION['token']['access_token']);
@@ -138,14 +168,15 @@ class WeiboCallbackController extends Controller
                 $user = new User(['id' => $userId]);
                 Yii::$app->getUser()->login($user);
                 return $this->redirect("/user/default/index?id=$userId");
-            } 
+            }
+            $user = new User(['id' => $userAuths->user_id]);
+            Yii::$app->getUser()->login($user);
+            return $this->goHome();
+        } elseif ($type == 1) {
             $user = new User(['id' => $userAuths->user_id]);
             Yii::$app->getUser()->login($user);
             return $this->goHome();
         }
-        $user = new User(['id' => $userAuths->user_id]);
-        Yii::$app->getUser()->login($user);
-        return $this->goHome();
     }
 
     /**

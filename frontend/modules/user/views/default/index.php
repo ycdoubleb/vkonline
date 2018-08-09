@@ -24,7 +24,7 @@ ModuleAssets::register($this);
                     <a href="<?= $weibo_url?>" class="weibo" title="绑定微博账号"></a>
                 <?php endif;?>
                 <?php if ($qqUser == null):?>
-                    <a href="/callback/qq-callback/index" class="qq"></a>
+                    <a href="/callback/qq-callback/index" class="qq" title="绑定QQ账号"></a>
                 <?php endif;?>
             </div>
         </div>

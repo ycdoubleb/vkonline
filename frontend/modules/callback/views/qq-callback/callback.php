@@ -62,6 +62,7 @@ $js = <<<JS
                     type: "success",
                 });
                 $("#binding").addClass("disabled");
+                Signup();   //直接登录
             }else if(data['code'] == '417'){
                 $.notify({
                     message: data['message'],
@@ -74,12 +75,17 @@ $js = <<<JS
       
     //直接提交注册
     $("#signup").click(function(){
+        Signup();
+    });
+        
+    //注册登录
+    function Signup() {
         if($("binding").hasClass("disabled")){
             $.post("/callback/qq-callback/signup?type=1&access_token=$access_token&open_id=$open_id&nickname=$nickname&gender=$gender&avatar=$avatar");
         }else{
             $.post("/callback/qq-callback/signup?type=2&access_token=$access_token&open_id=$open_id&nickname=$nickname&gender=$gender&avatar=$avatar");
         }
-    })
+    }
         
 JS;
     $this->registerJs($js, View::POS_READY);
