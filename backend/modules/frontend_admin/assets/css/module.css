@@ -7,6 +7,15 @@ and open the template in the editor.
     Created on : 2018-3-7, 13:50:08
     Author     : Vito
 */
+/**
+ * 禁用样式
+ */
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
 /********* customer 样式 ***********/
 .customer{
     height: 100%
