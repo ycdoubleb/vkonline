@@ -13,7 +13,7 @@ return [
             'bucket-input' => 'studying8',
             'bucket-output' => 'studying8',
             'host-input' => 'studying8.oss-cn-shenzhen.aliyuncs.com',                   
-            'host-output' => 'studying8.oss-cn-shenzhen.aliyuncs.com',                  
+            'host-output' => 'file.studying8.com',                  
             'host-input-internal' => 'studying8.oss-cn-shenzhen-internal.aliyuncs.com',
             'host-output-internal' => 'studying8.oss-cn-shenzhen-internal.aliyuncs.com',
             'endPoint' => 'oss-cn-shenzhen.aliyuncs.com',

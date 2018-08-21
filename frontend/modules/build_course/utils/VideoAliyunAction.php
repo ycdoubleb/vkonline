@@ -182,7 +182,6 @@ class VideoAliyunAction {
                     $userData = json_decode($job->Output->UserData);
 
                     //添加对应 Uploadfile 数据
-                    $hostOutput = Yii::$app->params['aliyun']['oss']['host-output'];
                     $uploadfileRows [] = [
                         $jobId,                                         //id
                         $userData->source_file_id,                      //源始文件ID
