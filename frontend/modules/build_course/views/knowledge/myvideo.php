@@ -51,13 +51,16 @@ $actionId = Yii::$app->controller->action->id;
                         echo '</li>';
                     } 
                 ?>
-                <?php foreach ($catalogMap as $catalog): ?>
-                <li>
-                    <?= Html::a('<i class="ifolder"></i><p class="folder-name single-clamp">'. $catalog['name'] .'</p>',
-                        array_merge([$actionId], array_merge($filters, ['user_cat_id' => $catalog['id']])),
-                    ['title' => $catalog['name'],]) ?>
-                </li>
-               <?php endforeach; ?>
+                <?php 
+                    foreach ($catalogMap as $catalog){
+                        $iconFolder = $catalog['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                        echo '<li>';
+                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $catalog['name'] .'</p>',
+                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $catalog['id']])),
+                            ['title' => $catalog['name'],]);
+                        echo '</li>';
+                    } 
+                ?>
             </ul>
         </div>
         

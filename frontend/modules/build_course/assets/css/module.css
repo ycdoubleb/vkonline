@@ -266,6 +266,11 @@
 }
 
 .knowledge-reference 
+.vk-list .ifolder.folder-public{
+    background-image: url('../imgs/folder-public.png');
+}
+
+.knowledge-reference 
 .vk-list .folder-name {
     margin-top: 10px;
     margin-bottom: 0px;
@@ -501,6 +506,10 @@
 
 .video-index .vk-list .ifolder.upper-level{
     background-image: url('../imgs/upper-level.png');
+}
+
+.video-index .vk-list .ifolder.folder-public{
+    background-image: url('../imgs/folder-public.png');
 }
 
 .video-index .vk-list .folder-name {
