@@ -97,7 +97,8 @@ class VideoFavoriteSearch extends VideoFavorite
         self::$query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         //添加字段
         $addArrays = [
-            'Video.id', 'Video.name', 'Video.img', 'Video.duration',  'Video.created_at', 'Video.mts_status', 
+            'Video.id', 'Video.name', 'Video.img', 'Video.level', 'Video.mts_status', 
+            'Video.duration',  'Video.created_at', 'Video.mts_status', 
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序

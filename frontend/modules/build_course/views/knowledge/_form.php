@@ -33,10 +33,14 @@ use yii\widgets\ActiveForm;
             ],  
         ], 
     ]); ?>
+    
     <div id="reference-video-list" class="hidden"></div>
-    <div id="knowledge-info">
+    
+    <div id="knowledge-info" class="knowledge-info">
+        
         <!--知识点名称-->
         <?= $form->field($model, 'name')->textInput(['placeholder' => '请输入...']) ?>
+        
         <!--简介-->
         <?= $form->field($model, 'des', [
             'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
@@ -44,6 +48,7 @@ use yii\widgets\ActiveForm;
             'id' => 'knowledge-des', 'style' => 'width:100%; height:200px;',
             'value' => $model->isNewRecord ? '无' : $model->des, 'placeholder' => '请输入...'
         ])->label(Yii::t('app', 'Synopsis')) ?>
+        
         <!--引用视频-->
         <div class="form-group field-reference-video">
             <?= Html::label(Yii::t('app', '{Reference}{Video}', [
@@ -61,6 +66,7 @@ use yii\widgets\ActiveForm;
                 ?>
             </div>
         </div>
+        
         <!--视频详细-->
         <div class="form-group field-video-details <?= !$model->has_resource ? 'hidden' : '' ?>">
             <?= Html::label(null, 'video-details', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -72,9 +78,11 @@ use yii\widgets\ActiveForm;
                 </div>
             </div>
         </div>
+        
         <!--隐藏的属性-->
         <?= Html::hiddenInput('Resource[res_id]', Knowledge::getKnowledgeResourceInfo($model->id, 'res_id')) ?>
         <?= Html::hiddenInput('Resource[data]', Knowledge::getKnowledgeResourceInfo($model->id, 'data')) ?>
+        
     </div>
     
     <?php ActiveForm::end(); ?>

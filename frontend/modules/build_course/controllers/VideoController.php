@@ -7,6 +7,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\UserCategorySearch;
+use common\models\vk\searchs\VideoListSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
@@ -18,6 +19,7 @@ use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -63,18 +65,19 @@ class VideoController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new VideoSearch();
-        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $searchModel = new VideoListSearch();
+        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         $videos = array_values($results['data']['video']);    //视频数据
+        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($videos as $index => $item) {
             $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['level'] = Video::$levelMap[$item['level']];
+            $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
             $videos[$index]['des'] = Html::decode($item['des']);
             $videos[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);
             $videos[$index]['level_name'] = Video::$levelMap[$item['level']];
-            $videos[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
-            $videos[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
         
         //如果是ajax请求，返回json
@@ -103,6 +106,34 @@ class VideoController extends Controller
             'searchModel' => $searchModel,      //搜索模型
             'filters' => $results['filter'],     //查询过滤的属性
             'totalCount' => $results['total'],   //总数量
+            'pathMap' => $this->getDirectoryLocation($userCatId),  //所属目录位置
+            'catalogMap' => $this->getSameLevelCats($userCatId),  //所有目录
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+        ]);
+    }
+    
+    /**
+     * 列出所有 VideoSearch 模型，搜索后的结果。
+     * @return string|json
+     */
+    public function actionResult()
+    {
+        $searchModel = new VideoListSearch();
+        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams));
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($results['data']['video']),
+            'key' => 'id',
+        ]);
+        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        $userCatIds = ArrayHelper::getColumn($dataProvider->allModels, 'user_cat_id');   //所有用户分类id
+        $cateIds = array_merge($userCatIds, [$userCatId]);
+       
+        return $this->render('result', [
+            'searchModel' => $searchModel,      //搜索模型
+            'dataProvider' => $dataProvider,    //搜索结果后的数据
+            'filters' => $results['filter'],     //查询过滤的属性
+            'totalCount' => $results['total'],   //总数量
+            'pathMap' => $this->getDirectoryLocation(array_filter($cateIds)),  //所属目录位置
             'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
         ]);
     }
@@ -262,7 +293,7 @@ class VideoController extends Controller
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
             
-            return $this->redirect(['index']);
+            return $this->redirect(['index', 'user_cat_id' => $target_id]);
         }
 
         return $this->renderAjax('move', [
@@ -340,16 +371,72 @@ class VideoController extends Controller
     }
     
     /**
+     * 获取目录位置
+     * @param integer|array $categoryId
+     * @return array
+     */
+    protected function getDirectoryLocation($categoryId)
+    {
+        $path = [];
+        $categoryIds = !is_array($categoryId) ? [$categoryId] : array_unique($categoryId);
+        if(!empty(array_filter($categoryIds))) {
+            foreach ($categoryIds as $catId) {
+                $userCategory = UserCategory::getCatById($catId);
+                if($userCategory != null){
+                    $parentids = array_values(array_filter(explode(',', $userCategory->path)));
+                    foreach ($parentids as $index => $id) {
+                        $path[$catId][] = [
+                            'id' => $id,
+                            'name' => UserCategory::getCatById($id)->name
+                        ];
+                    }
+                }
+            }
+        }
+        
+        return $path;
+    }
+    
+    /**
+     * 返回用户当前分类同级的所有分类
+     * @param integer $categoryId  
+     * @return array
+     */
+    protected function getSameLevelCats($categoryId)
+    {
+        if($categoryId != null){
+            $categoryMap = UserCategory::getCatChildren($categoryId, 1, false);
+        }else{
+            $categoryMap = UserCategory::getCatsByLevel(1, null);
+        }
+        
+        $categorys = [];
+        ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
+        foreach ($categoryMap as $category) {
+            $categorys[] = [
+                'id' => $category['id'],
+                'name' => $category['name'],
+                'is_public' => $category['is_public'],
+            ];
+        }
+        
+        return $categorys;
+    }
+
+    /**
      * 获取分类全路径
      * @param integer $categoryId
      * @return string
      */
     protected function getCategoryFullPath($categoryId) 
     {
-        $parentids = array_values(array_filter(explode(',', UserCategory::getCatById($categoryId)->path)));
         $path = '';
-        foreach ($parentids as $index => $id) {
-            $path .= ($index == 0 ? '' : ' \ ') . UserCategory::getCatById($id)->name;
+        $userCategory = UserCategory::getCatById($categoryId);
+        if($userCategory != null){
+            $parentids = array_values(array_filter(explode(',', $userCategory->path)));
+            foreach ($parentids as $index => $id) {
+                $path .= ($index == 0 ? '' : ' \ ') . UserCategory::getCatById($id)->name;
+            }
         }
         
         return $path;

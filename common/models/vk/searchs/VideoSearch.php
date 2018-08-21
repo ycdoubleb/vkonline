@@ -88,6 +88,7 @@ class VideoSearch extends Video
     public function buildCourseSearch($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
+        $this->user_cat_id = ArrayHelper::getValue($params, 'user_cat_id', null);    //用户分类id
         
         self::getInstance();
         $this->load($params);

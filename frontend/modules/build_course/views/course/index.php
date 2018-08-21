@@ -27,6 +27,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
 ?>
 
 <div class="course-index main">
+    
     <!-- 页面标题 -->
     <div class="vk-title">
         <span>
@@ -38,6 +39,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
             ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
         </div>
     </div>
+    
     <!-- 搜索 -->
     <div class="course-form vk-form set-spacing"> 
         
@@ -118,6 +120,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
         <?php ActiveForm::end(); ?>
         
     </div>
+    
     <!-- 排序 -->
     <div class="vk-tabs">
         <ul class="list-unstyled">
@@ -132,17 +135,20 @@ $this->title = Yii::t('app', '{My}{Course}', [
             </li>
         </ul>
     </div>
+    
     <!--列表-->
     <div class="vk-list">
         <ul class="list-unstyled">
             
         </ul>
     </div>
+    
     <!--加载-->
     <div class="loading-box">
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
+    
     <!--总结记录-->
     <div class="summary">
         <span>共 <b><?= $totalCount ?></b> 条记录</span>
