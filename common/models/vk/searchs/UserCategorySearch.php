@@ -41,7 +41,7 @@ class UserCategorySearch extends UserCategory
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function backendSearch($params)
     {        
         $this->id = ArrayHelper::getValue($params, 'id');
                 
@@ -53,6 +53,44 @@ class UserCategorySearch extends UserCategory
             'query' => $query,
         ]);
 
+        $this->load($params);
+        
+        // grid filtering conditions
+        $query->andFilterWhere(['NOT IN', 'id', $this->id]);
+        $query->andFilterWhere([
+            'type' => $this->type,
+            'sort_order' => $this->sort_order,
+            'is_show' => $this->is_show,
+            'is_public' => 1,
+        ]);
+        
+        $query->andFilterWhere(['like', 'name', $this->name]);
+            
+        $query->orderBy(['path' => SORT_ASC]);
+                
+        $query->with('videos');
+        
+        return $dataProvider;
+    }
+    
+    /**
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
+    public function search($params)
+    {        
+        $this->id = ArrayHelper::getValue($params, 'id');
+                
+        $query = UserCategory::find();
+
+        // add conditions that should always apply here
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+        
         $this->load($params);
         
         // grid filtering conditions

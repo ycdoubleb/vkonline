@@ -274,8 +274,6 @@ textarea {
 }
 .vk-list .list-panel .list-header .hyalinize {
     position: absolute;
-    bottom: 2px;
-    right: 2px;
     height: 20px;
     padding: 0 5px;
     color: #fff;
@@ -295,6 +293,7 @@ textarea {
     height: 100%;
     margin-top: 14px;
     font-size: 12px;
+    line-height: 100%;
     color: #aaa;
     font-weight: normal;
 }
@@ -408,10 +407,10 @@ textarea {
 .vk-modal .modal-content {
     border-radius: 0px; 
 }
-.vk-modal .modal-body, 
+/*.vk-modal .modal-body, 
 .modal-body .vk-form {
     background-color: #F2F2F2;
-}
+}*/
 /*******************************************************************************
  * 最近联系
  *******************************************************************************/

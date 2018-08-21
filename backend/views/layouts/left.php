@@ -76,6 +76,7 @@ use common\widgets\Menu;
                             ['label' => '视频', 'icon' => 'circle-o', 'url' => ['/frontend_admin/video']],
                             ['label' => '宣传栏', 'icon' => 'circle-o', 'url' => ['/frontend_admin/banner']],
                             ['label' => '课程分类', 'icon' => 'circle-o', 'url' => ['/frontend_admin/category']],
+                            ['label' => '公用目录', 'icon' => 'circle-o', 'url' => ['/frontend_admin/user-category']],
                             ['label' => '老师列表', 'icon' => 'circle-o', 'url' => ['/frontend_admin/teacher']],
                             ['label' => '认证申请', 'icon' => 'circle-o', 'url' => ['/frontend_admin/certificate']],
                             ['label' => '套餐管理', 'icon' => 'circle-o', 'url' => ['/frontend_admin/good']],

@@ -54,7 +54,7 @@ class UserCategoryController extends GridViewChangeSelfController
         foreach ($catIds as $id) {
             $catChildrens[$id] = ArrayHelper::index(UserCategory::getCatChildren($id), 'id');
         }
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

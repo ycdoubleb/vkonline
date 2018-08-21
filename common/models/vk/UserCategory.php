@@ -168,6 +168,7 @@ class UserCategory extends ActiveRecord
         return $this->hasMany(Video::class, ['user_cat_id' => 'id'])->where(['is_del' => '0']);
     }
     
+    
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径
@@ -326,7 +327,7 @@ class UserCategory extends ActiveRecord
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
             if ($category['parent_id'] == $id && $category['type'] == $type &&
-                    (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by)) &&
+                    ($category['is_public'] == 1 || (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by))) &&
                     ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $category;
                 if ($recursion) {
@@ -334,6 +335,7 @@ class UserCategory extends ActiveRecord
                 }
             }
         }
+        
         return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
     }
 
@@ -351,6 +353,31 @@ class UserCategory extends ActiveRecord
         return self::getUserCatChildren($id, null, $type, $key_to_value, $recursion, $include_unshow);
     }
 
+    /**
+     * 获取用户分类的子级 （后台）
+     * @param integer $id               分类ID
+     * @param integer $type             默认返回我的视频类型
+     * @param bool $key_to_value        返回键值对形式
+     * @param bool $recursion           是否递归
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [array|key=value]
+     */
+    public static function getBackendCatChildren($id, $type = 1, $key_to_value = false, $recursion = false, $include_unshow = false) {
+        self::initCache();
+        $childrens = [];
+        foreach (self::$userCategorys as $c_id => $category) {
+            if ($category['parent_id'] == $id && $category['type'] == $type && ($include_unshow || $category['is_show'] == 1)) {
+                $childrens[] = $category;
+                if ($recursion) {
+                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $type, false, $recursion, $include_unshow));
+                }
+            }
+        }
+        
+        return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
+    }
+    
     /**
      * 获取用户分类的子级ID
      * @param integer $id               分类ID
@@ -433,7 +460,7 @@ class UserCategory extends ActiveRecord
             if ($catgegory->parent_id == 0)
                 break;
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
-
+        
         return $userCategorys;
     }
 

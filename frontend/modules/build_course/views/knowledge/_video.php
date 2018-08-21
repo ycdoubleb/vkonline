@@ -4,11 +4,12 @@
         <a href="/study_center/default/video-info?id={%id%}" title="{%name%}" target="_blank">
             <img src="{%img%}" width="100%" height="100%" />
         </a>
-        <div class="hyalinize">{%duration%}</div>
+        <div class="hyalinize duration">{%duration%}</div>
     </div>
     <div class="list-body">
         <div class="tuip">
-            <span class="title single-clamp">{%name%}</span>
+            <span class="title single-clamp" style="width: 80%">{%name%}</span>
+            <span class="text-success pull-right">{%status%}</span>
         </div>
         <div class="tuip single-clamp">{%tags%}</div>
         <div class="tuip">

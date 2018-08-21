@@ -1,12 +1,12 @@
 <?php
+
 return [
     'timeZone' => 'PRC',
     'language' => 'zh-CN',
     'name' => '游学吧',
-    
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
@@ -23,7 +23,6 @@ return [
                         'app/rbac' => 'rbac.php',
                     ],
                 ],
-               
                 '*' => [
                     'class' => 'yii\i18n\PhpMessageSource',
                     'basePath' => '@app/messages',
@@ -48,11 +47,20 @@ return [
             'class' => 'common\modules\ueditor\Module',
         ],
         //日期控制组件
-        'datecontrol' =>  [
+        'datecontrol' => [
             'class' => '\kartik\datecontrol\Module',
         ],
+        //gridview 组件
+        'gridview' => [
+            'class' => '\kartik\grid\Module',
+        // your other grid module settings
+        ],
+        //gridview 组件
+        'gridviewKrajee' => [
+            'class' => '\kartik\grid\Module',
+        // your other grid module settings
+        ]
     ],
-    
     'as access' => [
         'class' => 'common\modules\rbac\components\AccessControl',
         'allowActions' => [

@@ -22,38 +22,6 @@ $this->title = Yii::t('app', '{My}{Video}', [
     'My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')
 ]);
 
-//组装获取老师的下拉的格式对应数据
-$teacherFormat = [];
-foreach ($teacherMap as $teacher) {
-    $teacherFormat[$teacher->id] = [
-        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
-        'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
-        'sex' => $teacher->sex == 1 ? '男' : '女',
-        'job_title' => $teacher->job_title,
-    ];
-}
-$formats = json_encode($teacherFormat);
-$format = <<< SCRIPT
-    window.formats = $formats;
-    function format(state) {
-        //如果非数组id，返回选项组
-        if (!state.id){
-            return state.text
-        };
-        //访问名师堂的链接
-        var links = '/teacher/default/view?id=' + $.trim(state.id);
-        //返回结果（html）
-        return '<div class="vk-select2-results single-clamp">' +
-            '<a class="icon-vimeo"><i class="fa fa-vimeo ' + formats[state.id]['is_certificate'] + '"></i></a>' + 
-            '<img class="avatars img-circle" src="' + formats[state.id]['avatar'].toLowerCase() + '" width="32" height="32"/>' +  state.text + 
-            '（' + formats[state.id]['sex'] + '<span class="job-title">' + formats[state.id]['job_title'] + '</span>）' + 
-        '</div>';
-    } 
-        
-SCRIPT;
-$escape = new JsExpression("function(m) { return m; }");
-$this->registerJs($format, View::POS_HEAD);
-
 ?>
 
 <div class="video-index main">
@@ -79,91 +47,18 @@ $this->registerJs($format, View::POS_HEAD);
     </div>
     
     <!-- 搜索 -->
-    <div class="video-form vk-form set-spacing"> 
-        
-        <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-            'options'=>[
-                'id' => 'build-course-form',
-                'class'=>'form-horizontal',
-            ],
-            'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n",  
-                'labelOptions' => [
-                    'class' => 'col-lg-1 col-md-1 control-label form-label',
-                ],  
-            ], 
-        ]); ?>
-        
-        <div class="col-lg-12 col-md-12">
-            
-            <!--所属目录-->
-            <?= $form->field($searchModel, 'user_cat_id', [
-                'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
-            ])->widget(DepDropdown::class, [
-                'pluginOptions' => [
-                    'url' => Url::to('../user-category/search-children', false),
-                    'max_level' => 6,
-                    'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
-                ],
-                'items' => UserCategory::getSameLevelCats($searchModel->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
-                'values' => $searchModel->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($searchModel->user_cat_id)->path))),
-                'itemOptions' => [
-                    'style' => 'width: 115px; display: inline-block;',
-                ],
-            ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')]) . '：') ?>
-            
-            <!--主讲老师-->
-            <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
-                'options' => ['placeholder'=>'请选择...',],
-                'pluginOptions' => [
-                    'templateResult' => new JsExpression('format'),     //设置选项格式
-                    'escapeMarkup' => $escape,
-                    'allowClear' => true
-                ],
-                'pluginEvents' => [
-                    'change' => 'function(){ submitForm(); }'
-                ]
-            ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
-                'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
-            ])) ?>
-            
-            <!--查看权限-->
-            <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
-                'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
-                'itemOptions'=>[
-                    'onclick' => 'submitForm();',
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{View}{Privilege}：', [
-                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-            ])) ?>
-            
-            <!--视频名称-->
-            <?= $form->field($searchModel, 'name')->textInput([
-                'placeholder' => '请输入...', 'maxlength' => true,
-                'onchange' => 'submitForm();',
-            ])->label(Yii::t('app', '{Video}{Name}：', [
-                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-            ])) ?>
-        </div>
-        
-        <?php ActiveForm::end(); ?>
-        
-    </div>
-    <!-- 排序 -->
+    <?= $this->render('_search', [
+        'searchModel' => $searchModel,
+        'filters' => $filters,
+        'pathMap' => $pathMap,
+        'teacherMap' => $teacherMap,
+    ]) ?>
+    
+    <!-- 显示结果 -->
     <div class="vk-tabs">
         <ul class="list-unstyled pull-left">
-            <li id="created_at">
-                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at']))) ?>
+            <li>
+                <span class="summary">共 <b><?= $totalCount ?></b> 个视频</span>
             </li>
         </ul>
         <ul class="list-unstyled pull-right hidden">
@@ -188,43 +83,69 @@ $this->registerJs($format, View::POS_HEAD);
             </li>
         </ul>
     </div>
+    
     <!--列表-->
     <div class="vk-list">
-        <ul class="list-unstyled">
-            
-        </ul>
+        <!--目录-->
+        <div class="folder">
+            <ul class="list-unstyled">
+                 <?php 
+                    $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                    if($userCatId != null){ 
+                        echo '<li>';
+                            $parent_id = UserCategory::getCatById($userCatId)->parent_id;
+                            echo Html::a('<i class="ifolder upper-level"></i><p class="folder-name">上一级</p>', 
+                                    array_merge(['index'], array_merge($filters, ['user_cat_id' => $parent_id > 0 ? $parent_id : null ])), ['title' => '上一级']);
+                        echo '</li>';
+                    } 
+                ?>
+                <?php 
+                    foreach ($catalogMap as $catalog){
+                        $iconFolder = $catalog['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                        echo '<li>';
+                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $catalog['name'] .'</p>',
+                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $catalog['id']])),
+                            ['title' => $catalog['name'],]);
+                        echo '</li>';
+                    } 
+                ?>
+            </ul>
+        </div>
+        
+        <!--视频-->
+        <div class="video">
+            <ul class="list-unstyled">
+
+            </ul>
+        </div>
+        
+        <!--加载-->
+        <div class="loading-box">
+            <span class="loading" style="display: none"></span>
+            <span class="no_more" style="display: none">没有更多了</span>
+        </div>
+        
     </div>
-    <!--加载-->
-    <div class="loading-box">
-        <span class="loading" style="display: none"></span>
-        <span class="no_more" style="display: none">没有更多了</span>
-    </div>
-    <!--总结记录-->
-    <div class="summary">
-        <span>共 <b><?= $totalCount ?></b> 条记录</span>
-    </div>
-    
+        
 </div>
 
 <?= $this->render('/layouts/model') ?>
 
 <?php
-$tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');   //排序
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
 $js = 
 <<<JS
-    //排序选中效果
-    $(".vk-tabs ul li[id=$tabs]").addClass('active');   
+    
     var is_arrange = false;   //是否在整理状态
     var is_checked = false;   //是否选中状态
     //单击整理视频
     $("#arrange").click(function(){
         is_arrange = true;
         $(".vk-tabs .pull-right").removeClass("hidden");
-        $('input[name="Video[id]"]').removeClass("hidden");
+        $('input[name="Video[id]"]').removeClass("hidden").prop("checked", false);
     });
     //单击取消
     $("#cancel").click(function(){
@@ -261,12 +182,6 @@ $js =
     }   
     
     /**
-     * 提交表单
-     */
-    window.submitForm = function(){
-        $('#build-course-form').submit();
-    }
-    /**
      * 滚屏自动换页
      */
     var page = 0; //页数
@@ -284,7 +199,7 @@ $js =
      * @param string url 指定的链接
      */
     function loaddata (target_page, url) {
-        var maxPageNum =  $totalCount / 6;
+        var maxPageNum =  $totalCount / 8;
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
             $('.loading').hide();
@@ -304,7 +219,7 @@ $js =
                 //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
                     for(var i in data.result){
-                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > ul"));
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > div.video > ul"));
                         //是否在整理状态，如果是，则换页时显示input
                         if(is_arrange){
                             var checkboxItem = item.find($('input[name="Video[id]"]'));

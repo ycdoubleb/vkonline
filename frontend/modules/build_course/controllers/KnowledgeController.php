@@ -2,8 +2,10 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Knowledge;
 use common\models\vk\searchs\VideoFavoriteSearch;
+use common\models\vk\searchs\VideoListSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
@@ -13,6 +15,7 @@ use common\utils\DateUtil;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -165,9 +168,10 @@ class KnowledgeController extends Controller
         $videos = array_values($results['data']['video']);    //视频数据
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['level'] = Video::$levelMap[$item['level']];
+            $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -192,7 +196,7 @@ class KnowledgeController extends Controller
             }
         }
         
-        return $this->renderAjax('reference', [
+        return $this->renderAjax('mycollect', [
             'searchModel' => $searchModel,      //搜索模型
             'type' => UserCategory::TYPE_MYCOLLECT,
             'filters' => $results['filter'],    //查询过滤的属性
@@ -207,14 +211,16 @@ class KnowledgeController extends Controller
      */
     public function actionMyVideo()
     {
-        $searchModel = new VideoSearch();
+        $searchModel = new VideoListSearch();
         $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
         $videos = array_values($results['data']['video']);    //视频数据
+        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['level'] = Video::$levelMap[$item['level']];
+            $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
         }
         
         //分页查询
@@ -239,11 +245,39 @@ class KnowledgeController extends Controller
             }
         }
         
-        return $this->renderAjax('reference', [
+        return $this->renderAjax('myvideo', [
             'searchModel' => $searchModel,      //搜索模型
             'type' => UserCategory::TYPE_MYVIDOE,
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
+            'pathMap' => $this->getDirectoryLocation($userCatId),  //所属目录位置
+            'catalogMap' => $this->getSameLevelCats($userCatId),  //所有目录
+        ]);
+    }
+    
+    /**
+     * 引用视频，搜索后的结果。
+     * @return string|json
+     */
+    public function actionResult()
+    {
+        $searchModel = new VideoListSearch();
+        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams));
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => array_values($results['data']['video']),
+            'key' => 'id',
+        ]);
+        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        $userCatIds = ArrayHelper::getColumn($dataProvider->allModels, 'user_cat_id');   //所有用户分类id
+        $cateIds = array_merge($userCatIds, [$userCatId]);
+       
+        return $this->renderAjax('result', [
+            'searchModel' => $searchModel,      //搜索模型
+            'dataProvider' => $dataProvider,    //搜索结果后的数据
+            'filters' => $results['filter'],     //查询过滤的属性
+            'type' => UserCategory::TYPE_MYVIDOE,
+            'totalCount' => $results['total'],   //总数量
+            'pathMap' => $this->getDirectoryLocation(array_filter($cateIds)),  //所属目录位置
         ]);
     }
     
@@ -251,7 +285,7 @@ class KnowledgeController extends Controller
      * 引用 品牌内部的视频
      * 如果是 page 非为空，返回成功的json数据，否则返回自己的视频
      * @return json
-     */
+     
     public function actionInsideVideo()
     {
         $searchModel = new VideoSearch();
@@ -291,7 +325,7 @@ class KnowledgeController extends Controller
             'filters' => $results['filter'],    //查询过滤的属性
             'totalCount' => $results['total'],  //总数量
         ]);
-    }
+    }*/
     
     /**
      * 选择 引用的资源视频
@@ -309,7 +343,7 @@ class KnowledgeController extends Controller
                     return [
                         'code'=> 200,
                         'data' => [
-                            'result' => $results, 
+                            'result' => $results[0], 
                         ],
                         'message' => '请求成功！',
                     ];
@@ -373,8 +407,9 @@ class KnowledgeController extends Controller
         
         //重修视频数据里面的元素值
         foreach ($results as $index => $item) {
-            $results[$index]['img'] = StringUtil::completeFilePath($item['img']);
+            $results[$index]['img'] = Aliyun::absolutePath($item['img']);
             $results[$index]['duration'] = DateUtil::intToTime($item['duration']);
+            $results[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $results[$index]['des'] = Html::decode($item['des']);
             $results[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);
             $results[$index]['level_name'] = Video::$levelMap[$item['level']];
@@ -383,5 +418,58 @@ class KnowledgeController extends Controller
         }
         
         return $results;
+    }
+    
+    /**
+     * 获取目录位置
+     * @param integer|array $categoryId
+     * @return array
+     */
+    protected function getDirectoryLocation($categoryId)
+    {
+        $path = [];
+        $categoryIds = !is_array($categoryId) ? [$categoryId] : array_unique($categoryId);
+        if(!empty(array_filter($categoryIds))) {
+            foreach ($categoryIds as $catId) {
+                $userCategory = UserCategory::getCatById($catId);
+                if($userCategory != null){
+                    $parentids = array_values(array_filter(explode(',', $userCategory->path)));
+                    foreach ($parentids as $index => $id) {
+                        $path[$catId][] = [
+                            'id' => $id,
+                            'name' => UserCategory::getCatById($id)->name
+                        ];
+                    }
+                }
+            }
+        }
+        
+        return $path;
+    }
+    
+    /**
+     * 返回用户当前分类同级的所有分类
+     * @param integer $categoryId  
+     * @return array
+     */
+    protected function getSameLevelCats($categoryId)
+    {
+        if($categoryId != null){
+            $categoryMap = UserCategory::getCatChildren($categoryId, 1, false);
+        }else{
+            $categoryMap = UserCategory::getCatsByLevel(1, null);
+        }
+        
+        $categorys = [];
+        ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
+        foreach ($categoryMap as $category) {
+            $categorys[] = [
+                'id' => $category['id'],
+                'name' => $category['name'],
+                'is_public' => $category['is_public'],
+            ];
+        }
+        
+        return $categorys;
     }
 }
