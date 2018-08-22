@@ -252,7 +252,10 @@ $js =
     $('.vk-table > tbody > tr').each(function(){
         var key = $(this).attr('data-key');
         $(this).click(function(){
-            $(location).attr({'href': '../video/view?id=' + key, 'target': '_blank'});
+            var a = $('<a href="../video/view?id=' + key + '"' + 'target="_blank" />').get(0);
+            var e = document.createEvent('MouseEvents');
+            e.initEvent( 'click', true, true );
+            a.dispatchEvent(e);
         });
     });    
     
