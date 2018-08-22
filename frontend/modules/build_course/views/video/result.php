@@ -4,10 +4,12 @@ use common\components\aliyuncs\Aliyun;
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
+use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\LinkPager;
 
 /* @var $this View */
 
@@ -91,6 +93,11 @@ $this->title = Yii::t('app', '{My}{Video}', [
             'tableOptions' => ['class' => 'table detail-view vk-table'],
             'layout' => "{items}\n{summary}\n{pager}",
             'summaryOptions' => ['class' => 'hidden'],
+            'pager' => [
+                'options' => [
+                    'class' => 'hidden',
+                ]
+            ],
             'columns' => [
                 [
                     'header' => '',
@@ -176,6 +183,13 @@ $this->title = Yii::t('app', '{My}{Video}', [
                 ],
             ],
         ]); ?>
+        
+        <!--分页-->
+        <?= LinkPager::widget([  
+            'pagination' => new Pagination([
+                'totalCount' => $totalCount,  
+            ]),  
+        ]) ?> 
         
     </div>
         
