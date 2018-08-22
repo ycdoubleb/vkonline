@@ -240,8 +240,10 @@
 .vk-list .folder > ul > li > a {
     display: inline-block;
     width: 77px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
@@ -300,7 +302,7 @@
 .knowledge-reference .vk-list 
 .list-panel .list-header .status {
     bottom: 2px;
-    left: 42px;
+    left: 38px;
 }
 
 .knowledge-reference .vk-list 
@@ -485,8 +487,10 @@
 .video-index .vk-list .folder > ul > li > a {
     display: inline-block;
     width: 77px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
@@ -548,7 +552,7 @@
 .video-index .vk-list 
 .list-panel .list-header .status {
     bottom: 2px;
-    left: 42px;
+    left: 38px;
 }
 
 .video-index .vk-list 
