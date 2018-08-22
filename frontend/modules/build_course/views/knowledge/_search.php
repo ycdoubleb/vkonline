@@ -42,7 +42,7 @@ use yii\widgets\ActiveForm;
 
         <!--搜索类型-->
         <div class="form-group field-knowledgereference-type">
-            <div class="col-lg-11 col-md-11 clear-padding">
+            <div class="col-lg-10 col-md-10 clear-padding">
                 <?= Html::radioList('KnowledgeReference[type]', $actionId, [
                     'my-video' => '我的视频', 'my-collect' => '我的收藏'
                 ], [
@@ -73,6 +73,7 @@ use yii\widgets\ActiveForm;
                             $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
                             if(isset($pathMap[$userCatId]) && count($pathMap[$userCatId]) > 0){
                                 $endPath = end($pathMap[$userCatId]);
+                                echo '<li>' . Html::a('根目录', [$actionId, 'user_cat_id' => null]) . '<span class="set-route">›</span></li>';
                                 foreach ($pathMap[$userCatId] as $path) {
                                     echo '<li>';
                                     echo Html::a($path['name'], array_merge([$actionId], array_merge($filters, ['user_cat_id' => $path['id']])));

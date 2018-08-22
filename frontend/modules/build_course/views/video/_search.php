@@ -79,6 +79,7 @@ $this->registerJs($format, View::POS_HEAD);
                         $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
                         if(isset($pathMap[$userCatId]) && count($pathMap[$userCatId]) > 0){
                             $endPath = end($pathMap[$userCatId]);
+                            echo '<li>' . Html::a('根目录', ['index', 'user_cat_id' => null]) . '<span>›</span></li>';
                             foreach ($pathMap[$userCatId] as $path) {
                                 echo '<li>';
                                 echo Html::a($path['name'], array_merge(['index'], array_merge($filters, ['user_cat_id' => $path['id']])));

@@ -136,19 +136,19 @@
                         }
                     }
                 }
-                function openUriWithIE11UsingRegistry(uri, failCb, successCb) {
-                    try {
-                        var shell = new ActiveXObject("WScript.Shell");
-                        var reg = shell.RegRead("HKEY_CLASSES_ROOT\\glcloud\\URL Protocol");
-                        if (reg) {
-                            window.location.href = uri;
-                        }
-                        successCb();
-                    } catch (e) {
-                        failCb();
-                    }
-
-                }
+//                function openUriWithIE11UsingRegistry(uri, failCb, successCb) {
+//                    try {
+//                        var shell = new ActiveXObject("WScript.Shell");
+//                        var reg = shell.RegRead("HKEY_CLASSES_ROOT\glcloud\URL Protocol");
+//                        if (reg) {
+//                            window.location.href = uri;
+//                        }
+//                        successCb();
+//                    } catch (e) {
+//                        failCb();
+//                    }
+//
+//                }
 
                 function openUriUsingIEInOlderWindows(uri, failCb, successCb) {
                     if (getInternetExplorerVersion() === 10) {

@@ -123,6 +123,9 @@ class VideoController extends Controller
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($results['data']['video']),
             'key' => 'id',
+            'pagination' => [
+                'pageSize' => 20,
+            ]
         ]);
         $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         $userCatIds = ArrayHelper::getColumn($dataProvider->allModels, 'user_cat_id');   //所有用户分类id

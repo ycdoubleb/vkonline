@@ -72,15 +72,21 @@ class VideoListSearch extends Video
         
         self::getInstance();
         $this->load($params);
-       
+        
         //目录
-        if($this->user_cat_id == null && !$sign){
-            $userCatIds = ArrayHelper::getColumn(UserCategory::getCatsByLevel(1, null), 'id');
-            self::$query->andFilterWhere(['Video.user_cat_id' => $userCatIds]);
-        }else{
+        if($sign){
+            //获取分类的子级ID    
+            $userCatIds = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
             self::$query->andFilterWhere([
-                'Video.user_cat_id' => $this->user_cat_id
+                'Video.user_cat_id' => !empty($userCatIds) ? 
+                    ArrayHelper::merge([$this->user_cat_id], $userCatIds) : $this->user_cat_id,
             ]);
+        }else{
+            if($this->user_cat_id != null && !$sign){
+                self::$query->andFilterWhere(['Video.user_cat_id' => $this->user_cat_id]);
+            }else{
+                self::$query->andFilterWhere(['Video.user_cat_id' => 0]);
+            }
         }
 
         //条件查询

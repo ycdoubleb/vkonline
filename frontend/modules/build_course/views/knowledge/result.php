@@ -2,10 +2,12 @@
 
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\Video;
+use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\LinkPager;
 
 /* @var $this View */
 
@@ -43,6 +45,11 @@ $actionId = Yii::$app->controller->action->id;
             'tableOptions' => ['class' => 'table detail-view vk-table'],
             'layout' => "{items}\n{summary}\n{pager}",
             'summaryOptions' => ['class' => 'hidden'],
+            'pager' => [
+                'options' => [
+                    'class' => 'hidden',
+                ]
+            ],
             'columns' => [
                 [
                     'header' => '',
@@ -129,6 +136,13 @@ $actionId = Yii::$app->controller->action->id;
             ],
         ]); ?>
         
+        <!--分页-->
+        <?= LinkPager::widget([  
+            'pagination' => new Pagination([
+                'totalCount' => $totalCount,  
+            ]),  
+        ]) ?> 
+        
     </div>
         
 </div>
@@ -145,6 +159,14 @@ $js =
     $('.times-close').click(function(){
         $("#reference-video-list").load("../knowledge/my-video?user_cat_id={$userCatId}");
     });
+        
+    //单击分页    
+    $('.pagination > li').each(function(){
+        $(this).click(function(e){
+            e.preventDefault();
+            $("#reference-video-list").load($(this).find('a').attr('href'));
+        });
+    });    
         
     //设置table的每个tr的跳转链接    
     $('.vk-table > tbody > tr').each(function(){
