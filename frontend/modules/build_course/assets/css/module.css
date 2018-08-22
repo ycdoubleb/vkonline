@@ -240,8 +240,10 @@
 .vk-list .folder > ul > li > a {
     display: inline-block;
     width: 77px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
@@ -485,8 +487,10 @@
 .video-index .vk-list .folder > ul > li > a {
     display: inline-block;
     width: 77px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
