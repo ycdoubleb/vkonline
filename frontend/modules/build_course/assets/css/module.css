@@ -228,7 +228,7 @@
 }
 
 .knowledge-reference .vk-list .folder > ul > li {
-    display: inline-block;
+    float: left;
     margin-bottom: 25px;
 }
 
@@ -468,7 +468,7 @@
 }
 
 .video-index .vk-list .folder > ul > li {
-    display: inline-block;
+    float: left;
     margin-bottom: 25px;
 }
 
@@ -557,11 +557,6 @@
 
 .video-index .vk-list .list-panel .tuip {
     margin-top: 0px;
-}
-
-.video-index .vk-list 
-.list-panel .tuip > input[type="checkbox"] {
-    margin-top: -1px;
 }
 
 .video-index .vk-list 
