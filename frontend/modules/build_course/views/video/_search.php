@@ -171,6 +171,7 @@ $this->registerJs($format, View::POS_HEAD);
         </div>
     </div>
 
+    <!--标记搜索方式-->
     <?= Html::hiddenInput('sign', 1); ?>
     
     <?php ActiveForm::end(); ?>

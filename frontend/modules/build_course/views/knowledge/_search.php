@@ -96,7 +96,10 @@ use yii\widgets\ActiveForm;
         <?= $form->field($searchModel, 'name')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true, 'onchange' => 'submitForm();'
         ])->label(Yii::t('app', 'Keyword') . '：') ?>
-
+        
+        <!--标记搜索方式-->
+        <?= Html::hiddenInput('sign', 1); ?>
+        
         <?php ActiveForm::end(); ?>
         
     </div>
