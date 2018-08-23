@@ -66,7 +66,7 @@ class VideoListSearch extends Video
     //建课中心模块的情况下
     public function buildCourseSearch($params)
     {
-        $sign = ArrayHelper::getValue($params, 'sign', 0);
+        $sign = ArrayHelper::getValue($params, 'sign', 0);  //标记搜索方式
         $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
         $this->user_cat_id = ArrayHelper::getValue($params, 'user_cat_id', null);    //用户分类id
         

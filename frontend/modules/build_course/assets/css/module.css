@@ -179,8 +179,7 @@
 /***************************
  * 引用视频：搜索样式-面包屑
  ***************************/
-.knowledge-reference 
-.vk-tabs .breadcrumb {
+.knowledge-reference .vk-tabs .breadcrumb {
     display: inline-block;
     width: 100%;
     height: 40px;
@@ -191,22 +190,20 @@
     background-color: transparent;
 }
 
-.knowledge-reference 
-.vk-tabs ul > li > a {
+.knowledge-reference .vk-tabs ul > li > a {
     font-size: 13px;
     text-decoration: none;
 }
 
-.knowledge-reference 
-.vk-tabs ul > li .set-route {
+.knowledge-reference .vk-tabs ul > li .set-route,
+.knowledge-reference .vk-table .set-route {
     margin: 0 15px;
     font-size: 16px;
     color: #9e9e9e;
     font-weight: bold;
 }
 
-.knowledge-reference 
-.vk-tabs ul > li + li:before {
+.knowledge-reference .vk-tabs ul > li + li:before {
     padding: 0px;
     color: transparent;
     content: "";
@@ -230,23 +227,22 @@
     overflow-x: hidden;
 }
 
-.knowledge-reference 
-.vk-list .folder > ul > li {
+.knowledge-reference .vk-list .folder > ul > li {
     display: inline-block;
     margin-bottom: 25px;
 }
 
-.knowledge-reference 
-.vk-list .folder > ul > li > a {
+.knowledge-reference .vk-list .folder > ul > li > a {
     display: inline-block;
-    width: 77px;
+    width: 97px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
-.knowledge-reference 
-.vk-list .folder > ul > li > a:hover {
+.knowledge-reference .vk-list .folder > ul > li > a:hover {
     background-color: #f9f9f9;
 }
 
@@ -260,18 +256,15 @@
     background-size: 40px 32px; 
 }
 
-.knowledge-reference 
-.vk-list .ifolder.upper-level{
+.knowledge-reference .vk-list .ifolder.upper-level{
     background-image: url('../imgs/upper-level.png');
 }
 
-.knowledge-reference 
-.vk-list .ifolder.folder-public{
+.knowledge-reference .vk-list .ifolder.folder-public{
     background-image: url('../imgs/folder-public.png');
 }
 
-.knowledge-reference 
-.vk-list .folder-name {
+.knowledge-reference .vk-list .folder-name {
     margin-top: 10px;
     margin-bottom: 0px;
 }
@@ -279,8 +272,7 @@
 /***************************
  * 引用视频：列表样式-视频
  ***************************/
-.knowledge-reference 
-.vk-list .list-panel {
+.knowledge-reference .vk-list .list-panel {
     width: 200px;
     margin-right: 25px;
     margin-bottom: 20px;
@@ -300,7 +292,7 @@
 .knowledge-reference .vk-list 
 .list-panel .list-header .status {
     bottom: 2px;
-    left: 42px;
+    left: 38px;
 }
 
 .knowledge-reference .vk-list 
@@ -325,16 +317,14 @@
     text-align: center;
 }
 
-.knowledge-reference 
-.summary .times-close {
+.knowledge-reference .summary .times-close {
     font-size: 16px;
     color: #999999;
     padding: 0px 5px;
     cursor: pointer;
 }
 
-.knowledge-reference 
-.vk-table tr:hover{
+.knowledge-reference .vk-table tr:hover{
     background-color: #f2f2f2;
     cursor: pointer;
 }
@@ -383,7 +373,7 @@
     text-decoration: none;
 }
 
-.video-search ul > li > span,
+.video-search ul > li > .set-route,
 .video-index .vk-table .set-route {
     margin: 0 15px;
     font-size: 16px;
@@ -484,9 +474,11 @@
 
 .video-index .vk-list .folder > ul > li > a {
     display: inline-block;
-    width: 77px;
+    width: 93px;
+    height: 100%;
     padding: 5px 0px;
     text-align: center;
+    line-height: 100%;
     text-decoration: none;
 }
 
@@ -548,7 +540,7 @@
 .video-index .vk-list 
 .list-panel .list-header .status {
     bottom: 2px;
-    left: 42px;
+    left: 38px;
 }
 
 .video-index .vk-list 

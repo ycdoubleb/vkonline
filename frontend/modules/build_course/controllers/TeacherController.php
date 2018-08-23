@@ -146,7 +146,7 @@ class TeacherController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
             if($model->is_del){
                 throw new NotFoundHttpException(Yii::t('app', 'The teacher does not exist.'));
             }
@@ -174,7 +174,7 @@ class TeacherController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
             if($model->is_certificate){
                 throw new NotFoundHttpException(Yii::t('app', 'The certified teacher can not be deleted.'));
             }

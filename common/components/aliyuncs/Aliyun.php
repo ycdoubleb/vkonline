@@ -73,7 +73,7 @@ class Aliyun extends Component {
      */
     public static function absolutePath($path) {
         if (strpos($path, 'http://') === false) {
-            $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-input'] . "/$path";
+            $path = "http://" . \Yii::$app->params['aliyun']['oss']['host-output'] . "/$path";
         }
         return $path;
     }

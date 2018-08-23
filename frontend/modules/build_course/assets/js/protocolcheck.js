@@ -1,6 +1,5 @@
 (function (f) {
-    if (typeof exports === "object" && typeof module !== "undefined")
-    {
+    if (typeof exports === "object" && typeof module !== "undefined") {
         module.exports = f()
     } else if (typeof define === "function" && define.amd) {
         define([], f)
@@ -73,7 +72,6 @@
                 }
 
                 function openUriWithHiddenFrame(uri, failCb, successCb) {
-
                     var timeout = setTimeout(function () {
                         failCb();
                         handler.remove();
@@ -87,12 +85,18 @@
                     var handler = _registerEvent(window, "blur", onBlur);
 
                     function onBlur() {
-                        clearTimeout(timeout);
-                        handler.remove();
-                        successCb();
+                        try{
+                            iframe.contentWindow.window
+                        }catch(e){
+                            clearTimeout(timeout);
+                            handler.remove();
+                            successCb();
+                        }
                     }
-
-                    iframe.contentWindow.location.href = uri;
+                    
+                    try{
+                        iframe.contentWindow.location.href = uri;
+                    }catch(e){}
                 }
 
                 function openUriWithTimeoutHack(uri, failCb, successCb) {
@@ -100,7 +104,7 @@
                     var timeout = setTimeout(function () {
                         failCb();
                         handler.remove();
-                    }, 100);
+                    }, 1000);
 
                     //handle page running in an iframe (blur must be registered with top level window)
                     var target = window;
@@ -131,41 +135,30 @@
                         successCb();
                     } catch (e) {
                         if (e.name == "NS_ERROR_UNKNOWN_PROTOCOL") {
-                            alert("Un Kown!")
                             failCb();
                         }
                     }
                 }
-//                function openUriWithIE11UsingRegistry(uri, failCb, successCb) {
-//                    try {
-//                        var shell = new ActiveXObject("WScript.Shell");
-//                        var reg = shell.RegRead("HKEY_CLASSES_ROOT\glcloud\URL Protocol");
-//                        if (reg) {
-//                            window.location.href = uri;
-//                        }
-//                        successCb();
-//                    } catch (e) {
-//                        failCb();
-//                    }
-//
-//                }
 
                 function openUriUsingIEInOlderWindows(uri, failCb, successCb) {
                     if (getInternetExplorerVersion() === 10) {
                         openUriUsingIE10InWindows7(uri, failCb, successCb);
                     } else if (getInternetExplorerVersion() === 9 || getInternetExplorerVersion() === 11) {
-                        /*openUriWithHiddenFrame(uri, failCb, successCb);*/
-                        openUriWithIE11UsingRegistry(uri, failCb, successCb);
+                        openUriWithHiddenFrame(uri, failCb, successCb);
                     } else {
                         openUriInNewWindowHack(uri, failCb, successCb);
                     }
                 }
 
                 function openUriUsingIE10InWindows7(uri, failCb, successCb) {
-                    var timeout = setTimeout(failCb, 100);
+                    var timeout = setTimeout(failCb, 1000);
                     window.addEventListener("blur", function () {
-                        clearTimeout(timeout);
-                        successCb();
+                        try{
+                            iframe.contentWindow.window
+                        }catch(e){
+                            clearTimeout(timeout);
+                            successCb();
+                        }
                     });
 
                     var iframe = document.querySelector("#hiddenIframe");
@@ -206,10 +199,12 @@
 
                 function checkBrowser() {
                     var isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+                    var ua = navigator.userAgent.toLowerCase();
                     return {
                         isOpera: isOpera,
                         isFirefox: typeof InstallTrigger !== 'undefined',
-                        isSafari: Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
+                        isSafari: (~ua.indexOf('safari') && !~ua.indexOf('chrome')) || Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0,
+                        isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
                         isChrome: !!window.chrome && !isOpera,
                         isIE: /*@cc_on!@*/false || !!document.documentMode // At least IE6
                     }
@@ -232,7 +227,7 @@
                     return rv;
                 }
 
-                module.exports = function (uri, failCb, successCb) {
+                module.exports = function (uri, failCb, successCb, unsupportedCb) {
                     function failCallback() {
                         failCb && failCb();
                     }
@@ -248,11 +243,14 @@
 
                         if (browser.isFirefox) {
                             openUriUsingFirefox(uri, failCallback, successCallback);
-                        } else if (browser.isChrome) {
+                        } else if (browser.isChrome || browser.isIOS) {
                             openUriWithTimeoutHack(uri, failCallback, successCallback);
                         } else if (browser.isIE) {
                             openUriUsingIEInOlderWindows(uri, failCallback, successCallback);
+                        } else if (browser.isSafari) {
+                            openUriWithHiddenFrame(uri, failCallback, successCallback);
                         } else {
+                            unsupportedCb();
                             //not supported, implement please
                         }
                     }
