@@ -173,7 +173,7 @@ class ApiController extends Controller {
                 if ($courseProgress->isNewRecord) {
                     $courseMdeol = Course::findOne($course_id);
                     $courseMdeol->learning_count = $courseMdeol->learning_count + 1;
-                    $courseMdeol->update(true, ['learning_count']);
+                    $courseMdeol->update(false, ['learning_count']);
                 }
                 if (!$isFinish) {
                     $courseProgress->is_finish = 0;
@@ -222,7 +222,7 @@ class ApiController extends Controller {
                 if ($courseProgress->isNewRecord) {
                     $courseMdeol = Course::findOne($course_id);
                     $courseMdeol->learning_count = $courseMdeol->learning_count + 1;
-                    $courseMdeol->update(true, ['learning_count']);
+                    $courseMdeol->update(false, ['learning_count']);
                 }
                 if ($isFinish) {
                     $courseProgress->is_finish = 1;

@@ -59,7 +59,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                 ]) ?>
             </span>
             <div class="btngroup pull-right">
-                <?php if($model->created_by == Yii::$app->user->id){
+                <?php if($model->created_by == Yii::$app->user->id && !$model->is_certificate){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']);
                     if(!$model->is_certificate){
