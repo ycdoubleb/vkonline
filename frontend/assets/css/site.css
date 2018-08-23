@@ -405,6 +405,7 @@
 .course-tile .pic-box {
     width: 280px;
     height: 210px;
+    border-bottom: solid 1px #f2f2f2;
 }
 .course-tile .pic-box img{
     width: 100%;

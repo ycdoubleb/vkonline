@@ -72,6 +72,28 @@ html, body{
     padding: 20px
 }
 
+.main .panel .panel-body ul{
+    padding: 0px;
+    margin: 0px -20px -20px 0px;
+}
+
+.main .panel .panel-body ul li{
+    display: inline-block;
+    margin: 0px 8px 20px 0;
+}
+
+.main .panel .panel-body .pic{
+    width: 115px;
+    height: 86px;
+}
+
+.main .panel .panel-body .course-name {
+    font-size: 12px;
+    color: #666666;
+    width: 115px;
+    margin: 0;
+}
+
 .main .panel .panel-body.video {
     padding: 0px
 }
@@ -119,7 +141,7 @@ html, body{
 .main .viewdetail-th {
     color: #999999;
     background-color: #ffffff;
-    width: 27%;
+    width: 15%;
     font-weight: normal;
     text-align: right;
     min-width: 73px;
@@ -129,187 +151,15 @@ html, body{
 
 .main .viewdetail-td {
     text-align: left;
+    vertical-align: middle;
     background-color: #ffffff;
     border: 1px solid #eee !important;
 }
 
-/**
- * 左浮动
- */
-.keep-left {
-   float: left !important;;
+.table-striped > tbody > tr {
+    height: 48px;
 }
-/**
- * 右浮动
- */
-.keep-right {
-   float: right !important;;
-}
-/**
- * 加载
- */
-.loading-box {
-    width: 100%;
-    padding: 20px;
-    color: #999;
-    text-align: center;
-}
-/**
- * 总结样式
- */
-.summary {
-    float: left;
-    width: 100%;
-    padding: 20px 10px 0;
-    color: #999;
-}
-.font-warning {
-    color: #ff3300;
-}
+
 .clear-margin {
     margin: 0 !important;
-}
-/*******************************************************************************
- * 列表
- *******************************************************************************/
-.main .avatars {
-    position: relative;
-    display: inline-block;
-    padding: 2px;
-    margin: 20px 0 0;
-    background-color: #f2f2f2 !important;
-}
-
-.main .avatars > i {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    font-size: 30px;
-    color: #ffcc01;
-}
-
-.list > ul > li,
-.main .teacher-des {
-    background-color: #fff;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-.list {
-    display: inline-block;
-    width: 100%;
-    font-size: 0px;
-    margin-top: 25px;
-}
-.list > ul {
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    font-size: 0px;
-}
-.list > ul > li {
-    float: left;
-    width: 280px;
-    margin-right: 21px;
-    margin-bottom: 30px;
-    font-size: 14px;
-    -webkit-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    transition: all 0.2s linear;
-}
-.list > ul > li.hover {
-    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    -webkit-transform: translate3d(0, -2px, 0);
-    -moz-transform: translate3d(0, -2px, 0);
-    transform: translate3d(0, -2px, 0);
-}
-.list > ul > li a {
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
-}
-.list > ul > li .tuip {
-    display: inline-block;
-    width: 100%;
-    margin-top: 15px;
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-}
-.list > ul > li .avatars {
-    width: 25px;
-    height: 25px;
-    margin: 12px 5px;
-    margin-left: 0;
-    line-height: 0;
-    background-color: #26bfcd;
-}
-.list > ul > li .pic {
-    position: relative;
-    width: 100%;
-    height: 210px;
-    background-color: #26bfcd; 
-}
-.list > ul > li .pic .icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1022;
-    font-size: 18px;
-    border-color: rgba(0, 0, 0, 0.5);
-    border-width: 14px;
-    border-style: solid;
-    display: none;
-}
-.list > ul > li .pic .icon > i {
-    position: absolute;
-    top: -9px;
-    left: -6px;
-    color: #fff;
-}
-.list > ul > li .pic .title {
-    display: table-cell;
-    width: 280px;
-    height: 210px;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    vertical-align: middle;
-}
-.list > ul > li .pic .duration {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    height: 20px;
-    padding: 0 5px;
-    color: #fff;
-    text-align: center;
-    line-height: 20px;
-    background-color: rgba(0, 0, 0, .7);
-}
-.list > ul > li .text {
-    width: 100%;
-    padding: 0 10px 15px;
-    border-bottom: dashed 1px #dedede;
-}
-.list > ul > li .text .title {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    font-weight: bold;
-}
-.list > ul > li .text .title-size {
-    display: inline-block;
-    width: 200px;
-}
-.list > ul > li .teacher {
-    height: 50px;
-    margin: 0 10px;
-    line-height: 50px;
-}
-.list > ul > li .teacher .tuip {
-    margin-top: 0;
 }
