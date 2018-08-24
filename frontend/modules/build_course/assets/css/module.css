@@ -238,7 +238,6 @@
     height: 100%;
     padding: 5px 0px;
     text-align: center;
-    line-height: 100%;
     text-decoration: none;
 }
 
@@ -265,7 +264,7 @@
 }
 
 .knowledge-reference .vk-list .folder-name {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-bottom: 0px;
 }
 
@@ -478,7 +477,6 @@
     height: 100%;
     padding: 5px 0px;
     text-align: center;
-    line-height: 100%;
     text-decoration: none;
 }
 
@@ -505,7 +503,7 @@
 }
 
 .video-index .vk-list .folder-name {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-bottom: 0px;
 }
 
@@ -593,30 +591,49 @@
 .video-form .loading-box {
     text-align: left;
 }
-/**
+
+/***************************
  * 移动视频
- */
-.user-category-move .modal-body .vk-table tr:hover,
-.video-move .modal-body .vk-table tr:hover {
+ ***************************/
+.user-category-move .modal-body .vk-table > tbody > tr,
+.user-category-move .modal-body .vk-table > tbody > tr > td,
+.video-move .modal-body .vk-table > tbody > tr,
+.video-move .modal-body .vk-table > tbody > tr > td {
+    position: relative;
+    cursor: pointer;
+}
+
+.user-category-move .modal-body .vk-table > tbody > tr:hover,
+.video-move .modal-body .vk-table > tbody > tr:hover {
     background-color: #f2f2f2;
 }
-.video-move .modal-body .vk-table a,
-.user-category-move .modal-body .vk-table a{
+
+.user-category-move .modal-body .vk-table .moveCatalog,
+.video-move .modal-body .vk-table .moveCatalog {
     display: inline-block;
     width: 100%;
-    line-height: 48px;
-    text-decoration: none;
-    margin: -8px 0px;
+    cursor: pointer;
 }
-/**
+
+.video-move .modal-body .vk-table .addCatalog,
+.video-move .modal-body .vk-table .delCatalog {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    cursor: pointer;
+}
+
+/***************************
  * 用户自定义目录
- */
+ ***************************/
 .user-category-index .vk-panel .pointer{
     cursor: pointer;
 }
+
 .user-category-index .summary {
     padding-left: 20px;
 }
+
 .user-category-move .top-level{
     display: inline-block;
     width: 100%;
@@ -627,14 +644,17 @@
     border-bottom: 1px solid #e4e4e4;
     
 }
+
 .user-category-move .top-level > a {
     display: inline-block;
     width: 100%;
     text-decoration: none;
 }
+
 .user-category-move .top-level:hover {
     background-color: #f2f2f2;
 }
+
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/
@@ -642,12 +662,14 @@
     margin-top: 30px;
     margin-right: -66px;
 }
+
 .teacher-index .vk-list .list-panel {
     width: 200px;
     height: 203px;
     margin-right: 66px;
     text-align: center;
 }
+
 .teacher-index .vk-list .list-body {
     padding-bottom: 0px !important;
     margin-top: 15px;
@@ -656,31 +678,35 @@
     text-align: center;
     border: none !important;
 }
+
 .teacher-index .vk-list .list-body .tuip {
     width: auto;
     margin: 0;
     font-size: 14px;
     color: #ccc;
 }
-/**
+
+/***************************
  * 老师表单
- */
+ ***************************/
 .teacher-form .result-show {
     float: left;
     width: 245px;
     padding: 3px;
     color: #ff3300;
 }
-/**
+
+/***************************
  * 老师详情
- */
+ ***************************/
 .teacher-view.main .frame .grid-view .pagination {
     padding-left: 20px;
     margin: 15px 0px 20px;
 }
-/**
+
+/***************************
  * 公共部分
- */
+ ***************************/
 .teacher-index .vk-list .list-panel .avatars,
 .teacher-view .avatars {
     position: relative;
@@ -691,6 +717,7 @@
     margin-top: 15px;
     background-color: #f2f2f2;
 }
+
 .teacher-index .vk-list .list-panel .avatars > i,
 .teacher-view .avatars > i {
     position: absolute;

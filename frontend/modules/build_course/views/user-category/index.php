@@ -5,6 +5,7 @@ use common\models\vk\UserCategory;
 use common\widgets\grid\GridViewChangeSelfColumn;
 use common\widgets\treegrid\TreegridAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\switchinput\SwitchInputAsset;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -16,6 +17,7 @@ use yii\web\View;
 /* @var $dataProvider ActiveDataProvider */
 
 ModuleAssets::register($this);
+SwitchInputAsset::register($this);
 TreegridAssets::register($this);
 
 $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
@@ -33,15 +35,16 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
             </span>
             <div class="btngroup pull-right">
                 <?php
-                    echo Html::a(Yii::t('app', 'Add'),  ['create'], [
-                        'class' => 'btn btn-success btn-flat'
+                    echo Html::a(Yii::t('app', 'Add') . '顶级目录',  ['create'], [
+                        'class' => 'btn btn-success',
+                        'onclick' => 'showModal($(this)); return false;'
                     ]) . '&nbsp;';
                     echo Html::a(Yii::t('app', '{Move}{Catalog}', [
                         'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')
                     ]), 'javascript:;', ['id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat']);
                     echo '&nbsp;' . Html::a(Yii::t('app', 'Confirm'), ['move'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat hidden', 
-                        'onclick' => 'showModal($(this)); return false;'
+                        'onclick' => 'moveCatalogModal($(this)); return false;'
                     ]);
                 ?>
             </div>
@@ -146,7 +149,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                                 'title' => Yii::t('app', 'Create'),
                                 'aria-label' => Yii::t('app', 'Create'),
                                 'data-pjax' => '0',
-                                'target' => '_blank'
+                                'onclick' => 'showModal($(this)); return false;'
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-plus"></span>',
@@ -164,7 +167,6 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                                 'title' => Yii::t('app', 'View'),
                                 'aria-label' => Yii::t('app', 'View'),
                                 'data-pjax' => '0',
-                                'target' => '_blank'
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
@@ -182,7 +184,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                                 'title' => Yii::t('app', 'Update'),
                                 'aria-label' => Yii::t('app', 'Update'),
                                 'data-pjax' => '0',
-                                'target' => '_blank'
+                                'onclick' => 'showModal($(this)); return false;'
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="glyphicon glyphicon-pencil"></span>',
@@ -259,8 +261,19 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                 });
             }
         });
-        //显示模态框
+        
+        /**
+         * 显示模态框
+         */
         window.showModal = function(elem){
+            $(".myModal").html("");
+            $('.myModal').modal("show").load(elem.attr("href"));
+        }    
+            
+        /**
+         * 显示移动目录模态框
+         */
+        window.moveCatalogModal = function(elem){
             var checkObject = $("input[name='UserCategory[id]']");  
             var val = [];
             for(i in checkObject){

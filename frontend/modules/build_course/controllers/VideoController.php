@@ -16,10 +16,12 @@ use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use common\utils\StringUtil;
+use Exception;
 use frontend\modules\build_course\utils\ActionUtils;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Exception as Exception2;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -71,7 +73,7 @@ class VideoController extends Controller
         $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
             $videos[$index]['level'] = Video::$levelMap[$item['level']];
             $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
@@ -93,7 +95,7 @@ class VideoController extends Controller
                     ],
                     'message' => '请求成功！',
                 ];
-            }catch (Exception $ex) {
+            }catch (Exception2 $ex) {
                 return [
                     'code'=> 404,
                     'data' => [],
@@ -275,14 +277,13 @@ class VideoController extends Controller
      * @param string $move_ids   移动id
      * @param string $target_id  目标id
      * @return mixed
-     * @throws NotFoundHttpException
      */
-    public function actionMove($move_ids = null, $target_id = null)
+    public function actionMoveVideo($move_ids = null, $target_id = null)
     {
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         
-        if (Yii::$app->request->isPost) {
+        if (Yii::$app->request->isPost){
             /** 开启事务 */
             $trans = Yii::$app->db->beginTransaction();
             try
@@ -291,7 +292,7 @@ class VideoController extends Controller
                 Video::updateAll(['user_cat_id' => $target_id], ['id' => $move_ids]);
                 $trans->commit();  //提交事务
                 Yii::$app->getSession()->setFlash('success','操作成功！');
-            }catch (Exception $ex) {
+            }catch (Exception2 $ex) {
                 $trans ->rollBack(); //回滚事务
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
@@ -299,7 +300,7 @@ class VideoController extends Controller
             return $this->redirect(['index', 'user_cat_id' => $target_id]);
         }
 
-        return $this->renderAjax('move', [
+        return $this->renderAjax('movevideo', [
             'move_ids' => $move_ids,    //所选的视频id
             'dataProvider' => $dataProvider,    //用户自定义的目录结构
         ]);

@@ -100,7 +100,7 @@ class UserCategoryController extends GridViewChangeSelfController
                 if($model->level <= 4){
                     $trans->commit();  //提交事务
                     Yii::$app->getSession()->setFlash('success','操作成功！');
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->redirect(['index']);
                 }else{
                     Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
                     return $this->redirect(['create', 'id' => $id]);
@@ -111,7 +111,7 @@ class UserCategoryController extends GridViewChangeSelfController
             }
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -161,7 +161,7 @@ class UserCategoryController extends GridViewChangeSelfController
                 if($targetLevel + $moveLevel <= 4){
                     $trans->commit();  //提交事务
                     Yii::$app->getSession()->setFlash('success','操作成功！');
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->redirect(['index']);
                 }else{
                     Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
                     return $this->redirect(['update', 'id' => $model->id]);
@@ -172,7 +172,7 @@ class UserCategoryController extends GridViewChangeSelfController
             }
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -263,7 +263,7 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         return $this->renderAjax('move', [
-            'move_ids' => $move_ids,    //所选的目录id
+            'move_ids' => implode(',', $move_ids),    //所选的目录id
             'dataProvider' => $dataProvider,    //用户自定义的目录结构
         ]);
     }

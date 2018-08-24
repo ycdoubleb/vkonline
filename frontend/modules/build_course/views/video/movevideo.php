@@ -15,7 +15,7 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
 ?>
 <div class="video-move main vk-modal">
 
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" style="width: 720px" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -28,14 +28,8 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
                     'dataProvider' => $dataProvider,
                     'tableOptions' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
                     'layout' => "{items}\n{summary}\n{pager}",
-                    'summaryOptions' => [
-                        'class' => 'hidden',
-                    ],
-                    'pager' => [
-                        'options' => [
-                            'class' => 'hidden',
-                        ]
-                    ],
+                    'summaryOptions' => ['class' => 'hidden'],
+                    'pager' => ['options' => ['class' => 'hidden']],
                     'rowOptions' => function($model, $key, $index, $this){
                         return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
                     },
@@ -44,10 +38,9 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
                             'header' => null,
                             'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
                             'format' => 'raw',
-                            'value' => function ($model) use($move_ids){
-                                return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => $move_ids, 'target_id' => $model->id], [
-                                    'onclick' => 'moveVideo($(this)); return false;'
-                                ]);
+                            'value' => function ($model){
+                                return "<span class=\"moveCatalog\">{$model->name}</span>";
+//                                    . "<span class=\"glyphicon glyphicon-plus addCatalog pull-right\" data-level=\"{$model->level}\"></span>";
                             },
                             'contentOptions' => ['style' => 'text-align:left;'],
                         ],
@@ -61,20 +54,27 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
 </div>
 
 <?php
-    
-    $js = <<<JS
+$js = <<<JS
+        
     /**
      * 初始化树状网格插件
      */
     $('.table').treegrid({
         initialState: 'collapsed',
     });        
-            
-    //移动视频到指定目录
-    window.moveVideo = function(elem){
-        $.post(elem.attr("href"));
-    };
-    
+
+    /**
+     * 移动视频到指定目录
+     */
+    var moveIds = "$move_ids";
+    $('.vk-table > tbody > tr').each(function(){
+        var _this = $(this);
+        var targetId = $(this).attr('data-key');
+        _this.find('span.moveCatalog').click(function(){
+            $.post('../video/move-video?move_ids=' + moveIds + '&target_id=' + targetId);
+        });
+    });         
+
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

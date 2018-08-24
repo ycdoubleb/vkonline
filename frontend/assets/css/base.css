@@ -264,7 +264,7 @@ textarea {
     display: inline-block;
     width: 100%;
     background-color: #fff; 
-    border-bottom: solid 1px #f2f2f2;
+    border: solid 1px #e4e4e4;
 }
 .vk-list .list-panel > a,
 .vk-list .list-panel .list-header > a {

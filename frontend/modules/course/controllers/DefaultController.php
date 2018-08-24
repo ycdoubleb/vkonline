@@ -67,9 +67,8 @@ class DefaultController extends Controller {
         //测试长视频
         $result = VideoAliyunAction::addVideoTranscode('0a254e1c7b0323ef5475d75540618d68', true);
         exit;
-       
     }
-    
+
     /**
      * 搜索课程
      * 添加到搜索记录，再跳转到显示列表

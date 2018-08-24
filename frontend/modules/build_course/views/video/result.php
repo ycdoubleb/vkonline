@@ -254,7 +254,7 @@ $js =
         $(this).click(function(){
             var a = $('<a href="../video/view?id=' + key + '"' + 'target="_blank" />').get(0);
             var e = document.createEvent('MouseEvents');
-            e.initEvent( 'click', true, true );
+            e.initEvent('click', true, true );
             a.dispatchEvent(e);
         });
     });    

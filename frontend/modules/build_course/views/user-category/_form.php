@@ -15,26 +15,25 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="user-category-form vk-form set-spacing set-bottom">
+<div class="user-category-form vk-form clear-shadow">
 
     <?php $form = ActiveForm::begin([
         'options' => [
+            'id' => 'user-category-form',
             'class' => 'form-horizontal',
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n"
-                . "<div class=\"col-lg-1 col-md-1\"></div><div class=\"col-lg-7 col-md-7\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
         ],
     ]); ?>
 
     <!--名称-->
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'name')->textInput([
+        'placeholder' => '请输入...', 'maxlength' => true
+    ]) ?>
     
-    <!--移动端名称-->
-    <?= $form->field($model, 'mobile_name')->textInput(['maxlength' => true]) ?>
-   
     <!--所属父级-->
     <?php
         $params = Yii::$app->request->queryParams;
@@ -87,20 +86,13 @@ use yii\widgets\ActiveForm;
     ?>
     
     <!--是否显示-->
-    <?=$form->field($model, 'is_show')->widget(SwitchInput::classname(), [
+    <?=$form->field($model, 'is_show')->widget(SwitchInput::class, [
         'pluginOptions' => [
             'onText' => Yii::t('app', 'Y'),
             'offText' => Yii::t('app', 'N'),
         ],
-        'containerOptions' => ['class' => ' ']
+        'containerOptions' => ['class' => '']
     ]);?>
-
-    <div class="form-group">
-        <div class="col-lg-1 col-md-1 control-label form-label"></div>
-        <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton(Yii::t('app', 'Submit') , ['class' => 'btn btn-success btn-flat']) ?>
-        </div>
-    </div>
 
     <?php ActiveForm::end(); ?>
 
