@@ -275,6 +275,7 @@
     width: 200px;
     margin-right: 25px;
     margin-bottom: 20px;
+    border: solid 1px #e4e4e4;
 }
 
 .knowledge-reference .vk-list 
@@ -331,6 +332,10 @@
 /***************************
  * 知识点：引用视频详情
  ***************************/
+.knowledge-info .vk-list .list-panel {
+    border: solid 1px #e4e4e4;
+}
+
 .knowledge-info .vk-list 
 .list-panel .list-header {
     height: 157px;
@@ -345,6 +350,11 @@
 /*******************************************************************************
  * 我的视频
  *******************************************************************************/
+.video-index .vk-list 
+.list-panel {
+    border: solid 1px #e4e4e4;
+}
+
 .video-index .vk-list 
 .list-panel .list-header {
     height: 157px;
