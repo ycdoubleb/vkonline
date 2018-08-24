@@ -228,7 +228,7 @@
 }
 
 .knowledge-reference .vk-list .folder > ul > li {
-    display: inline-block;
+    float: left;
     margin-bottom: 25px;
 }
 
@@ -468,7 +468,7 @@
 }
 
 .video-index .vk-list .folder > ul > li {
-    display: inline-block;
+    float: left;
     margin-bottom: 25px;
 }
 
@@ -557,11 +557,6 @@
 
 .video-index .vk-list .list-panel .tuip {
     margin-top: 0px;
-}
-
-.video-index .vk-list 
-.list-panel .tuip > input[type="checkbox"] {
-    margin-top: -1px;
 }
 
 .video-index .vk-list 
@@ -703,4 +698,33 @@
     bottom: 0px;
     font-size: 30px;
     color: #ffcc01;
+}
+
+/*******************************************************************************
+ * 板书工具打开中提示
+ *******************************************************************************/
+.tooltip-opening-box{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 50%;
+    top: 230px;
+    left: 0px;
+    text-align: center;
+}
+
+.tooltip-opening-box .content-box{
+    display: inline-block;
+    background: #f9f9f9;
+    
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+
+.tooltip-opening-box .content-box p{
+    padding: 20px;
+    margin: 0px;
 }

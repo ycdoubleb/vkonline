@@ -264,6 +264,7 @@ textarea {
     display: inline-block;
     width: 100%;
     background-color: #fff; 
+    border-bottom: solid 1px #f2f2f2;
 }
 .vk-list .list-panel > a,
 .vk-list .list-panel .list-header > a {
@@ -294,7 +295,7 @@ textarea {
     height: 100%;
     margin-top: 14px;
     font-size: 12px;
-    line-height: 100%;
+    /*line-height: 100%;*/
     color: #aaa;
     font-weight: normal;
 }
