@@ -95,9 +95,6 @@ return [
             'class' => 'frontend\modules\external\Module',
         ],
         //course marker测试
-        'test' => [
-            'class' => 'frontend\modules\test\Module',
-        ],
     ],
 
     'params' => $params,
