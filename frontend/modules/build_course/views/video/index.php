@@ -1,17 +1,11 @@
 <?php
 
 use common\models\vk\UserCategory;
-use common\utils\StringUtil;
-use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
-use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\web\JsExpression;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 
@@ -202,8 +196,8 @@ $js =
         var maxPageNum =  $totalCount / 8;
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
-            $('.loading').hide();
-            $('.no_more').show();
+            $('.loading-box .loading').hide();
+            $('.loading-box .loading-box .no_more').show();
             return;
         }
         /**
@@ -241,7 +235,7 @@ $js =
                     }
                     //如果当前页大于最大页数显示“没有更多了”
                     if(page > Math.ceil(maxPageNum)){
-                        $('.no_more').show();
+                        $('.loading-box .loading-box .no_more').show();
                     }
                 }else{
                     $.notify({
@@ -250,10 +244,10 @@ $js =
                         type: "danger", //错误类型
                     });
                 }
-                $('.loading').hide();   //隐藏loading
+                $('.loading-box .loading').hide();   //隐藏loading
             });
-            $('.loading').show();
-            $('.no_more').hide();
+            $('.loading-box .loading').show();
+            $('.loading-box .loading-box .no_more').hide();
         }
     }
     

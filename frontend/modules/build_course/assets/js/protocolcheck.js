@@ -43,6 +43,9 @@
             s(r[o]);
         return s
     })({1: [function (require, module, exports) {
+                /* 延迟时间 */
+                var timeoutDelay = 5000;
+                
                 function _registerEvent(target, eventType, cb) {
                     if (target.addEventListener) {
                         target.addEventListener(eventType, cb);
@@ -75,7 +78,7 @@
                     var timeout = setTimeout(function () {
                         failCb();
                         handler.remove();
-                    }, 1000);
+                    }, timeoutDelay);
 
                     var iframe = document.querySelector("#hiddenIframe");
                     if (!iframe) {
@@ -104,7 +107,7 @@
                     var timeout = setTimeout(function () {
                         failCb();
                         handler.remove();
-                    }, 1000);
+                    }, timeoutDelay);
 
                     //handle page running in an iframe (blur must be registered with top level window)
                     var target = window;
@@ -151,7 +154,7 @@
                 }
 
                 function openUriUsingIE10InWindows7(uri, failCb, successCb) {
-                    var timeout = setTimeout(failCb, 1000);
+                    var timeout = setTimeout(failCb, timeoutDelay);
                     window.addEventListener("blur", function () {
                         try{
                             iframe.contentWindow.window
@@ -181,13 +184,13 @@
                     setTimeout(function () {
                         try {
                             myWindow.location.href;
-                            myWindow.setTimeout("window.close()", 1000);
+                            myWindow.setTimeout("window.close()", timeoutDelay);
                             successCb();
                         } catch (e) {
                             myWindow.close();
                             failCb();
                         }
-                    }, 1000);
+                    }, timeoutDelay);
                 }
 
                 function openUriWithMsLaunchUri(uri, failCb, successCb) {
