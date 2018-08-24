@@ -239,3 +239,31 @@ Html;
     $content = $html . $content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
 ?>
+<script>
+    /* 检查系统是否安装工具 */
+    var tips = '<div class="tooltip-opening-box">'+
+                    '<div class="content-box">'+
+                        '<p>正在打开工具，请稍后！<span class="loading"></span></p>'
+                    '</div>'+
+                '</div>';
+    var $tips = $(tips);
+    window.onload = function(){
+        $tips.appendTo($('body')).show();
+        $("#coursemake").click(function (event) {
+            $tips.appendTo($('body')).show();
+            window.protocolCheck($(this).attr("href"),
+                    function () {
+                        $tips.appendTo($('body')).hide();
+                        var bln = confirm("检测到您电脑未安装‘板书工具’ 是否下载安装？");
+                        if (bln == true) {
+                            window.location = "http://file.studying8.com/static/tools/coursemaker/Setup.exe";
+                        }
+                    },
+                    function(){
+                        $tips.appendTo($('body')).hide();
+                    }
+            );
+            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+        });
+    };
+</script>
