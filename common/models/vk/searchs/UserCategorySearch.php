@@ -51,6 +51,9 @@ class UserCategorySearch extends UserCategory
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 2000
+            ]
         ]);
 
         $this->load($params);
@@ -89,6 +92,9 @@ class UserCategorySearch extends UserCategory
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => 2000
+            ]
         ]);
         
         $this->load($params);
