@@ -123,6 +123,7 @@ class TeacherController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'customer' => $this->getCustomer(),
         ]);
     }
 
@@ -156,7 +157,7 @@ class TeacherController extends Controller
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
     
-     /**
+    /**
      * 查找客户
      * @return array
      */
@@ -166,6 +167,7 @@ class TeacherController extends Controller
                 ->select(['id', 'name'])
                 ->from(['Customer' => Customer::tableName()])
                 ->all();
+        
         return ArrayHelper::map($query, 'id', 'name');
     }
 }

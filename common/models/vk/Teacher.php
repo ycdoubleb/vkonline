@@ -137,6 +137,10 @@ class Teacher extends ActiveRecord
             if (!$this->id) {
                 $this->id = md5(time() . rand(1, 99999999));
             }
+            //如果更改了认证状态即更新认证时间
+            if($this->attributes('is_certificate') != $this->getOldAttribute('is_certificate')){
+                $this->certicicate_at = time();
+            }
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
                 $string = $upload->name;
@@ -146,12 +150,13 @@ class Teacher extends ActiveRecord
                 $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
                 $upload->saveAs($uploadpath . $this->id . '.' . $ext);
                 $this->avatar = '/upload/teacher/avatars/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
-            }else{
-                $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
             }
-            //都没做修改的情况下保存旧数据
-            if (trim($this->avatar) == ''){
+            //更新并且没有修改头像情况即使用旧头像
+            if (trim($this->avatar) == '' && !$this->isNewRecord){
                 $this->avatar = $this->getOldAttribute('avatar');
+            }else{
+                //设置默认头像
+                $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
             }
             $this->des = Html::encode($this->des);
             
