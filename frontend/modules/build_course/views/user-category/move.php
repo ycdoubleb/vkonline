@@ -15,7 +15,7 @@ $this->title = '选择移动到哪个目录';
 ?>
 <div class="user-category-move main vk-modal">
 
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" style="width: 720px;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
