@@ -1,42 +1,83 @@
 <?php
 
+use common\models\vk\Teacher;
+use kartik\widgets\FileInput;
+use kartik\widgets\Select2;
+use kartik\widgets\SwitchInput;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\vk\Teacher */
-/* @var $form yii\widgets\ActiveForm */
+/* @var $this View */
+/* @var $model Teacher */
+/* @var $form ActiveForm */
+
 ?>
 
 <div class="teacher-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'options' => [
+            'class' => 'form-horizontal',
+            'enctype' => 'multipart/form-data',
+        ],
+        'fieldConfig' => [
+            'template' => "{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+            'labelOptions' => ['class' => 'col-lg-2 col-md-2 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
+        ],
+    ]); ?>
 
-    <?= $form->field($model, 'id')->textInput(['maxlength' => true]) ?>
+    <?php // $form->field($model, 'id')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'sex')->textInput() ?>
+    <?= $form->field($model, 'sex')->radioList(Teacher::$sexName); ?>
+    
+    <?php // $form->field($model, 'level')->textInput() ?>
 
-    <?= $form->field($model, 'avatar')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'customer_id')->widget(Select2::classname(), [
+        'data' => $customer,
+        'hideSearch' => false,
+        'options' => ['placeholder' => '请选择...',]
+    ])->label(Yii::t('app', '{The}{Customer}',['The' => Yii::t('app', 'The'),'Customer' => Yii::t('app', 'Customer'),])); ?>
 
-    <?= $form->field($model, 'level')->textInput() ?>
-
-    <?= $form->field($model, 'customer_id')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'job_title')->textInput(['maxlength' => true]) ?>
+        
+    <?= $form->field($model, 'is_certificate')->widget(SwitchInput::class, [
+        'pluginOptions' => [
+            'onText' => Yii::t('app', 'Y'),
+            'offText' => Yii::t('app', 'N'),
+        ],
+        'containerOptions' => [
+            'class' => '',
+        ],
+    ])->label(Yii::t('app', '{Is}{Authentication}',['Is' => Yii::t('app', 'Is'), 'Authentication' => Yii::t('app', 'Authentication')])); ?>
+        
+    <?= $form->field($model, 'avatar')->widget(FileInput::class, [
+        'options' => [
+            'accept' => 'image/*',
+            'multiple' => false,
+        ],
+        'pluginOptions' => [
+            'resizeImages' => true,
+            'showCaption' => false,
+            'showRemove' => false,
+            'showUpload' => false,
+            'browseClass' => 'btn btn-primary btn-block',
+            'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+            'browseLabel' => '选择上传头像...',
+            'initialPreview' => [
+                $model->isNewRecord ?
+                        Html::img(WEB_ROOT . '/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
+                        Html::img(WEB_ROOT . $model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
+            ],
+            'overwriteInitial' => true,
+        ],
+    ]);?>
 
     <?= $form->field($model, 'des')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'is_certificate')->textInput() ?>
-
-    <?= $form->field($model, 'certicicate_at')->textInput() ?>
-
-    <?= $form->field($model, 'created_by')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'created_at')->textInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'updated_at')->textInput(['maxlength' => true]) ?>
-
-    <div class="form-group">
+    <div class="form-group" style="padding-left: 50px;">
         <?= Html::submitButton(Yii::t('app', 'Save'), ['class' => 'btn btn-success']) ?>
     </div>
 

@@ -28,8 +28,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?></span>
             <?php
                 $url = Url::to([WEB_ROOT . '/teacher/default/view', 'id' => $model->id], 'http');
+                echo '<div style="float: right">' . Html::a(Yii::t('app', 'Edit'), ['update', 'id' => $model->id],
+                        ['class' => 'btn btn-primary', ]);
                 echo Html::a(Yii::t('app', 'Famous teacher Hall'), $url, 
-                        ['class' => 'btn btn-info', 'target' => '_blank', 'style' => 'float: right'])
+                        ['class' => 'btn btn-info', 'target' => '_blank', 'style' => 'margin-left:10px']) . '</div>'
             ?>
         </div>
         <?= DetailView::widget([
