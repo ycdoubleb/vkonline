@@ -30,9 +30,11 @@ class HelpCenterAssets extends AssetBundle {
     public $css = [
         'css/layout.css',
         'css/module.css',
+        'css/tree_menu.css',
     ];
     public $js = [
         'js/view.js',
+        'js/tree_menu.js',
     ];
 
 }

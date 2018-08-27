@@ -30,7 +30,7 @@ class DefaultController extends Controller
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -42,16 +42,22 @@ class DefaultController extends Controller
      * Renders the index view for the module
      * @return string
      */
-    public function actionIndex($app_id) 
+    public function actionIndex() 
     {
         //传递参数
         $view = Yii::$app->view;
-        $view->params['app_id'] = $app_id;
+        $view->params['app_id'] = 'app-frontend';
         $categoryId = Yii::$app->request->get('id');
-        
+        if(empty($categoryId)){
+            $parCatName = PostCategory::find()->where(['is_show' => 1, 'level' => 1])->orderBy('sort_order')->one();
+            $catName = PostCategory::findOne(['parent_id' => $parCatName->id]);
+        } else {
+            $catName = PostCategory::findOne($categoryId);
+        }
+
         return $this->render('index', [
-            'posts' => $this->getPostContents($categoryId),     //文章内容
-            'categoryName' => $this->getCategory($categoryId),  //文章分类名
+            'posts' => $this->getPostContents($catName->id),     //文章内容
+            'categoryName' => $catName,  //文章分类名
         ]);
     }
     
@@ -164,13 +170,14 @@ class DefaultController extends Controller
                 $item = [
                     'label' => $_menu->name,
                 ];
+                $item['url'] = '#';
+                $item['icon'] = '<i class="fa fa-' . $_menu->icon . '">&nbsp;</i>';
+                $item['chevron'] = '<i class="fa fa-chevron-down"></i>';
+                $item['options'] = ['class' => 'link'];
                 if (count($children) > 0) {
-                    $item['url'] = $_menu->id;
                     $item['items'] = $children;
-                } else {
-                    $item['url'] = [$_menu->id];
                 }
-                $item['icon'] = $_menu->icon;
+                
                 $menuItems[] = $item;
             }
         }
@@ -208,8 +215,10 @@ class DefaultController extends Controller
             if($menu->parent_id == $parent_id){
                 $items[] = [
                     'label' => $menu->name,
-                    'url' => [$menu->id],
-                    'icon' => $menu->icon,
+                    'url' => '?id=' . $menu->id,
+                    'icon' => '<i class="fa fa-' . $menu->icon . '">&nbsp;</i>',
+                    'chevron' => '',
+                    'options' => ['class' => 'links'],
                 ];
             }
         }
@@ -234,19 +243,7 @@ class DefaultController extends Controller
         
         return $postContents;
     }
-    
-    /**
-     * 获取文章分类
-     * @param integer $categoryId   文章分类ID
-     * @return array
-     */
-    public function getCategory($categoryId)
-    {
-        $categoryName = PostCategory::findOne($categoryId);
-        
-        return $categoryName;
-    }
-
+   
     /**
      * 查询上/下篇文章
      * @param string $app_id    应用ID

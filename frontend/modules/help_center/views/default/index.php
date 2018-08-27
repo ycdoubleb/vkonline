@@ -63,15 +63,22 @@ $js =
         }else{
             elem.css("color","#999999");
         };
-        elem.click(function(){
-            elem.next("div.post-content").toggle();
-            if(!elem.next("div.post-content").is(":hidden")){
-                elem.css("color","#FF6600");
+    });    
+    $(".post-title").click(function(){
+        if($(this).css("color") == 'rgb(255, 102, 0)'){     //是否展开
+            $(this).next("div.post-content").toggle();
+            if(!$(this).next("div.post-content").is(":hidden")){
+                $(this).css("color","#FF6600");
             }else{
-                elem.css("color","#999999");
+                $(this).css("color","#999999");
             };
-        })
-    }); 
+        }else{
+            $(".post-title").css("color","#999999");
+            $(this).css("color","#FF6600");
+            $(".post-content").css("display", "none");
+            $(this).next(".post-content").css("display", "block");
+        }    
+    });
         
 JS;
     $this->registerJs($js,  View::POS_READY);
