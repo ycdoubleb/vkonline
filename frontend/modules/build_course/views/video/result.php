@@ -251,10 +251,14 @@ $js =
     //设置table的每个tr的跳转链接    
     $('.vk-table > tbody > tr').each(function(){
         var key = $(this).attr('data-key');
-        $(this).click(function(){
+        $(this).click(function(event){
+            var NodeType = event.target.nodeName;
+            if (NodeType == "INPUT") {
+                return;
+            }
             var a = $('<a href="../video/view?id=' + key + '"' + 'target="_blank" />').get(0);
             var e = document.createEvent('MouseEvents');
-            e.initEvent( 'click', true, true );
+            e.initEvent('click', true, true );
             a.dispatchEvent(e);
         });
     });    

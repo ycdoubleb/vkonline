@@ -168,7 +168,7 @@ class KnowledgeController extends Controller
         $videos = array_values($results['data']['video']);    //视频数据
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
             $videos[$index]['level'] = Video::$levelMap[$item['level']];
             $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
@@ -217,7 +217,7 @@ class KnowledgeController extends Controller
         $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修视频数据里面的元素值
         foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = Aliyun::absolutePath($item['img']);
+            $videos[$index]['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
             $videos[$index]['level'] = Video::$levelMap[$item['level']];
             $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
             $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);

@@ -6,8 +6,4 @@ return [
             'cookieValidationKey' => '',
         ],
     ],
-    'as access' => [
-        'allowActions' => [
-        ]
-    ],
 ];

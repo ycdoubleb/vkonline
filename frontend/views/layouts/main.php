@@ -93,7 +93,7 @@ BaseAssets::register($this);
     </div>
     <div class="copy-right-box">
         <div class="container copy-right-content">
-            <p class="pull-left">eenet旗下品牌，Copyright © <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?> 版权所有  京ICP备150033??号-1   京公网安备 110105020347??号</p>
+            <p class="pull-left">eenet旗下品牌，Copyright © <?= date('Y') ?> <?= Html::encode(Yii::$app->name) ?> 版权所有 <a href="http://www.miitbeian.gov.cn">粤ICP备14084579号-7</a></p>
             <p class="pull-right"><img src="/imgs/site/logo_hui.png"/></p>
         </div>
     </div>

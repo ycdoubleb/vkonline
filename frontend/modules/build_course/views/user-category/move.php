@@ -15,7 +15,7 @@ $this->title = '选择移动到哪个目录';
 ?>
 <div class="user-category-move main vk-modal">
 
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog" style="width: 720px;" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -25,9 +25,7 @@ $this->title = '选择移动到哪个目录';
             </div>
             <div class="modal-body clear-padding">
                 <div class="top-level">
-                    <?= Html::a('&nbsp;顶级目录', ['move', 'move_ids' => implode(',', $move_ids)], [
-                        'onclick' => 'moveCatalog($(this)); return false;'
-                    ]) ?>
+                    <?= Html::a('&nbsp;移动到根目录下', ['move', 'move_ids' => $move_ids], ['data-method' => 'post']) ?>
                 </div>
                 <?= GridView::widget([
                     'dataProvider' => $dataProvider,
@@ -49,10 +47,8 @@ $this->title = '选择移动到哪个目录';
                             'header' => null,
                             'headerOptions' => ['style' => 'width:300px;height:0px;padding:0px;border-bottom:0px'],
                             'format' => 'raw',
-                            'value' => function ($model) use($move_ids){
-                                return Html::a('&nbsp;' . $model->name, ['move', 'move_ids' => implode(',', $move_ids), 'target_id' => $model->id], [
-                                    'onclick' => 'moveCatalog($(this)); return false;'
-                                ]);
+                            'value' => function ($model){
+                                return "<span class=\"moveCatalog\">{$model->name}</span>";
                             },
                             'contentOptions' => ['style' => 'text-align:left'],
                         ],
@@ -75,10 +71,17 @@ $this->title = '选择移动到哪个目录';
         initialState: 'collapsed',   //默认折叠
     });        
             
-    //移动视频到指定目录
-    window.moveCatalog = function(elem){
-        $.post(elem.attr("href"));
-    };
+    /**
+     * 移动目录到指定目录
+     */
+    var moveIds = "$move_ids";
+    $('.vk-table > tbody > tr').each(function(){
+        var _this = $(this);
+        var targetId = $(this).attr('data-key');
+        _this.find('span.moveCatalog').click(function(){
+            $.post('../user-category/move?move_ids=' + moveIds + '&target_id=' + targetId);
+        });
+    });         
     
 JS;
     $this->registerJs($js,  View::POS_READY);
