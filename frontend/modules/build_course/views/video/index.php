@@ -181,7 +181,7 @@ $js =
     var page = 0; //页数
     var isPageLoading = false;
     $(window).scroll(function(){
-        if($(document).scrollTop() >= $(document).height() - $(window).height()){
+        if($(document).scrollTop() >= $(document).height() - $(window).height() - 300){
             loaddata(page, "/build_course/video/index");
         }
     });
@@ -235,7 +235,7 @@ $js =
                     }
                     //如果当前页大于最大页数显示“没有更多了”
                     if(page > Math.ceil(maxPageNum)){
-                        $('.loading-box .loading-box .no_more').show();
+                        $('.loading-box  .no_more').show();
                     }
                 }else{
                     $.notify({
