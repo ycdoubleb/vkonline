@@ -113,8 +113,7 @@ h1 a {
     display: block;
     text-decoration: none;
     color: #999;
-    padding: 12px;
-    padding-left: 42px;
+    padding: 12px 20px;
     -webkit-transition: all 0.25s ease;
     -o-transition: all 0.25s ease;
     transition: all 0.25s ease;
