@@ -155,6 +155,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ],
             ],
+            [
+                'attribute' => 'sort_order',
+                'filter' => FALSE,
+                'headerOptions' => [
+                    'style' => [
+                        'text-align' => 'center',
+                        'width' => '80px'
+                    ]
+                ],
+                'class' => GridViewChangeSelfColumn::class,
+                'plugOptions' => [
+                    'type' => 'input',
+                ]
+            ],
             //'des',
             // 'level',
             // 'created_at',

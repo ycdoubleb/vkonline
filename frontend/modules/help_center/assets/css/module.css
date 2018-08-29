@@ -44,6 +44,9 @@
     padding: 15px 20px;
     background-color: #f9f9f9;
     margin-bottom: 10px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
 }
 
 .default-index .footer-kefu {

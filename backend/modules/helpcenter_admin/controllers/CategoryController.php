@@ -52,8 +52,8 @@ class CategoryController extends GridViewChangeSelfController
         $dataProvider->query->orderBy('parent_id_path');
 
         return $this->render('index', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -65,7 +65,7 @@ class CategoryController extends GridViewChangeSelfController
     public function actionView($id)
     {
         return $this->render('view', [
-                    'model' => $this->findModel($id),
+            'model' => $this->findModel($id),
         ]);
     }
 
@@ -83,8 +83,8 @@ class CategoryController extends GridViewChangeSelfController
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
-                        'model' => $model,
-                        'parents' => !empty($model->app_id) ? ArrayHelper::map($this->getParentCats($model->app_id), 'id', 'name') : [],
+                'model' => $model,
+                'parents' => !empty($model->app_id) ? ArrayHelper::map($this->getParentCats($model->app_id), 'id', 'name') : [],
             ]);
         }
     }
@@ -105,8 +105,8 @@ class CategoryController extends GridViewChangeSelfController
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
-                        'model' => $model,
-                        'parents' => ArrayHelper::map($parentsdata, 'id', 'name'),
+                'model' => $model,
+                'parents' => ArrayHelper::map($parentsdata, 'id', 'name'),
             ]);
         }
     }

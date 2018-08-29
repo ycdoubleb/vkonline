@@ -2,6 +2,7 @@
 
 use common\models\helpcenter\Post;
 use common\models\helpcenter\PostCategory;
+use common\widgets\ckeditor\CkeditorAsset;
 use common\widgets\ueditor\UeditorAsset;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
@@ -61,7 +62,8 @@ use yii\widgets\ActiveForm;
     ]); ?>
         
     <?= $form->field($model, 'content')->textarea([
-            'id' => 'container', 
+//            'id' => 'editor', 
+            'id' => 'container',
             'type' => 'text/plain', 
             'style' => 'width:100%; height:400px;',
             'placeholder' => '文章内容...'
@@ -75,12 +77,32 @@ use yii\widgets\ActiveForm;
 
 </div>
 <?php
-
+    $upload = '/ueditor/default/upload-img?command=QuickUpload&type=Files&responseType=json';
 $js =
 <<<JS
     /** 富文本编辑器 */
     $('#container').removeClass('form-control');
-    var ue = UE.getEditor('container');
+    var ue = UE.getEditor('container', {
+        initialFrameHeight: 200, 
+        maximumWords: 100000,
+    });
+//    ClassicEditor
+//        .create(document.querySelector('#editor'), {
+//            language: 'zh-cn',
+//            ckfinder : {
+//                uploadUrl: 'upload'
+//            },image: {
+//            styles: [
+//            ]
+//        }
+//        })
+//        .then(editor => {
+//            console.log(editor);
+//        })
+//        .catch(error => {
+//            console.error(error);
+//        });
+  
     /** 下拉选择父级分类 */
     $('#post-app_id').change(function(){
         $("#post-category_id").html("");
@@ -88,7 +110,7 @@ $js =
         $("#post-category_id").attr("data-add", "true");
         $("#post-category_id").html("");
         $('#select2-post-category_id-container').html('<span class="select2-selection__placeholder">请选择...</span>');
-        $.post("/admin/helpcenter_admin/post/search-cats?id="+$(this).val(),function(data)
+        $.post("/helpcenter_admin/post/search-cats?id="+$(this).val(),function(data)
         {
             $('<option/>').val('').text(this['name']).appendTo($('#post-category_id'));
             $.each(data['data'],function()
@@ -102,4 +124,5 @@ JS;
 ?> 
 <?php
     UeditorAsset::register($this);
+//    CkeditorAsset::register($this);
 ?>

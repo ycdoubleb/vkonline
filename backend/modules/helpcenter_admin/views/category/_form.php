@@ -19,13 +19,13 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
 
-    <?= $form->field($model, 'app_id')->widget(Select2::classname(),[
+    <?= $form->field($model, 'app_id')->widget(Select2::class,[
         'data' => PostCategory::$APPID,
         'hideSearch' => true,
         'options' => ['placeholder' => '请选择...',]
     ])?>
     
-    <?= $form->field($model, 'parent_id')->widget(Select2::classname(),[
+    <?= $form->field($model, 'parent_id')->widget(Select2::class,[
         'data' => $parents,
         'hideSearch' => true,
         'options' => ['placeholder' => '请选择...',]
@@ -57,7 +57,7 @@ use yii\widgets\ActiveForm;
         $("#postcategory-parent_id").attr("data-add", "true");
         $("#postcategory-parent_id").html("");
         $('#select2-postcategory-parent_id-container').html('<span class="select2-selection__placeholder">请选择...</span>');
-        $.post("/admin/helpcenter_admin/category/search-cats?id="+$(this).val(),function(data)
+        $.post("/helpcenter_admin/category/search-cats?id="+$(this).val(),function(data)
         {
             $('<option/>').val('').text(this['name']).appendTo($('#postcategory-parent_id'));
             $.each(data['data'],function()
