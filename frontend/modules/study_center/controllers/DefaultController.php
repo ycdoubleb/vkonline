@@ -184,7 +184,7 @@ class DefaultController extends Controller
         $results = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         
         foreach($results['data']['video'] as &$video){
-            $video['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+            $video['img'] = Aliyun::absolutePath(!empty($video['img']) ? $video['img'] : 'static/imgs/notfound.png');
         }
         
         $dataProvider = new ArrayDataProvider([
