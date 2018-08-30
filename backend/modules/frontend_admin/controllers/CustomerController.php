@@ -183,7 +183,7 @@ class CustomerController extends Controller
         //查找到最新的一条记录
         $customerActLog = (new Query())->select(['good_id', 'start_time', 'end_time'])->from(CustomerActLog::tableName())
                     ->where(['customer_id' => $id])->orderBy('id desc')->one();
-        if(time() < $customerActLog['end_time']){
+        if(false && time() < $customerActLog['end_time']){
             throw new NotAcceptableHttpException('套餐未到期，不能停用！');
         } else {
             $model->status = Customer::STATUS_STOP;

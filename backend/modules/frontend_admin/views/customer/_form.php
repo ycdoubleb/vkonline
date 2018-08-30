@@ -119,60 +119,67 @@ use yii\widgets\ActiveForm;
 
 </div>
 <?php
-$isNewRecord = $model->isNewRecord ? 0 : 1;
-if($isNewRecord){
-    $map_x = $point['X(location)'];                               //经度
-    $map_y = $point['Y(location)'];                               //纬度
-}else{
-    $map_x = 113.2759952545166;
-    $map_y = 23.117055306224895;
+$isNewRecord = $model->isNewRecord ? 1 : 0;
+
+if(!$point || $point['X(location)'] == null){
+    $point['X(location)'] = 113.2759952545166;
+    $point['Y(location)'] = 23.117055306224895;
 }
+$map_x = $point['X(location)'];                               //经度
+$map_y = $point['Y(location)'];                               //纬度
+
 $js =
 <<<JS
-    var isNewRecord = $isNewRecord,
-        map_x = $map_x,
-        map_y = $map_y;
+    var _self = this;
+    var isNewRecord = $isNewRecord;
         
     /** 百度地图设置 */    
-    var map = new BMap.Map("map");                      // 创建地图实例 
-    var point = new BMap.Point(113.2759952545166,23.117055306224895);   //地图初始位置
-    map.centerAndZoom(point, 12);                       // 初始化地图，设置中心点坐标和地图级别
+    var map = new BMap.Map("map");                                          // 创建地图实例 
+    var point = new BMap.Point($map_x,$map_y);                              //地图初始位置
 
-    var myGeo = new BMap.Geocoder();                    // 创建地址解析器实例
-    if(isNewRecord){
-        var point = new BMap.Point(map_x, map_y);   
-        $('#customer-location').val(map_x + " " + map_y);  //把经纬度传到form表单
-        map.centerAndZoom(point, 16);
-        var marker = new BMap.Marker(point);    // 创建标注
-        map.addOverlay(marker);                 // 将标注添加到地图中
-        marker.addEventListener("dragend",onMarkerDragend);
-        marker.enableDragging();                //设置标注是否可以移动
-        function onMarkerDragend(e){
-            //获取marker的位置
-            $('#customer-location').val(e.point.lng + " " + e.point.lat);
-        }
-    }else{
-        // 当地址输入框失去焦点时出发事件
-        $('#customer-address').blur(function() {
+    var myGeo = new BMap.Geocoder();                                        // 创建地址解析器实例
+    var marker = new BMap.Marker(point);                                    // 创建标注
+    map.addOverlay(marker);                                                 // 将标注添加到地图中
+    marker.addEventListener("dragend",onMarkerDragend);
+    marker.enableDragging();                                                //设置标注是否可以移动
+    //把当前坐标显示出来    
+    updateMarker(point.lng , point.lat , isNewRecord ? 12 : 16);            // 初始化地图，设置中心点坐标和地图级别
+    
+    // 当地址输入框失去焦点时出发事件
+    $('#customer-address').change(function(){
+        $(this).off('blur');
+        $(this).blur(function(){
             // 将地址解析结果显示在地图上,并调整地图视野
-            myGeo.getPoint($('#customer-address').val(), function(point){
+            myGeo.getPoint($(this).val(), function(point){
                 if (point) {
                     $('#customer-location').val(point.lng + " " + point.lat);
-                    map.centerAndZoom(point, 16);
-                    var marker = new BMap.Marker(point);    // 创建标注
-                    map.addOverlay(marker);                 // 将标注添加到地图中
-                    marker.addEventListener("dragend",onMarkerDragend);
-                    marker.enableDragging();                //设置标注是否可以移动
-                    function onMarkerDragend(e){
-                        //获取marker的位置
-                        $('#customer-location').val(e.point.lng + " " + e.point.lat);
-                    }
+                    updateMarker( point.lng , point.lat , 16);
                 }else{
                     alert("您输入的详细地址没有解析到结果!");
                 }
             });
         });
+    });
+        
+    /**
+     * 更新坐标位置
+     * @param px 
+     * @param py 
+     * @param zoom 地图放大系数
+     */
+    function updateMarker(px,py,zoom){
+        var point = new BMap.Point(px, py);
+        map.centerAndZoom(point, zoom);
+        marker.setPosition(point);
+        $('#customer-location').val(point.lng + " " + point.lat);
+    }
+    /* 坐标点发生拖拽事件时 */   
+    function onMarkerDragend(e){
+        //获取marker的位置
+        $('#customer-location').val(e.point.lng + " " + e.point.lat);
     };
+        
+    
         
     var top_left_navigation = new BMap.NavigationControl(); //左上角，添加默认缩放平移控件
     map.addControl(top_left_navigation);

@@ -28,7 +28,10 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'parent_id')->widget(Select2::class,[
         'data' => $parents,
         'hideSearch' => true,
-        'options' => ['placeholder' => '请选择...',]
+        'options' => ['placeholder' => '请选择...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
     ])?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>

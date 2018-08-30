@@ -152,10 +152,47 @@ class PostCategory extends ActiveRecord
      * @param integer $id
      */
     public static function getCatById($id) {
-        $catdata = self::find()->asArray()->all();
-        if (isset($catdata[$id-1])) {
-            return new PostCategory($catdata[$id-1]);
+        $catdata = self::find()->where(['id' => $id])->asArray()->one();
+        if (isset($catdata)) {
+            return new PostCategory($catdata);
         }
         return null;
+    }
+    
+    /**
+     * 获取分类的子级
+     * @param integer $id               分类ID
+     * @param bool $key_to_value        返回键值对形式
+     * @param bool $recursion           是否递归
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [array|key=value]
+     */
+    public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false) {
+        return self::getPostCatChildren($id, $key_to_value, $recursion, $include_unshow);
+    }
+    
+    /**
+     * 获取文章分类的子级
+     * @param integer $id               分类ID
+     * @param bool $key_to_value        返回键值对形式
+     * @param bool $recursion           是否递归
+     * @param bool $include_unshow      是否包括隐藏的分类
+     * 
+     * @return array [array|key=value]
+     */
+    public static function getPostCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false) {      
+        $childrens = [];
+        $categorys = self::find()->asArray()->all();
+        foreach ($categorys as $c_id => $category) {
+            if ($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)) {
+                $childrens[] = $category;
+                if ($recursion) {
+                    $childrens = array_merge($childrens, self::getPostCatChildren($c_id, false, $recursion, $include_unshow));
+                }
+            }
+        }
+
+        return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
     }
 }
