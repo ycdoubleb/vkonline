@@ -1,0 +1,10 @@
+/** 表格 */
+table td .yes{
+    color: #1BBC9D;
+    cursor: pointer;
+}
+
+table td .no{
+    color: #9ea3a7;
+    cursor: pointer;
+}

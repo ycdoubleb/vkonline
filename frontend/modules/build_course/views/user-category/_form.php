@@ -3,8 +3,6 @@
 use common\models\vk\UserCategory;
 use common\widgets\depdropdown\DepDropdown;
 use kartik\widgets\SwitchInput;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -71,7 +69,9 @@ use yii\widgets\ActiveForm;
                 $values = array_merge($values, [$userCategory->id]);
             }
         }
-        echo $form->field($model, 'parent_id')->widget(DepDropdown::class,[
+        echo $form->field($model, 'parent_id', [
+            'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n<div class=\"col-lg-10 col-md-10\">{error}</div>",
+        ])->widget(DepDropdown::class,[
             'pluginOptions' => [
                 'url' => Url::to('search-children', false),
                 'max_level' => $max_level,

@@ -1,6 +1,5 @@
 <?php
 
-use wbraganca\fancytree\FancytreeAsset;
 use wbraganca\fancytree\FancytreeWidget;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Html;
@@ -9,7 +8,7 @@ use yii\web\View;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = '选择移动到哪个目录';
+$this->title = '选择移动到哪个分类';
 
 ?>
 <div class="user-category-move main vk-modal">
@@ -25,11 +24,7 @@ $this->title = '选择移动到哪个目录';
             </div>
             
             <div class="modal-body clear-padding" style="max-height: 500px; overflow-y: auto;">
-                
-                <div class="top-level">
-                    <?= Html::a('&nbsp;移动到根目录下', ['move', 'move_ids' => $move_ids], ['data-method' => 'post']) ?>
-                </div>
-                
+               
                 <?php echo FancytreeWidget::widget([
                     'options' =>[
                         'id' => 'table-fancytree_2', // 设置整体id
@@ -77,11 +72,11 @@ $this->title = '选择移动到哪个目录';
     
     $js = <<<JS
     
-    //移动视频到指定目录
+    //移动视频到指定分类
     var moveIds = "$move_ids";
     $('#submitsave').click(function(){
         var _nodes = $("#table-fancytree_2").fancytree("getActiveNode");
-        $.post('../user-category/move?move_ids=' + moveIds + '&target_id=' + _nodes.key);
+        $.post('../category/move?move_ids=' + moveIds + '&target_id=' + _nodes.key);
     });               
             
 JS;

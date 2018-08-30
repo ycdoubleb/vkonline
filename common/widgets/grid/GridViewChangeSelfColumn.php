@@ -124,7 +124,7 @@ class GridViewChangeSelfColumn extends DataColumn {
                 var plugin_id = $(obj).attr('plugin-id');
                 var plugin_data = window.$plugin_name [plugin_id];
                 var labels = plugin_data['labels'];
-                var values = plugin_data['values'];;
+                var values = plugin_data['values'];
                 var value;
                 if($(obj).hasClass('no')) // 图片点击是否操作
                 {          
