@@ -52,9 +52,11 @@ class Oauth{
         $login_url =  $this->urlUtils->combineURL(self::GET_AUTH_CODE_URL, $keysArr);
 
         header("Location:$login_url");
+        //var_dump(\Yii::$app->session);
     }
 
     public function qq_callback(){
+        //var_dump(\Yii::$app->session);
         $state = $this->recorder->read("state");
         
         //--------验证state防止CSRF攻击

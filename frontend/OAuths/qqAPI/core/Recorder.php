@@ -11,6 +11,8 @@ use Yii;
  */
 
 class Recorder{
+    
+    const SESSION_NAME = 'QC_userData';
     public static $qqConfig = 'qqLogin';
     private static $data;
     private $inc;
@@ -30,17 +32,12 @@ class Recorder{
         if(empty($this->inc)){
             $this->error->showError("20001");
         }
-
-        if(empty($_SESSION['QC_userData'])){
-            self::$data = array();
-        }else{
-            self::$data = $_SESSION['QC_userData'];
-        }
+        self::$data = Yii::$app->session->get(self::SESSION_NAME , []);
     }
 
     public function write($name,$value){
         self::$data[$name] = $value;
-        $_SESSION['QC_userData'][$name] = $value;
+        //$_SESSION['QC_userData'][$name] = $value;
     }
 
     public function read($name){
@@ -64,6 +61,6 @@ class Recorder{
     }
 
     function __destruct(){
-        $_SESSION['QC_userData'] = self::$data;
+        Yii::$app->session->set(self::SESSION_NAME, self::$data);
     }
 }
