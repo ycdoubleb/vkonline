@@ -49,7 +49,6 @@ class CategoryController extends GridViewChangeSelfController
     {
         $searchModel = new PostCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->query->orderBy('parent_id_path');
 
         return $this->render('index', [
             'searchModel' => $searchModel,

@@ -79,6 +79,8 @@ class PostCategorySearch extends PostCategory
             ->andFilterWhere(['like', 'icon', $this->icon])
             ->andFilterWhere(['like', 'href', $this->href]);
 
+        $query->orderBy('parent_id_path');
+        
         return $dataProvider;
     }
 }
