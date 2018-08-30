@@ -349,13 +349,25 @@ textarea {
     overflow-x: hidden;
     overflow-y: auto;
 }
+/**
+ * 重置fancytree组件样式
+ */
+.vk-panel .table-responsive{
+    padding-top: 20px;
+    padding-right: 15px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+}
+.table-responsive .vk-table:focus{
+    outline: 0px !important;
+}
+
 /*******************************************************************************
  * table样式
  *******************************************************************************/
 .vk-table {
     margin: 0px;
     color: #666;
-    border: none;
     table-layout:fixed;
 }
 .vk-table .detail-th {
@@ -390,7 +402,7 @@ textarea {
     border-bottom: 1px solid #eee;
 }
 .vk-table > thead > tr > th {
-    background-color: #f9f9f9;
+    background-color: #f2f2f2;
 }
 /**
  * 设置表格每行最后一个th、td的右边框大小
@@ -399,6 +411,13 @@ textarea {
 .vk-table > tbody > tr > td:last-of-type{
     border-right-width: 0px;
 }
+/**
+ * 重置fancytree组件样式
+ */
+.vk-table > tbody > tr.fancytree-active{
+    background-color: #f9f9f9 !important;
+}
+
 /*******************************************************************************
  * 模态框样式
  *******************************************************************************/

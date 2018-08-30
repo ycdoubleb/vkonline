@@ -1,15 +1,13 @@
 <?php
 
 use common\models\vk\searchs\UserCategorySearch;
-use common\models\vk\UserCategory;
-use common\widgets\grid\GridViewChangeSelfColumn;
-use common\widgets\treegrid\TreegridAssets;
+use common\widgets\tabselfcolumn\TabSelfColumnAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\switchinput\SwitchInputAsset;
-use kartik\widgets\Select2;
+use wbraganca\fancytree\FancytreeWidget;
 use yii\data\ActiveDataProvider;
-use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\web\View;
 
 /* @var $this View */
@@ -18,7 +16,7 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 SwitchInputAsset::register($this);
-TreegridAssets::register($this);
+TabSelfColumnAssets::register($this);
 
 $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
     'My' => Yii::t('app', 'My'),  'Video' => Yii::t('app', 'Video'),
@@ -28,7 +26,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
 ?>
 <div class="user-category-index main">
 
-    <div class="vk-panel">
+    <div class="vk-panel" style="margin-top: 0px;">
         <div class="title">
             <span>
                 <?= $this->title ?>
@@ -41,184 +39,139 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     ]) . '&nbsp;';
                     echo Html::a(Yii::t('app', '{Move}{Catalog}', [
                         'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')
-                    ]), 'javascript:;', ['id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat']);
-                    echo '&nbsp;' . Html::a(Yii::t('app', 'Confirm'), ['move'], [
-                        'id' => 'move', 'class' => 'btn btn-primary btn-flat hidden', 
-                        'onclick' => 'moveCatalogModal($(this)); return false;'
+                    ]), 'javascript:;', [
+                        'class' => 'btn btn-unimportant btn-flat', 'onclick' => 'moveCatalogModal();'
                     ]);
                 ?>
             </div>
         </div>
 
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'tableOptions' => ['class' => 'table table-bordered detail-view vk-table'],
-            'layout' => "{items}\n{summary}\n{pager}",
-            'rowOptions' => function($model, $key, $index, $this){
-                /* @var $model UserCategorySearch */
-                return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
-            },
-            'columns' => [
-                [
-                    'attribute' => 'name',
-                    'header' => Yii::t('app', 'Name'),
-                    'format' => 'raw',
-                    'value' => function($model){
-                        if(!$model->is_public){
-                            return '<label style="font-weight: normal;margin-bottom:0px">'. Html::checkbox('UserCategory[id]', false, [
-                                'class' => 'hidden',
-                                'value' => $model->id,
-                                'style' => ['margin' => '4px',],
-                                'data-path' => $model->path,
-                            ]) . $model->name . '</label>';
-                        }else{
-                            return $model->name;
+        <?= FancytreeWidget::widget([
+            'options' =>[
+                'id' => 'table-fancytree_1', // 设置整体id
+                'checkbox' => true,
+                'selectMode' => 3,
+                'source' => $dataProvider,
+                'extensions' => ['table', 'dnd'],
+                'table' => [
+                    'indentation' => 20,
+                    'nodeColumnIdx' => 0
+                ],
+                'select' => new JsExpression('function(event, data){
+                    var node = data.node,
+                        level = node.getLevel(),
+                        pList = node.getParentList();
+                    for(i in pList){
+                        if(level != pList[i].getLevel()){
+                            pList[i].selected = false;
+                            $(pList[i].tr).removeClass("fancytree-selected");
                         }
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '400px',
-                            'text-align' => 'left'
-                        ]
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'left'
-                        ]
-                    ],
-                ],
-                [
-                    'attribute' => 'is_show',
-                    'header' => Yii::t('app', '{Is}{Show}',[
-                        'Is' => Yii::t('app', 'Is'),
-                        'Show' => Yii::t('app', 'Show'),
-                    ]),
-                    'class' => GridViewChangeSelfColumn::class,
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'is_show',
-                        'data' => UserCategory::$showStatus,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
-                    'value' => function ($model){
-                        return UserCategory::$showStatus[$model->is_publish];
-                    },
-                    'disabled' => function($model) {
-                        if($model->is_public){
-                            return true;
+                    }
+                }'),
+                'renderColumns' => new JsExpression('function(event, data) {
+                    //初始化组件
+                    var tabColumn = new tabcolumn.TabSelfColumn();
+                    var node = data.node;
+                    var $tdList = $(node.tr).find(">td");
+                    var $span =  tabColumn.init({
+                        disabled: node.data.is_public ? true : false,
+                        data:{key: node.key,fieldName:"is_show",value:node.data.is_show,dome:"this"}
+                    });
+                    var $input = tabColumn.init({
+                        type:"input",disabled: node.data.is_public ? true : false,
+                        data:{key:node.key,fieldName:"sort_order",value:node.data.sort_order,dome:"this"}
+                    });
+                    $tdList.eq(0).find("span.fancytree-checkbox").each(function(){
+                        if(node.data.is_public){
+                            $(this).remove();
                         }
-                        return null;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '45px'
-                        ]
-                    ],
-                ],
-                [
-                    'attribute' => 'sort_order',
-                    'header' => Yii::t('app', 'Sort Order'),
-                    'filter' => false,
-                    'class' => GridViewChangeSelfColumn::class,
-                    'plugOptions' => [
-                        'type' => 'input',
-                    ],
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '40px'
-                        ]
-                    ],
-                ],
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'template' => '{add}{view}{update}{delete}',
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '55px'
-                        ]
-                    ],
-                    'buttons' => [
-                        'add' => function ($url, $model, $key) {
-                             $options = [
-                                'class' => ($model->level > 3 ? 'disabled' : ''),
-                                'title' => Yii::t('app', 'Create'),
-                                'aria-label' => Yii::t('app', 'Create'),
-                                'data-pjax' => '0',
-                                'onclick' => 'showModal($(this)); return false;'
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-plus"></span>',
-                                'url' => ['create', 'id' => $model->id],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']) . '&nbsp;';
-                        },
-                        'view' => function ($url, $model, $key) {
-                             $options = [
-                                'class' => '',
-                                'title' => Yii::t('app', 'View'),
-                                'aria-label' => Yii::t('app', 'View'),
-                                'data-pjax' => '0',
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-eye-open"></span>',
-                                'url' => ['view', 'id' => $model->id],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']) . '&nbsp;';
-                        },
-                        'update' => function ($url, $model, $key) {
-                             $options = [
-                                'class' => $model->is_public == 1 ? 'disabled' : '',
-                                'title' => Yii::t('app', 'Update'),
-                                'aria-label' => Yii::t('app', 'Update'),
-                                'data-pjax' => '0',
-                                'onclick' => 'showModal($(this)); return false;'
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-pencil"></span>',
-                                'url' => ['update', 'id' => $model->id],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']) . '&nbsp;';
-                        },
-                        'delete' => function ($url, $model, $key) use($catChildrens){
-                            $options = [
-                                'class' => count($catChildrens[$model->id]) > 0 || count($model->videos) > 0  || $model->is_public == 1 ? 'disabled' : '',
-                                'title' => Yii::t('app', 'Delete'),
-                                'aria-label' => Yii::t('app', 'Delete'),
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method' => 'post',
-                                'data-pjax' => '0',
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-trash"></span>',
-                                'url' => ['delete', 'id' => $model->id],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
-                        },
-                    ]
-                ],
-            ],
+                    });
+                    $tdList.eq(1).html($span);
+                    $tdList.eq(2).html($input);
+                    //设置a标签的属性
+                    $tdList.eq(3).find("a").each(function(index){
+                        var _this = $(this);
+                        switch(index){
+                            case 0:
+                                _this.attr({href: \'../user-category/create?id=\' + node.key});
+                                if(node.data.level > 3){
+                                    _this.removeAttr("onclick");
+                                    _this.click(function(){
+                                        alert("目录结构不能超过4级。");
+                                        return false;
+                                    });
+                                }
+                                break;
+                            case 1:
+                                _this.attr({href: \'../user-category/view?id=\' + node.key});
+                                break;
+                            case 2:
+                                _this.attr({href: \'../user-category/update?id=\' + node.key});
+                                if(node.data.is_public){
+                                    _this.removeAttr("onclick");
+                                    _this.click(function(){
+                                        alert("该目录为公共目录，您无权限操作。");
+                                        return false;
+                                    });
+                                }
+                                break;
+                            case 3:
+                                _this.click(function(){
+                                    if(confirm("您确定要删除此项吗？") == true){
+                                        $.post(\'../user-category/delete?id=\' + node.key, function(rel){
+                                            alert(rel.message);
+                                        });
+                                    }
+                                    return false;
+                                });
+                                break;
+                        }
+                    });
+                }'),
+            ]
         ]); ?>
+                
+        <div class="table-responsive">
+            <table id="table-fancytree_1" class="table table-bordered detail-view vk-table">
+                <colgroup>
+                    <col width="400px"></col>
+                    <col width="45px"></col>
+                    <col width="40px"></col>
+                    <col width="55px"></col>
+                </colgroup>
+                <thead>
+                  <tr>
+                      <th><?= Yii::t('app', 'Name') ?></th>
+                      <th><?= Yii::t('app', '{Is}{Show}',['Is' => Yii::t('app', 'Is'), 'Show' => Yii::t('app', 'Show')]) ?></th>
+                      <th><?= Yii::t('app', 'Sort Order') ?></th>
+                      <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: left;"></td>
+                        <td style="text-align: center;"></td>
+                        <td style="text-align: center;"></td>
+                        <td style="text-align: center;">
+                            <?php
+                                echo Html::a('<span class="glyphicon glyphicon-plus"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this)); return false;'
+                                ]) . '&nbsp;';
+                                echo Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'View'),
+                                ]) . '&nbsp;';     
+                                echo Html::a('<span class="glyphicon glyphicon-pencil"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this)); return false;'
+                                ]) . '&nbsp;';     
+                                echo Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Delete'), 
+                                ]);     
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         
     </div>
 </div>
@@ -228,67 +181,48 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
 <?php
     
     $js = <<<JS
-        /**
-         * 初始化树状网格插件
-         */
-        $('.table').treegrid({
-            initialState: 'collapsed',
-        });
-        //单击移动目录
-        $("#arrange").click(function(){
-            $("input[name='UserCategory[id]']").toggleClass("hidden");
-            $("#move").toggleClass("hidden");
-            $('.vk-table').find("label").toggleClass("pointer");
-        })
-        //选中时把子级也选中
-        $('input[name="UserCategory[id]"]').click(function(){
-            var obj = $(this);  //选中的对象
-            if(obj.is(":checked")){ //选中时
-                $.each($('input[name="UserCategory[id]"]'),function(){
-                    var pathArray = $(this).attr('data-path').split(",");  //子级（ID为路径）分割为数组
-                    if(pathArray.indexOf(obj.val()) > 0){           //判断点击的ID是否在路径中（在返回大于0 不在返回-1）
-                        $(this).prop("checked", true);
-                    }
-                });
-            }else{  //取消选中时
-                $.each($('input[name="UserCategory[id]"]'),function(){
-                    var pathArray = $(this).attr('data-path').split(","),  //子级（ID为路径）分割为数组
-                        objArray = obj.attr('data-path').split(",");       //选中对象（ID为路径）分割为数组
-                    //判断 点击的ID是否在路径中（在返回大于0 不在返回-1） 
-                    if(pathArray.indexOf(obj.val()) > 0 || objArray.indexOf($(this).val()) > 0){
-                        $(this).prop("checked", false);
-                    }
-                });
+       
+    /**
+     * 显示模态框
+     */
+    window.showModal = function(elem){
+        $(".myModal").html("");
+        $('.myModal').modal("show").load(elem.attr("href"));
+    }    
+
+    /**
+     * 显示移动目录模态框
+     */
+    window.moveCatalogModal = function(){
+        var vals = [];
+        var selectedNodes = [];
+        var is_public = false;
+        //获取所有选中的节点
+        $("#table-fancytree_1").fancytree("getRootNode").visit(function(node) {
+            if(node.isSelected()){
+                selectedNodes = node.tree.getSelectedNodes();
             }
         });
-        
-        /**
-         * 显示模态框
-         */
-        window.showModal = function(elem){
-            $(".myModal").html("");
-            $('.myModal').modal("show").load(elem.attr("href"));
-        }    
-            
-        /**
-         * 显示移动目录模态框
-         */
-        window.moveCatalogModal = function(elem){
-            var checkObject = $("input[name='UserCategory[id]']");  
-            var val = [];
-            for(i in checkObject){
-                if(checkObject[i].checked){
-                   val.push(checkObject[i].value);
-                }
+        //组装移动目录id数组
+        for(i in selectedNodes){
+            //如果选中的目录是“公共目录”终止循环
+            if(selectedNodes[i].data.is_public){
+                is_public = true;
+                break;
             }
-            if(val.length > 0){
-                $(".myModal").html("");
-                $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
-            }else{
-                alert("请选择移动的目录");
-            }
+            vals.push(selectedNodes[i].key);
+        }
+        if(is_public){
+            alert("移动目录结构里存在“公共目录”。");
             return false;
-        }   
+        }
+        if(vals.length > 0){
+            $(".myModal").html("");
+            $(".myModal").modal("show").load("../user-category/move?move_ids=" + vals);
+        }else{
+            alert("请选择移动的目录。");
+        }
+    }   
 JS;
     $this->registerJs($js, View::POS_READY);
 ?>

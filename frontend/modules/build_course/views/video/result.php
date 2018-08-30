@@ -71,7 +71,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['move'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['move-video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
                         'onclick' => 'showModal($(this)); return false;'
                     ]) ?>
@@ -117,7 +117,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::img(Aliyun::absolutePath($model['img']), ['width' => 121, 'height' => 68]);
+                        return Html::img(Aliyun::absolutePath(!empty($model['img']) ? $model['img'] : 'static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
                     },
                 ],
                 [

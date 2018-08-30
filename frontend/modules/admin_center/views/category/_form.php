@@ -3,7 +3,6 @@
 use common\models\vk\Category;
 use common\widgets\depdropdown\DepDropdown;
 use kartik\widgets\SwitchInput;
-use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -14,16 +13,16 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="category-form vk-form set-spacing set-bottom">
+<div class="category-form vk-form clear-shadow">
 
     <?php $form = ActiveForm::begin([
         'options' => [
+            'id' => 'category-form',
             'class' => 'form-horizontal',
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n"
-                . "<div class=\"col-lg-1 col-md-1\"></div><div class=\"col-lg-11 col-md-11\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
         ],
     ]); ?>
@@ -64,7 +63,9 @@ use yii\widgets\ActiveForm;
                 $values = array_merge($values, [$ategory->id]);
             }
         }
-        echo $form->field($model, 'parent_id')->widget(DepDropdown::class,[
+        echo $form->field($model, 'parent_id', [
+            'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n<div class=\"col-lg-10 col-md-10\">{error}</div>",
+        ])->widget(DepDropdown::class,[
             'pluginOptions' => [
                 'url' => Url::to('search-children', false),
                 'max_level' => $max_level,
@@ -80,28 +81,15 @@ use yii\widgets\ActiveForm;
     
     <!--名称-->
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-    <!--移动端名称-->
-    <?= $form->field($model, 'mobile_name')->textInput(['maxlength' => true]) ?>
     
-    <?= Html::activeHiddenInput($model, 'created_by', ['value' => Yii::$app->user->id])?>
-    <!--排序-->
-    <?= $form->field($model, 'sort_order')->textInput(['maxlength' => true]) ?>
-
-    <?php
-//    $form->field($model, 'is_show')->widget(SwitchInput::classname(), [
-//        'pluginOptions' => [
-//            'onText' => Yii::t('app', 'Y'),
-//            'offText' => Yii::t('app', 'N'),
-//        ],
-//        'containerOptions' => ['class' => ' ']
-//    ]);?>
-    
-    <div class="form-group">
-        <div class="col-lg-1 col-md-1 control-label form-label"></div>
-        <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton(Yii::t('app', 'Submit') , ['class' => 'btn btn-success btn-flat']) ?>
-        </div>
-    </div>
+    <!--是否显示-->
+    <?=$form->field($model, 'is_show')->widget(SwitchInput::class, [
+        'pluginOptions' => [
+            'onText' => Yii::t('app', 'Y'),
+            'offText' => Yii::t('app', 'N'),
+        ],
+        'containerOptions' => ['class' => '']
+    ]);?>
 
     <?php ActiveForm::end(); ?>
 
