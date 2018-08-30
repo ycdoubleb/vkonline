@@ -47,10 +47,6 @@ class WeiboCallbackController extends Controller
             $_SESSION['token'] = $token;
             setcookie('weibojs_'.$weibo->client_id, http_build_query($token));
             $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
-            if($user_message['error_code'] == 10023){
-                \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
-                return $this->goHome();
-            }
             
             $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);     //是否已绑定
             if(!empty(\Yii::$app->user->id)){
