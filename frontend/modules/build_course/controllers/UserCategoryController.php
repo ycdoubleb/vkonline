@@ -49,16 +49,9 @@ class UserCategoryController extends GridViewChangeSelfController
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        $catIds = ArrayHelper::getColumn($dataProvider->models, 'id');
-        $catChildrens = [];
-        foreach ($catIds as $id) {
-            $catChildrens[$id] = ArrayHelper::index(UserCategory::getCatChildren($id), 'id');
-        }
-        
         return $this->render('index', [
             'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'catChildrens' => $catChildrens,
+            'dataProvider' => $this->getCatalogFramework($dataProvider->models),
         ]);
     }
 
@@ -100,15 +93,15 @@ class UserCategoryController extends GridViewChangeSelfController
                 if($model->level <= 4){
                     $trans->commit();  //提交事务
                     Yii::$app->getSession()->setFlash('success','操作成功！');
-                    return $this->redirect(['index']);
                 }else{
                     Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
-                    return $this->redirect(['create', 'id' => $id]);
                 }
             }catch (Exception $ex) {
                 $trans ->rollBack(); //回滚事务
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
+            
+            return $this->redirect(['index']);
         }
 
         return $this->renderAjax('create', [
@@ -128,7 +121,8 @@ class UserCategoryController extends GridViewChangeSelfController
         $model = $this->findModel($id);
         
         if($model->is_public){
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+            Yii::$app->getSession()->setFlash('error','操作失败::' . Yii::t('app', 'You have no permissions to perform this operation.'));
+            return $this->redirect(['index']);
         }
         
         if ($model->load(Yii::$app->request->post())) {
@@ -158,18 +152,18 @@ class UserCategoryController extends GridViewChangeSelfController
                     throw new Exception($model->getErrors());
                 }
                 //如果目标分类等级 + 移动分类等级 <= 4，则提交修改移动分类所有子级的path
-                if($targetLevel + $moveLevel <= 4){
+                if($targetLevel + $moveLevel <= 4 || $model->parent_id == 0){
                     $trans->commit();  //提交事务
                     Yii::$app->getSession()->setFlash('success','操作成功！');
-                    return $this->redirect(['index']);
                 }else{
                     Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
-                    return $this->redirect(['update', 'id' => $model->id]);
                 }
             }catch (Exception $ex) {
                 $trans ->rollBack(); //回滚事务
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
+            
+            return $this->redirect(['index']);
         }
 
         return $this->renderAjax('update', [
@@ -187,22 +181,32 @@ class UserCategoryController extends GridViewChangeSelfController
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        
-        if($model->is_public){
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-        }
-        
+
+        Yii::$app->getResponse()->format = 'json';
+        $results = [
+            'code' => 404,
+            'data' => ['id' => $model->id, 'name' => $model->name],
+            'message' => Yii::t('app', 'You have no permissions to perform this operation.'),
+        ];
         if($model->created_by == \Yii::$app->user->id){
-            $catChildrens  = UserCategory::getCatChildren($model->id);
-            if(count($catChildrens) > 0 || count($model->videos) > 0){
-                Yii::$app->getSession()->setFlash('error', '操作失败::该目录存在子目录或存在视频。');
+            if($model->is_public){
+                return $results;
             }else{
-                $model->delete();
-                UserCategory::invalidateCache();    //清除缓存
-                Yii::$app->getSession()->setFlash('success','操作成功！');
+                $catChildrens  = UserCategory::getCatChildren($model->id);
+                if(count($catChildrens) > 0){
+                    $results['message'] = '该目录存在子目录，不能删除。';
+                    return $results;
+                }else if(count($model->videos) > 0){
+                    $results['message'] = '该目录存在视频，不能删除。';
+                    return $results;
+                }else{
+                    $model->delete();
+                    UserCategory::invalidateCache();    //清除缓存
+                    Yii::$app->getSession()->setFlash('success','操作成功！');
+                }
             }
         }else{
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+            return $results;
         }
         
         return $this->redirect(['index']);
@@ -228,6 +232,7 @@ class UserCategoryController extends GridViewChangeSelfController
             try
             { 
                 $is_submit = false;
+                $is_public = false;
                 $targetLevel = $target_id > 0 ? UserCategory::getCatById($target_id)->level : 1;  //目标分类等级        
                 $moveCateorys = UserCategory::find()->where(['id' => $move_ids])
                     ->orderBy(['path' => SORT_ASC])->all();   //获取所要移动的分类
@@ -236,7 +241,11 @@ class UserCategoryController extends GridViewChangeSelfController
                 $moveCategoryCountLevel = max($moveCateogyLevels) - min($moveCateogyLevels) + 1 + $targetLevel;
                 if($moveCategoryCountLevel <= 4){
                     foreach ($moveCateorys as $moveModel) {
-                        /* @var $moveModel UserCategory */
+                        //如果移动的目录是公共目录，终止循环
+                        if($moveModel->is_public){
+                            $is_public = true;
+                            break;
+                        }
                         //如果移动的分类父级id不在所要移动的id数组里，则设置所要移动的父级id为目标id
                         if(!in_array($moveModel->parent_id, $move_ids)){
                             $moveModel->parent_id = $target_id;
@@ -249,11 +258,15 @@ class UserCategoryController extends GridViewChangeSelfController
                     }
                     $is_submit = true;
                 }
-                if($is_submit){
-                    $trans->commit();  //提交事务
-                    Yii::$app->getSession()->setFlash('success','操作成功！');
+                if(!$is_public){
+                    if($is_submit){
+                        $trans->commit();  //提交事务
+                        Yii::$app->getSession()->setFlash('success','操作成功！');
+                    }else{
+                        Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
+                    }
                 }else{
-                    Yii::$app->getSession()->setFlash('error', '操作失败::目录结构不能超过4级');
+                    Yii::$app->getSession()->setFlash('error', '操作失败::移动目录结构里存在“公共目录”。');
                 }
                 return $this->redirect(['index']);
             }catch (Exception $ex) {
@@ -264,7 +277,7 @@ class UserCategoryController extends GridViewChangeSelfController
 
         return $this->renderAjax('move', [
             'move_ids' => implode(',', $move_ids),    //所选的目录id
-            'dataProvider' => $dataProvider,    //用户自定义的目录结构
+            'dataProvider' => $this->getCatalogFramework($dataProvider->models),    //用户自定义的目录结构
         ]);
     }
     
@@ -308,5 +321,35 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 递归生成目录框架
+     * @param array $dataProvider   目录
+     * @param integer $parent_id    上一级id
+     * @return array
+     */
+    protected function getCatalogFramework($dataProvider, $parent_id = 0)
+    {
+        $dataCatalog = [];
+        //组装目录结构
+        ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
+        foreach($dataProvider as $_data){
+            if($_data->parent_id == $parent_id){
+                $item = [
+                    'title'=> $_data->name,
+                    'key' => $_data->id,
+                    'level' => $_data->level,
+                    'is_show' => $_data->is_show,
+                    'is_public' => $_data->is_public,
+                    'sort_order' => $_data->sort_order,
+                    'folder' => true,
+                ];
+                $item['children'] = $this->getCatalogFramework($dataProvider, $_data->id);
+                $dataCatalog[] = $item;
+            }
+        }
+        
+        return $dataCatalog;
     }
 }

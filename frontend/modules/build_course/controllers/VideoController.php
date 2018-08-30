@@ -302,8 +302,92 @@ class VideoController extends Controller
 
         return $this->renderAjax('movevideo', [
             'move_ids' => $move_ids,    //所选的视频id
-            'dataProvider' => $dataProvider,    //用户自定义的目录结构
+            'dataProvider' => $this->getCatalogFramework($dataProvider->models),    //用户自定义的目录结构
         ]);
+    }
+    
+    /**
+     * 创建 目录到指定的目录，
+     * 如果添加成功，返回json。
+     * @return json
+     */
+    public function actionCreateCatalog()
+    {
+        $model = new UserCategory(['type' => UserCategory::TYPE_MYVIDOE, 'created_by' => \Yii::$app->user->id]);
+        $model->parent_id = ArrayHelper::getValue(Yii::$app->request->post(), 'parent_id');
+        $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
+        
+        if (Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            {  
+                if($model->save()){
+                    $model->updateParentPath();
+                    UserCategory::invalidateCache();
+                }
+                
+                if($model->level <= 4){
+                    $trans->commit();  //提交事务
+                    return [
+                        'code' => 200,
+                        'data' => ['id' => $model->id, 'name' => $model->name],
+                        'message' => '添加成功。'
+                    ];
+                }else{
+                    return [
+                        'code' => 404,
+                        'data' => ['id' => $model->id, 'name' => $model->name],
+                        'message' => '添加失败::目录结构不能超过4级。'
+                    ];
+                }
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
+                return [
+                    'code' => 404,
+                    'data' => ['id' => $model->id, 'name' => $model->name],
+                    'message' => '添加失败：' . $ex->getMessage(),
+                ];
+            }
+        }
+    }
+    
+    /**
+     * 更新 选中目录，
+     * 如果添加成功，返回json。
+     * @param integer $id 
+     * @return json
+     */
+    public function actionUpdateCatalog($id)
+    {
+        $model = UserCategory::findOne($id);
+        $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
+        
+        if (Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            {  
+                if($model->save(false, ['name'])){
+                    $trans->commit();  //提交事务
+                    UserCategory::invalidateCache();
+                }
+                return [
+                    'code' => 200,
+                    'data' => ['id' => $model->id, 'name' => $model->name],
+                    'message' => '添加成功。'
+                ];
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
+                return [
+                    'code' => 404,
+                    'data' => ['id' => $model->id, 'name' => $model->name],
+                    'message' => '添加失败：' . $ex->getMessage(),
+                ];
+            }
+        }
     }
     
     /**
@@ -444,5 +528,30 @@ class VideoController extends Controller
         }
         
         return $path;
+    }
+    
+    /**
+     * 递归生成目录框架
+     * @param array $dataProvider   目录
+     * @param integer $parent_id    上一级id
+     * @return array
+     */
+    protected function getCatalogFramework($dataProvider, $parent_id = 0)
+    {
+        $dataCatalog = [];
+        ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
+        foreach($dataProvider as $_data){
+            if($_data->parent_id == $parent_id){
+                $item = [
+                    'title'=> $_data->name,
+                    'key' => $_data->id,
+                    'folder' => true,
+                ];
+                $item['children'] = $this->getCatalogFramework($dataProvider, $_data->id);
+                $dataCatalog[] = $item;
+            }
+        }
+        
+        return $dataCatalog;
     }
 }

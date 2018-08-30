@@ -48,8 +48,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Create}{Catalog}',[
 </div>
 
 <?php
-$js = 
-<<<JS
+$js = <<<JS
 
     // 提交表单
     $("#submitsave").click(function(){
