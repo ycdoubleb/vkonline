@@ -250,7 +250,7 @@ Html;
     window.onload = function(){
         $("#coursemake").click(function (event) {
             $tips.appendTo($('body')).show();
-            window.protocolCheck($(this).attr("href"),
+            window.customeProtocolCheck($(this).attr("href"),
                     function () {
                         $tips.hide();
                         var bln = confirm("检测到您电脑未安装‘板书工具’ 是否下载安装？");
