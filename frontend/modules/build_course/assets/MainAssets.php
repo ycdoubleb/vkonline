@@ -22,7 +22,7 @@ class MainAssets extends AssetBundle {
        'css/main.css'
     ];
     public $js = [
-        'js/protocolcheck.js',
+        'js/customeProtocolCheck.js',
     ];
     public $depends = [
         'yii\web\YiiAsset'

@@ -206,7 +206,7 @@ class CustomerController extends GridViewChangeSelfController
                     'customer_id','title','good_id','content','start_time','end_time','created_by','created_at','updated_at'
                 ],$values)->execute();
 
-                return $this->redirect(['view']);
+                return $this->redirect(['view','id' => $id]);
             }
         }
     }
