@@ -1,27 +1,31 @@
-<li class="{%className%}">
-    <div class="pic keep-left">
-        <a href="/course/default/view?id={%courseId%}" title="{%name%}" target="_blank">{%isExist%}</a>
+<li class="list-panel">
+    <div class="list-header pull-left">
+        <a href="../default/view?id={%course_id%}" title="{%name%}" target="_blank">
+            <img src="{%cover_img%}" width="280" height="210" />
+        </a>
     </div>
-    <div class="text keep-right">
-        <div class="tuip title single-clamp keep-left">{%name%}</div>
-        <div class="tuip speaker">
-            <a href="/teacher/default/view?id={%teacherId%}" target="_blank">
-                <div class="avatars img-circle keep-left">
-                    <img src="{%teacherAvatar%}" class="img-circle" width="25" height="25">
-                </div>
-                <span class="keep-left">{%teacherName%}</span>
+    <div class="list-body pull-ringt">
+        <div class="tuip">
+            <span class="title single-clamp">{%name%}</span>
+        </div>
+        <div class="tuip" style="line-height: 25px;">
+            <a href="/teacher/default/view?id={%teacher_id%}" target="_blank">
+                <img src="{%teacher_avatar%}" class="avatars img-circle pull-left"/>
+                <span class="pull-left">{%teacher_name%}</span>
             </a>
-            <span class="font-success keep-right">{%number%} 人在学</span>
+            <span class="text-success pull-right">{%learning_count%} 人在学</span>
         </div>
         <div class="tuip single-clamp">
             <span>已完成 {%percent%}%</span>
             <div class="progress">
-                <div class="progress-bar" style="width:{%percent%}%;"></div>
+                <div class="progress-bar" style="{%progress_width%}"></div>
             </div>
-            <span class="font-success">上次观看至&nbsp;
-                {%nodeName%}-{%knowledgeName%}&nbsp;{%data%}
+            <span class="text-success">上次观看至&nbsp;
+                {%node_name%}-{%knowledge_name%}&nbsp;{%data%}
             </span>
         </div>
     </div>
-    <a href="../default/view?id={%id%}" class="btn btn-success study keep-right">继续学习</a>
+    <div class="list-footer pull-right">
+        <a href="../default/view?id={%course_id%}" class="btn btn-success study pull-right">继续学习</a>
+    </div>
 </li>

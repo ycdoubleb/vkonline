@@ -72,7 +72,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 'name' => Yii::t('app', 'Publish'),
                 'url' => ['publish', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => !Yii::$app->user->identity->is_official ? 'showModal($(this));return false;' : null],
+                'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => 'showModal($(this));return false;'],
                 'symbol' => '&nbsp;',
                 'conditions' => !$model->is_publish && !$model->is_del && $haveAllPrivilege,
                 'adminOptions' => true,
@@ -103,6 +103,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             }
         }
     ?>
+    
     <!-- 页面标题 -->
     <div class="vk-title">
         <span>
@@ -110,8 +111,10 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
         </span>
         <div class="btngroup pull-right"><?= $btngroup ?></div>
     </div>
+    
     <!--基本信息-->
     <div class="vk-panel left-panel pull-left">
+        
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -125,9 +128,10 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 }?>
             </div>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -172,7 +176,9 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 ],
             ],
         ]) ?>
+        
     </div>
+    
     <!--协作人员-->
     <div id="help_man">
         <?= $this->render('/course-user/index', [
@@ -181,6 +187,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             'haveAllPrivilege' => $haveAllPrivilege,
         ]) ?>
     </div>
+    
     <!--课程框架-->
     <div id="course_frame">
         <?= $this->render('/course-node/index', [
@@ -189,6 +196,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             'haveEditPrivilege' => $haveEditPrivilege,
         ]) ?>
     </div>
+    
     <!--操作记录-->
     <div id="act_log">
         <?= $this->render('/course-actlog/index', array_merge($logs, [
@@ -203,16 +211,16 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
 <?= $this->render('/layouts/model') ?>
 
 <?php
-$js = 
-<<<JS
-   
-    //显示模态框
-    window.showModal = function(elem){
+$js = <<<JS
+    /**
+     * 显示模态框
+     * @param {Object} _this   
+     */
+    window.showModal = function(_this){
         $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
+        $('.myModal').modal("show").load(_this.attr("href"));
         return false;
     }    
-                
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

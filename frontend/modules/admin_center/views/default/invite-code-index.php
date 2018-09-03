@@ -15,7 +15,7 @@ $this->title = Yii::t('app', 'Customer');
 
      <?= DetailView::widget([
         'model' => $model,
-        'options' => ['class' => 'table table-bordered detail-view vk-table'],
+        'options' => ['class' => 'table detail-view vk-table'],
         'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
         'attributes' => [
             [

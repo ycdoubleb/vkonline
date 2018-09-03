@@ -43,7 +43,7 @@ $this->title = '选择移动到哪个目录';
                 ]); ?>
                 
                 <div class="table-responsive">
-                    <table id="table-fancytree_2" class="table vk-table">
+                    <table id="table-fancytree_2" class="table table-hover vk-table">
                         
                         <colgroup>
                             <col width="*"></col>
@@ -74,16 +74,13 @@ $this->title = '选择移动到哪个目录';
 </div>
 
 <?php
-    
-    $js = <<<JS
-    
+$js = <<<JS
     //移动视频到指定目录
     var moveIds = "$move_ids";
     $('#submitsave').click(function(){
         var _nodes = $("#table-fancytree_2").fancytree("getActiveNode");
         $.post('../user-category/move?move_ids=' + moveIds + '&target_id=' + _nodes.key);
     });               
-            
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

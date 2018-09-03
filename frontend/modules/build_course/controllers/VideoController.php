@@ -72,14 +72,13 @@ class VideoController extends Controller
         $videos = array_values($results['data']['video']);    //视频数据
         $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
-        foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
-            $videos[$index]['level'] = Video::$levelMap[$item['level']];
-            $videos[$index]['status'] = Video::$mtsStatusName[$item['mts_status']];
-            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['des'] = Html::decode($item['des']);
-            $videos[$index]['created_at'] = Date('Y-m-d H:i', $item['created_at']);
-            $videos[$index]['level_name'] = Video::$levelMap[$item['level']];
+        foreach ($videos as &$item) {
+            $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+            $item['status'] = Video::$mtsStatusName[$item['mts_status']];
+            $item['duration'] = DateUtil::intToTime($item['duration']);
+            $item['des'] = Html::decode($item['des']);
+            $item['created_at'] = Date('Y-m-d H:i', $item['created_at']);
+            $item['level_name'] = Video::$levelMap[$item['level']];
         }
         
         //如果是ajax请求，返回json

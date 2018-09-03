@@ -22,12 +22,14 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
     
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+            
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode('选择发布的方式') ?></h4>
             </div>
+            
             <div class="modal-body">
                 <div class="vk-form clear-shadow">
                     <?php $form = ActiveForm::begin([
@@ -60,6 +62,7 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
                     <?php ActiveForm::end(); ?>
                 </div>
             </div>
+            
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
                     'id'=>'submitsave','class'=>'btn btn-primary btn-flat','data-dismiss'=> '','aria-label'=>'Close'

@@ -45,7 +45,7 @@ $this->title = Yii::t('app', 'Select the mobile video to the directory');
                 ]); ?>
                 
                 <div class="table-responsive">
-                    <table id="table-fancytree" class="table vk-table">
+                    <table id="table-fancytree" class="table table-hover vk-table">
                         <colgroup>
                             <col width="*"></col>
                         </colgroup>

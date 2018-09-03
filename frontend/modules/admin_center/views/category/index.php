@@ -25,7 +25,7 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
 ?>
 <div class="category-index main">
     
-    <div class="vk-panel" style="margin-top: 0px;">
+    <div class="vk-panel set-bottom" style="margin-top: 0px;">
         <div class="title">
             <span>
                 <?= $this->title ?>
@@ -34,9 +34,9 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                 
                 <?= Html::a(Yii::t('app', '{Move}{Category}', [
                     'Move' => Yii::t('app', 'Move'), 'Category' => Yii::t('app', 'Category'),
-                ]), 'javascript:;', [
-                    'id' => 'move', 'class' => 'btn btn-unimportant btn-flat',
-                    'onclick' => 'moveCategoryModal()',
+                ]), ['move'], [
+                    'class' => 'btn btn-unimportant btn-flat',
+                    'onclick' => 'moveCategoryModal($(this)); return false;',
                 ]) ?>
                 
             </div>
@@ -123,8 +123,8 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
             ]
         ]); ?>
                 
-        <div class="table-responsive">
-            <table id="table-fancytree_1" class="table table-bordered detail-view vk-table">
+        <div class="table-responsive set-padding">
+            <table id="table-fancytree_1" class="table table-bordered table-hover detail-view vk-table">
                 <colgroup>
                     <col width="345px"></col>
                     <col width="100px"></col>
@@ -173,9 +173,9 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
 
 <?php
 $js = <<<JS
-    
     /**
      * 显示模态框
+     * @param {Object} _this
      */
     window.showModal = function(elem){
        $(".myModal").html("");
@@ -183,9 +183,10 @@ $js = <<<JS
     }
 
     /**
-     * 显示移动分类模态框
+     * 显示移动目录模态框
+     * @param {Object} _this
      */
-    window.moveCategoryModal = function(){
+    window.moveCategoryModal = function(_this){
         var vals = [];
         var selectedNodes = [];
         var is_public = false;
@@ -210,10 +211,12 @@ $js = <<<JS
         }
         if(vals.length > 0){
             $(".myModal").html("");
-            $(".myModal").modal("show").load("../category/move?move_ids=" + vals);
+            $(".myModal").modal("show").load(_this.attr('href') + '?move_ids=' + vals);
         }else{
             alert("请选择移动的分类。");
         }
+        
+        return false;
     }     
 JS;
     $this->registerJs($js, View::POS_READY);

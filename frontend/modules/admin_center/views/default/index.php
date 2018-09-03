@@ -12,19 +12,24 @@ use yii\widgets\DetailView;
 /* @var $this View */
 /* @var $model Customer */
 
+ModuleAssets::register($this);
+
 $this->title = '概况';
 
 ?>
 
 <div class="admin_center-default-index main">
+    
     <!-- 页面标题 -->
     <div class="vk-title">
         <span>
             <?= $this->title ?>
         </span>
     </div>
+    
     <!--基本信息-->
     <div class="vk-panel">
+        
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -32,9 +37,10 @@ $this->title = '概况';
                 ]) ?>
             </span>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 'name',
@@ -70,6 +76,7 @@ $this->title = '概况';
             ],
         ]) ?>
     </div>
+    
     <!--管理员信息-->
     <div class="vk-panel">
         <div class="title">
@@ -84,13 +91,14 @@ $this->title = '概况';
                 ])?>
             </div>
         </div>
-        <div id="admin_info">
+        <div id="admin_info" class="set-padding">
             <!--加载-->
             <div class="loading-box">
                 <span class="loading"></span>
             </div>
         </div>
     </div>
+    
     <!--储存信息-->
     <div class="vk-panel">
         <div class="title">
@@ -100,7 +108,7 @@ $this->title = '概况';
         </div>
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -128,6 +136,7 @@ $this->title = '概况';
             ],
         ]) ?>   
     </div>
+    
     <!--邀请码-->
     <div class="vk-panel">
         <div class="title">
@@ -162,8 +171,9 @@ $this->title = '概况';
             </div>
         </div>
     </div>
+    
     <!--资源统计-->
-    <div class="vk-panel">
+    <div class="vk-panel set-bottom">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Resources}{Statistics}',[
@@ -171,7 +181,9 @@ $this->title = '概况';
                 ]) ?>
             </span>
         </div>
-         <?= GridView::widget([
+        
+        <div class="set-padding">
+        <?= GridView::widget([
             'dataProvider' => new ArrayDataProvider([
                 'allModels' => $resourceData,
                 'pagination' => FALSE,
@@ -253,26 +265,32 @@ $this->title = '概况';
                 ],
             ]
         ])?>
+        </div>    
    </div>
+        
 </div>
+
 <?= $this->render('/layouts/model') ?>
 
 <?php
+$adminCount = count($customerAdmin);    //管理员人数
 $WEB_ROOT = WEB_ROOT;   //web域名
-$js = 
-<<<JS
+$js = <<<JS
     //加载管理员列表
     $("#admin_info").load("../default/admin-index?id={$model->id}"); 
     //加载邀请码列表
     $("#signup_user").load("../default/invite-code-index?id={$model->id}"); 
+    
     /**
      * 显示模态框
+     * @param {Object} _this
      */
-    window.showElemModal = function(elem){
+    window.showElemModal = function(_this){
         $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
+        $('.myModal').modal("show").load(_this.attr("href"));
         return false;
     };
+    
     /**
      * 生成邀请码
      */
@@ -283,6 +301,7 @@ $js =
             }
         });
     }
+                
     /** 
      * 复制邀请码 
      */
@@ -295,8 +314,6 @@ $js =
           alert('复制邀请链接成功');
         }
     }; 
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
-    ModuleAssets::register($this);
 ?>

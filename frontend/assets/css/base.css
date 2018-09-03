@@ -96,7 +96,29 @@ textarea {
     overflow: auto;
     resize: vertical;
 }
-
+/**
+ * 设置底部内边距
+ */
+.set-bottom {
+    margin-bottom: 40px !important;
+}
+/**
+ * 设置间距
+ */
+.set-spacing {
+    margin-top: -15px !important;
+    padding-top: 15px !important;
+    padding-bottom: 25px !important;
+}
+/**
+ * 设置内边距
+ */
+.set-padding {
+    padding-top: 20px !important;
+    padding-right: 15px !important;
+    padding-bottom: 20px !important;
+    padding-left: 20px !important;
+}
 /*******************************************************************************
  * 页面标题
  *******************************************************************************/
@@ -116,19 +138,6 @@ textarea {
 .vk-form {
     display: inline-block;
     width: 100%;
-}
-/**
- * 设置间距
- */
-.vk-form.set-spacing {
-    margin: -15px 0px 0px;
-    padding: 15px 0px 25px;
-}
-/**
- *  设置底部内边距
- */
-.vk-form.set-bottom {
-    padding-bottom: 110px;
 }
 .vk-form .form-horizontal .form-group {
     margin-right: 0px;
@@ -211,7 +220,8 @@ textarea {
     display: inline-block;
     width: 100%;
     height: 54px;
-    margin: 30px 0px 35px;
+    margin-top: 30px;
+    margin-bottom: 35px;
     border-bottom: 1px solid #ccc;
 }
 .vk-tabs > ul > li {
@@ -220,7 +230,8 @@ textarea {
 }
 .vk-tabs > ul > li > a {
     display: inline-block;
-    padding: 0px 20px;
+    padding-right: 20px;
+    padding-left: 20px;
     color: #333;
     line-height: 54px;
     text-decoration: none;
@@ -264,7 +275,7 @@ textarea {
     display: inline-block;
     width: 100%;
     background-color: #fff; 
-    border-bottom: solid 1px #e4e4e4;
+    border-bottom: 1px solid #e4e4e4;
 }
 .vk-list .list-panel > a,
 .vk-list .list-panel .list-header > a {
@@ -276,7 +287,8 @@ textarea {
 .vk-list .list-panel .list-header .hyalinize {
     position: absolute;
     height: 20px;
-    padding: 0 5px;
+    padding-right: 5px;
+    padding-left: 5px;
     font-size: 12px;
     color: #fff;
     text-align: center;
@@ -286,8 +298,10 @@ textarea {
 .vk-list .list-panel .list-body {
     display: inline-block;
     width: 100%;
-    padding: 0 10px 15px;
-    border-bottom: dashed 1px #dedede;
+    padding-right: 10px;
+    padding-bottom: 15px;
+    padding-left: 10px;
+    border-bottom: 1px dashed #dedede;
 }
 .vk-list .list-panel .tuip {
     display: inline-block;
@@ -308,22 +322,25 @@ textarea {
 }
 .vk-list .list-panel .list-footer {
     height: 50px;
-    margin: 0 10px;
+    margin-right: 10px;
+    margin-left: 10px;
     line-height: 50px;
 }
 .vk-list .list-panel .list-footer .tuip {
-    margin-top: 0;
+    margin-top: 0px;
     line-height: 50px;
 }
 .vk-list .list-panel .list-footer .avatars {
     width: 25px;
     height: 25px;
-    margin: 12.5px 5px;
-    margin-left: 0px;
+    margin-top: 12.5px;
+    margin-right: 5px;
+    margin-bottom: 12.5px;
 }
 .vk-list .list-panel .list-footer .btn-edit {
     display: none;
-    margin: 7.5px 0px;
+    margin-top: 7.5px;
+    margin-bottom: 7.5px;
 }
 /*******************************************************************************
  * 详情公共
@@ -331,12 +348,14 @@ textarea {
  .vk-panel {
     display: inline-block;
     width: 100%;
-    margin: 30px 0px 15px;
+    margin-top: 30px;
+    margin-bottom: 15px;
     border-radius: 0px;
 }
 .vk-panel .title {
     height: 60px;
-    padding: 0px 15px 0px 20px;
+    padding-right: 15px;
+    padding-left: 20px;
     font-size: 16px;
     color: #878787;
     text-align: left;
@@ -344,20 +363,14 @@ textarea {
     border-bottom: 1px solid #f2f2f2;
 }
 .vk-panel .panel-height {
-    min-height: 600px;
-    max-height: 600px;
+    min-height: 640px;
+    max-height: 640px;
     overflow-x: hidden;
     overflow-y: auto;
 }
 /**
  * 重置fancytree组件样式
  */
-.vk-panel .table-responsive{
-    padding-top: 20px;
-    padding-right: 15px;
-    padding-bottom: 20px;
-    padding-left: 20px;
-}
 .table-responsive .vk-table:focus{
     outline: 0px !important;
 }
@@ -395,11 +408,11 @@ textarea {
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
-    border-color: #e4e4e4;
+    border:1px solid #e4e4e4;
     border-top-width: 0px;
     border-right-width: 1px;
     border-left-width: 0px;
-    border-bottom: 1px solid #eee;
+    border-bottom-color: #eee;
 }
 .vk-table > thead > tr > th {
     background-color: #f2f2f2;
@@ -408,14 +421,17 @@ textarea {
  * 设置表格每行最后一个th、td的右边框大小
  */
 .vk-table > thead > tr > th:last-of-type,
+.vk-table > thead > tr.filters > td:last-of-type,
 .vk-table > tbody > tr > td:last-of-type{
     border-right-width: 0px;
 }
 /**
- * 重置fancytree组件样式
+ * 重置fancytree组件激活样式 和 鼠标经过tr样式
  */
-.vk-table > tbody > tr.fancytree-active{
+.vk-table > tbody > tr.fancytree-active,
+.vk-table.table-hover > tbody > tr:hover{
     background-color: #f9f9f9 !important;
+    cursor: pointer;
 }
 
 /*******************************************************************************

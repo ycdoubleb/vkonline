@@ -207,7 +207,7 @@ $this->registerJs($format, View::POS_HEAD);
 </div>
 
 <?php
-//加载载模板
+//加载ITEM_DOM模板
 $item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course/_attr.php')));
 //获取flash上传组件路径
@@ -216,8 +216,7 @@ $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this
 $attFiles = json_encode($attFiles);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
-$js = 
-<<<JS
+$js = <<<JS
     /**
      * 初始化百度编辑器
      */
@@ -225,6 +224,7 @@ $js =
         initialFrameHeight: 500,
         maximumWords: 100000,
     });
+        
     /**
      * 选择分类加载其对应的属性
      * @param int value 指定分类id  
@@ -245,6 +245,7 @@ $js =
             }
         });
     }
+        
     /**
      * 单击刷新按钮重新加载老师下拉列表
      */
@@ -261,6 +262,9 @@ $js =
         })
         return false;
     });
+    
+    
+        
     /**
      * 加载文件上传
      */
@@ -293,6 +297,7 @@ $js =
         window.uploader = new euploader.Uploader(config, euploader.FilelistView);
         window.uploader.addCompleteFiles($attFiles);
     });
+        
     /**
     * 上传文件完成才可以提交
     * @return {uploader.isFinish}

@@ -1,17 +1,12 @@
 <?php
 
-use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\searchs\CourseSearch;
-use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\web\JsExpression;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $searchModel CourseSearch */
@@ -41,97 +36,22 @@ $this->title = Yii::t('app', '{My}{Course}', [
     </div>
     
     <!-- 搜索 -->
-    <div class="course-form vk-form set-spacing"> 
-        
-        <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-            'options'=>[
-                'id' => 'build-course-form',
-                'class'=>'form-horizontal',
-            ],
-            'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n",  
-                'labelOptions' => [
-                    'class' => 'col-lg-1 col-md-1 control-label form-label',
-                ],  
-            ], 
-        ]); ?>
-        <div class="col-log-12 col-md-12">
-            
-            <!--分类-->
-            <?= $form->field($searchModel, 'category_id', [
-                'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
-            ])->widget(DepDropdown::class, [
-                'pluginOptions' => [
-                    'url' => Url::to('/admin_center/category/search-children', false),
-                    'max_level' => 4,
-                    'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
-                ],
-                'items' => Category::getSameLevelCats($searchModel->category_id, true),
-                'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
-                'itemOptions' => [
-                    'style' => 'width: 115px; display: inline-block;',
-                ],
-            ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
-            
-            <!--状态-->
-            <?= $form->field($searchModel, 'is_publish')->radioList(['' => '全部', 1 => '已发布', 0 => '未发布'], [
-                'value' => ArrayHelper::getValue($filters, 'CourseSearch.is_publish', ''),
-                'itemOptions'=>[
-                    'onclick' => 'submitForm();',
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{Status}：', ['Status' => Yii::t('app', 'Status')])) ?>
-            
-            <!--查看权限-->
-            <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
-                'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
-                'itemOptions'=>[
-                    'onclick' => 'submitForm();',
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{View}{Privilege}：', [
-                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-            ])) ?>
-            
-            <!--课程名称-->
-            <?= $form->field($searchModel, 'name')->textInput([
-                'placeholder' => '请输入...', 'maxlength' => true, 
-                'onchange' => 'submitForm();',
-            ])->label(Yii::t('app', '{Course}{Name}：', [
-                'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
-            ])) ?>
-            
-        </div>
-        
-        <?php ActiveForm::end(); ?>
-        
-    </div>
+    <?= $this->render('_search', [
+        'searchModel' => $searchModel,
+        'filters' => $filters,
+    ]) ?>
     
     <!-- 排序 -->
     <div class="vk-tabs">
         <ul class="list-unstyled">
             <li id="created_at">
-                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at'])), ['id' => 'created_at']) ?>
+                <?= Html::a('按时间排序', array_merge(['index'], array_merge($filters, ['sort' => 'created_at']))) ?>
             </li>
             <li id="is_publish">
-                <?= Html::a('按状态排序', array_merge(['index'], array_merge($filters, ['sort' => 'is_publish'])), ['id' => 'is_publish']) ?>
+                <?= Html::a('按状态排序', array_merge(['index'], array_merge($filters, ['sort' => 'is_publish']))) ?>
             </li>
             <li id="level">
-                <?= Html::a('按权限排序', array_merge(['index'], array_merge($filters, ['sort' => 'level'])), ['id' => 'level']) ?>
+                <?= Html::a('按权限排序', array_merge(['index'], array_merge($filters, ['sort' => 'level']))) ?>
             </li>
         </ul>
     </div>
@@ -150,7 +70,7 @@ $this->title = Yii::t('app', '{My}{Course}', [
     </div>
     
     <!--总结记录-->
-    <div class="summary">
+    <div class="summary set-bottom">
         <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
@@ -162,14 +82,10 @@ $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course/_list.php')));
-$js = 
-<<<JS
-    //提交表单 
-    window.submitForm = function(){
-        $('#build-course-form').submit();
-    }
+$js = <<<JS
     //标签页选中效果
     $(".vk-tabs ul li[id=$tabs]").addClass('active');
+        
     /**
      * 滚屏自动换页
      */
@@ -180,6 +96,7 @@ $js =
             loaddata(page, '/build_course/course/index');
         }
     });
+        
     //加载第一页的课程数据
     loaddata(page, '/build_course/course/index');
     /**
@@ -237,7 +154,6 @@ $js =
             $('.loading-box .no_more').hide();
         }
     }
-   
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

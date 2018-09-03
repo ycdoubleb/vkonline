@@ -15,7 +15,8 @@ ModuleAssets::register($this);
 
 ?>
 <div class="course_actlog-index">
-    <div class="vk-panel">
+    <div class="vk-panel set-bottom">
+        
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Operation}{Log}', [
@@ -23,7 +24,9 @@ ModuleAssets::register($this);
                 ]) ?>
             </span>
         </div>
+        
         <div class="panel-height">
+            <div class="set-padding">
             <?= GridView::widget([
                 'id' => 'gv1',
                 'dataProvider' => $dataProvider,
@@ -203,6 +206,7 @@ ModuleAssets::register($this);
                     ],
                 ],
             ]); ?>
+            </div>
         </div>
             
         <div class="summary">
@@ -220,25 +224,26 @@ ModuleAssets::register($this);
 
 <?php
 $url = Url::to(array_merge(['course-actlog/index'], $filter));
-$js = 
-<<<JS
+$js = <<<JS
    
-    //点击加载更多
-    window.more = function(elem){
-        $("#act_log").load(elem.attr("href")); 
+    /**
+     * 点击加载更多
+     * @param {Object} _this
+     */
+    window.more = function(_this){
+        $("#act_log").load(_this.attr("href")); 
         return false;
-    }    
-    
+    }   
+        
+    /** 过滤器之前的事件 */
     $('#gv1').on('beforeFilter', function(evt){
         evt.result = false;
         $.post("$url",$('#gv1 form').serialize(), function(rel){
             if(rel['code'] == '200'){
-                $("#act_log").load(rel['url']); 
+                $("#act_log").load(rel.url); 
             }
         });
     });
-
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

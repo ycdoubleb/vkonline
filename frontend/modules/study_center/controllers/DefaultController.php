@@ -22,6 +22,8 @@ use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
+use common\utils\DateUtil;
+use common\utils\StringUtil;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Exception;
@@ -89,11 +91,16 @@ class DefaultController extends Controller
     public function actionHistory()
     {
         $searchModel = new CourseProgressSearch();
-        $results = $searchModel->search(Yii::$app->request->queryParams);
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['course']),
-        ]);
+        $results = $searchModel->search(array_merge(\Yii::$app->request->queryParams, ['limit' => 4]));
+        $courses = array_values($results['data']['course']);    //课程数据
+        //重修课程数据里面的元素值
+        foreach ($courses as &$item) {
+            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['percent'] = isset($item['node_num']) && isset($item['finish_num']) ? floor($item['node_num'] / $item['finish_num']) : 0;
+            $item['progress_width'] = 'width:' . $item['percent'] . '%';
+            $item['data'] = Yii::$app->formatter->asDuration($item['data'], '');
+        }
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
@@ -102,7 +109,7 @@ class DefaultController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['course']), 
+                        'result' => $courses, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -123,7 +130,6 @@ class DefaultController extends Controller
         ];
         
         return $this->render('history', [
-            'dataProvider' => $dataProvider,    //参与的课程数据
             'totalCount' => $results['total'],  //总数量
         ]);
     }
@@ -135,11 +141,14 @@ class DefaultController extends Controller
     public function actionCollectCourse()
     {
         $searchModel = new CourseFavoriteSearch();
-        $results = $searchModel->search(Yii::$app->request->queryParams);
-       
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['course']),
-        ]);
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        $courses = array_values($results['data']['course']);    //课程数据
+        //重修课程数据里面的元素值
+        foreach ($courses as &$item) {
+            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        }
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
@@ -148,7 +157,7 @@ class DefaultController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['course']), 
+                        'result' => $courses, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -169,7 +178,6 @@ class DefaultController extends Controller
         ];
         
         return $this->render('course', [
-            'dataProvider' => $dataProvider,    //收藏的课程数据
             'totalCount' => $results['total'],  //总数量
         ]);
     }
@@ -182,14 +190,12 @@ class DefaultController extends Controller
     {
         $searchModel = new VideoFavoriteSearch();
         $results = $searchModel->collectSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
-        
-        foreach($results['data']['video'] as &$video){
-            $video['img'] = Aliyun::absolutePath(!empty($video['img']) ? $video['img'] : 'static/imgs/notfound.png');
+        $videos = array_values($results['data']['video']);    //视频数据
+        //重修视频数据里面的元素值
+        foreach($videos as &$item){
+            $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+            $item['duration'] = DateUtil::intToTime($item['duration']);
         }
-        
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
-        ]);
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
@@ -198,7 +204,7 @@ class DefaultController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => array_values($results['data']['video']), 
+                        'result' => $videos, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -219,7 +225,6 @@ class DefaultController extends Controller
         ];
         
         return $this->render('video', [
-            'dataProvider' => $dataProvider,    //收藏的视频数据
             'totalCount' => $results['total'],  //总数量
         ]);
     }

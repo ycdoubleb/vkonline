@@ -26,7 +26,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
 ?>
 <div class="user-category-index main">
 
-    <div class="vk-panel" style="margin-top: 0px;">
+    <div class="vk-panel set-bottom" style="margin-top: 0px;">
         <div class="title">
             <span>
                 <?= $this->title ?>
@@ -39,8 +39,9 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     ]) . '&nbsp;';
                     echo Html::a(Yii::t('app', '{Move}{Catalog}', [
                         'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')
-                    ]), 'javascript:;', [
-                        'class' => 'btn btn-unimportant btn-flat', 'onclick' => 'moveCatalogModal();'
+                    ]), ['move'], [
+                        'class' => 'btn btn-unimportant btn-flat', 
+                        'onclick' => 'moveCatalogModal($(this)); return false;'
                     ]);
                 ?>
             </div>
@@ -131,8 +132,8 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
             ]
         ]); ?>
                 
-        <div class="table-responsive">
-            <table id="table-fancytree_1" class="table table-bordered detail-view vk-table">
+        <div class="table-responsive set-padding">
+            <table id="table-fancytree_1" class="table table-bordered table-hover detail-view vk-table">
                 <colgroup>
                     <col width="400px"></col>
                     <col width="45px"></col>
@@ -179,21 +180,21 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
 <?= $this->render('/layouts/model') ?>
 
 <?php
-    
-    $js = <<<JS
-       
+$js = <<<JS
     /**
      * 显示模态框
+     * @param {Object} _this
      */
-    window.showModal = function(elem){
+    window.showModal = function(_this){
         $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
+        $('.myModal').modal("show").load(_this.attr("href"));
     }    
 
     /**
      * 显示移动目录模态框
+     * @param {Object} _this
      */
-    window.moveCatalogModal = function(){
+    window.moveCatalogModal = function(_this){
         var vals = [];
         var selectedNodes = [];
         var is_public = false;
@@ -218,10 +219,12 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
         }
         if(vals.length > 0){
             $(".myModal").html("");
-            $(".myModal").modal("show").load("../user-category/move?move_ids=" + vals);
+            $('.myModal').modal('show').load(_this.attr('href') + '?move_ids=' + vals);
         }else{
             alert("请选择移动的目录。");
         }
+        
+        return false;
     }   
 JS;
     $this->registerJs($js, View::POS_READY);

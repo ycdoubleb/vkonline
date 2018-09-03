@@ -79,7 +79,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
     </div>
     
     <!--列表-->
-    <div class="vk-list">
+    <div class="vk-list set-bottom">
         <!--目录-->
         <div class="folder">
             <ul class="list-unstyled">
@@ -107,7 +107,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </div>
         
         <!--视频-->
-        <div class="video">
+        <div class="video set-padding">
             <ul class="list-unstyled">
 
             </ul>
@@ -141,24 +141,31 @@ $js =
         $(".vk-tabs .pull-right").removeClass("hidden");
         $('input[name="Video[id]"]').removeClass("hidden").prop("checked", false);
     });
+        
     //单击取消
     $("#cancel").click(function(){
         is_arrange = false;
         $(".vk-tabs .pull-right").addClass("hidden");
         $('input[name="Video[id]"]').addClass("hidden").prop("checked", false);
     });
+        
     //单击全选
     $("#allChecked").click(function(){
         is_checked = true;
         $('input[name="Video[id]"]').prop("checked", true);
     });
+        
     //单机全不选
     $("#noAllChecked").click(function(){
         is_checked = false;
         $('input[name="Video[id]"]').prop("checked", false);
     });
-    //显示模态框
-    window.showModal = function(elem){
+        
+    /**
+     * 显示模态框  
+     * @param {Object} _this
+     */
+    window.showModal = function(_this){
         var checkObject = $("input[name='Video[id]']");  
         var val = [];
         for(i in checkObject){
@@ -168,7 +175,7 @@ $js =
         }
         if(val.length > 0){
             $(".myModal").html("");
-            $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+            $('.myModal').modal("show").load(_this.attr("href") + "?move_ids=" + val);
         }else{
             alert("请选择移动的视频");
         }

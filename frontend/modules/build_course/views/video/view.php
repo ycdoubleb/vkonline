@@ -52,6 +52,7 @@ foreach ($watermarksFiles as $watermark) {
         </div>
     </div>
     
+    <!--基本信息-->
     <div class="vk-panel">
         <div class="title">
             <span>
@@ -77,9 +78,10 @@ foreach ($watermarksFiles as $watermark) {
                 }?>
             </div>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -148,20 +150,23 @@ foreach ($watermarksFiles as $watermark) {
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => !empty($model->videoFile) ? 
-                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . Aliyun::absolutePath($model->img) . '"></video>' : null,
+                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . Aliyun::absolutePath(!empty($model->img) ? $model->img : 'static/imgs/notfound.png') . '"></video>' : null,
                 ],
             ],
         ]) ?>
     </div>
     
-    <div class="vk-panel">
+    <!--关联课程-->
+    <div class="vk-panel set-bottom">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Relation}{Course}',[
                     'Relation' => Yii::t('app', 'Relation'), 'Course' => Yii::t('app', 'Course'),
                 ]) ?>
             </span>
-        </div>            
+        </div>    
+
+        <div class="set-padding">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'tableOptions' => ['class' => 'table table-bordered vk-table'],
@@ -207,8 +212,7 @@ foreach ($watermarksFiles as $watermark) {
                         ],
                     ],
                     'contentOptions' =>[
-                        'style' => [
-                        ],
+                        'class' => 'single-clamp',
                     ],
                 ],
                 [
@@ -225,8 +229,7 @@ foreach ($watermarksFiles as $watermark) {
                         ],
                     ],
                     'contentOptions' =>[
-                        'style' => [
-                        ],
+                        'class' => 'single-clamp',
                     ],
                 ],
                 [
@@ -295,6 +298,7 @@ foreach ($watermarksFiles as $watermark) {
                 ],
             ],
         ]); ?>
+        </div>
         
         <div class="summary">
             <span>共 <?= $dataProvider->totalcount ?> 条记录</span>

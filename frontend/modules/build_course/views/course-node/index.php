@@ -22,6 +22,7 @@ GrowlAsset::register($this);
 <div class="course-node-index">
     
    <div class="vk-panel">
+       
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Course}{Catalog}',[
@@ -31,15 +32,19 @@ GrowlAsset::register($this);
             <div class="btngroup pull-right">
                 <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
-                        'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;']) . '&nbsp;';
-                    /*
-                    echo Html::a(Yii::t('app', '导入'), 'javascript:;', [
-                        'class' => 'btn btn-info btn-flat']) . '&nbsp;';
-                    echo Html::a(Yii::t('app', '导出'), 'javascript:;', [
-                        'class' => 'btn btn-info btn-flat']);*/
+                        'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
+                    ]);
+//                    echo '&nbsp;' . Html::a(Yii::t('app', '导入'), 'javascript:;', [
+//                        'class' => 'btn btn-info btn-flat'
+//                    ]);
+//                    echo '&nbsp;' . Html::a(Yii::t('app', '导出'), 'javascript:;', [
+//                        'class' => 'btn btn-info btn-flat'
+//                    ]);
                 } ?>
             </div>
+            
         </div>
+       
         <!--框架-->
         <ul id="course_node" class="sortable list list-unstyled">
             <?php if(count($dataProvider) <= 0): ?>
@@ -120,8 +125,7 @@ GrowlAsset::register($this);
 </div>
 
 <?php
-$js = 
-<<<JS
+$js = <<<JS
     /**
      * 初始化组件
      */
@@ -130,6 +134,7 @@ $js =
         handle: '.fa-arrows',
 	items: 'li',
     });
+        
     /*
      * 顺序更改
      */
@@ -163,8 +168,10 @@ $js =
             });
         });
     }); 
+        
     //在模态框里Select2不能输入搜索的解决方法
     $.fn.modal.Constructor.prototype.enforceFocus = function () {}; 
+        
     /**
      * 替换图标
      * @param object elem   目标对象
@@ -175,6 +182,7 @@ $js =
         else
             elem.find('i').removeClass("fa-caret-right").addClass("fa-caret-down");
     }
+        
     /**
      * 删除节点
      */
@@ -197,6 +205,7 @@ $js =
             return false;
         }
     }
+        
     /**
      * 删除知识点
      */
@@ -216,7 +225,6 @@ $js =
             return false;
         }
     }
-
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

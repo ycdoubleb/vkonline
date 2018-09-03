@@ -15,9 +15,10 @@ use yii\widgets\ActiveForm;
 ]); ?>
 
 <?= $form->field($searchModel, 'name', [
-    'template' => "<div class=\"col-lg-12 col-md-12\" style=\"padding: 0\">{input}</div>\n",  
+    'template' => "<div class=\"col-lg-12 col-md-12 clear-padding\">{input}</div>\n",  
 ])->textInput([
-    'placeholder' => '请输入...', 'maxlength' => true
+    'placeholder' => '请输入...', 'maxlength' => true,
+    'onchange' => 'submitForm();'
 ])->label(''); ?>
 
 <?php ActiveForm::end(); ?>

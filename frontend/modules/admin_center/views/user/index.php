@@ -15,16 +15,20 @@ use yii\web\View;
 /* @var $searchModel UserSearch */
 /* @var $dataProvider ActiveDataProvider */
 
+ModuleAssets::register($this);
+
 $this->title = Yii::t('app', '{User}{List}',[
     'User' => Yii::t('app', 'User'), 'List' => Yii::t('app', 'List'),
 ]);
 
 $userLevel = CustomerAdmin::find()->select(['level'])
-        ->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
+    ->where(['user_id' => Yii::$app->user->id])->asArray()->one();   //当前用户的管理员等级
 
 ?>
+
 <div class="user-index main">
-    <div class="vk-panel">
+    <div class="vk-panel set-bottom" style="margin-top: 0px;">
+        
         <div class="title">
             <span>
                 <?= $this->title ?>
@@ -36,10 +40,16 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                 ]), ['create'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']) ?>
             </div>
         </div>
+        
+        <div class="set-padding">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'tableOptions' => ['class' => 'table table-bordered vk-table'],
+            'summaryOptions' => [
+                'class' => 'summary',
+                'style' => 'padding-left: 0px;'
+            ],
             'layout' => "{items}\n{summary}\n{pager}",
             'columns' => [
                 [
@@ -235,12 +245,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                 ],
             ],
         ]); ?>
+        </div>    
+            
     </div>
 </div>
-<?php
-    $js = <<<JS
-        
-JS;
-    $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
-?>

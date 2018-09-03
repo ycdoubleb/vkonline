@@ -63,14 +63,14 @@ class CourseController extends Controller
         $results = $searchModel->buildCourseSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         $courses = array_values($results['data']['course']);    //课程数据
         //重修课程数据里面的元素值
-        foreach ($courses as $index => $item) {
-            $courses[$index]['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
-            $courses[$index]['level'] = Course::$levelMap[$item['level']];
-            $courses[$index]['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
-            $courses[$index]['color_name'] = $item['is_publish'] ? 'success' : 'danger';
-            $courses[$index]['is_publish'] = Course::$publishStatus[$item['is_publish']];
-            $courses[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
-            $courses[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        foreach ($courses as &$item) {
+            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $item['level'] = Course::$levelMap[$item['level']];
+            $item['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
+            $item['color_name'] = $item['is_publish'] ? 'success' : 'danger';
+            $item['is_publish'] = Course::$publishStatus[$item['is_publish']];
+            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
        
         //如果是ajax请求，返回json
@@ -279,14 +279,14 @@ class CourseController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if (Yii::$app->user->identity->is_official || $model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->publishCourse($model);
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->renderAjax('publish', [
-                'model' => $model,  //模型
-            ]);
         }
+        
+        return $this->renderAjax('publish', [
+            'model' => $model,  //模型
+        ]);
     }
     
     /**

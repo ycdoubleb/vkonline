@@ -163,7 +163,7 @@ class ActionUtils
             $model->level = 0;
             $model->is_publish = 0;
             if($model->save(true, ['level', 'is_publish'])){
-                $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理", 'course_id' => $model->id]);
+                $this->saveCourseActLog(['action' => '下架', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -188,9 +188,11 @@ class ActionUtils
         try
         {  
             $model->is_publish = 1;
-            if(Yii::$app->user->identity->is_official){
-                $model->level = Course::PUBLIC_LEVEL;
-            }
+            //如果是官方用户level为公开
+//            if(Yii::$app->user->identity->is_official){
+//                $model->level = Course::PUBLIC_LEVEL;
+//            }
+            
             if($model->save()){
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{

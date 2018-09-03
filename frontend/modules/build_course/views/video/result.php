@@ -86,11 +86,11 @@ $this->title = Yii::t('app', '{My}{Video}', [
     </div>
     
     <!--列表-->
-    <div class="vk-list">
+    <div class="vk-list set-bottom set-padding">
         
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
-            'tableOptions' => ['class' => 'table detail-view vk-table'],
+            'tableOptions' => ['class' => 'table table-bordered table-hover detail-view vk-table'],
             'layout' => "{items}\n{summary}\n{pager}",
             'summaryOptions' => ['class' => 'hidden'],
             'pager' => [
@@ -230,8 +230,11 @@ $js =
         $('input[name="Video[id]"]').prop("checked", false);
     });
         
-    //显示模态框
-    window.showModal = function(elem){
+    /**
+     * 显示模态框  
+     * @param {Object} _this
+     */
+    window.showModal = function(_this){
         var checkObject = $("input[name='Video[id]']");  
         var val = [];
         for(i in checkObject){
@@ -241,7 +244,7 @@ $js =
         }
         if(val.length > 0){
             $(".myModal").html("");
-            $('.myModal').modal("show").load(elem.attr("href") + "?move_ids=" + val);
+            $('.myModal').modal("show").load(_this.attr("href") + "?move_ids=" + val);
         }else{
             alert("请选择移动的视频");
         }
