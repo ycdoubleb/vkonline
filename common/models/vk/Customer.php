@@ -192,6 +192,11 @@ class Customer extends ActiveRecord
                 $randStr = str_shuffle($str);       //打乱字符串  
                 $this->invite_code = substr($randStr,0,6); //substr(string,start,length);返回字符串的一部分 
             }
+            //创建时默认设置为停用状态
+            if($this->isNewRecord){
+                $this->status = self::STATUS_STOP;
+            }
+            //更新成员的‘is_official’状态
             if(!$this->isNewRecord){
                 User::updateAll(['is_official' => $this->is_official], ['customer_id' => $this->id]);
             }
@@ -215,17 +220,11 @@ class Customer extends ActiveRecord
             if(trim($this->logo) == ''){
                 $this->logo = $this->getOldAttribute('logo');
             }
-            $this->des = htmlentities($this->des);
             return true;
         }
         return false;
     }
-    
-    public function afterFind()
-    {
-        $this->des = html_entity_decode($this->des);
-    }
-    
+        
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param type $uploadpath  目标路径

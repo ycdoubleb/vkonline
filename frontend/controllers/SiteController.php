@@ -152,19 +152,35 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         $isPass = !empty($post) ? array_key_exists('username', $post['LoginForm']) : true;  //是否为密码登录true
-        if($isPass){
-            $model->scenario = LoginForm::SCENARIO_PASS;    //设置密码登录场景
-        } else {
-            $model->scenario = LoginForm::SCENARIO_SMS;     //设置短信登录场景
+        //检查客户是否到期停用
+        if(!empty($post)){
+            if($isPass){
+                $username = ArrayHelper::getValue($post, 'LoginForm.username');
+                $user = User::findOne(['username' => $username]);
+            } else {
+                $phone = ArrayHelper::getValue($post, 'LoginForm.phone');   //获取输入的号码
+                $user = User::findOne(['phone' => $phone]);
+            }
+            if($user->type == User::TYPE_GROUP){
+                $customer = Customer::findOne($user->customer_id);
+                if($customer->status == Customer::STATUS_STOP){
+                    Yii::$app->getSession()->setFlash('error', '客户套餐已到期！待管理员续费后可继续使用');
+                    return $this->goHome();
+                }
+            }
         }
         
         if($isPass){
+            $model->scenario = LoginForm::SCENARIO_PASS;    //设置密码登录场景
+            
             if ($model->load(Yii::$app->request->post()) && $model->login()) {
                 return $this->goBack();
             } else {
                 $model->password = '';
             }
         } else {
+            $model->scenario = LoginForm::SCENARIO_SMS;     //设置短信登录场景
+            
             $phone = ArrayHelper::getValue($post, 'LoginForm.phone');   //获取输入的号码
             $code = ArrayHelper::getValue($post, 'LoginForm.code');     //获取输入的验证码
             if(empty($phone)){
@@ -173,8 +189,8 @@ class SiteController extends Controller
                 Yii::$app->getSession()->setFlash('error','验证码不能为空！');
             }
             //保存在sesson中的电话号码/验证码
-            $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
-            $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+            $sessonPhone = Yii::$app->session->get('code_phone', '');
+            $sessonCode = Yii::$app->session->get('code_code', '');
             if($sessonPhone != $phone){
                 Yii::$app->getSession()->setFlash('error','手机号与验证码不匹配！');
             } elseif ($code != $sessonCode) {
@@ -251,8 +267,8 @@ class SiteController extends Controller
         $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
         $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
         //保存在sesson中的电话号码/验证码
-        $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
-        $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        $sessonPhone = Yii::$app->session->get('code_phone', '');
+        $sessonCode = Yii::$app->session->get('code_code', '');
         if($sessonPhone != $phone || $sessonCode != $code){
             Yii::$app->getSession()->setFlash('error','号码或验证码错误！');
         } elseif ($model->load($post)) {
@@ -285,7 +301,7 @@ class SiteController extends Controller
         $phone = ArrayHelper::getValue($post, 'MOBILE');   //获取输入的电话号码
         $pathName = ArrayHelper::getValue($post, 'pathname');   //获取点击发送验证码时的路径
         $name = trim(strrchr($pathName, '/'),'/');
-       
+
         //检查提交的号码是否存在
         $hasPhone = (new Query())->select(['id'])->from(['User' => User::tableName()])
                 ->where(['status' => User::STATUS_ACTIVE,'phone' => $phone])
@@ -388,7 +404,7 @@ class SiteController extends Controller
      */
     public function actionSetPassword()
     {
-        $sessonPhone = Yii::$app->session['code_timeOut']['phone'];
+        $sessonPhone = Yii::$app->session->get('code_phone');
         if(empty($sessonPhone)){
             return $this->goHome();
         }
@@ -398,7 +414,7 @@ class SiteController extends Controller
             $model->setPassword($model->password_hash);
             if($model->save(false)){
                 Yii::$app->session->setFlash('success', Yii::t('app', 'New password saved.'));
-                unset(Yii::$app->session['code_timeOut']);  //销毁sesson
+//                unset(Yii::$app->session['code_timeOut']);  //销毁sesson
                 return $this->goHome();
             }
         }
@@ -523,9 +539,9 @@ class SiteController extends Controller
         $code = ArrayHelper::getValue($post, 'code');   //获取输入的邀请码
         
         //保存在sesson中的邀请码
-        $params_code = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        $params_code = Yii::$app->session->get('code_code', '');
         //保存在sesson中的过期时间
-        $time_out = isset(Yii::$app->session['code_timeOut']['timeOut']) ? Yii::$app->session['code_timeOut']['timeOut']: '';
+        $time_out = Yii::$app->session->get('code_timeOut', '');
         $now_time = time();      //当前时间
         
         if($time_out >= $now_time){
@@ -565,8 +581,8 @@ class SiteController extends Controller
             Yii::$app->getSession()->setFlash('error','验证码不能为空！');
         }
         //保存在sesson中的电话号码
-        $sessonPhone = isset(Yii::$app->session['code_timeOut']['phone']) ? Yii::$app->session['code_timeOut']['phone'] : '';
-        $sessonCode = isset(Yii::$app->session['code_timeOut']['code']) ? Yii::$app->session['code_timeOut']['code'] : '';
+        $sessonPhone = Yii::$app->session->get('code_phone', '');
+        $sessonCode = Yii::$app->session->get('code_code', '');
         if($sessonPhone != $phone){
             Yii::$app->getSession()->setFlash('error','手机号与验证码不匹配！');
         } elseif ($code != $sessonCode) {
@@ -639,13 +655,12 @@ class SiteController extends Controller
         $str='0123456789876543210';  
         $randStr = str_shuffle($str);           //打乱字符串  
         //把生成的验证码和到期时间保存到sesson中
-        Yii::$app->session['code_timeOut'] = [
-            'phone' => $phone,
-            'code' => substr($randStr, 0, 4),   //验证码【substr(string,start,length);返回字符串的一部分】
-            'timeOut' => time() + 30*60,
-        ];
+        Yii::$app->session->set('code_phone', $phone);
+        Yii::$app->session->set('code_code', substr($randStr, 0, 4));//验证码【substr(string,start,length);返回字符串的一部分】
+        Yii::$app->session->set('code_timeOut', time() + 30*60);
+     
         
-        $PARAMS = Yii::$app->session['code_timeOut']['code'];
+        $PARAMS = Yii::$app->session->get('code_code');
         //传递的参数【必须是以下xml格式】
         $xmlDatas = '<?xml version="1.0" encoding="UTF-8"?>' .
                 '<tranceData>' .

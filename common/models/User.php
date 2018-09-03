@@ -172,12 +172,16 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public function checkMaxStore($attribute, $params)
     {
-        $format = $this->getAttribute($attribute) * $this->byte;
-        $totalSize = Customer::findOne($this->customer_id);             //客户所拥有的存储空间
+        if($this->type == self::TYPE_GROUP){  //团体用户才需要检测
+            $format = $this->getAttribute($attribute) * $this->byte;
+            $totalSize = Customer::findOne($this->customer_id);             //客户所拥有的存储空间
 
-        if((string)$format > (string)$totalSize->good->data){
-            $this->addError($attribute, "用户的存储空间大于客户所拥有的存储空间！");  
-            return false;  
+            if((string)$format > (string)$totalSize->good->data){
+                $this->addError($attribute, "用户的存储空间大于客户所拥有的存储空间！");  
+                return false;  
+            } else {
+                return true;
+            }
         } else {
             return true;
         }
