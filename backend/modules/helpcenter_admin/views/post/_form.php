@@ -2,7 +2,6 @@
 
 use common\models\helpcenter\Post;
 use common\models\helpcenter\PostCategory;
-use common\widgets\ckeditor\CkeditorAsset;
 use common\widgets\ueditor\UeditorAsset;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
@@ -62,10 +61,9 @@ use yii\widgets\ActiveForm;
     ]); ?>
         
     <?= $form->field($model, 'content')->textarea([
-//            'id' => 'editor', 
             'id' => 'container',
             'type' => 'text/plain', 
-            'style' => 'width:100%; height:400px;',
+            'style' => 'width:100%; min-height:400px;',
             'placeholder' => '文章内容...'
     ]) ?>
 
@@ -77,7 +75,7 @@ use yii\widgets\ActiveForm;
 
 </div>
 <?php
-    $upload = '/ueditor/default/upload-img?command=QuickUpload&type=Files&responseType=json';
+
 $js =
 <<<JS
     /** 富文本编辑器 */
@@ -86,22 +84,6 @@ $js =
         initialFrameHeight: 200, 
         maximumWords: 100000,
     });
-//    ClassicEditor
-//        .create(document.querySelector('#editor'), {
-//            language: 'zh-cn',
-//            ckfinder : {
-//                uploadUrl: 'upload'
-//            },image: {
-//            styles: [
-//            ]
-//        }
-//        })
-//        .then(editor => {
-//            console.log(editor);
-//        })
-//        .catch(error => {
-//            console.error(error);
-//        });
   
     /** 下拉选择父级分类 */
     $('#post-app_id').change(function(){
@@ -124,5 +106,4 @@ JS;
 ?> 
 <?php
     UeditorAsset::register($this);
-//    CkeditorAsset::register($this);
 ?>

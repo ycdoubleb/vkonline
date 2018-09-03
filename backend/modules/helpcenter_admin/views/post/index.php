@@ -129,75 +129,75 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]
                 ],
             ],
-            [
-                'attribute' => 'comment_count',
-                'label' => Yii::t('app', '{Comment}{Count}',[
-                    'Comment' => Yii::t('app', 'Comment'),
-                    'Count' => Yii::t('app' , 'Count')
-                ]),
-                'filter' => FALSE,
-                'headerOptions' => [
-                    'style' => [
-                        'text-align' => 'center'
-                    ]
-                ],
-                'contentOptions' => [
-                    'style' => [
-                        'text-align' => 'center'
-                    ]
-                ],
-            ],
-            [
-                'label' => Yii::t('app', '{Praise}/{Tread}',[
-                    'Praise' => Yii::t('app', 'Praise'),
-                    'Tread' => Yii::t('app' , 'Tread')
-                ]),
-                'format' => 'raw',
-                'filter' => FALSE,
-                'headerOptions' => [
-                    'style' => [
-                        'text-align' => 'center'
-                    ]
-                ],
-                'value' => function ($data){
-                    return '<span style="color:green">' . $data['like_count'] . '</span>' . '/' . 
-                           '<span style="color:red">'.$data['unlike_count'] . '</span>';
-                },
-                'contentOptions' => [
-                    'style' => [
-                        'text-align' => 'center'
-                    ]
-                ],
-            ],
-            [
-                'attribute' => 'can_comment',
-                'label' => Yii::t('app', '{Can}{Comment}', [
-                    'Can' => Yii::t('app', 'Can'),
-                    'Comment' => Yii::t('app', 'Comment'),
-                ]),
-                'format' => 'raw',
-                'class' => GridViewChangeSelfColumn::className(),
-                'filter' => Select2::widget([
-                    'model' => $searchModel,
-                    'attribute' => 'can_comment',
-                    'data' => Post::$TYPES,
-                    'hideSearch' => true,
-                    'options' => ['placeholder' => Yii::t('app', 'All')],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                    ],
-                ]),
-                'headerOptions' => [
-                    'style' => [
-                        'text-align' => 'center',
-                    ],
-                ],
-                'contentOptions' => [
-                    'style' => [
-                        'text-align' => 'center',
-                    ],
-                ],
-            ],
+//            [
+//                'attribute' => 'comment_count',
+//                'label' => Yii::t('app', '{Comment}{Count}',[
+//                    'Comment' => Yii::t('app', 'Comment'),
+//                    'Count' => Yii::t('app' , 'Count')
+//                ]),
+//                'filter' => FALSE,
+//                'headerOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center'
+//                    ]
+//                ],
+//                'contentOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center'
+//                    ]
+//                ],
+//            ],
+//            [
+//                'label' => Yii::t('app', '{Praise}/{Tread}',[
+//                    'Praise' => Yii::t('app', 'Praise'),
+//                    'Tread' => Yii::t('app' , 'Tread')
+//                ]),
+//                'format' => 'raw',
+//                'filter' => FALSE,
+//                'headerOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center'
+//                    ]
+//                ],
+//                'value' => function ($data){
+//                    return '<span style="color:green">' . $data['like_count'] . '</span>' . '/' . 
+//                           '<span style="color:red">'.$data['unlike_count'] . '</span>';
+//                },
+//                'contentOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center'
+//                    ]
+//                ],
+//            ],
+//            [
+//                'attribute' => 'can_comment',
+//                'label' => Yii::t('app', '{Can}{Comment}', [
+//                    'Can' => Yii::t('app', 'Can'),
+//                    'Comment' => Yii::t('app', 'Comment'),
+//                ]),
+//                'format' => 'raw',
+//                'class' => GridViewChangeSelfColumn::className(),
+//                'filter' => Select2::widget([
+//                    'model' => $searchModel,
+//                    'attribute' => 'can_comment',
+//                    'data' => Post::$TYPES,
+//                    'hideSearch' => true,
+//                    'options' => ['placeholder' => Yii::t('app', 'All')],
+//                    'pluginOptions' => [
+//                        'allowClear' => true,
+//                    ],
+//                ]),
+//                'headerOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center',
+//                    ],
+//                ],
+//                'contentOptions' => [
+//                    'style' => [
+//                        'text-align' => 'center',
+//                    ],
+//                ],
+//            ],
             [
                 'attribute' => 'is_show',
                 'label' => Yii::t('app', '{Is}{Show}', [

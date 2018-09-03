@@ -107,7 +107,7 @@ class LoginForm extends Model
     public function smsLogin($phone)
     {
         if (!empty($phone)) {
-            $user = User::findOne(['phone' => $phone, 'status' => self::STATUS_ACTIVE]);
+            $user = User::findOne(['phone' => $phone, 'status' => User::STATUS_ACTIVE]);
             $hasLogin = Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
             if($hasLogin && $this->userClass == User::class){
                 $user->generateAccessToken();

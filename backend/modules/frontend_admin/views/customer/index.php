@@ -3,6 +3,7 @@
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\Customer;
 use common\models\vk\searchs\CustomerSearch;
+use common\widgets\grid\GridViewChangeSelfColumn;
 use kartik\widgets\Select2;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
@@ -199,6 +200,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
+                [
+                    'attribute' => 'sort_order',
+                    'headerOptions' => [
+                        'style' => [
+                            'min-width' => '45px'
+                        ],
+                    ],
+                    'filter' => false,
+                    'class' => GridViewChangeSelfColumn::class,
+                    'plugOptions' => [
+                        'type' => 'input',
+                    ],
+                    'value' => function ($data) {
+                        return $data['sort_order'];
+                    }
+                    ],
                 [
                     'attribute' => 'expire_time',
                     'label' => Yii::t('app', 'Expire'),
