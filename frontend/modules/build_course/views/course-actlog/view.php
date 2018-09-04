@@ -9,9 +9,6 @@ use yii\widgets\DetailView;
 /* @var $this View */
 /* @var $model CourseActLog */
 
-
-ModuleAssets::register($this);
-
 $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
     'Operation' => Yii::t('app', 'Operation'), 'Log' => Yii::t('app', 'Log'),
     'Detail' => Yii::t('app', 'Detail')

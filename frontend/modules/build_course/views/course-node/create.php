@@ -1,17 +1,11 @@
 <?php
 
 use common\models\vk\CourseNode;
-use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $model CourseNode */
-
-
-ModuleAssets::register($this);
-GrowlAsset::register($this);
 
 $this->title = Yii::t('app', "{Add}{Node}",[
     'Add' => Yii::t('app', 'Add'), 'Node' => Yii::t('app', 'Node')
@@ -48,8 +42,7 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 <?php
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course-node/view.php')));
-$js = 
-<<<JS
+$js = <<<JS
             
     /** 提交表单 */
     $("#submitsave").click(function(){

@@ -1,8 +1,6 @@
 <?php
 
 use common\models\vk\CourseUser;
-use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\web\View;
@@ -10,9 +8,6 @@ use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $model CourseUser */
-
-ModuleAssets::register($this);
-GrowlAsset::register($this);
 
 $this->title = Yii::t(null, "{Edit}{HelpMan}", [
     'Edit' => Yii::t('app', 'Edit'), 'HelpMan' => Yii::t('app', 'Help Man')
@@ -77,9 +72,7 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
 </div>
 
 <?php
-$js = 
-<<<JS
-        
+$js = <<<JS
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit();return;
@@ -97,7 +90,6 @@ $js =
             }, 500);
         });
     });   
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

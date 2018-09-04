@@ -70,191 +70,213 @@ $this->registerJs($format, View::POS_HEAD);
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [  
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",  
+            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",  
             'labelOptions' => [
                 'class' => 'col-lg-1 col-md-1 control-label form-label',
             ],  
         ], 
     ]); ?>
     
-    <!--所属目录-->
-    <?= $form->field($model, 'user_cat_id', [
-        'template' => "{label}\n<div class=\"col-lg-8 col-md-8\">{input}</div>\n",  
-    ])->widget(DepDropdown::class, [
-        'pluginOptions' => [
-            'url' => Url::to('../user-category/search-children', false),
-            'max_level' => 4,
-//            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
-        ],
-        'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
-        'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
-        'itemOptions' => [
-            'style' => 'width: 150px; display: inline-block;',
-        ],
-    ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')]) . '：') ?>
+    <ul class="nav nav-tabs set-bottom" role="tablist" style="height: auto; padding-left: 20px;">
+        <li role="presentation" class="active">
+            <a href="#basics" role="tab" data-toggle="tab" aria-controls="basics" aria-expanded="true">基本信息</a>
+        </li>
+        <li role="presentation" class="">
+            <a href="#config" role="tab" data-toggle="tab" aria-controls="config" aria-expanded="false">转码配置</a>
+        </li>
+    </ul>
     
-    
-    <!--封面-->
-    <?= $form->field($model, 'img')->widget(FileInput::class, [
-            'options' => [
-                'accept' => 'image/*',
-                'multiple' => false,
-            ],
-            'pluginOptions' => [
-                'resizeImages' => true,
-                'showCaption' => false,
-                'showRemove' => false,
-                'showUpload' => false,
-                'browseClass' => 'btn btn-primary btn-block',
-                'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
-                'browseLabel' => '选择图片...',
-                'initialPreview' => [
-                    Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
+    <div class="tab-content">
+        
+        <!--基本信息-->
+        <div role="tabpanel" class="tab-pane fade active in" id="basics" aria-labelledby="basics-tab">
+            <!--所属目录-->
+            <?= $form->field($model, 'user_cat_id', [
+                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>",  
+            ])->widget(DepDropdown::class, [
+                'pluginOptions' => [
+                    'url' => Url::to('../user-category/search-children', false),
+                    'max_level' => 4,
+        //            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
                 ],
-                'overwriteInitial' => true,
-            ],
-        ]); ?>
-    
-    
-    <!--主讲老师-->
-    <?php
-        $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
-            'id' => 'refresh',  'class' => 'btn btn-primary'
-        ]);
-        $newAdd = Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']);
-        $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
-        echo  $form->field($model, 'teacher_id', [
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
-                "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
-                    "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
-                    "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
-                    "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
-                "</div>\n" .
-            "<div class=\"col-lg-7 col-md-7\">{error}</div>",
-        ])->widget(Select2::class,[
-            'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
-            'options' => ['placeholder'=>'请选择...',],
-            'pluginOptions' => [
-                'templateResult' => new JsExpression('format'),     //设置选项格式
-                'escapeMarkup' => $escape,
-                'allowClear' => true
-            ],
-        ])->label(Yii::t('app', '{mainSpeak}{Teacher}', [
-            'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
-        ]));
-    ?>
-    
-    <!--视频名称-->
-    <?= $form->field($model, 'name')->textInput([
-        'placeholder' => '请输入...'
-    ])->label(Yii::t('app', '{Video}{Name}', [
-        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-    ])) ?>
-    
-     <!--标签-->
-    <div class="form-group field-tagref-tag_id required">
-        <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div class="col-lg-11 col-md-11">
-            <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
-                'id' => 'obj_taginput', 'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
-            ]) ?>
-        </div>
-        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
-    </div>
-     
-    <!--视频描述-->
-    <?= $form->field($model, 'des', [
-        'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
-    ])->textarea([
-        'id' => 'container', 'type' => 'text/plain', 'style' => 'width:100%; height:200px;',
-        'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
-    ])->label(Yii::t('app', '{Video}{Des}', [
-        'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
-    ])) ?>
-    
-    <!--查看权限-->
-    <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
-        'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
-        'itemOptions'=>[
-            'labelOptions'=>[
-                'style'=>[
-                    'margin'=>'10px 15px 10px 0',
-                    'color' => '#999',
-                    'font-weight' => 'normal',
-                ]
-            ]
-        ],
-    ])->label(Yii::t('app', '{View}{Privilege}', [
-        'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-    ])) ?>
-    
-    <!--视频文件-->
-    <div class="form-group field-videofile-file_id">
-        <?= Html::label(Yii::t('app', '{Video}{File}', [
-            'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
-        ]), 'video-source_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div id="uploader-container" class="col-lg-11 col-md-11"></div>
-        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
-    </div>
-    
-    <!--外部链接-->
-    <?php if(Yii::$app->user->identity->is_official): ?>
-        <div class="form-group field-outside_link">
-            <?= Html::label(Yii::t('app', '{Outside}{Link}', [
-                'Outside' => Yii::t('app', 'Outside'), 'Link' => Yii::t('app', 'Link')
-            ]), 'outside_link', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-            <div class="col-lg-7 col-md-7">
-                <?php 
-                    $path = !$model->isNewRecord && $model->is_link ? 
-                            StringUtil::completeFilePath($model->videoFile->uploadfile->path) : null;
-                    echo Html::textInput(null, $path, [
-                        'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
-                    ]) 
-                ?>
+                'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
+                'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
+                'itemOptions' => [
+                    'style' => 'width: 150px; display: inline-block;',
+                ],
+            ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')])) ?>
+
+            <!--封面-->
+            <?= $form->field($model, 'img')->widget(FileInput::class, [
+                    'options' => [
+                        'accept' => 'image/*',
+                        'multiple' => false,
+                    ],
+                    'pluginOptions' => [
+                        'resizeImages' => true,
+                        'showCaption' => false,
+                        'showRemove' => false,
+                        'showUpload' => false,
+                        'browseClass' => 'btn btn-primary btn-block',
+                        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+                        'browseLabel' => '选择图片...',
+                        'initialPreview' => [
+                            Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
+                        ],
+                        'overwriteInitial' => true,
+                    ],
+                ]); ?>
+
+            <!--主讲老师-->
+            <?php
+                $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
+                    'id' => 'refresh',  'class' => 'btn btn-primary'
+                ]);
+                $newAdd = Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']);
+                $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
+                echo  $form->field($model, 'teacher_id', [
+                    'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
+                        "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
+                            "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
+                            "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
+                            "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
+                        "</div>\n" .
+                    "<div class=\"col-lg-6 col-md-6\">{error}</div>",
+                ])->widget(Select2::class,[
+                    'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
+                    'options' => ['placeholder'=>'请选择...',],
+                    'pluginOptions' => [
+                        'templateResult' => new JsExpression('format'),     //设置选项格式
+                        'escapeMarkup' => $escape,
+                        'allowClear' => true
+                    ],
+                ])->label(Yii::t('app', '{mainSpeak}{Teacher}', [
+                    'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                ]));
+            ?>
+
+            <!--视频名称-->
+            <?= $form->field($model, 'name', [
+                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
+            ])->textInput([
+                'placeholder' => '请输入...'
+            ])->label(Yii::t('app', '{Video}{Name}', [
+                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
+            ])) ?>
+
+             <!--标签-->
+            <div class="form-group field-tagref-tag_id required">
+                <span class="form-must text-danger" style="left: 43px;">*</span>
+                <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+                <div class="col-lg-11 col-md-11">
+                    <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
+                        'id' => 'obj_taginput', 'class' => 'form-control', 'data-role' => 'tagsinput', //'placeholder' => '请输入...'
+                    ]) ?>
+                </div>
+                <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
             </div>
-            <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+
+            <!--视频描述-->
+            <?= $form->field($model, 'des', [
+                'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>"
+            ])->textarea([
+                'id' => 'container', 'type' => 'text/plain', 'style' => 'width:100%; height:200px;',
+                'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
+            ])->label(Yii::t('app', '{Video}{Des}', [
+                'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
+            ])) ?>
+
+            <!--查看权限-->
+            <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
+                'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
+                'itemOptions'=>[
+                    'labelOptions'=>[
+                        'style'=>[
+                            'margin'=>'10px 15px 10px 0',
+                            'color' => '#999',
+                            'font-weight' => 'normal',
+                        ]
+                    ]
+                ],
+            ])->label(Yii::t('app', '{View}{Privilege}', [
+                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
+            ])) ?>
+
+            <!--视频文件-->
+            <div class="form-group field-videofile-file_id">
+                <?= Html::label(Yii::t('app', '{Video}{File}', [
+                    'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
+                ]), 'video-source_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+                <div id="uploader-container" class="col-lg-11 col-md-11"></div>
+                <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+            </div>
+
+            <!--外部链接-->
+            <?php if(Yii::$app->user->identity->is_official): ?>
+                <div class="form-group field-outside_link">
+                    <?= Html::label(Yii::t('app', '{Outside}{Link}', [
+                        'Outside' => Yii::t('app', 'Outside'), 'Link' => Yii::t('app', 'Link')
+                    ]), 'outside_link', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+                    <div class="col-lg-6 col-md-6">
+                        <?php 
+                            $path = !$model->isNewRecord && $model->is_link ? 
+                                    StringUtil::completeFilePath($model->videoFile->uploadfile->path) : null;
+                            echo Html::textInput(null, $path, [
+                                'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
+                            ]) 
+                        ?>
+                    </div>
+                    <div class="col-lg-6 col-md-6"><div class="help-block"></div></div>
+                </div>
+            <?php endif; ?>
+        
         </div>
-    <?php endif; ?>
-    
-    <!--转码-->
-    <?= $form->field($model, 'mts_need')->radioList([1 => '自动', 0 => '手动'], [
-        'value' => $model->isNewRecord ? 1 : $model->mts_need,
-        'itemOptions'=>[
-            'labelOptions'=>[
-                'style'=>[
-                    'margin'=>'10px 15px 10px 0',
-                    'color' => '#999',
-                    'font-weight' => 'normal',
-                ]
-            ]
-        ],
-    ])->label(Yii::t('app', 'Transcoding')) ?>
-    
-    <!--水印-->
-    <div class="form-group field-video-mts_watermark_ids">
-        <?= Html::label(Yii::t('app', 'Watermark'), 'video-mts_watermark_ids', [
-            'class' => 'col-lg-1 col-md-1 control-label form-label'
-        ]) ?>
-        <div class="col-lg-11 col-md-11">
-            <div id="video-mts_watermark_ids">
-                <div class="loading-box">
-                    <span class="loading"></span>
+        
+        <!--转码配置-->
+        <div role="tabpanel" class="tab-pane fade" id="config" aria-labelledby="config-tab">
+            <!--转码-->
+            <?= $form->field($model, 'mts_need')->radioList([1 => '自动', 0 => '手动'], [
+                'value' => $model->isNewRecord ? 1 : $model->mts_need,
+                'itemOptions'=>[
+                    'labelOptions'=>[
+                        'style'=>[
+                            'margin'=>'10px 15px 10px 0',
+                            'color' => '#999',
+                            'font-weight' => 'normal',
+                        ]
+                    ]
+                ],
+            ])->label(Yii::t('app', 'Transcoding')) ?>
+
+            <!--水印-->
+            <div class="form-group field-video-mts_watermark_ids">
+                <?= Html::label(Yii::t('app', 'Watermark'), 'video-mts_watermark_ids', [
+                    'class' => 'col-lg-1 col-md-1 control-label form-label'
+                ]) ?>
+                <div class="col-lg-11 col-md-11">
+                    <div id="video-mts_watermark_ids">
+                        <div class="loading-box">
+                            <span class="loading"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+            </div>
+
+            <!--预览-->
+            <div class="form-group">
+                <?= Html::label(Yii::t('app', 'Preview'), 'customerwatermark-is_selected', [
+                    'class' => 'col-lg-1 col-md-1 control-label form-label'
+                ]) ?>
+                <div class="col-lg-7 col-md-7">
+                    <div id="preview" class="preview"></div>
                 </div>
             </div>
+        
         </div>
-        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
+        
     </div>
-    
-    <!--预览-->
-    <div class="form-group">
-        <?= Html::label(Yii::t('app', 'Preview'), 'customerwatermark-is_selected', [
-            'class' => 'col-lg-1 col-md-1 control-label form-label'
-        ]) ?>
-        <div class="col-lg-7 col-md-7">
-            <div id="preview" class="preview"></div>
-        </div>
-    </div>
-    
+        
     <div class="form-group">
         <?= Html::label(null, null, ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">

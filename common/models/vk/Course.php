@@ -120,6 +120,7 @@ class Course extends ActiveRecord
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
                 "Can't be empty" => \Yii::t('app', "Can't be empty.")
             ])],
+            [['cover_img'], 'required'],
             [['category_id', 'level', 'is_recommend', 'is_publish', 'zan_count', 'favorite_count', 'content_time',
                 'is_del', 'is_official', 'created_at', 'updated_at'], 'integer'],
             [['id', 'customer_id', 'teacher_id', 'created_by'], 'string', 'max' => 32],

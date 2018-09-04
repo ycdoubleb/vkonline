@@ -18,6 +18,7 @@ $this->title = Yii::t('app', "{Update}{Course}：{$model->name}", [
 
 ?>
 <div class="course-update main">
+    
     <!--页面标题-->
     <div class="vk-title">
         <span>
@@ -28,7 +29,6 @@ $this->title = Yii::t('app', "{Update}{Course}：{$model->name}", [
     <?= $this->render('_form', [
         'model' => $model,
         'teacherMap' => $teacherMap,
-        'attFiles' => $attFiles,
         'allAttrs' => $allAttrs,
         'attrsSelected' => $attrsSelected,
         'tagsSelected' => $tagsSelected,
@@ -37,11 +37,10 @@ $this->title = Yii::t('app', "{Update}{Course}：{$model->name}", [
 </div>
 
 <?php
-$js = 
-<<<JS
-              
+$js = <<<JS
     //提交表单    
     $("#submitsave").click(function(){
+        //判断分类是否为空
         if($("#course-category_id").val() == 0){
             $(".field-course-category_id").addClass("has-error");
             $(".field-course-category_id .help-block").html("课程分类不能为空。");
@@ -51,18 +50,18 @@ $js =
             }, 3000);
             return;
         }
-        if(tijiao() == false){
-            $(".field-courseattachment-file_id").addClass("has-error");
-            $(".field-courseattachment-file_id .help-block").html("文件必须是已上传。");
+        //判断标签是否少于5个
+        if($('.field-tagref-tag_id').find('span.tag').length < 5){
+            $('.field-tagref-tag_id').addClass('has-error');
+            $('.field-tagref-tag_id .help-block').html('标签个数不能少于5个');
             setTimeout(function(){
-                $(".field-courseattachment-file_id").removeClass("has-error");
-                $(".field-courseattachment-file_id .help-block").html("");
-            }, 3000);
+                $('.field-tagref-tag_id').removeClass('has-error');
+                $('.field-tagref-tag_id .help-block').html('');
+            }, 5000);
             return;
         }
         $("#build-course-form").submit();
     });
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

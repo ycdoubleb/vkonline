@@ -152,10 +152,6 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
             'dataProvider' => $dataProvider,
             'layout' => "{items}\n{summary}\n{pager}",
             'tableOptions' => ['class' => 'table table-bordered vk-table'],
-            'summaryOptions' => [
-                'class' => 'summary',
-                'style' => 'padding-left: 0px;'
-            ],
             'columns' => [
                 [
                     'label' => Yii::t('app', '{The}{Customer}', [

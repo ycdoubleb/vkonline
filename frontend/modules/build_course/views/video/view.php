@@ -167,142 +167,140 @@ foreach ($watermarksFiles as $watermark) {
         </div>    
 
         <div class="set-padding">
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'tableOptions' => ['class' => 'table table-bordered vk-table'],
-            'layout' => "{items}\n{summary}\n{pager}",
-            'summaryOptions' => [
-                'class' => 'hidden',
-            ],
-            'pager' => [
-                'options' => [
+            <?= GridView::widget([
+                'dataProvider' => $dataProvider,
+                'tableOptions' => ['class' => 'table table-bordered vk-table'],
+                'layout' => "{items}\n{summary}\n{pager}",
+                'summaryOptions' => [
                     'class' => 'hidden',
-                ]
-            ],
-            'columns' => [
-                [
-                    'label' => Yii::t('app', '{The}{Customer}', [
-                        'The' => Yii::t('app', 'The'), 'Customer' => Yii::t('app', 'Customer')
-                    ]),
-                    'format' => 'raw',
-                    'value'=> function($data){
-                        return $data['customer_name'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '200px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'style' => [
-                        ],
-                    ],
                 ],
-                [
-                    'label' => Yii::t('app', '{Course}{Name}', [
-                        'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
-                    ]),
-                    'format' => 'raw',
-                    'value'=> function($data){
-                        return $data['course_name'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '200px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'class' => 'single-clamp',
-                    ],
+                'pager' => [
+                    'options' => [
+                        'class' => 'hidden',
+                    ]
                 ],
-                [
-                    'label' => Yii::t('app', '{The}{Knowledge}', [
-                        'The' => Yii::t('app', 'The'), 'Knowledge' => Yii::t('app', 'Knowledge')
-                    ]),
-                    'format' => 'raw',
-                    'value'=> function($data){
-                        return $data['knowledge_name'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '200px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'class' => 'single-clamp',
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Created By'),
-                    'value'=> function($data){
-                        return $data['nickname'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '100px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'style' => [
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', '{Relation}{Time}', [
-                        'Relation' => Yii::t('app', 'Relation'), 'Time' => Yii::t('app', 'Time')
-                    ]),
-                    'value'=> function($data){
-                        return date('Y-m-d H:i', $data['created_at']);
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '110px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'style' => [
-                        ],
-                    ],
-                ],
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'buttons' => [
-                        'view' => function ($url, $data, $key) {
-                             $options = [
-                                'title' => Yii::t('yii', 'View'),
-                                'aria-label' => Yii::t('yii', 'View'),
-                                'data-pjax' => '0',
-                                'target' => '_black'
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="fa fa-eye"></span>',
-                                'url' => ['/course/default/view', 'id' => $data['id']],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
+                'columns' => [
+                    [
+                        'label' => Yii::t('app', '{The}{Customer}', [
+                            'The' => Yii::t('app', 'The'), 'Customer' => Yii::t('app', 'Customer')
+                        ]),
+                        'format' => 'raw',
+                        'value'=> function($data){
+                            return $data['customer_name'];
                         },
-                    ],
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '45px',
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '200px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'style' => [
+                            ],
                         ],
                     ],
-                    'contentOptions' =>[
-                        'style' => [
-                            'padding' => '4px 0px',
+                    [
+                        'label' => Yii::t('app', '{Course}{Name}', [
+                            'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
+                        ]),
+                        'format' => 'raw',
+                        'value'=> function($data){
+                            return $data['course_name'];
+                        },
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '200px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'class' => 'single-clamp',
                         ],
                     ],
-                    'template' => '{view}',
+                    [
+                        'label' => Yii::t('app', '{The}{Knowledge}', [
+                            'The' => Yii::t('app', 'The'), 'Knowledge' => Yii::t('app', 'Knowledge')
+                        ]),
+                        'format' => 'raw',
+                        'value'=> function($data){
+                            return $data['knowledge_name'];
+                        },
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '200px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'class' => 'single-clamp',
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('app', 'Created By'),
+                        'value'=> function($data){
+                            return $data['nickname'];
+                        },
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '100px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'style' => [
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => Yii::t('app', '{Relation}{Time}', [
+                            'Relation' => Yii::t('app', 'Relation'), 'Time' => Yii::t('app', 'Time')
+                        ]),
+                        'value'=> function($data){
+                            return date('Y-m-d H:i', $data['created_at']);
+                        },
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '110px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'style' => [
+                            ],
+                        ],
+                    ],
+                    [
+                        'class' => 'yii\grid\ActionColumn',
+                        'buttons' => [
+                            'view' => function ($url, $data, $key) {
+                                 $options = [
+                                    'title' => Yii::t('yii', 'View'),
+                                    'aria-label' => Yii::t('yii', 'View'),
+                                    'data-pjax' => '0',
+                                    'target' => '_black'
+                                ];
+                                $buttonHtml = [
+                                    'name' => '<span class="fa fa-eye"></span>',
+                                    'url' => ['/course/default/view', 'id' => $data['id']],
+                                    'options' => $options,
+                                    'symbol' => '&nbsp;',
+                                    'adminOptions' => true,
+                                ];
+                                return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
+                            },
+                        ],
+                        'headerOptions' => [
+                            'style' => [
+                                'width' => '45px',
+                            ],
+                        ],
+                        'contentOptions' =>[
+                            'style' => [
+                                'padding' => '4px 0px',
+                            ],
+                        ],
+                        'template' => '{view}',
+                    ],
                 ],
-            ],
-        ]); ?>
+            ]); ?>
+            <div class="summary">
+                <span>共 <?= $dataProvider->totalcount ?> 条记录</span>
+            </div>
         </div>
-        
-        <div class="summary">
-            <span>共 <?= $dataProvider->totalcount ?> 条记录</span>
-        </div>
-        
     </div>
 </div>

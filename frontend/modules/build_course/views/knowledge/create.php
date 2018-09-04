@@ -1,18 +1,12 @@
 <?php
 
 use common\models\vk\Knowledge;
-use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;
 
 
 /* @var $this View */
 /* @var $model Knowledge */
-
-
-ModuleAssets::register($this);
-GrowlAsset::register($this);
 
 $this->title = Yii::t('app', "{Add}{Knowledge}",[
     'Add' => Yii::t('app', 'Add'), 'Knowledge' => Yii::t('app', 'Knowledge')

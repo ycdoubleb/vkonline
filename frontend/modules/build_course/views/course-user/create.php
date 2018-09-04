@@ -2,19 +2,13 @@
 
 use common\models\vk\CourseUser;
 use common\utils\StringUtil;
-use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\growl\GrowlAsset;
 use kartik\widgets\Select2;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
-
 /* @var $this View */
 /* @var $model CourseUser */
-
-ModuleAssets::register($this);
-GrowlAsset::register($this);
 
 $this->title = Yii::t('app', '{Add}{helpMan}',[
     'Add' => Yii::t('app', 'Add'), 'helpMan' => Yii::t('app', 'Help Man')
@@ -108,8 +102,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
 </div>
 
 <?php
-$js = 
-<<<JS
+$js = <<<JS
     var temp = [];
     //选择最近联系人
     $(".recent").click(function(){

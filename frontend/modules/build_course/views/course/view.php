@@ -2,6 +2,7 @@
 
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use kartik\switchinput\SwitchInputAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -14,6 +15,7 @@ use yii\widgets\DetailView;
 
 ModuleAssets::register($this);
 SwitchInputAsset::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
     'Course' => Yii::t('app', 'Course'), 'Detail' => Yii::t('app', 'Detail')
@@ -114,7 +116,6 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
     
     <!--基本信息-->
     <div class="vk-panel left-panel pull-left">
-        
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -129,6 +130,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             </div>
         </div>
         
+        <!--课程的基本信息-->
         <?= DetailView::widget([
             'model' => $model,
             'options' => ['class' => 'table detail-view vk-table'],
@@ -180,30 +182,107 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
     </div>
     
     <!--协作人员-->
-    <div id="help_man">
-        <?= $this->render('/course-user/index', [
-            'model' => $model,
-            'dataProvider' => $courseUsers,
-            'haveAllPrivilege' => $haveAllPrivilege,
-        ]) ?>
+    <div class="vk-panel right-panel pull-right">
+        <div class="title">
+            <span><?= Yii::t('app', 'Help Man') ?></span>
+            <div class="btngroup pull-right">
+                <?php 
+                    if($haveAllPrivilege && !$model->is_publish && !$model->is_del){
+                        echo Html::a(Yii::t('app', 'Add'), ['course-user/create', 'course_id' => $model->id], [
+                            'class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));'
+                        ]);
+                    }
+                ?>
+            </div>
+        </div>
+        
+        <!--协作人员列表-->
+        <div class="right-panel-height">
+            <div id="help_man">
+                <!--加载-->
+                <div class="loading-box">
+                    <span class="loading"></span>
+                </div>
+            </div>
+        </div>        
     </div>
     
     <!--课程框架-->
-    <div id="course_frame">
-        <?= $this->render('/course-node/index', [
-            'model' => $model,
-            'dataProvider' => $courseNodes,
-            'haveEditPrivilege' => $haveEditPrivilege,
-        ]) ?>
+    <div class="vk-panel">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Course}{Catalog}',[
+                    'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
+                ]) ?>
+            </span>
+            <div class="btngroup pull-right">
+                <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
+                    echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
+                        'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
+                    ]);
+//                    echo '&nbsp;' . Html::a(Yii::t('app', '导入'), 'javascript:;', [
+//                        'class' => 'btn btn-info btn-flat'
+//                    ]);
+//                    echo '&nbsp;' . Html::a(Yii::t('app', '导出'), 'javascript:;', [
+//                        'class' => 'btn btn-info btn-flat'
+//                    ]);
+                } ?>
+            </div>
+        </div>
+        
+        <!--课程目录结构-->
+        <div id="course_frame">
+            <!--加载-->
+            <div class="loading-box">
+                <span class="loading"></span>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!--课程资料-->
+    <div class="vk-panel">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Course}{Resources}', [
+                    'Course' => Yii::t('app', 'Course'), 'Resources' => Yii::t('app', 'Resources')
+                ]) ?>
+            </span>
+            <div class="btngroup pull-right">
+                <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
+                    echo Html::a(Yii::t('app', 'Add'), ['course-attachment/create', 'course_id' => $model->id], 
+                        ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));']);
+                }?>
+            </div>
+        </div>
+        
+        <!--课程附件列表-->
+        <div id="course_attachment">
+            <!--加载-->
+            <div class="loading-box">
+                <span class="loading"></span>
+            </div>
+        </div>
     </div>
     
     <!--操作记录-->
-    <div id="act_log">
-        <?= $this->render('/course-actlog/index', array_merge($logs, [
-            'searchModel' => $courseLogModel,
-            'filter' => $courseLogs['filter'],
-            'dataProvider' => $courseLogs['dataProvider'], 
-        ])) ?>
+    <div class="vk-panel set-bottom">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Operation}{Log}', [
+                    'Operation' => Yii::t('app', 'Operation'), 'Log' => Yii::t('app', 'Log')
+                ]) ?>
+            </span>
+        </div>
+        
+        <div class="panel-height">
+            <div id="act_log">
+                <!--加载-->
+                <div class="loading-box">
+                    <span class="loading"></span>
+                </div>
+            </div>
+        </div>
     </div>
     
 </div>
@@ -212,6 +291,15 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
 
 <?php
 $js = <<<JS
+    //加载协作人员列表
+    $('#help_man').load("../course-user/index?course_id={$model->id}");
+    //加载课程框架列表
+    $('#course_frame').load("../course-node/index?course_id={$model->id}");
+    //加载课程附件列表
+    $('#course_attachment').load("../course-attachment/index?course_id={$model->id}");
+    //加载课程操作日志列表
+    $('#act_log').load("../course-actlog/index?course_id={$model->id}");
+        
     /**
      * 显示模态框
      * @param {Object} _this   

@@ -41,6 +41,17 @@ $js =
 
     // 提交表单
     $("#submitsave").click(function(){
+        //判断标签是否少于5个
+        if($('.field-tagref-tag_id').find('span.tag').length < 5){
+            $('.field-tagref-tag_id').addClass('has-error');
+            $('.field-tagref-tag_id .help-block').html('标签个数不能少于5个');
+            setTimeout(function(){
+                $('.field-tagref-tag_id').removeClass('has-error');
+                $('.field-tagref-tag_id .help-block').html('');
+            }, 5000);
+            return;
+        }
+        //判断是否提交和是否为空
         if(!(tijiao() && isExist())){
             $('.field-videofile-file_id').addClass('has-error');
             $('.field-videofile-file_id .help-block').html('视频文件不能为空或者必须是已上传。');

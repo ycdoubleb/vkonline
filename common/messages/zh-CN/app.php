@@ -202,6 +202,7 @@ return [
     'New password saved.' => '新密码已成功保存。',
     'The video has been transcoding without repeating the transcoding.' => '该视频已经转码，无需重复转码。',
     'Select the mobile video to the directory' => '选择移动视频到目录',
+    'Uploading course resources' => '课程资源上传',
     
     //后台-公共配置
     'Config' => '配置',

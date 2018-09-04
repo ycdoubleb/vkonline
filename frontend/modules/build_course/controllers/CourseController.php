@@ -116,12 +116,7 @@ class CourseController extends Controller
         
         return $this->render('view', [
             'model' => $model,  //模型
-            'courseLogModel' => $searchCourseLog,   //课程操作记录搜索模型
-            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]), //所有协作人员
-            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]), //所有课程节点
-            'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),  //所有课程操作记录
             'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
-            'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id), //该课程下的所有操作记录
             'path' => !empty($model->category_id) ? $this->getCategoryFullPath($model->category_id) : '',  //分类全路径
             'haveAllPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id),  //只有全部权限
             'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id, true), //包含编辑权限
@@ -149,7 +144,6 @@ class CourseController extends Controller
             return $this->render('create', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-                'attFiles' => [],
             ]);
         }
     }
@@ -185,7 +179,6 @@ class CourseController extends Controller
             return $this->render('update', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'attFiles' => Course::getUploadfileByAttachment($model->id),    //已存在的附近
                 'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
                 'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 1)),  //已选的标签

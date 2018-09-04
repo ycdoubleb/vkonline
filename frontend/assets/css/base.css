@@ -10,7 +10,8 @@
 .summary,
 .see-more {
     width: 100%;
-    padding: 10px 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     color: #999;
     text-align: center;
 }
@@ -140,8 +141,15 @@ textarea {
     width: 100%;
 }
 .vk-form .form-horizontal .form-group {
+    position: relative;
     margin-right: 0px;
     margin-left: 0px;
+}
+.vk-form .form-group .form-must {
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    font-size: 25px;
 }
 .vk-form .form-group .form-label {
     padding: 10px 0px;
@@ -158,6 +166,14 @@ textarea {
     border-radius: 0px;
     box-shadow: none;
 }
+
+/**
+ * 重设置标签错误的样式
+ */
+.vk-form .has-error .bootstrap-tagsinput {
+    border-color: #a94442;
+}
+
 /**
  * select2 组件多选
  */
@@ -363,8 +379,8 @@ textarea {
     border-bottom: 1px solid #f2f2f2;
 }
 .vk-panel .panel-height {
-    min-height: 640px;
-    max-height: 640px;
+    min-height: 710px;
+    max-height: 710px;
     overflow-x: hidden;
     overflow-y: auto;
 }

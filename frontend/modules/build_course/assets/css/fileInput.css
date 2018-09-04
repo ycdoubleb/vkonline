@@ -51,7 +51,7 @@
 }
 
 .main .btn-kv {
-    width: 25px;
+    width: auto;
     height: 25px;
     line-height: 25px;
 }

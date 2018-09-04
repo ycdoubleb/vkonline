@@ -2,25 +2,23 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\models\vk\CourseNode;
-use common\models\vk\searchs\CourseNodeSearch;
+use common\models\vk\Course;
+use common\models\vk\CourseAttachment;
+use common\models\vk\searchs\CourseAttachmentSearch;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
-
-
 /**
- * CourseNode controller for the `build_course` module
+ * CourseAttachmentController implements the CRUD actions for CourseAttachment model.
  */
-class CourseNodeController extends Controller
+class CourseAttachmentController extends Controller
 {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function behaviors()
     {
@@ -42,33 +40,31 @@ class CourseNodeController extends Controller
             ]
         ];
     }
-    
+
     /**
-     * 列出所有 CourseNodeSearch 模型。
-     * @return mixed 
+     * Lists all CourseAttachment models.
+     * @return mixed
      */
     public function actionIndex($course_id)
     {
-        $searchModel = new CourseNodeSearch();
-        $dataProvider = $searchModel->search(['course_id' => $course_id]);
-        
+        $searchModel = new CourseAttachmentSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
         return $this->renderAjax('index', [
-            'dataProvider' => $dataProvider,    //课程节点数据
-            'course_id' => $course_id,      //课程id
-            'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($course_id, true), //包含编辑权限
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($course_id, true),  //只有全部权限
         ]);
     }
-    
+
     /**
-     * 创建 一个新的 CourseNode 模块
-     * 如果创建成功，返回json数据。
-     * @param string $course_id
-     * @return mixed|json 
+     * 创建 一个新的 CourseAttachment 模型。
+     * 如果创建成功，浏览器将被重定向到“查看”页。
+     * @return mixed
      */
     public function actionCreate($course_id)
-    {        
-        $model = new CourseNode(['course_id' => $course_id]);
-        $model->loadDefaultValues();
+    {
+        $model = new CourseAttachment(['course_id' => $course_id]);
         
         if(ActionUtils::getInstance()->getIsHavePermission($course_id, true)){
             if($model->course->is_publish){
@@ -82,29 +78,31 @@ class CourseNodeController extends Controller
             }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-        }
+        }   
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (\Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->createCourseNode($model);
-        } else {
-            return $this->renderAjax('create', [
-                'model' => $model,      //模型
-            ]);
+            return ActionUtils::getInstance()->createCourseAttachment($model, Yii::$app->request->post());
         }
+
+        return $this->renderAjax('create', [
+            'model' => $model,
+            'attFiles' => [],
+        ]);
     }
-    
+
     /**
-     * 更新 现有的 CourseNode 模型。
-     * 如果更新成功，返回json数据。
+     * 更新 现有的 CourseAttachment 模型。
+     * 如果更新成功，浏览器将被重定向到“查看”页。
      * @param string $id
-     * @return mixed|json 
+     * @return mixed
+     * @throws NotFoundHttpException 如果找不到模型
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        
-        if(ActionUtils::getInstance()->getIsHavePermission($model->course_id, true)){
+
+         if(ActionUtils::getInstance()->getIsHavePermission($model->course_id, true)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Edit}', [
                     'beenPublished' => Yii::t('app', 'The course has been published,'),
@@ -118,26 +116,28 @@ class CourseNodeController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if (\Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->updateCourseNode($model);
-        } else {
-            return $this->renderAjax('update', [
-                'model' => $model,      //模型
-            ]);
+            return ActionUtils::getInstance()->updateCourseAttachment($model, Yii::$app->request->post());
         }
+
+        return $this->renderAjax('update', [
+            'model' => $model,
+            'attFiles' => Course::getUploadfileByAttachment($model->course_id),    //已存在的附近
+        ]);
     }
 
     /**
-     * 删除 现有的 CourseNode 模型。
-     * 如果删除成功，返回json数据。
+     * 删除 现有的 CourseAttachment 模型。
+     * 如果删除成功，浏览器将被重定向到“索引”页。
      * @param string $id
-     * @return json 
+     * @return mixed
+     * @throws NotFoundHttpException 如果找不到模型
      */
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        
+
         if(ActionUtils::getInstance()->getIsHavePermission($model->course_id, true)){
             if($model->course->is_publish){
                 throw new NotFoundHttpException(Yii::t('app', '{beenPublished}{canNot}{Delete}', [
@@ -154,50 +154,23 @@ class CourseNodeController extends Controller
         
         if (Yii::$app->request->isPost) {
             Yii::$app->getResponse()->format = 'json';
-            return ActionUtils::getInstance()->deleteCourseNode($model);
+            return ActionUtils::getInstance()->deleteCourseAttachment($model);
         }
     }
-    
+
     /**
-     * 移动节点，调整节点的排序
+     * 根据其主键值查找 CourseAttachment 模型。
+     * 如果找不到模型，将抛出404个HTTP异常。
      * @param string $id
-     * @return json
-     */
-    public function actionMoveNode()
-    {
-        $post = Yii::$app->request->post();
-        $course_id = ArrayHelper::getValue($post, 'course_id');
-       
-        if(!ActionUtils::getInstance()->getIsHavePermission($course_id, true)){
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
-        }
-                
-        Yii::$app->getResponse()->format = 'json';
-        
-        if(Yii::$app->request->isPost){
-            return ActionUtils::getInstance()->moveNode($post, $course_id);
-        }
-        
-        return [
-            'code' => 404,
-            'data' => [],
-            'message' => '请重新操作。'
-        ];
-    }
-    
-    /**
-     * 基于其主键值找到 CourseNode 模型。
-     * 如果找不到模型，就会抛出404个HTTP异常。
-     * @param string $id
-     * @return CourseNode 加载模型
+     * @return CourseAttachment 加载模型
      * @throws NotFoundHttpException 如果找不到模型
      */
     protected function findModel($id)
     {
-        if (($model = CourseNode::findOne($id)) !== null) {
+        if (($model = CourseAttachment::findOne($id)) !== null) {
             return $model;
-        } else {
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
+
+        throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
     }
 }

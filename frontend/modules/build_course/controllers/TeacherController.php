@@ -107,6 +107,9 @@ class TeacherController extends Controller
             //主讲老师下的所有课程
             'dataProvider' => new ArrayDataProvider([
                 'allModels' => $model->courses,
+                'pagination' => [
+                    'pageSize' => 1000,
+                ],
             ]),
             //是否正在申请认证
             'is_applying' => $this->getIsHasCertificateModel($model->id),    
