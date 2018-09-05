@@ -20,8 +20,8 @@ use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Style\Protection;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
-use PhpOffice\PhpSpreadsheet\Worksheet\SheetView;
 use Yii;
 use yii\web\Controller;
 
@@ -419,9 +419,40 @@ class TestController extends Controller {
         $path = Yii::getAlias('@vendor/phpoffice/phpspreadsheet/samples');
         $sheetname = 'Data Sheet #2';
         $reader = IOFactory::createReader('Xlsx');
-        $spreadsheet = $reader->load('D:/backup/Desktop/test/01writesimple.xlsx');
+        $spreadsheet = $reader->load('D:/backup/Desktop/a.xlsx');
         $sheetData = $spreadsheet->getActiveSheet()->getDrawingCollection();
-        var_dump($sheetData);
+        $i = 0;
+        foreach ($spreadsheet->getActiveSheet()->getDrawingCollection() as $drawing) {
+            if ($drawing instanceof MemoryDrawing) {
+                ob_start();
+                call_user_func(
+                        $drawing->getRenderingFunction(), $drawing->getImageResource()
+                );
+                $imageContents = ob_get_contents();
+                ob_end_clean();
+                switch ($drawing->getMimeType()) {
+                    case MemoryDrawing::MIMETYPE_PNG :
+                        $extension = 'png';
+                        break;
+                    case MemoryDrawing::MIMETYPE_GIF:
+                        $extension = 'gif';
+                        break;
+                    case MemoryDrawing::MIMETYPE_JPEG :
+                        $extension = 'jpg';
+                        break;
+                }
+            } else {
+                $zipReader = fopen($drawing->getPath(), 'r');
+                $imageContents = '';
+                while (!feof($zipReader)) {
+                    $imageContents .= fread($zipReader, 1024);
+                }
+                fclose($zipReader);
+                $extension = $drawing->getExtension();
+            }
+            $myFileName = '00_Image_' . ++$i . '.' . $extension;
+            file_put_contents($myFileName, $imageContents);
+        }
         exit;
         // Save
         $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
