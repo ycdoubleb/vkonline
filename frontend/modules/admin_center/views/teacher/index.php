@@ -21,7 +21,7 @@ $this->title = Yii::t('app', '{Teachers}{List}', [
 <div class="teacher-index main">
     
     <!--页面标题-->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span>
             <?= $this->title ?>
         </span>

@@ -25,7 +25,7 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
 ?>
 <div class="category-index main">
     
-    <div class="vk-panel set-bottom" style="margin-top: 0px;">
+    <div class="vk-panel clear-margin set-bottom">
         <div class="title">
             <span>
                 <?= $this->title ?>

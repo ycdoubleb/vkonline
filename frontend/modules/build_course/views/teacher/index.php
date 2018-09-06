@@ -21,14 +21,19 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
 <div class="teacher-index main">
     
     <!--页面标题-->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span>
             <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
-            <?= Html::a(Yii::t('app', '{Create}{Teacher}', [
-                'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+            <?php
+                echo Html::a(Yii::t('app', '{Create}{Teacher}', [
+                    'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
+                ]), ['create'], ['class' => 'btn btn-success btn-flat']);
+                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
+                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
+                ]), ['import'], ['class' => 'btn btn-primary btn-flat']);
+            ?>
         </div>
     </div>
     

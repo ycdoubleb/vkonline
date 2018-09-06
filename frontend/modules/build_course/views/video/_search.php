@@ -45,7 +45,7 @@ $this->registerJs($format, View::POS_HEAD);
 
 ?>
 
-<div class="video-search vk-form set-spacing"> 
+<div class="video-search vk-form clear-shadow"> 
 
     <?php
     $form = ActiveForm::begin([

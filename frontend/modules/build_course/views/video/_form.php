@@ -61,7 +61,7 @@ $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
 ?>
 
-<div class="video-form vk-form set-spacing set-bottom">
+<div class="video-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[

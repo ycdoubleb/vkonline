@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 ?>
 
-<div class="course-node-form vk-form clear-shadow">
+<div class="course-node-form vk-form clear-shadow clear-border">
 
    <?php $form = ActiveForm::begin([
         'options'=>[

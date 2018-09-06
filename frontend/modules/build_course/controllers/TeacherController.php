@@ -7,6 +7,7 @@ use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\ImportUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -132,11 +133,11 @@ class TeacherController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->createTeacher($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,  //模型
-            ]);
         }
+        
+        return $this->render('create', [
+            'model' => $model,  //模型
+        ]);
     }
     
     /**
@@ -160,11 +161,11 @@ class TeacherController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->updateTeacher($model, Yii::$app->request->post());
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,  //模型
-            ]);
         }
+        
+        return $this->render('update', [
+            'model' => $model,  //模型
+        ]);
     }
     
     /**
@@ -298,6 +299,29 @@ class TeacherController extends Controller
                 'message' => '搜索失败::' . $ex->getMessage(),
             ];
         }
+    }
+    
+    /**
+     * 导入 现有的 Teacher 模板。
+     * 如果导入成功，浏览器将返回导入的 Teacher。
+     * @return mixed
+     */
+    public function actionImport()
+    {
+        $results = [
+            'repeat_total' => 0,
+            'exist_total' => 0,
+            'insert_total' => 0,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => [],
+            ]),
+        ];
+        if (Yii::$app->request->isPost) {
+            $results = ImportUtils::getInstance()->batchImportTeacher();
+        }
+        
+        return $this->render('import', $results);
+        
     }
     
     /**

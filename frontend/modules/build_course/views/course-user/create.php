@@ -27,7 +27,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
             <div class="modal-body">
-                <div class="course-user-form vk-form clear-shadow">
+                <div class="course-user-form vk-form clear-shadow clear-border">
                     <?php $form = ActiveForm::begin([
                         'options'=>[
                             'id' => 'build-course-form',

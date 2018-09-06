@@ -31,7 +31,7 @@ $this->title = Yii::t(null, "{Publish}{Course}：{$model->name}", [
             </div>
             
             <div class="modal-body">
-                <div class="vk-form clear-shadow">
+                <div class="vk-form clear-shadow clear-border">
                     <?php $form = ActiveForm::begin([
                         'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
                         'fieldConfig' => [  

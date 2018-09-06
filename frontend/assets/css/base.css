@@ -49,6 +49,27 @@
     box-shadow: none !important;
 }
 /**
+ *  清除边框
+ */
+.clear-border {
+    border: none !important;
+}
+/**
+ * 设置底部内边距
+ */
+.set-bottom {
+    margin-bottom: 40px !important;
+}
+/**
+ * 设置内边距
+ */
+.set-padding {
+    padding-top: 20px !important;
+    padding-right: 15px !important;
+    padding-bottom: 20px !important;
+    padding-left: 20px !important;
+}
+/**
  * 查看更多
  */
 .see-more {
@@ -97,36 +118,14 @@ textarea {
     overflow: auto;
     resize: vertical;
 }
-/**
- * 设置底部内边距
- */
-.set-bottom {
-    margin-bottom: 40px !important;
-}
-/**
- * 设置间距
- */
-.set-spacing {
-    margin-top: -15px !important;
-    padding-top: 15px !important;
-    padding-bottom: 25px !important;
-}
-/**
- * 设置内边距
- */
-.set-padding {
-    padding-top: 20px !important;
-    padding-right: 15px !important;
-    padding-bottom: 20px !important;
-    padding-left: 20px !important;
-}
 /*******************************************************************************
  * 页面标题
  *******************************************************************************/
 .vk-title {
     width: 100%;
     height: 60px;
-    padding: 0 15px 0 20px;
+    padding-right: 15px;
+    padding-left: 20px;
     margin-bottom: 15px;
     font-size: 16px;
     color: #666;
@@ -134,11 +133,14 @@ textarea {
     border-bottom: 1px solid #f2f2f2;
 } 
 /*******************************************************************************
- * 表单样式
+ * 表单
  *******************************************************************************/
 .vk-form {
     display: inline-block;
     width: 100%;
+    padding-top: 15px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #f2f2f2;
 }
 .vk-form .form-horizontal .form-group {
     position: relative;
@@ -166,14 +168,12 @@ textarea {
     border-radius: 0px;
     box-shadow: none;
 }
-
 /**
  * 重设置标签错误的样式
  */
 .vk-form .has-error .bootstrap-tagsinput {
     border-color: #a94442;
 }
-
 /**
  * select2 组件多选
  */
@@ -228,6 +228,17 @@ textarea {
     margin-right: 15px;
     color: #333 !important;
     line-height: 35px;
+}
+/**
+ * 警告框
+ */
+.vk-form .alert {
+    border-radius: 0px;
+}
+.vk-form .alert .alert-link {
+    color: #23527c;
+    font-weight: normal;
+    text-decoration: none;
 }
 /*******************************************************************************
  * 标签页
@@ -325,7 +336,6 @@ textarea {
     height: 100%;
     margin-top: 14px;
     font-size: 12px;
-    /*line-height: 100%;*/
     color: #aaa;
     font-weight: normal;
 }
@@ -359,7 +369,7 @@ textarea {
     margin-bottom: 7.5px;
 }
 /*******************************************************************************
- * 详情公共
+ * 面板
  *******************************************************************************/
  .vk-panel {
     display: inline-block;
@@ -390,9 +400,8 @@ textarea {
 .table-responsive .vk-table:focus{
     outline: 0px !important;
 }
-
 /*******************************************************************************
- * table样式
+ * 表格
  *******************************************************************************/
 .vk-table {
     margin: 0px;
@@ -449,9 +458,8 @@ textarea {
     background-color: #f9f9f9 !important;
     cursor: pointer;
 }
-
 /*******************************************************************************
- * 模态框样式
+ * 模态框
  *******************************************************************************/
 .vk-modal {
     display: block;
@@ -460,10 +468,6 @@ textarea {
 .vk-modal .modal-content {
     border-radius: 0px; 
 }
-/*.vk-modal .modal-body, 
-.modal-body .vk-form {
-    background-color: #F2F2F2;
-}*/
 /*******************************************************************************
  * 最近联系
  *******************************************************************************/
@@ -481,4 +485,36 @@ textarea {
 }
 .recent:hover {
     cursor:pointer;
+}
+/*******************************************************************************
+ * 上传文件控件
+ *******************************************************************************/
+.vk-uploader {
+    position: relative;
+    display: inline-block;
+}
+.vk-uploader .btn-pick {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    background: #00a2d4;
+    color: #fff;
+    border-radius: 0px;
+    overflow: hidden;
+    height: 35px;
+}
+.vk-uploader .file-box {
+    position: absolute; 
+    top: 0px; 
+    left: 0px; 
+    width: 82px; 
+    height: 35px; 
+    line-height: 35px;
+    overflow: hidden; 
+}
+.vk-uploader .file-box .file-input {
+    opacity: 0;
+    width: 100%;
+    position: absolute;
+    z-index: 10;
 }

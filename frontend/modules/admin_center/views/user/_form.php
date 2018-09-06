@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="user-form vk-form set-spacing set-bottom">
+<div class="user-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options' => [

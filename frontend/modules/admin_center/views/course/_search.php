@@ -51,7 +51,7 @@ $this->registerJs($format, View::POS_HEAD);
 <div class="course-search">
     
     <!-- 页面标题 -->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span><?= $title ?></span>
         <div class="btngroup pull-right">
             <?php
@@ -66,7 +66,7 @@ $this->registerJs($format, View::POS_HEAD);
     </div>
     
     <!--搜索-->
-    <div class="course-form vk-form set-spacing">
+    <div class="course-form vk-form">
         <?php $form = ActiveForm::begin([
             'action' => array_merge([Yii::$app->controller->action->id], $filters),
             'method' => 'get',

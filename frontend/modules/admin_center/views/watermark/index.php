@@ -24,7 +24,7 @@ $this->title = '集团内部水印';
 <div class="customer-watermark-index main">
 
     <!-- 页面标题 -->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span>
             <?= $this->title ?>
         </span>

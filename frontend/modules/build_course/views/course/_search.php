@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="course-form vk-form set-spacing"> 
+<div class="course-form vk-form"> 
 
     <?php $form = ActiveForm::begin([
         'action' => ['index'],

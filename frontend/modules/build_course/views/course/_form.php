@@ -55,7 +55,7 @@ $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
 ?>
 
-<div class="course-form vk-form set-spacing set-bottom">
+<div class="course-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[

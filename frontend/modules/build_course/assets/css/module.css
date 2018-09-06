@@ -448,10 +448,10 @@
  ***************************/
 .video-index .vk-tabs {
     display: block;
-    margin: -5px 0px 0px;
     padding-right: 15px;
     padding-left: 20px;
-    border-top: 1px solid #f2f2f2;
+    margin-top: -5px;
+    margin-bottom: 0px;
     border-bottom: none;
     background-color: #fff;
 }

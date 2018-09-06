@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="user-category-form vk-form clear-shadow">
+<div class="user-category-form vk-form clear-shadow clear-border">
 
     <?php $form = ActiveForm::begin([
         'options' => [
