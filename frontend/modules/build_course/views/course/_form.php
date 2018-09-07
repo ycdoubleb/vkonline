@@ -213,6 +213,18 @@ $js = <<<JS
     UE.getEditor('course-content', {
         initialFrameHeight: 500,
         maximumWords: 100000,
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
+            ]
+        ]
     });
         
     /**

@@ -306,6 +306,18 @@ $js =
     var ue = UE.getEditor('container', {
         initialFrameHeight: 200, 
         maximumWords: 100000,
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
+            ]
+        ]
     });
     /**
      * 单击刷新按钮重新加载老师下拉列表
