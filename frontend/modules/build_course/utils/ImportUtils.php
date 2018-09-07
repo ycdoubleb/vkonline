@@ -9,13 +9,15 @@
 namespace frontend\modules\build_course\utils;
 
 use common\models\vk\Teacher;
+use common\models\vk\UserCategory;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Yii;
 use yii\data\ArrayDataProvider;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\UploadedFile;
 
 /**
@@ -24,6 +26,7 @@ use yii\web\UploadedFile;
  * @author Kiwi
  */
 class ImportUtils {
+    
     /**
      * 初始化类变量
      * @var ActionUtils 
@@ -39,6 +42,56 @@ class ImportUtils {
             self::$instance = new ImportUtils();
         }
         return self::$instance;
+    }
+    
+    /**
+     * 批量导入视频
+     * @param integer $format   格式：0是post，1是ajax格式
+     * @return json|array
+     */
+    public function importVideo($format)
+    {
+        $upload = UploadedFile::getInstanceByName('importfile');
+        if($upload != null){
+            $spreadsheet = IOFactory::load($upload->tempName); // 载入excel文件
+            $sheet = $spreadsheet->getActiveSheet();    // 读取第一個工作表 
+            $sheetdata = $sheet->toArray(null, true, true, true);   //转换为数组
+            $sheetColumns = [];
+            $dataProvider = [];
+            //获取组装的工作表数据
+            for ($row = 3; $row <= count($sheetdata); $row++) {
+                //组装对应数组值
+                foreach ($sheetdata[2] as $key => $value) {
+                    if(!empty($value)){ //值非空
+                        $sheetColumns[$value] = $sheetdata[$row][$key];
+                    }
+                }
+                //判断每一行是否存在空值，若存在则过滤
+                if(!empty(array_filter($sheetdata[$row]))){
+                    $dataProvider[] = $sheetColumns;
+                }
+            }
+            
+            //如果是ajax则返回json格式的数据
+            if($format){
+                
+            }else{
+                
+                foreach ($dataProvider as &$data) {
+                    $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
+                    $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
+                }
+//                var_dump($dataProvider);exit;
+                return [
+                    'repeat_total' => 0,
+                    'exist_total' => 0,
+                    'insert_total' => 0,
+                    'dataProvider' => new ArrayDataProvider([
+                        'allModels' => $dataProvider,
+                    ]),
+                ];
+            }            
+        }
     }
     
     /**
@@ -59,7 +112,7 @@ class ImportUtils {
                 $drawingDatas[$drawing->getCoordinates()] = $drawing;
             }
             $sheetColumns = [];
-            $datas = [];
+            $dataProvider = [];
             //获取组装的工作表数据
             for ($row = 3; $row <= count($sheetdata); $row++) {
                 //组装对应数组值
@@ -74,25 +127,21 @@ class ImportUtils {
                         if(isset($sexName[$sheetdata[$row][$key]])){
                             $sheetColumns['sex'] = $sexName[$sheetdata[$row][$key]];
                         }
-                        $sheetColumns['id'] = md5(time() . rand(1, 99999999));
-                        $sheetColumns['customer_id'] = Yii::$app->user->identity->customer_id;
-                        $sheetColumns['created_by'] = Yii::$app->user->id;
-                        $sheetColumns['created_at'] = $sheetColumns['updated_at'] = time();
                     }
                 }
                 //判断每一行是否存在空值，若存在则过滤
                 if(!empty(array_filter($sheetdata[$row]))){
-                    $datas[] = $sheetColumns;
+                    $dataProvider[] = $sheetColumns;
                 }
             }
             
-            return $this->batchSaveTeacher($datas);
+            return $this->batchSaveTeacher($dataProvider);
         }
     }
-    
+
     /**
      * 批量保存老师
-     * @param array $dataProvider
+     * @param array $datas
      * @return array
      */
     protected function batchSaveTeacher($dataProvider)
@@ -113,13 +162,10 @@ class ImportUtils {
         $repeat_job_title = array_diff_assoc($teacher_job_title, array_unique($teacher_job_title));   //重复老师职称
         
         //查询已经存在的老师
-        $teacher = (new Query())->from(['Teacher' => Teacher::tableName()]);
-        $teacher->select(['id', 'avatar', 'name', 'sex', 'job_title']);
-        $teacher->where([
-            'Teacher.name' => array_unique($teacher_name), 
-            'Teacher.sex' => array_unique($teacher_sex)
+        $teacher_result = $this->checkTeacherExists([
+            'name' => array_unique($teacher_name), 
+            'sex' => array_unique($teacher_sex),
         ]);
-        $teacher_result = $teacher->all();
         //已经存在的数据
         foreach ($teacher_result as $value) {
             $key = $value['name'] . '_' . $value['sex'];
@@ -152,8 +198,13 @@ class ImportUtils {
         {  
             foreach ($data_insert as &$data_val) {
                 if(!$is_success){
+                    $data_val['id'] = md5(time() . rand(1, 99999999));
                     $fileName = $this->saveDrawing($data_val['coordinates'], $data_val['id'], Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
                     $data_val['avatar'] = '/upload/teacher/avatars/' . $fileName . '?rand=' . rand(0, 1000);
+                    $data_val['customer_id'] = Yii::$app->user->identity->customer_id;
+                    $data_val['des'] = Html::encode($data_val['des']);
+                    $data_val['created_by'] = Yii::$app->user->id;
+                    $data_val['created_at'] = $data_val['updated_at'] = time();
                     unset($data_val['coordinates']);
                 }
             }
@@ -223,6 +274,125 @@ class ImportUtils {
         
         return $myFileName;
     }
+
+    /**
+     * 保存视频目录
+     * @param string $name  名称
+     * @param integer $parent_id   上一级id
+     * @return integer $id  分类id
+     */
+    protected function saveVideoDir($name, $parent_id = 0)
+    {
+        $category = new UserCategory([
+            'name' => $name, 'parent_id' => $parent_id, 
+            'created_by' => \Yii::$app->user->id
+        ]);
+        
+        $category->level = $category->parent_id == 0 ? 1 : UserCategory::getCatById($category->parent_id)->level + 1;
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($category->save()){
+                $category->updateParentPath();      //更新路径
+                $trans->commit();  //提交事务
+            }
+            UserCategory::invalidateCache();    //清除缓存    
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+        }
+        
+        return $category->id;
+    }
+    
+    /**
+     * 检查视频目录是否存在
+     * @param string $video_dirs    视频目标
+     * @return integer $dir_id 目录id
+     */
+    protected function checkVideoDirExists($video_dirs)
+    {
+        $dirs = explode(">", $video_dirs);  //目录结构
+        $dirCount = count($dirs);   //计算上传的目录个数
+        array_walk_recursive($dirs, function(&$val){$val = trim($val);});   //过滤数组中值两端的空格
+        
+        //查询已存在的目录
+        $existCategorys = [];   //已存在目录
+        $userCategory = (new Query())->from(['UserCategory' => UserCategory::tableName()]);
+        $userCategory->select(['UserCategory.id', 'UserCategory.parent_id']);
+        $userCategory->where(['UserCategory.name' => $dirs]);
+        $userCategory->andWhere(['or', ['UserCategory.created_by' => \Yii::$app->user->id], ['UserCategory.is_public' => 1]]);
+        $userCategory->orderBy(['UserCategory.path' => SORT_ASC]);
+        $categorys = $userCategory->all();
+        //获取需要的已存在目录
+        foreach ($categorys as $cat) {
+            foreach ($dirs as $dir) {
+                //上级目录名
+                $parentname = UserCategory::getCatById($cat['parent_id'] > 0 ? $cat['parent_id'] : $cat['id'])->name;
+                //上传目录的值和存在的上级目录名相同，则返回id
+                if($dir == $parentname){
+                    $existCategorys[] = $cat['id'];
+                }
+            }
+        }
+        //计算已存在的目录个数
+        $catCount = count($existCategorys);     
+        
+        $dir_id = 0;    //目录id
+        //如果已存在的目录等于上传的目录，并且已存在的目录大于0，则目录id为最后一个已存在的目录id
+        if($catCount == $dirCount && $catCount > 0){
+            $dir_id = end($existCategorys);
+        //如果已存在的目录小于上传的目录，并且已存在的目录大于0，则目录id为新建的目录id*/
+        }else if($catCount < $dirCount && $catCount > 0 ){
+            foreach ($dirs as $key => $name) {
+                if(isset($existCategorys[$key])) continue;
+                $dir_id = $this->saveVideoDir($name, $existCategorys[$key - 1]);
+            }
+        //如果已存在的目录等于0，则创建目录结构并且目录id为新建的目录目录结构等级最高的那个id
+        }else if($catCount == 0){
+            $dir_id = $this->saveVideoDir($dirs[0]);
+            for($i = 1; $i < $dirCount; $i++){
+                if($dir_id == null) break;
+                $dir_id = $this->saveVideoDir($dirs[$i], $dir_id);
+            }
+        }
+       
+        return $dir_id;
+    }
+    
+    /**
+     * 检查老师是否存在
+     * @param array|string $condition  条件
+     * @param boolean $key_to_value    键值对
+     * @return array
+     */
+    protected function checkTeacherExists($condition, $key_to_value = false)
+    {
+        //根据条件查询已存在老师
+        $teacher = (new Query())->from(['Teacher' => Teacher::tableName()]);
+        $teacher->select(['id', 'avatar', 'name', 'sex', 'job_title']);
+        $teacher->where($condition);
+        $teacher->andWhere(['Teacher.is_del' => 0]);
+        $teacher->andWhere([
+            'or', ['Teacher.created_by' => \Yii::$app->user->id], ['is_certificate' => 1]
+        ]);
+        $teacher_results = $teacher->all();
+        
+        if($key_to_value){
+            if(count($teacher_results) > 1){
+                return ArrayHelper::map($teacher_results, 'id', 'avatar');
+            }else{
+                return [
+                    'id' => isset($teacher_results[0]) ? $teacher_results[0]['id'] : null,
+                    'avatar' => isset($teacher_results[0]) ? $teacher_results[0]['avatar'] : null
+                ];
+            }
+        }else{
+            return $teacher_results;;
+        }
+    }
+
 
     /**
      * 检查目标路径是否存在，不存即创建目标

@@ -67,15 +67,16 @@ class ActionUtils
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
-            
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -109,15 +110,16 @@ class ActionUtils
                     ]);
                 }
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
-            
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -136,7 +138,7 @@ class ActionUtils
                 $this->saveCourseActLog(['action' => '删除', 'title' => "课程管理", 
                     'content' => "{$model->name}", 'course_id' => $model->id]);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -145,6 +147,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -163,7 +167,7 @@ class ActionUtils
             if($model->save(true, ['level', 'is_publish'])){
                 $this->saveCourseActLog(['action' => '下架', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -172,6 +176,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -191,18 +197,19 @@ class ActionUtils
 //                $model->level = Course::PUBLIC_LEVEL;
 //            }
             
-            if($model->save()){
+            if($model->save(true, ['is_publish'])){
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
-            
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -213,34 +220,35 @@ class ActionUtils
      */
     public function createCourseUser($model, $post)
     {
+        $is_null = true;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $results = $this->saveCourseUser($post);
             if($results != null){
+                $is_null = false;
                 $this->saveRecentContacts($post);
                 $this->saveCourseActLog(['action'=>'增加', 'title'=>'协作人员',
-                    'content'=>implode('、',$results['nickname']), 'course_id' => $results['course_id']
+                    'content'=>implode('、',$results), 'course_id' => $model->course_id
                 ]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '未能保存协作人员。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if(!$is_null){  //协作人员非空的情况下提交事务
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> !$is_null ? 200 : 404,
+            'data' => ['id' => $model->id, 'course_id' => $model->course_id],
+            'message' => $message
+        ];
     }
     
     /**
@@ -250,36 +258,43 @@ class ActionUtils
      */
     public function updateCourseUser($model)
     {
-        $newAttr = $model->getDirtyAttributes();    //获取新属性值
-        $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
-        
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            if($model->save() && $newAttr != null){
-                $this->saveCourseActLog(['action'=>'修改', 'title'=>'协作人员',
-                    'content'=>"调整【".$model->user->nickname."】以下属性：\n\r权限：【旧】". CourseUser::$privilegeMap[$oldPrivilege] . 
-                        ">>【新】" . CourseUser::$privilegeMap[$model->privilege],
-                    'course_id'=>$model->course_id]);
+            $newAttr = $model->getDirtyAttributes();    //获取新属性值
+            $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
+            if($model->save(true, ['privilege']) && $newAttr != null){
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action' => '修改', 'title' => '协作人员',
+                    'content'=>"调整【".$model->user->nickname."】以下属性：\n\r"
+                                . "权限：【旧】". CourseUser::$privilegeMap[$oldPrivilege]  
+                                . ">>【新】" . CourseUser::$privilegeMap[$model->privilege],
+                    'course_id'=>$model->course_id
+                ]);
             }else{
-                throw new Exception($model->getErrors());
+               $message = implode("、", $model->getErrorSummary(true));
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if($is_success){    //保存成功的情况下提交事务
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'id' => $model->id,
+                'course_id' => $model->course_id, 
+                'privilege' => CourseUser::$privilegeMap[$model->privilege]
+            ],
+            'message' => $message
+        ];
     }  
     
     /**
@@ -289,33 +304,40 @@ class ActionUtils
      */
     public function deleteCourseUser($model)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $model->is_del = 1;
-            if($model->update(false, ['is_del'])){
-                $this->saveCourseActLog(['action'=>'删除','title'=>'协作人员', 
+            if($model->update(true, ['is_del'])){
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action'=>'删除','title'=>'协作人员', 
                     'content'=>'删除【'.$model->user->nickname.'】的协作',
-                    'course_id'=>$model->course_id]);
+                    'course_id'=>$model->course_id
+                ]);
             }else{
-                throw new Exception($model->getErrors());
+               $message = '未能删除成功。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if($is_success){    //保存成功的情况下提交事务
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'id' => $model->id,
+                'course_id' => $model->course_id, 
+                'privilege' => CourseUser::$privilegeMap[$model->privilege]
+            ],
+            'message' => $message
+        ];
     }   
     
     /**
@@ -325,36 +347,37 @@ class ActionUtils
      */
     public function createCourseNode($model)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             if($model->save()){
-                $this->saveCourseActLog(['action' => '增加', 'title' => "环节管理",
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action' => '增加', 'title' => "环节管理",
                     'content' => $model->name,  'course_id' => $model->course_id,
                 ]);
             }else{
-                throw new Exception($model->getErrors());
+               $message = '未能保存成功。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [
-                    'id' => $model->id, 
-                    'course_id' => $model->course_id, 
-                    'name' => $model->name
-                ],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'id' => $model->id, 'course_id' => $model->course_id, 
+                'name' => $model->name
+            ],
+            'message' => '操作成功！'
+        ];
     }
     
     /**
@@ -364,40 +387,40 @@ class ActionUtils
      */
     public function updateCourseNode($model)
     {
-        //获取所有新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取所有旧属性值
-        $oldAttr = $model->getOldAttributes();
-        
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //获取所有新属性值
+            $newAttr = $model->getDirtyAttributes();
+            //获取所有旧属性值
+            $oldAttr = $model->getOldAttributes();
             if($model->save() && !empty($newAttr)){
-                $this->saveCourseActLog(['action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
-                    'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                        ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
-                                
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
+                    'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r"
+                                . ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null)
+                                . ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
                 ]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '未能保存成功。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200 ,
-                'data'=> ['id' => $model->id, 'name' => $model->name,],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404 ,
-                'data'=> [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data'=> ['id' => $model->id, 'name' => $model->name,],
+            'message' => $message
+        ];
     }
     
     /**
@@ -407,12 +430,14 @@ class ActionUtils
      */
     public function deleteCourseNode($model)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
+                $is_success = true;
                 Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);
                 $knowledges = Knowledge::findAll(['node_id' => $model->id, 'is_del' => $model->is_del]);
                 foreach ($knowledges as $knowledge) {
@@ -429,23 +454,22 @@ class ActionUtils
                 $this->saveCourseActLog(['action' => '删除', 'title' => "环节管理", 
                     'content' => "{$model->name}", 'course_id' => $model->course_id]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '删除失败。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data'=> ['id' => $model->id, 'name' => $model->name,],
+            'message' => $message
+        ];
     }
     
     /**
@@ -455,18 +479,20 @@ class ActionUtils
      */
     public function createKnowledge($model, $post)
     {
-        //资源id
-        $resId = ArrayHelper::getValue($post, 'Resource.res_id');
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //资源id
+            $resId = ArrayHelper::getValue($post, 'Resource.res_id');
             $model->type = Knowledge::TYPE_VIDEO_RESOURCE;
             if(!empty($resId)){
                 $model->has_resource = 1;
                 $model->data = ArrayHelper::getValue($post, 'Resource.data');
             }
             if($model->save()){
+                $is_success = true;
                 if($model->has_resource){
                     switch ($model->type){
                         //如果为视频资源的是否执行
@@ -485,29 +511,26 @@ class ActionUtils
                     'course_id' => $model->node->course_id,
                 ]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '未能保存成功。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [
-                    'id' => $model->id, 
-                    'node_id' => $model->node_id, 
-                    'course_id' => $model->node->course_id, 
-                    'name' => $model->name,
-                    'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
-                ],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功！';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage(),
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'id' => $model->id, 'node_id' => $model->node_id, 
+                'course_id' => $model->node->course_id, 'name' => $model->name,
+                'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
+            ],
+            'message' => $message
+        ];
     }
     
     /**
@@ -517,22 +540,23 @@ class ActionUtils
      */
     public function updateKnowledge($model, $post)
     {
-        //资源id
-        $resId = ArrayHelper::getValue($post, 'Resource.res_id');
-        //获取所有新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取所有旧属性值
-        $oldAttr = $model->getOldAttributes();
-        
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //资源id
+            $resId = ArrayHelper::getValue($post, 'Resource.res_id');
+            //获取所有新属性值
+            $newAttr = $model->getDirtyAttributes();
+            //获取所有旧属性值
+            $oldAttr = $model->getOldAttributes();
             if(!empty($resId)){
                 $model->has_resource = 1;
                 $model->data = ArrayHelper::getValue($post, 'Resource.data');
             }
             if($model->save()){
+                $is_success = true;
                 $content = '';
                 if($model->has_resource){
                     switch ($model->type){
@@ -567,23 +591,24 @@ class ActionUtils
                     ]);
                 }
             }else{
-                throw new Exception($model->getErrors());
+                $message = '未能保存成功。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => ['name' => $model->name, 'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'name' => $model->name, 'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
+            ],
+            'message' => $message
+        ];
     }
     
     /**
@@ -593,12 +618,14 @@ class ActionUtils
      */
     public function deleteKnowledge($model)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $model->is_del = 1;
             if($model->update(true, ['is_del'])){
+                $is_success = true;
                 if($model->has_resource){
                     switch ($model->type){
                         //如果为视频资源的是否执行
@@ -615,23 +642,22 @@ class ActionUtils
                     'content' => "{$model->node->name} >> {$model->name}",
                     'course_id' => $model->node->course_id,]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '删除失败。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => ['id' => $model->id, 'name' => $model->name],
+            'message' => $message
+        ];
     }
     
     /**
@@ -644,38 +670,39 @@ class ActionUtils
      */
     public function moveNode($post, $course_id, $number = 0)
     {
-        $table = ArrayHelper::getValue($post, 'tableName');
-        $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
-        $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
-        $oldItems = json_decode(json_encode($oldIndexs), true);
-        $newItems = json_decode(json_encode($newIndexs), true);
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $table = ArrayHelper::getValue($post, 'tableName');
+            $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
+            $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
+            $oldItems = json_decode(json_encode($oldIndexs), true);
+            $newItems = json_decode(json_encode($newIndexs), true);
             foreach ($newItems as $id => $sortOrder){
                 $number += $this->updateTableAttribute($id, $table, $sortOrder);
             }
             if($number > 0){
+                $is_success = true;
                 $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
             }else{
-                throw new Exception($model->getErrors());
+                $message = '未能移动成功，请重新尝试。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code' => 200,
-                'data' => [],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code' => 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code' => $is_success ? 200 : 404,
+            'data' => ['oldItem' => $oldItems, 'newItem' => $newItems],
+            'message' => $message
+        ];
     }
     
     /**
@@ -686,31 +713,35 @@ class ActionUtils
      */
     public function createCourseAttachment($model, $post)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
             if(count($results) > 0) {
-                $this->saveCourseActLog(['action'=>'增加', 'title'=>'课程资源',
-                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 'course_id' => $model->course_id
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action'=>'增加', 'title'=>'课程资源', 'course_id' => $model->course_id,
+                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 
                 ]);
+            }else{
+                $message = '添加课程附件失败。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => ['course_id' => $model->course_id],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => ['course_id' => $model->course_id],
+            'message' => $message
+        ];
     }
     
     /**
@@ -721,31 +752,35 @@ class ActionUtils
      */
     public function updateCourseAttachment($model, $post)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
             if(count($results) > 0) {
-                $this->saveCourseActLog(['action'=>'增加', 'title'=>'课程资源',
-                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 'course_id' => $model->course_id
+                $is_success = true;
+                $this->saveCourseActLog([
+                    'action'=>'增加', 'title'=>'课程资源', 'course_id' => $model->course_id,
+                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 
                 ]);
+            }else{
+                $message = '修改课程附件失败。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => ['id' => $model->id],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => ['id' => $model->id],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => ['course_id' => $model->course_id],
+            'message' => $message
+        ];
     }
     
     /**
@@ -755,32 +790,33 @@ class ActionUtils
      */
     public function deleteCourseAttachment($model)
     {
+        $is_success = false;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
             $model->is_del = 1;
             if($model->update(false, ['is_del'])){
+                $is_success = true;
                 $this->saveCourseActLog(['action'=>'删除','title'=>'课程资源', 
                     'content'=>"删除【{$model->uploadfile->name}】", 'course_id'=>$model->course_id]);
             }else{
-                throw new Exception($model->getErrors());
+                $message = '删除课程附件失败。';
             }
-            
-            $trans->commit();  //提交事务
-            return [
-                'code'=> 200,
-                'data' => ['id' => $model->id],
-                'message' => '操作成功！'
-            ];
+            if($is_success){
+                $trans->commit();  //提交事务
+                $message = '操作成功。';
+            }
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
-            return [
-                'code'=> 404,
-                'data' => ['id' => $model->id],
-                'message' => '操作失败::' . $ex->getMessage()
-            ];
+            $message = '操作失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => ['course_id' => $model->course_id],
+            'message' => $message
+        ];
     }   
     
     /**
@@ -829,7 +865,7 @@ class ActionUtils
                 }
                 $this->saveObjectTags($model->id, $tagIds, 2);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -838,6 +874,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -887,7 +925,7 @@ class ActionUtils
                 }
                 $this->saveObjectTags($model->id, $tagIds, 2);
             }else{
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -896,6 +934,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -915,17 +955,17 @@ class ActionUtils
             if($model->update(true, ['is_del']) && !in_array($model->id, $videoIds)){
                 
             }else{
-                Yii::$app->getSession()->setFlash('error','操作失败，该视频在其它地方被引用了。');
-                return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
+                return false;
             }
             
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','操作成功！');
-            return Yii::$app->controller->redirect(['index']);
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -967,7 +1007,7 @@ class ActionUtils
         try
         {  
             if(!$model->save()){
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -976,6 +1016,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -1000,7 +1042,7 @@ class ActionUtils
             }
             
             if(!$model->save()){
-                throw new Exception($model->getErrors());
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -1009,6 +1051,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -1023,10 +1067,8 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
-            if($model->update(true, ['is_del'])){
-                
-            }else{
-                throw new Exception($model->getErrors());
+            if(!$model->update(true, ['is_del'])){
+                return false;
             }
             
             $trans->commit();  //提交事务
@@ -1035,6 +1077,8 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
     /**
@@ -1053,17 +1097,17 @@ class ActionUtils
             $apply = new TeacherCertificate([
                 'teacher_id' => $model->id, 'proposer_id' => Yii::$app->user->id
             ]);
-            
             if(!$apply->save()){
-                throw new Exception($model->getErrors());
+                return false;
             }
-            
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','操作成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+        
+        return true;
     }
     
      /**
@@ -1283,13 +1327,10 @@ class ActionUtils
         if($number > 0){
             $users = (new Query())->select(['nickname'])->from(User::tableName())
                 ->where(['id' => $user_ids])->all();
-            return  [
-                'course_id' => $course_id,
-                'nickname' => ArrayHelper::getColumn($users, 'nickname')
-            ];
-        } else {
-            return [];
+            return ArrayHelper::getColumn($users, 'nickname');
         }
+        
+        return null;
     }
     
     /**

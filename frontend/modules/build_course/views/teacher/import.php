@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\Teacher;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -12,8 +13,10 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t('app', '{My}{Teachers}', [
-    'My' => Yii::t('app', 'My'), 'Teachers' => Yii::t('app', 'Teachers')
+$this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
+    'Batch' => Yii::t('app', 'Batch'), 
+    'Import' => Yii::t('app', 'Import'), 
+    'Teachers' => Yii::t('app', 'Teachers')
 ]);
 
 ?>
@@ -62,7 +65,7 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
     <div class="vk-panel set-padding clear-margin"> 
         
         <div class="summary">
-            <span>导入结果：成功导入 <?= $insert_total ?> 个，已存在 <?= $exist_total ?> 个，重复 <?= $repeat_total ?> 个</span>
+            <b>导入结果：</b><span class="text-danger">成功导入 <?= $insert_total ?> 个，已存在 <?= $exist_total ?> 个，重复 <?= $repeat_total ?> 个</span>
         </div>
         
         <?= GridView::widget([
@@ -82,7 +85,7 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
                     'label' => Yii::t('app', 'Avatar'),
                     'format' => 'raw',
                     'value'=> function($data){
-                        return Html::img([$data['avatar']], ['width' => 54, 'height' => 64]);
+                        return Html::img(StringUtil::completeFilePath($data['avatar']), ['width' => 54, 'height' => 64]);
                     },
                     'headerOptions' => [
                         'style' => [

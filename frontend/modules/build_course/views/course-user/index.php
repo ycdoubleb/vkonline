@@ -129,7 +129,7 @@ $js = <<<JS
      * @param {obj} _this
      */
     window.deleteCourseUser = function(_this){
-        if(confirm(elem.attr("data-confirms"))){
+        if(confirm(_this.attr("data-confirms"))){
             $.post("../course-user/delete?id=" + _this.attr("data-id"), function(rel){
                 if(rel['code'] == '200'){
                     $("#help_man").load("../course-user/index?course_id=" + _this.attr("data-course_id"));

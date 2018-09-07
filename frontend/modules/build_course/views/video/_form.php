@@ -121,11 +121,13 @@ $this->registerJs($format, View::POS_HEAD);
                         'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
                         'browseLabel' => '选择图片...',
                         'initialPreview' => [
-                            Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '130px', 'height' => '130px']),
+                            $model->isNewRecord || empty($model->cover_img)?
+                                    Html::img(['/upload/course/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+                                    Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140'])
                         ],
                         'overwriteInitial' => true,
                     ],
-                ]); ?>
+                ])->label('视频封面'); ?>
 
             <!--主讲老师-->
             <?php
@@ -187,20 +189,22 @@ $this->registerJs($format, View::POS_HEAD);
             ])) ?>
 
             <!--查看权限-->
-            <?= $form->field($model, 'level')->radioList(Video::$levelMap, [
-                'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
-                'itemOptions'=>[
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'10px 15px 10px 0',
-                            'color' => '#999',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{View}{Privilege}', [
-                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-            ])) ?>
+            <?php
+//            $form->field($model, 'level')->radioList(Video::$levelMap, [
+//                'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
+//                'itemOptions'=>[
+//                    'labelOptions'=>[
+//                        'style'=>[
+//                            'margin'=>'10px 15px 10px 0',
+//                            'color' => '#999',
+//                            'font-weight' => 'normal',
+//                        ]
+//                    ]
+//                ],
+//            ])->label(Yii::t('app', '{View}{Privilege}', [
+//                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
+//            ])) 
+            ?>
 
             <!--视频文件-->
             <div class="form-group field-videofile-file_id">

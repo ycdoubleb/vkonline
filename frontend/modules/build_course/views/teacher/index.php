@@ -32,7 +32,7 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
                 ]), ['create'], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['import'], ['class' => 'btn btn-primary btn-flat']);
+                ]), ['import'], ['class' => 'btn btn-primary btn-flat hidden']);
             ?>
         </div>
     </div>

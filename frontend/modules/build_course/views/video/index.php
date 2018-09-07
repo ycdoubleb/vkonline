@@ -29,13 +29,16 @@ $this->title = Yii::t('app', '{My}{Video}', [
             <?php
                 echo Html::a(Yii::t('app', '{Create}{Video}', [
                         'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
-                    ]), ['create'], ['class' => 'btn btn-success btn-flat']) . '&nbsp;';
-                echo Html::a(Yii::t('app', '{Catalog}{Admin}', [
+                    ]), ['create'], ['class' => 'btn btn-success btn-flat']);
+                echo '&nbsp;' . Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
-                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']) . '&nbsp;';
-                echo Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
+                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']);
+                echo '&nbsp;' . Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
                     'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
                 ]);
+                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
+                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
+                ]), ['import'], ['class' => 'btn btn-primary btn-flat hidden']);
             ?>
         </div>
     </div>
