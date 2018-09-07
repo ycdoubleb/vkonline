@@ -160,11 +160,11 @@ class Video extends ActiveRecord {
                 ])],
             [['duration'], 'number'],
             [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
-            'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
+                'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
             [['des'], 'string'],
             [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
-            [['img', 'mts_watermark_ids'], 'string', 'max' => 255],
+            [['img'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
     }

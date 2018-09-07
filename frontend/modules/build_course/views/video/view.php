@@ -35,20 +35,35 @@ foreach ($watermarksFiles as $watermark) {
             <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
-            <?php if($model->created_by == Yii::$app->user->id && $model->mts_status !== Video::MTS_STATUS_YES){
-                echo Html::a($model->mts_status == Video::MTS_STATUS_NO ? Yii::t('app', 'Transcoding') : Yii::t('app', 'Retry'), [
-                    'transcoding', 'id' => $model->id], [
-                    'class' => 'btn btn-flat ' . ($model->mts_status == Video::MTS_STATUS_NO ? 'btn-success' : 'btn-danger'), 
-                    'data' => [
-                        'pjax' => 0, 
-                        'confirm' => Yii::t('app', "{Are you sure}{Transcoding}【{$model->name}】{Video}", [
-                            'Are you sure' => Yii::t('app', 'Are you sure '), 'Transcoding' => Yii::t('app', 'Transcoding'), 
-                            'Video' => Yii::t('app', 'Video')
-                        ]),
-                        'method' => 'post',
-                    ],
-                ]);
-            }?>
+            <?php 
+                if($model->created_by == Yii::$app->user->id && $model->mts_status !== Video::MTS_STATUS_YES){
+                    switch($model->mts_status){
+                        case Video::MTS_STATUS_NO :
+                            $statusName = Yii::t('app', 'Transcoding');
+                            $btnClass = 'btn-success';
+                            break;
+                        case Video::MTS_STATUS_DOING :
+                            $statusName = Yii::t('app', '转码中');
+                            $btnClass = 'btn-info disabled';
+                            break;
+                        case Video::MTS_STATUS_FAIL :
+                            $statusName = Yii::t('app', 'Retry');
+                            $btnClass = 'btn-danger';
+                            break;
+                    }
+                    echo Html::a($statusName, ['transcoding', 'id' => $model->id], [
+                        'class' => 'btn btn-flat ' . $btnClass, 
+                        'data' => [
+                            'pjax' => 0, 
+                            'confirm' => Yii::t('app', "{Are you sure}{Transcoding}【{$model->name}】{Video}", [
+                                'Are you sure' => Yii::t('app', 'Are you sure '), 'Transcoding' => Yii::t('app', 'Transcoding'), 
+                                'Video' => Yii::t('app', 'Video')
+                            ]),
+                            'method' => 'post',
+                        ],
+                    ]);
+                }
+            ?>
         </div>
     </div>
     

@@ -18,6 +18,7 @@ use common\utils\DateUtil;
 use common\utils\StringUtil;
 use Exception;
 use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\ImportUtils;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -173,18 +174,20 @@ class VideoController extends Controller
         ]);
         $model->loadDefaultValues();
         
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-                'videoFiles' => json_encode([]),
-                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印,
-                'wateSelected' => json_encode([]),
-            ]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+        
+        return $this->render('create', [
+            'model' => $model,  //模型
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+            'videoFiles' => json_encode([]),
+            'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印,
+            'wateSelected' => json_encode([]),
+        ]);
     }
     
     /**
@@ -205,19 +208,21 @@ class VideoController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
     
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
-                'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
-                'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
-                'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
-            ]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+        
+        return $this->render('update', [
+            'model' => $model,  //模型
+            'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
+            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+            'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
+            'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
+            'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
+        ]);
     }
     
     /**
@@ -239,7 +244,13 @@ class VideoController extends Controller
         }
         
         if (Yii::$app->request->isPost) {
-            return ActionUtils::getInstance()->deleteVideo($model);
+            $is_success = ActionUtils::getInstance()->deleteVideo($model);
+            if($is_success){
+                return $this->redirect(['index']);
+            }else{
+                Yii::$app->getSession()->setFlash('error','操作失败，该视频在其它地方被引用了。');
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
     }
     
@@ -312,44 +323,41 @@ class VideoController extends Controller
      */
     public function actionCreateCatalog()
     {
-        $model = new UserCategory(['type' => UserCategory::TYPE_MYVIDOE, 'created_by' => \Yii::$app->user->id]);
-        $model->parent_id = ArrayHelper::getValue(Yii::$app->request->post(), 'parent_id');
-        $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
-        
+        $is_success = false;
+        Yii::$app->getResponse()->format = 'json';
         if (Yii::$app->request->isPost){
-            Yii::$app->getResponse()->format = 'json';
             /** 开启事务 */
             $trans = Yii::$app->db->beginTransaction();
             try
             {  
+                $model = new UserCategory([
+                    'type' => UserCategory::TYPE_MYVIDOE, 
+                    'created_by' => \Yii::$app->user->id
+                ]);
+                $model->parent_id = ArrayHelper::getValue(Yii::$app->request->post(), 'parent_id');
+                $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
                 if($model->save()){
                     $model->updateParentPath();
                     UserCategory::invalidateCache();
                 }
-                
                 if($model->level <= 4){
                     $trans->commit();  //提交事务
-                    return [
-                        'code' => 200,
-                        'data' => ['id' => $model->id, 'name' => $model->name],
-                        'message' => '添加成功。'
-                    ];
+                    $is_success = true;
+                    $message = '添加成功。';
                 }else{
-                    return [
-                        'code' => 404,
-                        'data' => ['id' => $model->id, 'name' => $model->name],
-                        'message' => '添加失败::目录结构不能超过4级。'
-                    ];
+                    $message = '添加失败::目录结构不能超过4级。';
                 }
             }catch (Exception $ex) {
                 $trans ->rollBack(); //回滚事务
-                return [
-                    'code' => 404,
-                    'data' => ['id' => $model->id, 'name' => $model->name],
-                    'message' => '添加失败：' . $ex->getMessage(),
-                ];
+                $message = '添加失败：' . $ex->getMessage();
             }
         }
+        
+        return [
+            'code' => $is_success ? 200 : 404,
+            'data' => ['id' => $model->id, 'name' => $model->name],
+            'message' => $message
+        ];
     }
     
     /**
@@ -360,33 +368,55 @@ class VideoController extends Controller
      */
     public function actionUpdateCatalog($id)
     {
-        $model = UserCategory::findOne($id);
-        $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
-        
+        $is_success = false;
+        Yii::$app->getResponse()->format = 'json';
         if (Yii::$app->request->isPost){
-            Yii::$app->getResponse()->format = 'json';
             /** 开启事务 */
             $trans = Yii::$app->db->beginTransaction();
             try
             {  
+                $model = UserCategory::findOne($id);
+                $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
                 if($model->save(false, ['name'])){
                     $trans->commit();  //提交事务
                     UserCategory::invalidateCache();
+                    $is_success = true;
+                    $message = '修改成功。';
                 }
-                return [
-                    'code' => 200,
-                    'data' => ['id' => $model->id, 'name' => $model->name],
-                    'message' => '添加成功。'
-                ];
             }catch (Exception $ex) {
                 $trans ->rollBack(); //回滚事务
-                return [
-                    'code' => 404,
-                    'data' => ['id' => $model->id, 'name' => $model->name],
-                    'message' => '添加失败：' . $ex->getMessage(),
-                ];
+                $message = '修改失败：' . $ex->getMessage();
             }
         }
+        
+        return [
+            'code' => $is_success ? 200 : 404,
+            'data' => ['id' => $model->id, 'name' => $model->name],
+            'message' => $message
+        ];
+    }
+    
+    /**
+     * 导入 现有的 Video 模板。
+     * 如果导入成功，浏览器将返回导入的 Video。
+     * @param integer $format   格式：0是post，1是ajax格式
+     * @return json|mixed
+     */
+    public function actionImport($format = 0)
+    {
+        $results = [
+            'repeat_total' => 0,
+            'exist_total' => 0,
+            'insert_total' => 0,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => [],
+            ]),
+        ];
+        if (Yii::$app->request->isPost) {
+            $results = ImportUtils::getInstance()->importVideo($format);
+        }
+        
+        return $this->render('import', $results);
     }
     
     /**

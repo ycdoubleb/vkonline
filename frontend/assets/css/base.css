@@ -19,6 +19,7 @@
  * 总结
  */
 .summary {
+    width: auto;
     text-align: left;
 }
 /**
@@ -389,7 +390,6 @@ textarea {
     border-bottom: 1px solid #f2f2f2;
 }
 .vk-panel .panel-height {
-    min-height: 710px;
     max-height: 710px;
     overflow-x: hidden;
     overflow-y: auto;

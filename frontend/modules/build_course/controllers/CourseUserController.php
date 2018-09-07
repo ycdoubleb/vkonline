@@ -91,13 +91,13 @@ class CourseUserController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->createCourseUser($model, Yii::$app->request->post());
-        }else{
-            return $this->renderAjax('create', [
-                'model' => $model,      //CourseUser
-                'courseUsers' => $this->getHelpManList($course_id),     //课程下的所有协作人员
-                'userRecentContacts' => $this->getUserRecentContacts(), //用户关联的最近联系人
-            ]);
         }
+        
+        return $this->renderAjax('create', [
+            'model' => $model,      //CourseUser
+            'courseUsers' => $this->getHelpManList($course_id),     //课程下的所有协作人员
+            'userRecentContacts' => $this->getUserRecentContacts(), //用户关联的最近联系人
+        ]);
     }
 
     /**
@@ -127,11 +127,11 @@ class CourseUserController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->updateCourseUser($model);
-        } else {
-            return $this->renderAjax('update', [
-                'model' => $model,  //CourseUser
-            ]);
         }
+        
+        return $this->renderAjax('update', [
+            'model' => $model,  //CourseUser
+        ]);
     }
     
     /**

@@ -49,6 +49,15 @@ $js = <<<JS
             }, 5000);
             return;
         }
+        if($("#course-cover_img").val() == 0){
+            $('.field-course-cover_img').addClass("has-error");
+            $('.field-course-cover_img .help-block').html("封面图片不能为空");
+            setTimeout(function(){
+                $('.field-course-cover_img').removeClass("has-error");
+                $('.field-course-cover_img .help-block').html("");
+            }, 5000);
+            return;
+        }
         //判断标签是否少于5个
         if($('.field-tagref-tag_id').find('span.tag').length < 5){
             $('.field-tagref-tag_id').addClass('has-error');

@@ -1,6 +1,5 @@
 <?php
 
-use common\models\vk\Teacher;
 use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use yii\grid\GridView;
@@ -13,10 +12,10 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
+$this->title = Yii::t('app', '{Batch}{Import}{Video}', [
     'Batch' => Yii::t('app', 'Batch'), 
     'Import' => Yii::t('app', 'Import'), 
-    'Teachers' => Yii::t('app', 'Teachers')
+    'Video' => Yii::t('app', 'Video')
 ]);
 
 ?>
@@ -35,39 +34,41 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <p>
-                1、老师头像分辨率建议为正方形，96x96 到 200x200的范围内<a href="javascript:;" class="alert-link">（模板下载）</a>。
-                储存为web所有格式<a href="javascript:;" class="alert-link">（操作教程）</a>
-            </p>
+            <p>1、务必先建师资再导入视频<a href="../teacher/import" class="alert-link" target="_black">（导入师资）</a>，否则会丢老师信息</p>
             <p>2、批量导入<a href="javascript:;" class="alert-link">模板下载</a></p>
+            <p>3、导入步骤：先上传视频文件，再导入视频信息</p>
         </div>
-        
-        <!--文件上传-->
-        <?php $form = ActiveForm::begin([
-            'options'=>[
-                'id' => 'build-course-form',
-                'class'=>'form-horizontal',
-                'enctype' => 'multipart/form-data',
-            ],
-        ]); ?>
-        
-        <div class="vk-uploader">
-            <div class="btn btn-pick">选择文件</div>
-            <div class="file-box"><input type="file" name="importfile" class="file-input"></div>
-        </div>
-        
-        <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
-        
-        <?php ActiveForm::end(); ?>
-        
     </div>
     
     <div class="vk-panel set-padding clear-margin"> 
         
-        <div class="summary">
-            <b>导入结果：</b><span class="text-danger">成功导入 <?= $insert_total ?> 个，已存在 <?= $exist_total ?> 个，重复 <?= $repeat_total ?> 个</span>
+        <!--总结-->
+        <div class="summary pull-left">
+            <b>视频信息上传：</b><span class="text-danger">成功导入 <?= $insert_total ?> 个，已存在 <?= $exist_total ?> 个，重复 <?= $repeat_total ?> 个</span>
         </div>
         
+        <!--文件上传-->
+        <div class="pull-right">
+            <?php $form = ActiveForm::begin([
+                'options'=>[
+                    'id' => 'build-course-form',
+                    'class'=>'form-horizontal',
+                    'enctype' => 'multipart/form-data',
+                ],
+            ]); ?>
+
+            <div class="vk-uploader">
+                <div class="btn btn-pick">选择文件</div>
+                <div class="file-box"><input type="file" name="importfile" class="file-input"></div>
+            </div>
+
+            <?= Html::submitButton(Yii::t('app', 'Upload'), ['class' => 'btn btn-default btn-flat']) ?>
+
+            <?php ActiveForm::end(); ?>
+            
+        </div>
+        
+        <!--结果显示-->
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'tableOptions' => ['class' => 'table table-bordered vk-table'],
@@ -82,14 +83,74 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
             ],
             'columns' => [
                 [
+                    'class' => 'yii\grid\SerialColumn',
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '20px',
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', '{Storage}{Catalog}', [
+                        'Storage' => Yii::t('app', 'Storage'), 'Catalog' => Yii::t('app', 'Catalog')
+                    ]),
+                    'value'=> function($data){
+                        return $data['video.dir'];
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '245px',
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'height' => '80px',
+                            'white-space' => 'normal',
+                            'padding-right' => '2px',
+                            'padding-left' => '2px'
+                        ],
+                    ],
+                ],
+                [
+                    'label' => Yii::t('app', '{Video}{Name}', [
+                        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
+                    ]),
+                    'value'=> function($data){
+                        return $data['video.name'];
+                    },
+                    'headerOptions' => [
+                        'style' => [
+                            'width' => '110px',
+                        ],
+                    ],
+                    'contentOptions' =>[
+                        'style' => [
+                            'height' => '80px',
+                            'white-space' => 'normal',
+                            'padding-right' => '4px',
+                            'padding-left' => '4px'
+                            
+                        ],
+                    ],
+                ],
+                [
                     'label' => Yii::t('app', 'Avatar'),
                     'format' => 'raw',
                     'value'=> function($data){
-                        return Html::img(StringUtil::completeFilePath($data['avatar']), ['width' => 54, 'height' => 64]);
+                        if(isset($data['teacher.data']['avatar'])){
+                            return Html::img(StringUtil::completeFilePath($data['teacher.data']['avatar']), ['width' => 54, 'height' => 64]);
+                        }else{
+                            $s_option = '';
+                            foreach ($data['teacher.data'] as $key => $value) {
+                                $avatar = StringUtil::completeFilePath($value);
+                                $s_option .= "<option value =\"{$key}\"><img src=\"{$avatar}\" width=\"54\" height=\"64\"></option>";
+                            }
+                            return "<select>{$s_option}</select>";
+                        }
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '100px',
+                            'width' => '85px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -99,13 +160,15 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                     ],
                 ],
                 [
-                    'label' => Yii::t('app', 'Name'),
+                    'label' => Yii::t('app', '{Teacher}{Name}', [
+                        'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
+                    ]),
                     'value'=> function($data){
-                        return $data['name'];
+                        return $data['teacher.name'];
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '120px',
+                            'width' => '65px',
                         ],
                     ],
                     'contentOptions' =>[
@@ -115,51 +178,45 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                     ],
                 ],
                 [
-                    'label' => Yii::t('app', 'Sex'),
+                    'label' => Yii::t('app', '{Video}{Tag}', [
+                        'Video' => Yii::t('app', 'Video'), 'Tag' => Yii::t('app', 'Tag')
+                    ]),
                     'value'=> function($data){
-                        return Teacher::$sexName[$data['sex']];
+                        return $data['video.tags'];
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '90px',
+                            'width' => '130px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
                             'height' => '80px',
+                            'white-space' => 'normal',
+                            'padding-right' => '4px',
+                            'padding-left' => '4px'
                         ],
                     ],
                 ],
                 [
-                    'label' => Yii::t('app', 'Job Title'),
-                    'value'=> function($data){
-                        return $data['job_title'];
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '250px',
-                        ],
-                    ],
-                    'contentOptions' =>[
-                        'style' => [
-                            'height' => '80px',
-                        ],
-                    ],
-                ],
-                [
-                    'label' => Yii::t('app', 'Reason'),
+                    'label' => Yii::t('app', '{Video}{File}', [
+                        'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
+                    ]),
                     'format' => 'raw',
                     'value'=> function($data){
-                        return '<span class="text-danger">' . $data['reason'] . '</span>';
+                        return $data['video.filename'];
                     },
                     'headerOptions' => [
                         'style' => [
-                            'width' => '150px',
+                            'width' => '145px',
                         ],
                     ],
                     'contentOptions' =>[
                         'style' => [
                             'height' => '80px',
+                            'white-space' => 'normal',
+                            'padding-right' => '4px',
+                            'padding-left' => '4px'
                         ],
                     ],
                 ],
@@ -187,7 +244,7 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                     ],
                     'headerOptions' => [
                         'style' => [
-                            'width' => '45px',
+                            'width' => '70px',
                         ],
                     ],
                     'contentOptions' =>[

@@ -130,9 +130,11 @@ class TeacherController extends Controller
         ]);
         $model->loadDefaultValues();
         
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->createTeacher($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->createTeacher($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
         
         return $this->render('create', [
@@ -158,9 +160,11 @@ class TeacherController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->updateTeacher($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->updateTeacher($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
         
         return $this->render('update', [
@@ -193,8 +197,13 @@ class TeacherController extends Controller
         }
         
         if (Yii::$app->request->isPost) {
-            ActionUtils::getInstance()->deleteTeacher($model);
-            return $this->redirect(['index']);
+            $is_success = ActionUtils::getInstance()->deleteTeacher($model);
+            if($is_success){
+                return $this->redirect(['index']);
+            }else{
+                Yii::$app->getSession()->setFlash('error','删除失败');
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
         
     }
@@ -207,38 +216,40 @@ class TeacherController extends Controller
      */
     public function actionRefresh()
     {
+        $is_success = false;
         Yii::$app->getResponse()->format = 'json';
-        //查询和自己相关的老师
-        $results = Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false);
-        //组装获取老师的下拉的格式对应数据
-        $teacherFormat = [];
-        foreach ($results as $teacher) {
-            $teacherFormat[$teacher->id] = [
-                'avatar' => StringUtil::completeFilePath($teacher->avatar), 
-                'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
-                'sex' => $teacher->sex == 1 ? '男' : '女',
-                'job_title' => $teacher->job_title,
-            ];
-        }
         try
         { 
-            if (count($results) > 0){
-                return [
-                    'code'=> 200,
-                    'data'=> [
-                        'dataMap' => ArrayHelper::map($results, 'id', 'name'), 
-                        'format' => $teacherFormat
-                    ],
-                    'message' => '刷新成功！',
+            //查询和自己相关的老师
+            $results = Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false);
+            //组装获取老师的下拉的格式对应数据
+            $teacherFormat = [];
+            foreach ($results as $teacher) {
+                $teacherFormat[$teacher->id] = [
+                    'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+                    'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
+                    'sex' => $teacher->sex == 1 ? '男' : '女',
+                    'job_title' => $teacher->job_title,
                 ];
             }
+            if (count($results) > 0){
+                $is_success = true;
+                $data = [
+                    'dataMap' => ArrayHelper::map($results, 'id', 'name'), 
+                    'format' => $teacherFormat
+                ];
+                $message = '刷新成功。';
+            }
         }catch (Exception $ex) {
-            return [
-                'code'=> 404,
-                'data' => [],
-                'message' => '刷新失败::' . $ex->getMessage(),
-            ];
+            $data = [];
+            $message = '刷新失败::' . $ex->getMessage();
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data'=> $data,
+            'message' => $message,
+        ];
     }
     
     /**
@@ -263,7 +274,6 @@ class TeacherController extends Controller
         }
         
         ActionUtils::getInstance()->applyCertificate($model);
-        
         return $this->redirect(['view', 'id' => $model->id]);
     }
     

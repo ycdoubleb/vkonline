@@ -137,15 +137,17 @@ class CourseController extends Controller
         ]);
         $model->loadDefaultValues();
         
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->createCourse($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-            ]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->createCourse($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+        
+        return $this->render('create', [
+            'model' => $model,  //模型
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+        ]);
     }
     
     /**
@@ -172,18 +174,20 @@ class CourseController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->updateCourse($model, Yii::$app->request->post());
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
-                'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
-                'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 1)),  //已选的标签
-            ]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $is_success = ActionUtils::getInstance()->updateCourse($model, Yii::$app->request->post());
+            if($is_success){
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
+        
+        return $this->render('update', [
+            'model' => $model,  //模型
+            'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
+            'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
+            'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
+            'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 1)),  //已选的标签
+        ]);
     }
     
     /**
@@ -211,8 +215,13 @@ class CourseController extends Controller
         }
         
         if (Yii::$app->request->isPost) {
-            ActionUtils::getInstance()->deleteCourse($model);
-            return $this->redirect(['index']);
+            $is_success = ActionUtils::getInstance()->deleteCourse($model);
+            if(!$is_success){
+                Yii::$app->getSession()->setFlash('error','操作失败::' . implode("、", $model->getErrorSummary(true)));
+                return $this->redirect(['view', 'id' => $model->id]);
+            }else{
+                return $this->redirect(['index']);
+            }
         }
         
     }
@@ -242,8 +251,12 @@ class CourseController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if (Yii::$app->request->isPost) {
-            ActionUtils::getInstance()->closeCourse($model);
+        if (Yii::$app->request->isPost){
+            $is_success = ActionUtils::getInstance()->closeCourse($model);
+            if(!$is_success){
+                Yii::$app->getSession()->setFlash('error','操作失败::' . implode("、", $model->getErrorSummary(true)));
+            }
+            
             return $this->redirect(['view', 'id' => $model->id]);
         }
     }
@@ -273,7 +286,10 @@ class CourseController extends Controller
         }
         
         if ($model->load(Yii::$app->request->post())) {
-            ActionUtils::getInstance()->publishCourse($model);
+            $is_success = ActionUtils::getInstance()->publishCourse($model);
+            if(!$is_success){
+                Yii::$app->getSession()->setFlash('error','操作失败::' . implode("、", $model->getErrorSummary(true)));
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
         
@@ -289,8 +305,6 @@ class CourseController extends Controller
      */
     public function actionAttrSearch($cate_id)
     {
-        $courseAttrs = $this->getCourseAttributeByCategoryId($cate_id);
-        
         //如果是ajax请求，返回json
         if(\Yii::$app->request->isPost){
             Yii::$app->getResponse()->format = 'json';
@@ -298,13 +312,13 @@ class CourseController extends Controller
             { 
                 return [
                     'code'=> 200,
-                    'data' => $courseAttrs,
+                    'data' => $this->getCourseAttributeByCategoryId($cate_id),
                     'message' => '请求成功！',
                 ];
             }catch (Exception $ex) {
                 return [
                     'code'=> 404,
-                    'data' => [],
+                    'data' => ['category_id' => $cate_id],
                     'message' => '请求失败::' . $ex->getMessage(),
                 ];
             }

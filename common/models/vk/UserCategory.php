@@ -150,10 +150,7 @@ class UserCategory extends ActiveRecord
             if (empty($this->parent_id)) {
                 $this->parent_id = 0;
             }
-            //设置排序
-//            if(empty($this->sort_order)){
-//                $this->sort_order = self::find()->orderBy(['sort_order' => SORT_DESC])->one()->sort_order + 1;
-//            }
+
             $this->level = $this->parent_id == 0 ? 1 : self::getCatById($this->parent_id)->level + 1;
             return true;
         }
