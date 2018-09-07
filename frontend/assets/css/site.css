@@ -253,6 +253,34 @@
 .site-index .banner {
     position: relative;
     height:400px;
+    overflow: hidden;
+    -webkit-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+/* 视频容器 */
+.site-index .banner .video-box{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 562px;
+    background: #333333;
+    text-align: center;
+}
+.site-index .banner .video-box video{
+    width: 960px;
+    height: 542px;
+    margin: 10px;
+}
+.site-index .banner .video-box .close-btn{
+    position: absolute;
+    display: none;
+    top: 10px;
+    cursor: pointer;  
 }
 
 .site-index .banner .carousel {
@@ -260,11 +288,53 @@
     width: 100%;
     overflow: hidden;
 }
+/* 模糊滤镜 */
+.site-index .banner .carousel .blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+    
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+    
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
 
 .site-index .carousel .item {
     /*height: calc(75vh - 130px);*/
     height: 400px;
 }
+.site-index .carousel .item .img-box{
+    position: relative;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+/* 播放视频按钮 */
+.site-index .carousel .item .play-btn-box{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    line-height: 400px;
+    text-align: center;
+}
+.site-index .carousel .item .play-btn-box .play-btn{
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+.site-index .carousel .item .play-btn-box .play-btn:hover{
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
 
 /***********************轮播*****************************/
 .site-index .carousel .item >  img,

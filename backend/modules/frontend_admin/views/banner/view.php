@@ -43,8 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
-                    'value' => $model->type == 1 ? Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '680px']]) : 
-                        '<video src="'.WEB_ROOT . $model->path.'" controls="controls" style="max-width:680px"></video>',
+                    'value' => Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '680px']]),
                 ],
                 'link',
                 [
