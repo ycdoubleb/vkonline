@@ -18,6 +18,7 @@ use yii\widgets\ActiveForm;
             'id' => 'build-course-form',
             'class'=>'form-horizontal',
             'enctype' => 'multipart/form-data',
+            'onkeydown' => "if(event.keyCode==13) return false;",
         ],
     ]); ?>
 

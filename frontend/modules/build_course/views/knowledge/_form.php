@@ -25,6 +25,7 @@ use yii\widgets\ActiveForm;
         'options'=>[
             'id' => 'build-course-form', 
             'class'=>'form-horizontal',
+            'onkeydown' => "if(event.keyCode==13) return false;",
         ],
         'fieldConfig' => [  
             'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",  
