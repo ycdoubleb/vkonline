@@ -18,6 +18,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
 
 ?>
 <div class="customer-admin-index">
+    
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'layout' => "{items}\n{summary}\n{pager}",

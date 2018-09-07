@@ -10,6 +10,8 @@ use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
+ModuleAssets::register($this);
+
 //组装获取老师的下拉的格式对应数据
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
@@ -43,8 +45,9 @@ $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
 ?>
 <div class="video-search">
+    
      <!-- 页面标题 -->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span><?= $title ?></span>
         <div class="btngroup pull-right">
             <?php
@@ -57,8 +60,9 @@ $this->registerJs($format, View::POS_HEAD);
             ?>
         </div>
     </div>
+     
     <!--搜索-->
-    <div class="video-form vk-form set-spacing">
+    <div class="video-form vk-form">
         <?php $form = ActiveForm::begin([
             'action' => array_merge([Yii::$app->controller->action->id], $filters),
             'method' => 'get',
@@ -73,7 +77,9 @@ $this->registerJs($format, View::POS_HEAD);
                 ],  
             ], 
         ]); ?>
+        
         <div class="col-lg-6 col-md-6">
+            
             <!--主讲老师-->
             <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
@@ -89,6 +95,7 @@ $this->registerJs($format, View::POS_HEAD);
             ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
                 'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
             ])) ?>
+            
             <!--创建者-->
             <?= $form->field($searchModel, 'created_by')->widget(Select2::class, [
                 'data' => $createdBys, 'options' => ['placeholder'=>'请选择...',],
@@ -97,6 +104,7 @@ $this->registerJs($format, View::POS_HEAD);
                     'change' => 'function(){ submitForm(); }'
                 ]
             ])->label(Yii::t('app', 'Created By') . '：') ?>
+            
             <!--视频名称-->
             <?php if($is_show){
                 echo $form->field($searchModel, 'name')->textInput([
@@ -107,7 +115,9 @@ $this->registerJs($format, View::POS_HEAD);
                 ]));
             } ?>
         </div>
+        
         <div class="col-lg-6 col-md-6">
+            
             <!--范围-->
             <?= $form->field($searchModel, 'level')->radioList(Course::$levelMap,[
                 'value' => ArrayHelper::getValue($filters, 'VideoSearch.level', ''),
@@ -122,6 +132,7 @@ $this->registerJs($format, View::POS_HEAD);
                     ]
                 ],
             ])->label(Yii::t('app', 'Range') . '：') ?>
+            
             <!--标签-->
             <?php if($is_show): ?>
             <div class="form-group">
@@ -140,21 +151,21 @@ $this->registerJs($format, View::POS_HEAD);
         <?php if($is_show): ?>
         
         <?php endif; ?>
+        
         <?php ActiveForm::end(); ?>
     </div>
 </div>
+
 <?php
 $pages = ArrayHelper::getValue($filters, 'pages', 'list');   //排序
 $js = <<<JS
-    
     //提交表单 
     window.submitForm = function(){
         $('#admin-center-form').submit();
     }  
+        
    //选中效果
     $(".vk-title .btngroup a[id=$pages]").addClass('active');    
-        
 JS;
     $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
 ?>

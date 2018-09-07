@@ -64,7 +64,6 @@ class ActionUtils
             if($model->save()){
                 $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
                 $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
-                $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
             }else{
@@ -98,7 +97,6 @@ class ActionUtils
             if($model->save()){
                 $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
                 $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
-                $this->saveCourseAttachment($model->id, ArrayHelper::getValue($post, 'files'));
                 if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
                     $oldCategory = Category::findOne($oldAttr['category_id']);
                     $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
@@ -163,7 +161,7 @@ class ActionUtils
             $model->level = 0;
             $model->is_publish = 0;
             if($model->save(true, ['level', 'is_publish'])){
-                $this->saveCourseActLog(['action' => '关闭', 'title' => "课程管理", 'course_id' => $model->id]);
+                $this->saveCourseActLog(['action' => '下架', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 throw new Exception($model->getErrors());
             }
@@ -188,9 +186,11 @@ class ActionUtils
         try
         {  
             $model->is_publish = 1;
-            if(Yii::$app->user->identity->is_official){
-                $model->level = Course::PUBLIC_LEVEL;
-            }
+            //如果是官方用户level为公开
+//            if(Yii::$app->user->identity->is_official){
+//                $model->level = Course::PUBLIC_LEVEL;
+//            }
+            
             if($model->save()){
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
@@ -283,7 +283,7 @@ class ActionUtils
     }  
     
     /**
-     * 编辑协作人员操作
+     * 删除协作人员操作
      * @param CourseUser $model
      * @throws Exception
      */
@@ -677,6 +677,111 @@ class ActionUtils
             ];
         }
     }
+    
+    /**
+     * 添加课程附件操作
+     * @param CourseAttachment $model
+     * @param type $post
+     * @throws Exception
+     */
+    public function createCourseAttachment($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
+            if(count($results) > 0) {
+                $this->saveCourseActLog(['action'=>'增加', 'title'=>'课程资源',
+                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 'course_id' => $model->course_id
+                ]);
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => ['course_id' => $model->course_id],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => [],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * 更新课程附件操作
+     * @param CourseAttachment $model
+     * @param type $post
+     * @throws Exception
+     */
+    public function updateCourseAttachment($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
+            if(count($results) > 0) {
+                $this->saveCourseActLog(['action'=>'增加', 'title'=>'课程资源',
+                    'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 'course_id' => $model->course_id
+                ]);
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => ['id' => $model->id],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => ['id' => $model->id],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }
+    
+    /**
+     * 删除课程附件操作
+     * @param CourseAttachment $model
+     * @throws Exception
+     */
+    public function deleteCourseAttachment($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(false, ['is_del'])){
+                $this->saveCourseActLog(['action'=>'删除','title'=>'课程资源', 
+                    'content'=>"删除【{$model->uploadfile->name}】", 'course_id'=>$model->course_id]);
+            }else{
+                throw new Exception($model->getErrors());
+            }
+            
+            $trans->commit();  //提交事务
+            return [
+                'code'=> 200,
+                'data' => ['id' => $model->id],
+                'message' => '操作成功！'
+            ];
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            return [
+                'code'=> 404,
+                'data' => ['id' => $model->id],
+                'message' => '操作失败::' . $ex->getMessage()
+            ];
+        }
+    }   
     
     /**
      * 添加视频操作
@@ -1125,7 +1230,7 @@ class ActionUtils
         $tagArrays = array_filter($tagArrays);
         //删除已存在的标签
         TagRef:: updateAll(['is_del' => 1], ['object_id' => $objectId]);
-        if(!empty($tagArrays)){
+        if(!empty($tagArrays) && count($tagArrays) >= 5){
             //先查询已经存在的标签
             $tagResults = Tags::findAll(['name' => $tagArrays]);
             $tagNames = ArrayHelper::map($tagResults, 'name', 'id');
@@ -1255,12 +1360,15 @@ class ActionUtils
      */
     private function saveCourseAttachment($course_id, $files)
     {
+        //先查询已添加的课程附件的文件id
+        $attachments = (new Query())->from(['Attachment' => CourseAttachment::tableName()])
+            ->where(['Attachment.course_id' => $course_id, 'is_del' => 0])->all();
+        $fileIds = ArrayHelper::getColumn($attachments, 'file_id');
+        
+        //组装保存课程附件
         $atts = [];
-        //删除
-        Yii::$app->db->createCommand()->delete(CourseAttachment::tableName(), 
-            ['course_id' => $course_id])->execute();
-        if($files != null){
-            foreach ($files as $id) {
+        foreach ($files as $id) {
+            if(!in_array($id, $fileIds)){
                 $atts[] = [
                     'course_id' => $course_id, 'file_id' => $id,
                     'created_at' => time(), 'updated_at' => time()
@@ -1270,6 +1378,14 @@ class ActionUtils
         //添加
         Yii::$app->db->createCommand()->batchInsert(CourseAttachment::tableName(),
             isset($atts[0]) ? array_keys($atts[0]) : [], $atts)->execute();
+                
+        //以课程附件的文件id查询附件的名称
+        $uploadFile = (new Query())->select(['name'])
+            ->from(['Uploadfile' => Uploadfile::tableName()])
+            ->where(['Uploadfile.id' => ArrayHelper::getColumn($atts, 'file_id')])
+            ->all();
+        
+        return $uploadFile;
     }
     
     /**

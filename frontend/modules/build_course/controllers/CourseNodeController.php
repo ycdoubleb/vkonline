@@ -54,6 +54,8 @@ class CourseNodeController extends Controller
         
         return $this->renderAjax('index', [
             'dataProvider' => $dataProvider,    //课程节点数据
+            'course_id' => $course_id,      //课程id
+            'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($course_id, true), //包含编辑权限
         ]);
     }
     

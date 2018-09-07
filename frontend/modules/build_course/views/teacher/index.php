@@ -19,62 +19,30 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
 ?>
 
 <div class="teacher-index main">
+    
     <!--页面标题-->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span>
             <?= $this->title ?>
         </span>
         <div class="btngroup pull-right">
-            <?= Html::a(Yii::t('app', '{Create}{Teacher}', [
-                'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
-            ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
+            <?php
+                echo Html::a(Yii::t('app', '{Create}{Teacher}', [
+                    'Create' => Yii::t('app', 'Create'), 'Teacher' => Yii::t('app', 'Teacher')
+                ]), ['create'], ['class' => 'btn btn-success btn-flat']);
+                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
+                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
+                ]), ['import'], ['class' => 'btn btn-primary btn-flat']);
+            ?>
         </div>
     </div>
+    
     <!-- 搜索 -->
-    <div class="teacher-form vk-form set-spacing"> 
-        
-        <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-            'options'=>[
-                'id' => 'build-course-form',
-                'class'=>'form-horizontal',
-            ],
-            'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
-                'labelOptions' => [
-                    'class' => 'col-lg-2 col-md-2 control-label form-label',
-                ],  
-            ], 
-        ]); ?>
-        <div class="col-lg-6 col-md-6">
-            <!--老师名称-->
-            <?= $form->field($searchModel, 'name')->textInput([
-                'placeholder' => '请输入...', 'maxlength' => true,
-                'onchange' => 'submitForm();',
-            ])->label(Yii::t('app', '{Teacher}{Name}：', [
-                'Teacher' => Yii::t('app', 'Teacher'), 'Name' => Yii::t('app', 'Name')
-            ])) ?>
-            <!--认证状态-->
-            <?= $form->field($searchModel, 'is_certificate')->radioList(['' => '全部', 1 => '已认证', 0 => '未认证'], [
-                'value' => ArrayHelper::getValue($filters, 'TeacherSearch.is_certificate', ''),
-                'itemOptions'=>[
-                    'onclick' => 'submitForm();',
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{Authentication}{Status}：', [
-                'Authentication' => Yii::t('app', 'Authentication'), 'Status' => Yii::t('app', 'Status')
-            ])) ?>
-        </div>
-        <?php ActiveForm::end(); ?>
-        
-    </div>
+    <?= $this->render('_search', [
+        'searchModel' => $searchModel,
+        'filters' => $filters,
+    ]) ?>
+    
     <!--列表-->
     <div class="vk-list">
         <ul class="list-unstyled">
@@ -87,8 +55,9 @@ $this->title = Yii::t('app', '{My}{Teachers}', [
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
+    
     <!--总结记录-->
-    <div class="summary">
+    <div class="summary set-bottom">
         <span>共 <b><?= $totalCount ?></b> 条记录</span>
     </div>
     
@@ -99,12 +68,7 @@ $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/teacher/_list.php')));
-$js = 
-<<<JS
-    //提交表单 
-    window.submitForm = function(){
-        $('#build-course-form').submit();
-    }  
+$js = <<<JS
     /**
      * 滚屏自动换页
      */
@@ -115,8 +79,10 @@ $js =
            loaddata(page, '/build_course/teacher/index');
         }
     });
+        
     //加载第一页的课程数据
     loaddata(page, '/build_course/teacher/index');
+        
     /**
      * 加载数据
      * @param int target_page 指定页
@@ -168,7 +134,6 @@ $js =
             $('.no_more').hide();
         }
     }
-    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

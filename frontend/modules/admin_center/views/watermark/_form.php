@@ -15,7 +15,7 @@ WatermarkAsset::register($this);
 
 ?>
 
-<div class="customer-watermark-form vk-form set-spacing set-bottom">
+<div class="customer-watermark-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[

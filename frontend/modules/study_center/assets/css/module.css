@@ -13,133 +13,43 @@
     display: inline-block;
     width: 100%;
     height: auto;
+    overflow-x: hidden;
 }
-/*******************************************************************************
- * 列表
- *******************************************************************************/
-.list {
-    display: inline-block;
-    margin-right: -50px;
-    font-size: 0px;
+
+.study_center-default-course .vk-list,
+.study_center-default-video .vk-list {
+    margin-right: -26px;
 }
-.list > ul {
-    display: inline-block;
-    padding: 0;
-    margin: 0;
-    font-size: 0px;
-}
-.list > ul > li {
-    float: left;
-    width: 280px;
+
+.study_center-default-course 
+.vk-list .list-panel,
+.study_center-default-video 
+.vk-list .list-panel {
     margin-right: 26px;
-    margin-bottom: 30px;
-    font-size: 14px;
-    background-color: #fff;
-    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    -webkit-transition: all 0.2s linear;
-    -o-transition: all 0.2s linear;
-    -moz-transition: all 0.2s linear;
-    transition: all 0.2s linear;
 }
-.list > ul > li.hover {
-    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    -webkit-transform: translate3d(0, -2px, 0);
-    -moz-transform: translate3d(0, -2px, 0);
-    transform: translate3d(0, -2px, 0);
-}
-.list > ul > li a {
-    text-decoration: none;
-}
-.list > ul > li .tuip {
-    display: inline-block;
-    width: 100%;
-    margin-top: 15px;
-    font-size: 12px;
-    color: #aaa;
-    font-weight: normal;
-}
-.list > ul > li .avatars {
-    width: 25px;
-    height: 25px;
-    margin: 12px 5px;
-    margin-left: 0;
-    line-height: 0;
-    background-color: #26bfcd;
-}
-.list > ul > li .pic {
-    position: relative;
-    width: 100%;
-    height: 210px;
-    background-color: #26bfcd; 
-}
-.list > ul > li .pic .icon {
+
+.study_center-default-course 
+.vk-list .list-header .icon,
+.study_center-default-video 
+.vk-list .list-header .icon {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 3px;
+    right: 3px;
     z-index: 1022;
-    font-size: 18px;
-    border-color: rgba(0, 0, 0, 0.5);
-    border-width: 14px;
-    border-style: solid;
+    width: 18px;
+    height: 18px;
+    color: #fff;
+    line-height: 18px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.5);
     display: none;
     cursor: pointer;
 }
-.list > ul > li .pic .icon > i {
-    position: absolute;
-    top: -9px;
-    left: -6px;
-    color: #fff;
-}
-.list > ul > li .pic .title {
-    display: table-cell;
-    width: 280px;
-    height: 210px;
-    font-size: 20px;
-    color: #fff;
-    font-weight: 700;
-    text-align: center;
-    vertical-align: middle;
-}
-.list > ul > li .pic .duration {
-    position: absolute;
-    bottom: 2px;
-    right: 2px;
-    height: 20px;
-    padding: 0 5px;
-    color: #fff;
-    text-align: center;
-    line-height: 20px;
-    background-color: rgba(0, 0, 0, .7);
-}
-.list > ul > li .text {
-    width: 100%;
-    padding: 0 10px 15px;
-    border-bottom: dashed 1px #dedede;
-}
-.list > ul > li .text .title {
-    display: block;
-    font-size: 14px;
-    color: #666;
-    font-weight: bold;
-}
-.list > ul > li .text .title-size {
-    display: inline-block;
-    width: 200px;
-}
-.list > ul > li .teacher {
-    height: 50px;
-    margin: 0 10px;
-    line-height: 50px;
-}
-.list > ul > li .teacher .tuip {
-    margin-top: 0;
-}
+
 /*******************************************************************************
  * 我的任务
  *******************************************************************************/
-.study_center-default-index .list > ul > li{
+.study_center-default-index .vk-list > ul > li{
     width: 588px;
     height: 374px;
     margin-right: 24px;
@@ -149,46 +59,72 @@
 /*******************************************************************************
  * 参与的课程
  *******************************************************************************/
-.study_center-default-history .list > ul > li {
+.study_center-default-history .vk-list {
+    margin-right: -26px;
+}
+
+.study_center-default-history 
+.vk-list .list-panel {
     width: 587px;
+    height: 210px;
     margin-right: 26px;
 }
-.study_center-default-history .list .pic {
-    width: 280px;
+
+.study_center-default-history 
+.vk-list .list-header {
+    width: 280px !important;
+    border-right: 1px solid #e4e4e4;
 }
-.study_center-default-history .list .text {
-    width: 307px;
+
+.study_center-default-history 
+.vk-list .list-body {
+    width: 307px !important;
     padding-left: 15px;
 }
-.study_center-default-history .list .speaker {
+
+.study_center-default-history 
+.vk-list .list-body .avatars {
+    width: 25px;
     height: 25px;
-    line-height: 25px;
-}
-.study_center-default-history .list .avatars {
-    margin: 0;
     margin-right: 5px;
 }
-.study_center-default-history .list .progress {
+
+.study_center-default-history 
+.vk-list .progress {
     height: 4px;
-    margin: 4px 0 6px;
+    margin-top: 4px;
+    margin-bottom: 6px;
 }
-.study_center-default-history .list .progress-bar {
+
+.study_center-default-history 
+.vk-list .progress-bar {
     background-color: #339966;
 }
 
-.study_center-default-history .list .study {
+.study_center-default-history 
+.vk-list .study {
     padding: 4px 20px;
     margin-top: 8px;
-    margin-right: 10px;
+}
+
+/*******************************************************************************
+ * 收藏的课程
+ *******************************************************************************/
+.study_center-default-course
+.vk-list .list-header {
+    height: 210px;
 }
 
 /*******************************************************************************
  * 收藏的视频
  *******************************************************************************/
-.study_center-default-video .list .pic {
+.study_center-default-video 
+.vk-list .list-header {
     height: 157px;
 }
 
-.study_center-default-video .list .pic .title {
-    height: 157px;
+.study_center-default-video  .vk-list 
+.list-panel .list-header .duration {
+    bottom: 2px;
+    right: 2px;
 }

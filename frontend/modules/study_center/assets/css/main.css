@@ -5,86 +5,6 @@
     创建时间 : 2018-5-10, 14:10:17
     更新时间 : 2018-5-18, 19:00:00;
 */
-/**
- * 加载
- */
-.loading-box {
-    width: 100%;
-    padding: 20px;
-    color: #999;
-    text-align: center;
-}
-/**
- * 总结样式
- */
-.summary {
-    float: left;
-    width: 100%;
-    padding: 20px 10px 0;
-    color: #999;
-}
-/**
- * 禁用样式
- */
-.disabled {
-    pointer-events: none;
-    cursor: not-allowed;
-    box-shadow: none;
-    opacity: .65;
-}
-/**
- * 左浮动
- */
-.keep-left {
-   float: left !important;
-}
-/**
- * 右浮动
- */
-.keep-right {
-   float: right !important;
-}
-/**
- * 清除外边距
- */
-.clear-margin {
-    margin: 0 !important;
-}
-/**
- * 清除内边距
- */
-.clear-padding {
-    padding: 0 !important;
-}
-/**
- * 按钮
- */
-.btn-tuip {
-    display: block;
-    padding: 4px 8px;
-    margin-top: -10px;
-    font-size: 14px;
-    color: #fff;
-}
-/**
- * 成功
- */
-.font-success {
-    color: #339966 !important;
-}
-.bg-success {
-    background-color: #339966 !important;
-}
-/**
- * 危险
- */
-.font-warning {
-    color: #ff3300 !important;
-    
-}
-.bg-warning {
-    background-color: #ff3300 !important;
-}
 /*******************************************************************************
  * 头部样式
  *******************************************************************************/
@@ -102,61 +22,30 @@
     padding: 0 !important;
 }
 /*******************************************************************************
- * 菜单和排序
+ * 排序
  *******************************************************************************/
-.sort {
-    width: 100%;
-    height: 54px;
-    margin: 30px 0 35px;
-    line-height: 54px;
-    border-bottom: 1px solid #999;
+.vk-tabs .study-search-form {
+    width: 55% !important;
+    padding-top: 7px;
+    background-color: transparent !important;
 }
-.sort > ul {
-    padding: 0;
-    margin: 0;
+
+.vk-tabs .study-sort-order {
+    width: 45% !important;
 }
-.sort > ul > li,
-.sort .sort-order {
-    float: left;
-    margin-top: -2px;
-    cursor: pointer;
-}
-.sort > ul > li > a,
-.sort .sort-order {
+
+.vk-tabs .sort-order {
     display: inline-block;
-    width: 100%;
+    float: left;
+    width: 50%;
     height: 54px;
-    padding: 0 20px;
+    padding-right: 20px;
+    padding-left: 20px;
     color: #666;
     line-height: 54px;
     text-decoration: none;
 }
-.sort .sort-order {
-    width: auto;
-}
-.sort > ul > li.active,
-.sort > ul > li:hover {
-    border-bottom: 2px solid #FC583D;
-}
-.sort > ul > li.active > a,
-.sort > ul > li:hover > a,
-.sort a.sort-order.active,
-.sort a.sort-order:hover {
-    color: #FC583D;
-}
-/*******************************************************************************
- * 表单样式
- *******************************************************************************/
-.form {
-    width: 50%;
-    margin-top: 5px;
-}
-.form .form-group {
-    margin-bottom: 0;
-}
-.form .form-group .form-control {
-    height: 40px;
-    padding: 10px 24px 10px 12px;
-    border-radius: 0;
-    box-shadow: none;
+
+.vk-tabs a.active {
+    color: #fc583d;
 }

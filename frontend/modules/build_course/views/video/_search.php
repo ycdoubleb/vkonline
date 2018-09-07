@@ -45,7 +45,7 @@ $this->registerJs($format, View::POS_HEAD);
 
 ?>
 
-<div class="video-search vk-form set-spacing"> 
+<div class="video-search vk-form clear-shadow"> 
 
     <?php
     $form = ActiveForm::begin([
@@ -180,14 +180,14 @@ $this->registerJs($format, View::POS_HEAD);
 
 <?php
 $sign = ArrayHelper::getValue($filters, 'sign', 0);
-$js = 
-<<<JS
+$js = <<<JS
     //标记是否为高级搜索
     if($sign){
         $('#collapse').addClass('in');
         $('#op_search').find('span.arrow').html('↑');
         $('#op_search').attr('aria-expanded', true);
     }    
+        
     //单击伸收高级搜索    
     $('#op_search').click(function(){
         if($(this).attr('aria-expanded') == 'false'){

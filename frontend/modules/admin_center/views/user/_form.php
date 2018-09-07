@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="user-form vk-form set-spacing set-bottom">
+<div class="user-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options' => [
@@ -21,71 +21,98 @@ use yii\widgets\ActiveForm;
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n"
-                . "<div class=\"col-lg-7 col-md-7\" style=\"padding-left:20px\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
             'labelOptions' => [
                 'class' => 'col-lg-1 col-md-1 control-label form-label',
             ],
         ],
     ]); ?>
         
+    <!--真实名称-->
     <?= $form->field($model, 'nickname')->textInput([
-            'maxlength' => true,
-            'placeholder' => '真实名称',
-            'disabled' => $model->isNewRecord ? false : true])->label(Yii::t('app', 'Name')) ?>
+        'maxlength' => true,
+        'placeholder' => '真实名称',
+        'disabled' => $model->isNewRecord ? false : true
+   ])->label(Yii::t('app', 'Name')) ?>
     
+    <!--用户名-->
     <?= $form->field($model, 'username')->textInput([
         'maxlength' => true, 
-        'placeholder' => '手机号',
-        'disabled' => $model->isNewRecord ? false : true]) ?>
+        'placeholder' => '用户名/手机号（注：用户名请不要用中文）',
+        'disabled' => $model->isNewRecord ? false : true
+    ]) ?>
     
-    <?= $form->field($model, 'password_hash')->passwordInput(['value' => '', 'minlength' => 6, 'maxlength' => 20]) ?>
+    <!--密码-->
+    <?= $form->field($model, 'password_hash')->passwordInput([
+        'value' => '',  'placeholder' => '密码', 'minlength' => 6, 'maxlength' => 20
+    ]) ?>
     
-    <?= $form->field($model, 'password2')->passwordInput(['minlength' => 6, 'maxlength' => 20]) ?>
+    <!--确认密码-->
+    <?= $form->field($model, 'password2')->passwordInput([
+        'placeholder' => '确认密码', 'minlength' => 6, 'maxlength' => 20
+    ]) ?>
     
-    <?= $form->field($model, 'phone')->textInput(['minlength' => 6, 'maxlength' => 20]); ?>
+    <!--手机号码-->
+    <?= $form->field($model, 'phone')->textInput(['placeholder' => '例如：12300000000', 'minlength' => 6, 'maxlength' => 20]); ?>
 
-    <?= $form->field($model, 'email')->textInput(['maxlength' => 200]) ?>
+    <!--邮箱-->
+    <?= $form->field($model, 'email')->textInput(['placeholder' => '例如：123@163.com', 'maxlength' => 200]) ?>
     
-    <?= $form->field($model, 'sex')->radioList(User::$sexName); ?>
+    <!--性别-->
+    <?= $form->field($model, 'sex')->radioList(User::$sexName, [
+        'itemOptions'=>[
+            'labelOptions'=>[
+                'style'=>[
+                    'margin'=>'10px 15px 10px 0',
+                    'color' => '#999',
+                    'font-weight' => 'normal',
+                ]
+            ]
+        ],
+    ]); ?>
     
+    <!--头像-->
     <?= $form->field($model, 'avatar')->widget(FileInput::classname(), [
-            'options' => [
-                'accept' => 'image/*',
-                'multiple' => false,
+        'options' => [
+            'accept' => 'image/*',
+            'multiple' => false,
+        ],
+        'pluginOptions' => [
+            'resizeImages' => true,
+            'showCaption' => false,
+            'showRemove' => false,
+            'showUpload' => false,
+            'browseClass' => 'btn btn-primary btn-block',
+            'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+            'browseLabel' => '选择上传头像...',
+            'initialPreview' => [
+                $model->isNewRecord ?
+                        Html::img('/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']) :
+                        Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']),
             ],
-            'pluginOptions' => [
-                'resizeImages' => true,
-                'showCaption' => false,
-                'showRemove' => false,
-                'showUpload' => false,
-                'browseClass' => 'btn btn-primary btn-block',
-                'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
-                'browseLabel' => '选择上传头像...',
-                'initialPreview' => [
-                    $model->isNewRecord ?
-                            Html::img('/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']) :
-                            Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']),
-                ],
-                'overwriteInitial' => true,
-            ],
-        ]); ?>
+            'overwriteInitial' => true,
+        ],
+    ]); ?>
     
+    <!--存储空间-->
     <?php
         $prompt = '1TB=1024GB，默认为不限制';
         $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 88%;']);
         echo $form->field($model, 'max_store',[
-        'template' => "{label}\n<div class=\"col-lg-1 col-md-1\" style=\"padding-right:3px;width:100px;\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding:0\">{$downList}</div>"
-            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999;padding:7px 0px\">{$prompt}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
-    ])->textInput(['type' => 'number', 'maxlength' => true]); ?>
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\"><div class=\"col-lg-1 col-md-1 clear-padding\">{input}</div><div class=\"col-lg-1 col-md-1 clear-padding\">{$downList}</div>"
+                . "<div class=\"col-lg-3 col-md-3 clear-padding control-label\" style=\"color: #999;text-align: left;line-height:40px;\">{$prompt}</div></div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+        ])->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0]); 
+    ?>
     
-    <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
+    <!--描述-->
+    <?= $form->field($model, 'des', [
+        'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>",
+    ])->textarea(['rows' => 5, 'value' => $model->isNewRecord ? '无' : $model->des]) ?>
 
     <div class="form-group">
         <?= Html::label(null, null, ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div class="col-lg-11 col-md-11">
-            <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), 
-                ['class' => $model->isNewRecord ? 'btn btn-success btn-flat' : 'btn btn-primary btn-flat']) ?>
+        <div class="col-lg-7 col-md-7">
+            <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
         </div> 
     </div>
 

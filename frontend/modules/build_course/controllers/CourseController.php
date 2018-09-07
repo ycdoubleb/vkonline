@@ -63,14 +63,14 @@ class CourseController extends Controller
         $results = $searchModel->buildCourseSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 6]));
         $courses = array_values($results['data']['course']);    //课程数据
         //重修课程数据里面的元素值
-        foreach ($courses as $index => $item) {
-            $courses[$index]['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
-            $courses[$index]['level'] = Course::$levelMap[$item['level']];
-            $courses[$index]['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
-            $courses[$index]['color_name'] = $item['is_publish'] ? 'success' : 'danger';
-            $courses[$index]['is_publish'] = Course::$publishStatus[$item['is_publish']];
-            $courses[$index]['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
-            $courses[$index]['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        foreach ($courses as &$item) {
+            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $item['level'] = Course::$levelMap[$item['level']];
+            $item['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
+            $item['color_name'] = $item['is_publish'] ? 'success' : 'danger';
+            $item['is_publish'] = Course::$publishStatus[$item['is_publish']];
+            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
        
         //如果是ajax请求，返回json
@@ -116,12 +116,7 @@ class CourseController extends Controller
         
         return $this->render('view', [
             'model' => $model,  //模型
-            'courseLogModel' => $searchCourseLog,   //课程操作记录搜索模型
-            'courseUsers' => $searchUserModel->search(['course_id' => $model->id]), //所有协作人员
-            'courseNodes' => $searchNodeModel->search(['course_id' => $model->id]), //所有课程节点
-            'courseLogs' => $searchCourseLog->search(['course_id' => $model->id]),  //所有课程操作记录
             'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
-            'logs' => ActionUtils::getInstance()->getCourseActLogs($model->id), //该课程下的所有操作记录
             'path' => !empty($model->category_id) ? $this->getCategoryFullPath($model->category_id) : '',  //分类全路径
             'haveAllPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id),  //只有全部权限
             'haveEditPrivilege' => ActionUtils::getInstance()->getIsHavePermission($model->id, true), //包含编辑权限
@@ -149,7 +144,6 @@ class CourseController extends Controller
             return $this->render('create', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-                'attFiles' => [],
             ]);
         }
     }
@@ -185,7 +179,6 @@ class CourseController extends Controller
             return $this->render('update', [
                 'model' => $model,  //模型
                 'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-                'attFiles' => Course::getUploadfileByAttachment($model->id),    //已存在的附近
                 'allAttrs' => $this->getCourseAttributeByCategoryId($model->category_id),   //已存在的属性
                 'attrsSelected' => array_keys($this->getCourseAttrByCourseId($model->id)),  //已选的属性
                 'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 1)),  //已选的标签
@@ -279,14 +272,14 @@ class CourseController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if (Yii::$app->user->identity->is_official || $model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())) {
             ActionUtils::getInstance()->publishCourse($model);
             return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->renderAjax('publish', [
-                'model' => $model,  //模型
-            ]);
         }
+        
+        return $this->renderAjax('publish', [
+            'model' => $model,  //模型
+        ]);
     }
     
     /**

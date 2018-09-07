@@ -27,7 +27,7 @@ $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
     </div>
 
     <!--基本信息-->
-    <div class="vk-panel left-panel pull-left">
+    <div class="vk-panel set-bottom">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -63,9 +63,10 @@ $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
                 ?>
             </div>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 'name',

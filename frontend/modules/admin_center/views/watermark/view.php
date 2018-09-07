@@ -19,14 +19,16 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
 
 ?>
 <div class="customer-watermark-view main">
+    
     <!--页面标题-->
     <div class="vk-title">
         <span>
             <?= $this->title ?>
         </span>
     </div>
+    
     <!--基本信息-->
-    <div class="vk-panel">
+    <div class="vk-panel set-bottom">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -51,9 +53,10 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
                 ?>
             </div>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -124,8 +127,7 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
 
 <?php
 $path = !empty($model->file_id) ? $model->file->path : '';
-$js = 
-<<<JS
+$js = <<<JS
     //初始化组件
     window.watermark = new youxueba.Watermark({
         container: '#preview'

@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
 
 <div class="vk-tabs">
     <!-- 搜索 -->
-    <div class="vk-form pull-left">
+    <div class="vk-form clear-border pull-left">
         
         <?php $form = ActiveForm::begin([
             'action' => [$actionId],

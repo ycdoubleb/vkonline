@@ -16,6 +16,7 @@ return [
     'End' => '结束',
     'Up' => '上',
     'Down' => '下',
+    'Batch' => '批量',
     
     
     //公共- 用户
@@ -118,6 +119,8 @@ return [
     'Send' => '发送',
     'Retry' => '重试',
     'Move' => '移动',
+    'Import' => '导入',
+    'Export' => '导出',
     
     //公共-属性
     'ID' => 'ID',
@@ -202,6 +205,7 @@ return [
     'New password saved.' => '新密码已成功保存。',
     'The video has been transcoding without repeating the transcoding.' => '该视频已经转码，无需重复转码。',
     'Select the mobile video to the directory' => '选择移动视频到目录',
+    'Uploading course resources' => '课程资源上传',
     
     //后台-公共配置
     'Config' => '配置',

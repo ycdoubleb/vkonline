@@ -9,9 +9,6 @@ use yii\widgets\DetailView;
 /* @var $this View */
 /* @var $model CourseActLog */
 
-
-ModuleAssets::register($this);
-
 $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
     'Operation' => Yii::t('app', 'Operation'), 'Log' => Yii::t('app', 'Log'),
     'Detail' => Yii::t('app', 'Detail')
@@ -31,7 +28,7 @@ $this->title = Yii::t('app', '{Operation}{Log}{Detail}', [
             <div class="modal-body clear-padding">
                 <?= DetailView::widget([
                     'model' => $model,
-                    'options' => ['class' => 'table table-bordered detail-view vk-table', 'style' => 'margin-top: 1px;'],
+                    'options' => ['class' => 'table detail-view vk-table'],
                     'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
                     'attributes' => [
                         'action',

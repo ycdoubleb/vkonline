@@ -27,6 +27,7 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
             <?= $this->title ?>
         </span>
     </div>
+    
     <!--基本信息-->
     <div class="vk-panel">
         <div class="title">
@@ -83,9 +84,10 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
                 ?>
             </div>
         </div>
+        
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
@@ -122,6 +124,7 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
             ],
         ]) ?>
     </div>    
+    
     <!--建设数据-->
     <div class="vk-panel">
         <div class="title">
@@ -133,27 +136,30 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
         </div>
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [
                     'label' => Yii::t('app', 'Course'),
                     'format' => 'raw',
                     'value' => $userCouVid['course_num'] . ' 门' .
-                        Html::a('<span style="float:right">'
-                                . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"]),
+                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
+                            "/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"
+                        ]),
                 ],
                 [
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => $userCouVid['video_num'] . ' 个' .
-                        Html::a('<span style="float:right">'
-                            . '<i class="icon fa fa-eye"></i></span>', ["/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"]),
+                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
+                            "/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"
+                        ]),
                 ],
             ],
         ]) ?>
         
     </div>
+    
     <!--学习数据-->
     <div class="vk-panel">
         <div class="title">
@@ -165,7 +171,7 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
         </div>
         <?= DetailView::widget([
             'model' => $model,
-            'options' => ['class' => 'table table-bordered detail-view vk-table'],
+            'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
                 [

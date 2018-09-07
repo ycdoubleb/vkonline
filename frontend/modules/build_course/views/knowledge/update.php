@@ -1,21 +1,15 @@
 <?php
 
 use common\models\vk\Knowledge;
-use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $model Knowledge */
 
-ModuleAssets::register($this);
-GrowlAsset::register($this);
-
 $this->title = Yii::t(null, "{Edit}{Knowledge}", [
     'Edit' => Yii::t('app', 'Edit'), 'Knowledge' => Yii::t('app', 'Knowledge')
 ]);
-
 
 ?>
 <div class="knowledge-update main vk-modal">

@@ -1,9 +1,9 @@
 <?php
 
 use frontend\modules\study_center\assets\MainAssets;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $content string */
@@ -70,19 +70,33 @@ $html = <<<Html
     <!-- 内容 -->
     <div class="container content">
         <!-- 菜单、搜索和排序 -->
-        <div class="sort">
+        <div class="vk-tabs">
             <!--菜单-->
-            <ul class="keep-left">{$menuHtml}</ul>
-            <div class="col-lg-5 col-md-5 keep-right">
+            <ul class="list-unstyled pull-left">{$menuHtml}</ul>
+            <div class="col-lg-5 col-md-5 clear-padding pull-right">
                 <!-- 搜索 -->
-                <div class="form keep-left">{$searchForm}</div>
+                <div class="vk-form clear-shadow pull-left study-search-form">{$searchForm}</div>
                 <!-- 排序 -->
-                <div class="keep-right">{$sort}</div>
+                <div class="study-sort-order pull-right">{$sort}</div>
             </div>
         </div>
 Html;
 
+//排序
+$sortOrder = ArrayHelper::getValue($this->params['filters'], 'sort', 'default');
+$js = <<<JS
+    /**
+     * 提交表单
+     */
+    window.submitForm = function(){
+        $('#study_center-form').submit();
+    }
+    
+    //排序选中效果
+    $(".vk-tabs").find("a.sort-order[id=$sortOrder]").addClass('active');    
+JS;
+    $this->registerJs($js,  View::POS_READY);               
+                
     $content = $html . $content . '</div>';
     echo $this->render('@app/views/layouts/main',['content' => $content]); 
-    
 ?>

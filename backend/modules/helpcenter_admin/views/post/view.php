@@ -1,10 +1,12 @@
 <?php
 
+use common\models\helpcenter\Post;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\DetailView;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\helpcenter\Post */
+/* @var $this View */
+/* @var $model Post */
 
 $this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t(null, '{Post}{Administration}', [

@@ -18,15 +18,13 @@ use yii\widgets\ActiveForm;
 
 ModuleAssets::register($this);
 
-$this->title = Yii::t('app', '{Watermark}{List}', [
-    'Watermark' => Yii::t('app', 'Watermark'), 'List' => Yii::t('app', 'List')
-]);
+$this->title = '集团内部水印';
 
 ?>
 <div class="customer-watermark-index main">
 
     <!-- 页面标题 -->
-    <div class="vk-title">
+    <div class="vk-title clear-margin">
         <span>
             <?= $this->title ?>
         </span>
@@ -36,55 +34,38 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
             ]), ['create'], ['class' => 'btn btn-success btn-flat']) ?>
         </div>
     </div>
+    
     <!-- 搜索 -->
-    <div class="course-form vk-form set-spacing"> 
+    <?= $this->render('_search', [
+        'searchModel' => $searchModel,
+        'filters' => $filters
+    ]) ?>
+    
+    <!--水印列表-->
+    <div class="vk-panel set-bottom">
         
-        <?php $form = ActiveForm::begin([
-            'action' => ['index'],
-            'method' => 'get',
-            'options'=>[
-                'id' => 'admin-center-form',
-                'class'=>'form-horizontal',
-            ],
-            'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-10 col-md-10\">{input}</div>\n",  
-                'labelOptions' => [
-                    'class' => 'col-lg-2 col-md-2 control-label form-label',
-                ],  
-            ], 
-        ]); ?>
-        <div class="col-log-6 col-md-6">
-            <!--水印状态-->
-            <?= $form->field($searchModel, 'is_del')->radioList(CustomerWatermark::$statusMap, [
-                'value' => ArrayHelper::getValue($filters, 'CustomerWatermarkSearch.is_del', ''),
-                'itemOptions'=>[
-                    'onclick' => 'submitForm();',
-                    'labelOptions'=>[
-                        'style'=>[
-                            'margin'=>'5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{Watermark}{Status}：', [
-                'Watermark' => Yii::t('app', 'Watermark'), 'Status' => Yii::t('app', 'Status')
-            ])) ?>
-            <!--课程名称-->
-            <?= $form->field($searchModel, 'name')->textInput([
-                'placeholder' => '请输入...', 'maxlength' => true, 
-                'onchange' => 'submitForm();',
-            ])->label(Yii::t('app', '{Watermark}{Name}：', [
-                'Watermark' => Yii::t('app', 'Watermark'), 'Name' => Yii::t('app', 'Name')
-            ])) ?>
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Watermark}{List}', [
+                    'Watermark' => Yii::t('app', 'Watermark'), 'List' => Yii::t('app', 'List')
+                ]) ?>
+            </span>
         </div>
-        <?php ActiveForm::end(); ?>
         
-    </div>
-    <div class="vk-panel">
+        <div class="set-padding">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'tableOptions' => ['class' => 'table table-bordered vk-table'],
+            'summaryOptions' => [
+                'class' => 'summary',
+                'style' => 'padding-left: 0px;',
+            ],
+            'pager' => [
+                'options' => [
+                    'class' => 'pagination',
+                    'style' => 'padding-left: 0px;',
+                ]
+            ],
             'layout' => "{items}\n{summary}\n{pager}",
             'columns' => [
                 [
@@ -215,17 +196,17 @@ $this->title = Yii::t('app', '{Watermark}{List}', [
                 ],
             ],
         ]); ?>
+        </div>
+            
     </div>
 </div>
 
 <?php
-$js = 
-<<<JS
+$js = <<<JS
     //提交表单 
     window.submitForm = function(){
         $('#admin-center-form').submit();
     }
-   
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

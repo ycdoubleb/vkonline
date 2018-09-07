@@ -32,6 +32,6 @@
         </div>
     </div>
     <div id="toggle_{%id%}" class="collapse knowledges" aria-expanded="false">
-        <ul id="knowledge" class="sortable list"></ul>
+        <ul id="knowledge" class="sortable list list-unstyled"></ul>
     </div>
 </li>

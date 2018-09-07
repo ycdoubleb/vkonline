@@ -28,20 +28,18 @@
 .video-index .vk-list {
     margin-right: -80px;
 }
+
 .course-index .vk-list .list-panel,
 .video-index .vk-list .list-panel {
     margin-right: 80px;
 }
-.course_actlog-index .vk-panel .summary,
-.video-view .vk-panel .summary,
-.teacher-view .vk-panel .summary {
-    padding-left: 20px;
-}
+
 .coutse_actlog-view .modal-body,
 .video-move .modal-body,
 .user-category-move .modal-body {
     background-color: #fff !important;
 }
+
 /*******************************************************************************
  * 我的课程列表
  *******************************************************************************/
@@ -86,61 +84,85 @@
  */
 .course-user-index .vk-table > tbody > tr > th,
 .course-user-index .vk-table > tbody > tr > td {
-    border-top-width: 1px;
+    border-right-width: 0px;
 }
 /**
  * 课程目录
  */
 .sortable {
-    font-size: 14px;
+    margin-bottom: 0px;
 }
-.sortable li {
+
+.sortable > li {
     border-top: 1px solid #f2f2f2;
 }
-.sortable li:nth-of-type(1) {
+
+.sortable > li:nth-of-type(1) {
     margin-top: -1px;
 }
+
 .sortable .head {
+    position: relative;
     height: 60px;
-    padding: 0px 15px 0px 20px;
+    padding-right: 15px;
+    padding-left: 20px;
     line-height: 60px;
 }
+
 .sortable .head  > a {
     display: inline-block;
-    width: 90%;
+    width: 100%;
     color: #666;
     text-align: left;
     text-decoration: none;
 }
+
 .sortable .head > a > div {
     display: inline-block;
     width: 15px;
 }
+
 .sortable .head .icongroup {
+    position: absolute;
+    top: 0px;
+    right: 15px;
     display: none;
-    float: right;
 }
+
 .sortable .head .icongroup > a {
+    display: inline-block;
+    width: 50px;
     color: #666;
     text-decoration: none;
+    text-align: center;
 }
+
+.sortable .head .icongroup > a:hover {
+    background-color: #e4e4e4;
+}
+
 .sortable .head:hover .icongroup{
     display: block;
 }
+
 .sortable .knowledges .head {
     position: relative;
     height: 50px;
-    padding: 0px 20px 0px 35px;
+    padding-right: 20px;
+    padding-left: 35px;
     line-height: 50px;
 }
+
 .sortable .knowledges .head > a {
     color: #878787;
 }
+
 .sortable .knowledges .data{
     position: absolute;
     top: 0;
     right: 20%;
 }
+
 .sortable .knowledges .head:hover {
     background-color: #f9f9f9;
 }
@@ -352,7 +374,7 @@
  *******************************************************************************/
 .video-index .vk-list 
 .list-panel {
-    border: solid 1px #e4e4e4;
+    border: 1px solid #e4e4e4;
 }
 
 .video-index .vk-list 
@@ -426,10 +448,10 @@
  ***************************/
 .video-index .vk-tabs {
     display: block;
-    margin: -5px 0px 0px;
     padding-right: 15px;
     padding-left: 20px;
-    border-top: 1px solid #f2f2f2;
+    margin-top: -5px;
+    margin-bottom: 0px;
     border-bottom: none;
     background-color: #fff;
 }
@@ -459,11 +481,8 @@
 .video-index .vk-list {
     display: block;
     width: 100%;
-    padding-right: 15px;
-    padding-bottom: 20px;
-    padding-left: 20px;
+    padding-top: 0px !important;
     background-color: #fff;
-    margin-bottom: 40px;
 }
 
 /***************************
@@ -574,9 +593,28 @@
     text-align: center;
 }
 
-.video-index .vk-table tr:hover{
-    background-color: #f2f2f2;
-    cursor: pointer;
+/***************************
+ * 视频列表-搜索结果
+ ***************************/
+.video-index .vk-table > thead > tr > th,
+.video-index .vk-table > tbody > tr > td {
+    border-right: none;
+    border-left: none;
+}
+
+/***************************
+ * 表单分页样式
+ ***************************/
+.video-form .nav li a:hover, 
+.video-form .nav li a:focus {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.video-form .nav-tabs > li.active > a, 
+.video-form .nav-tabs > li.active > a:hover, 
+.video-form .nav-tabs > li.active > a:focus {
+    color: #2aabb6 !important;
 }
 
 /***************************
@@ -601,37 +639,6 @@
 }
 .video-form .loading-box {
     text-align: left;
-}
-
-/***************************
- * 移动视频
- ***************************/
-.user-category-move .modal-body .vk-table > tbody > tr,
-.user-category-move .modal-body .vk-table > tbody > tr > td,
-.video-move .modal-body .vk-table > tbody > tr,
-.video-move .modal-body .vk-table > tbody > tr > td {
-    position: relative;
-    cursor: pointer;
-}
-
-.user-category-move .modal-body .vk-table > tbody > tr:hover,
-.video-move .modal-body .vk-table > tbody > tr:hover {
-    background-color: #f2f2f2;
-}
-
-.user-category-move .modal-body .vk-table .moveCatalog,
-.video-move .modal-body .vk-table .moveCatalog {
-    display: inline-block;
-    width: 100%;
-    cursor: pointer;
-}
-
-.video-move .modal-body .vk-table .addCatalog,
-.video-move .modal-body .vk-table .delCatalog {
-    position: absolute;
-    top: 15px;
-    right: 10px;
-    cursor: pointer;
 }
 
 /***************************

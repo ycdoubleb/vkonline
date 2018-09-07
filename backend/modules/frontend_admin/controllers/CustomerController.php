@@ -11,6 +11,7 @@ use common\models\vk\CustomerAdmin;
 use common\models\vk\Good;
 use common\models\vk\searchs\CustomerSearch;
 use common\modules\webuploader\models\Uploadfile;
+use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -18,14 +19,13 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
  * CustomerController implements the CRUD actions for Customer model.
  */
-class CustomerController extends Controller
+class CustomerController extends GridViewChangeSelfController
 {
     /**
      * @inheritdoc

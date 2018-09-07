@@ -61,7 +61,7 @@ class CourseProgressSearch extends CourseProgress
     public function search($params)
     {
         $sort_name = ArrayHelper::getValue($params, 'sort', 'default');    //排序
-        $this->name = ArrayHelper::getValue($params, 'CourseFavoriteSearch.name');  //课程名
+        $this->name = ArrayHelper::getValue($params, 'CourseProgressSearch.name');  //课程名
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 4); //显示数
         
@@ -69,6 +69,8 @@ class CourseProgressSearch extends CourseProgress
         $this->load($params);
         //条件查询
         self::$query->andFilterWhere(['CourseProgress.user_id' => Yii::$app->user->id]);
+        //关联课程查询
+        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseProgress.course_id');
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //复制课程对象
@@ -101,13 +103,12 @@ class CourseProgressSearch extends CourseProgress
         self::$query->offset(($page - 1) * $limit)->limit($limit);
         //添加字段
         self::$query->addSelect([
-            'Course.name', 'Course.cover_img', 'Course.learning_count AS people_num',
+            'Course.name', 'Course.cover_img', 'Course.learning_count',
             'CourseProgress.last_knowledge', 'Teacher.id AS teacher_id',
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name',
             'CourseNode.name AS node_name', 'Knowledge.name AS knowledge_name', 'KnowledgeProgress.data'
         ]);
         //关联查询
-        self::$query->leftJoin(['Course' => Course::tableName()], 'Course.id = CourseProgress.course_id');
         self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Course.teacher_id');
         self::$query->leftJoin(['Knowledge' => Knowledge::tableName()], '(Knowledge.id = CourseProgress.last_knowledge AND Knowledge.is_del = 0)');
         self::$query->leftJoin(['CourseNode' => CourseNode::tableName()], '(CourseNode.id = Knowledge.node_id AND CourseNode.is_del = 0)');

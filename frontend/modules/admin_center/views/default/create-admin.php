@@ -28,6 +28,7 @@ $this->title = Yii::t('app', '{Add}{Administrators}',[
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
+            
             <div class="modal-body customer-activity">
                 <div class="vk-form clear-shadow">
                 <?php $form = ActiveForm::begin([
@@ -43,8 +44,10 @@ $this->title = Yii::t('app', '{Add}{Administrators}',[
                     ], 
                 ]); ?>
                 
+                <!--客户id-->    
                 <?= Html::activeHiddenInput($model, 'customer_id') ?>
                 
+                <!--用户-->
                 <?= $form->field($model, 'user_id')->widget(Select2::classname(), [
                     'data' => $admins, 
                     'hideSearch' => true,
@@ -53,6 +56,7 @@ $this->title = Yii::t('app', '{Add}{Administrators}',[
                     ],
                 ])->label(Yii::t('app', '{Add}{People}',['Add'=>Yii::t('app', 'Add'),'People'=> Yii::t('app', 'People')])) ?>
 
+                <!--权限-->
                 <?= $form->field($model, 'level', [
                     'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",
                     'labelOptions' => [
@@ -69,24 +73,24 @@ $this->title = Yii::t('app', '{Add}{Administrators}',[
                 <?php ActiveForm::end(); ?>
                 </div>
             </div>
+            
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
                     'id'=>'submitsave','class'=>'btn btn-primary',
                     'data-dismiss'=>'modal','aria-label'=>'Close'
                 ]) ?>
             </div>
+            
        </div>
     </div>
     
 </div>
 
 <?php
-$js = 
-<<<JS
-        
-    /** 提交表单 */
+$js = <<<JS
+    //提交表单
     $("#submitsave").click(function(){
-        $.post("../default/create-admin?id={$model->customer_id}",$('#form-admin').serialize(),function(data){
+        $.post("../default/create-admin?id={$model->customer_id}", $('#form-admin').serialize(),function(data){
             if(data['code'] == '200'){
                 var num = Number($("#number").text()) + 1;
                 $("#number").html(num);
@@ -94,7 +98,6 @@ $js =
             }
         });
     });   
-    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

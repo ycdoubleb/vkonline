@@ -55,7 +55,7 @@ $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
 ?>
 
-<div class="course-form vk-form set-spacing set-bottom">
+<div class="course-form vk-form set-bottom">
 
     <?php $form = ActiveForm::begin([
         'options'=>[
@@ -64,7 +64,7 @@ $this->registerJs($format, View::POS_HEAD);
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [  
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",  
+            'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",  
             'labelOptions' => [
                 'class' => 'col-lg-1 col-md-1 control-label form-label',
             ],  
@@ -73,7 +73,7 @@ $this->registerJs($format, View::POS_HEAD);
     
     <!--课程分类-->
     <?= $form->field($model, 'category_id',[
-        'template' => "{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>", 
+        'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>", 
     ])->widget(DepDropdown::class, [
         'pluginOptions' => [
             'url' => Url::to('/admin_center/category/search-children', false),
@@ -111,7 +111,9 @@ $this->registerJs($format, View::POS_HEAD);
     </div>
     
     <!--课程名称-->
-    <?= $form->field($model, 'name')->textInput([
+    <?= $form->field($model, 'name', [
+        'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",  
+    ])->textInput([
         'placeholder' => '请输入...', 'maxlength' => true
     ])->label(Yii::t('app', '{Course}{Name}', [
         'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
@@ -125,13 +127,13 @@ $this->registerJs($format, View::POS_HEAD);
         $newAdd = Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']);
         $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
         echo  $form->field($model, 'teacher_id', [
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>"  . 
+            'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
                 "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
                     "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
                     "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
                     "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
                 "</div>\n" .
-            "<div class=\"col-lg-7 col-md-7\">{error}</div>",
+            "<div class=\"col-lg-6 col-md-6\">{error}</div>",
         ])->widget(Select2::class,[
             'data' => ArrayHelper::map($teacherMap, 'id', 'name'), 
             'options' => ['placeholder'=>'请选择...',],
@@ -146,7 +148,9 @@ $this->registerJs($format, View::POS_HEAD);
     ?>
     
     <!--封面图片-->
-    <?= $form->field($model, 'cover_img')->widget(FileInput::class, [
+    <?= $form->field($model, 'cover_img', [
+        'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>",
+    ])->widget(FileInput::class, [
         'options' => [
             'accept' => 'image/*',
             'multiple' => false,
@@ -170,21 +174,13 @@ $this->registerJs($format, View::POS_HEAD);
     
     <!--标签-->
     <div class="form-group field-tagref-tag_id required">
+        <span class="form-must text-danger" style="left: 43px;">*</span>
         <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
         <div class="col-lg-11 col-md-11">
             <?= Html::textInput('TagRef[tag_id]', !$model->isNewRecord ? implode(',', $tagsSelected) : null, [
                 'id' => 'obj_taginput', 'class' => 'form-control',  'data-role' => 'tagsinput'
             ]) ?>
         </div>
-        <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
-    </div>
-    
-    <!--课程资源-->
-    <div class="form-group field-courseattachment-file_id">
-        <?= Html::label(Yii::t('app', '{Course}{Resources}', [
-            'Course' => Yii::t('app', 'Course'), 'Resources' => Yii::t('app', 'Resources')
-        ]), 'courseattachment-file_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
-        <div id="uploader-container" class="col-lg-11 col-md-11"></div>
         <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
     </div>
     
@@ -207,17 +203,10 @@ $this->registerJs($format, View::POS_HEAD);
 </div>
 
 <?php
-//加载载模板
+//加载ITEM_DOM模板
 $item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course/_attr.php')));
-//获取flash上传组件路径
-$swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
-//获取已上传文件
-$attFiles = json_encode($attFiles);
-$csrfToken = Yii::$app->request->csrfToken;
-$app_id = Yii::$app->id ;
-$js = 
-<<<JS
+$js = <<<JS
     /**
      * 初始化百度编辑器
      */
@@ -225,6 +214,7 @@ $js =
         initialFrameHeight: 500,
         maximumWords: 100000,
     });
+        
     /**
      * 选择分类加载其对应的属性
      * @param int value 指定分类id  
@@ -245,6 +235,7 @@ $js =
             }
         });
     }
+        
     /**
      * 单击刷新按钮重新加载老师下拉列表
      */
@@ -261,45 +252,6 @@ $js =
         })
         return false;
     });
-    /**
-     * 加载文件上传
-     */
-    window.uploader;
-    require(['euploader'], function (euploader) {
-        //公共配置
-        var config = {
-            swf: "$swfpath" + "/Uploader.swf",
-            // 文件接收服务端。
-            server: '/webuploader/default/upload',
-            //检查文件是否存在
-            checkFile: '/webuploader/default/check-file',
-            //分片合并
-            mergeChunks: '/webuploader/default/merge-chunks',
-            //自动上传
-            auto: false,
-            //开起分片上传
-            chunked: true,
-            // 上传容器
-            container: '#uploader-container',
-            formData: {
-                _csrf: "$csrfToken",
-                //指定文件上传到的应用
-                app_id: "$app_id",
-                //同时创建缩略图
-                makeThumb: 1
-            }
-
-        };
-        window.uploader = new euploader.Uploader(config, euploader.FilelistView);
-        window.uploader.addCompleteFiles($attFiles);
-    });
-    /**
-    * 上传文件完成才可以提交
-    * @return {uploader.isFinish}
-    */
-    function tijiao() {
-       return window.uploader.isFinish() //是否已经完成所有上传;
-    }
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

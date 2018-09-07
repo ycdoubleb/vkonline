@@ -13,12 +13,14 @@ use yii\widgets\LinkPager;
 /* @var $searchModel CourseSearch */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', '{Course}{List}',[
-    'Course' => Yii::t('app', 'Course'), 'List' => Yii::t('app', 'List'),
+$this->title = Yii::t('app', '{All}{Course}',[
+    'All' => Yii::t('app', 'All'), 'Course' => Yii::t('app', 'Course'),
 ]);
 
 ?>
+
 <div class="course-index main">
+    
     <?= $this->render('_search', [
         'searchModel' => $searchModel, 
         'filters' => $filters, 
@@ -27,7 +29,18 @@ $this->title = Yii::t('app', '{Course}{List}',[
         'title' => $this->title,
         'is_show' => true
     ]) ?>
-    <div class="vk-panel">
+    
+    <div class="vk-panel set-bottom">
+        
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Course}{List}',[
+                    'Course' => Yii::t('app', 'Course'), 'List' => Yii::t('app', 'List'),
+                ]) ?>
+            </span>
+        </div>    
+        
+        <div class="set-padding">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'tableOptions' => ['class' => 'table table-bordered detail-view vk-table'],
@@ -127,6 +140,8 @@ $this->title = Yii::t('app', '{Course}{List}',[
                 ],
             ],
         ]); ?>
+        </div>
+            
         <!--总结-->
         <?php
             $page = !isset($filters['page']) ? 1 : $filters['page'];
@@ -135,11 +150,13 @@ $this->title = Yii::t('app', '{Course}{List}',[
                 echo '<div class="summary">第<b>' . (($page * 20 - 20) + 1) . '</b>-<b>' . ($page != $pageCount ? $page * 20 : $totalCount) .'</b>条，总共<b>' . $totalCount . '</b>条数据。</div>';
             }
         ?>
+        
         <!--分页-->
         <?= LinkPager::widget([  
             'pagination' => new Pagination([
                 'totalCount' => $totalCount,  
             ]),  
         ]) ?>
+        
     </div>
 </div>
