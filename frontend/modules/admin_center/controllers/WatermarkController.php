@@ -2,6 +2,7 @@
 
 namespace frontend\modules\admin_center\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\CustomerWatermark;
 use common\models\vk\searchs\CustomerWatermarkSearch;
 use common\modules\webuploader\models\Uploadfile;
@@ -134,10 +135,17 @@ class WatermarkController extends GridViewChangeSelfController
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
             }
         }
-
+        $file = Uploadfile::find()
+                ->select(['id',"name",'oss_key',"thumb_path","size"])
+                ->where(['id' => $model->file_id])
+                ->asArray()
+                ->one();
+        if($file){
+            $file['path'] = $file['thumb_path'] = Aliyun::absolutePath($file['oss_key']);
+        }
         return $this->render('update', [
             'model' => $model,      //模型
-            'files' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),     //获取已上传的水印图片
+            'files' => $file ? json_encode($file) : null,     //获取已上传的水印图片
         ]);
     }
 

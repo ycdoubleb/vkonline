@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\CustomerWatermark;
 use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
@@ -12,7 +13,6 @@ use yii\widgets\ActiveForm;
 /* @var $form ActiveForm */
 
 WatermarkAsset::register($this);
-
 ?>
 
 <div class="customer-watermark-form vk-form set-bottom">
@@ -176,7 +176,8 @@ WatermarkAsset::register($this);
 
 <?php
 //水印图路径
-$path = !$model->isNewRecord ? $model->file->path : '';
+$ossHost = Aliyun::getOssHost();
+$path = !$model->isNewRecord ? Aliyun::absolutePath($model->file->oss_key) : '';
 //设置偏移默认值
 $model->dx = $model->isNewRecord ? 10 : $model->dx;
 $model->dy = $model->isNewRecord ? 10 : $model->dy;
@@ -184,9 +185,11 @@ $model->dy = $model->isNewRecord ? 10 : $model->dy;
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
+
 $js = 
 <<<JS
     window.paths = "$path";   //水印图路径
+   
     /**
      * 加载文件上传
      */
@@ -231,7 +234,7 @@ $js =
         window.uploader = new euploader.Uploader(config, euploader.TileView);
         window.uploader.addCompleteFiles($files);
         $(window.uploader).on('uploadComplete',function(evt,file){
-            window.paths = file['path'];
+            window.paths = "$ossHost/"+file['oss_key'];
             changeRefer_pos();
         });
     });
