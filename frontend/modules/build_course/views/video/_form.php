@@ -449,7 +449,7 @@ $js =
      * 选中水印图
      * @param object _this
      */
-    window.checkedWatermark = function(elem){
+    window.checkedWatermark = function(_this){
         if($(_this).is(":checked")){
             $.each($watermarksFiles, function(){
                 //添加水印
