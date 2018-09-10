@@ -112,6 +112,18 @@ $js =
     window.knowledge_ue = UE.getEditor('knowledge-des', {
         initialFrameHeight: 400, 
         maximumWords: 100000,
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
+            ]
+        ]
     });
     /**
      * 引用视频事件
