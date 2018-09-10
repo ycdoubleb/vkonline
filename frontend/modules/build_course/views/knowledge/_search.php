@@ -26,7 +26,7 @@ use yii\widgets\ActiveForm;
                 'onkeydown' => 'if(event.keyCode == 13) return false;'
             ],
             'fieldConfig' => [  
-                'template' => "{label}\n<div class=\"col-lg-11 col-md-11 clear-padding\">{input}</div>\n",  
+                'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n",  
                 'labelOptions' => [
                     'class' => 'col-lg-1 col-md-1 control-label form-label',
                 ],  
@@ -34,40 +34,43 @@ use yii\widgets\ActiveForm;
         ]); ?>
 
         <!--返回按钮-->
-        <div class="pull-left" style="padding: 5px 30px 5px 8px">
+        <div class="col-lg-1 col-md-1 clear-padding" style="text-align: center">
             <?= Html::a(Yii::t('app', 'Back'), 'javascript:;', [
                 'class' => 'btn btn-default', 'onclick' => 'clickBackEvent();'
             ]) ?>
         </div>
-
+        
         <!--搜索类型-->
-        <div class="form-group field-knowledgereference-type">
-            <div class="col-lg-10 col-md-10 clear-padding">
-                <?= Html::radioList('KnowledgeReference[type]', $actionId, [
-                    'my-video' => '我的视频', 'my-collect' => '我的收藏'
-                ], [
-                    'itemOptions' => [
-                        'labelOptions' => [
-                            'style' => [
-                                'margin' => '10px 15px 10px 0',
-                                'color' => '#999',
-                                'font-weight' => 'normal',
+        <div class="col-lg-11 col-md-11 clear-padding">
+            <div class="form-group field-knowledgereference-type">
+                <div class="col-lg-10 col-md-10">
+                    <?= Html::radioList('KnowledgeReference[type]', $actionId, [
+                        'my-video' => '我的视频', 'my-collect' => '我的收藏'
+                    ], [
+                        'itemOptions' => [
+                            'labelOptions' => [
+                                'style' => [
+                                    'margin' => '10px 15px 10px 0',
+                                    'color' => '#999',
+                                    'font-weight' => 'normal',
+                                ]
                             ]
-                        ]
-                    ],
-                ]) ?>
+                        ],
+                    ]) ?>
+                </div>
             </div>
         </div>
-
+        
         <!--所属目录-->
         <?php if (isset($type) && $type == 1): ?>
+        <div class="col-lg-12 col-md-12 clear-padding">
             <div class="form-group field-videosearch-user_cat_id">
                 <?= Html::label(Yii::t('app', '{The}{Catalog}', [
                     'The' => Yii::t('app', 'The'), 
                     'Catalog' => Yii::t('app', 'Catalog')]) . '：', 'videosearch-user_cat_id', [
                         'class' => 'col-lg-1 col-md-1 control-label form-label'
                 ]) ?>
-                <div class="col-lg-11 col-md-11 clear-padding">
+                <div class="col-lg-11 col-md-11">
                     <ul class="breadcrumb">
                         <?php 
                             $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
@@ -90,13 +93,15 @@ use yii\widgets\ActiveForm;
                     </ul>
                 </div>
             </div>
+        </div>
         <?php endif; ?>
         
         <!--关键字搜索-->
-        <?= $form->field($searchModel, 'name')->textInput([
-            'placeholder' => '请输入...', 'maxlength' => true, 'onchange' => 'submitForm();'
-        ])->label(Yii::t('app', 'Keyword') . '：') ?>
-        
+        <div class="col-lg-12 col-md-12 clear-padding">
+            <?= $form->field($searchModel, 'name')->textInput([
+                'placeholder' => '请输入...', 'maxlength' => true, 'onchange' => 'submitForm();'
+            ])->label(Yii::t('app', 'Keyword') . '：') ?>
+        </div>
         <!--标记搜索方式-->
         <?= Html::hiddenInput('sign', 1); ?>
         

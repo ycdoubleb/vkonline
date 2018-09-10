@@ -1,15 +1,8 @@
 <?php
 
 use common\models\vk\Knowledge;
-use common\models\vk\Video;
-use common\utils\DateUtil;
-use common\utils\StringUtil;
-use kartik\widgets\Select2;
-use kartik\widgets\SwitchInput;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
-use yii\helpers\ArrayHelper;
+use common\widgets\ueditor\UeditorAsset;
 use yii\helpers\Html;
-use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -96,9 +89,7 @@ $videoDetail = json_encode(isset($videoDetail) ? $videoDetail : []);
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/knowledge/_video.php')));
-$js = 
-<<<JS
-    
+$js = <<<JS
     /**
      * 销毁百度编辑器
      */

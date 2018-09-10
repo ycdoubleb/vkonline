@@ -10,9 +10,6 @@ use yii\web\View;
 /* @var $model Course */
 
 
-ModuleAssets::register($this);
-UeditorAsset::register($this);
-
 $this->title = Yii::t('app', '{Create}{Course}', [
     'Create' => Yii::t('app', 'Create'), 'Course' => Yii::t('app', 'Course')
 ]);
