@@ -327,6 +327,12 @@ return [
     'Processer' => '处理人',
     'Feedbacker' => '反馈者',
     
+    'Authorizes' => '授权',
+    'Brand From' => '授权方',
+    'Brand To' => '被授权方',
+    'Cooperation' => '合作',
+    
+    
     //前台-公共
     'Avg Star' => '评分',
     'Learning Count' => '在学人数',

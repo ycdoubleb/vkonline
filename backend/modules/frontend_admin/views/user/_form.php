@@ -24,10 +24,13 @@ use yii\widgets\ActiveForm;
             'labelOptions' => ['class' => 'col-lg-2 col-md-2 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
         ],
     ]); ?>
-    <?= $form->field($model, 'customer_id')->widget(Select2::classname(),[
+    <?= $form->field($model, 'customer_id')->widget(Select2::class,[
         'data' => $customer,
         'hideSearch' => true,
-        'options' => ['placeholder' => '请选择...',]
+        'options' => ['placeholder' => '请选择...',],
+        'pluginOptions' => [
+            'allowClear' => true,
+        ],
     ])?>
     
     <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称']) ?>
