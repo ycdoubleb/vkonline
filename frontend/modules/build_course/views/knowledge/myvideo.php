@@ -88,9 +88,7 @@ $params_js = json_encode($filters); //js参数
 //加载 REF_DOM 模板
 $ref_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/knowledge/_list.php')));
-$js = 
-<<<JS
-    
+$js = <<<JS
     //动态目录跳转
     $('.folder > ul > li > a').each(function(){
         $(this).click(function(e){
@@ -194,7 +192,6 @@ $js =
         
         return false;
     }  
-        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
