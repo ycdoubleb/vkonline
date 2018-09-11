@@ -443,19 +443,19 @@ $js =
     
     /**
      * 选中水印图
-     * @param object elem
+     * @param object _this
      */
-    window.checkedWatermark = function(elem){
-        if($(elem).is(":checked")){
+    window.checkedWatermark = function(_this){
+        if($(_this).is(":checked")){
             $.each($watermarksFiles, function(){
                 //添加水印
-                if(this.id == $(elem).val()){
+                if(this.id == $(_this).val()){
                     window.watermark.addWatermark('vkcw' + this.id, this);
                     return false;
                 }
             });
         }else{
-            window.watermark.removeWatermark('vkcw' + $(elem).val());
+            window.watermark.removeWatermark('vkcw' + $(_this).val());
         }
     }
 JS;

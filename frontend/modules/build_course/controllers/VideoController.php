@@ -269,7 +269,10 @@ class VideoController extends Controller
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
             if($model->mts_status == Video::MTS_STATUS_YES){
-                throw new NotFoundHttpException(Yii::t('app', 'The video has been transcoding without repeating the transcoding.'));
+                throw new NotFoundHttpException(Yii::t('app', '该视频已转码，请不要重复转码。'));
+            }
+            if($model->mts_status == Video::MTS_STATUS_DOING){
+                throw new NotFoundHttpException(Yii::t('app', '该视频正在转码中。'));
             }
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));

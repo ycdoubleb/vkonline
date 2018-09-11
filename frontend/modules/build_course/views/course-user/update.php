@@ -27,7 +27,11 @@ $this->title = Yii::t(null, "{Edit}{HelpMan}", [
             <div class="modal-body">
                 <div class="course-user-form vk-form clear-shadow clear-border">
                     <?php $form = ActiveForm::begin([
-                        'options'=>['id' => 'build-course-form','class'=>'form-horizontal',],
+                        'options'=>[
+                            'id' => 'build-course-form',
+                            'class'=>'form-horizontal',
+                            'onkeydown' => "if(event.keyCode==13) return false;",
+                        ],
                         'fieldConfig' => [  
                             'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",  
                             'labelOptions' => [

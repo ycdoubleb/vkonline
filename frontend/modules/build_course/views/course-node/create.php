@@ -43,7 +43,6 @@ $this->title = Yii::t('app', "{Add}{Node}",[
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/course-node/view.php')));
 $js = <<<JS
-            
     /** 提交表单 */
     $("#submitsave").click(function(){
         //$('#build-course-form').submit(); return;

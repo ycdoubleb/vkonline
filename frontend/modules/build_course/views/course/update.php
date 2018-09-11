@@ -1,16 +1,11 @@
 <?php
 
 use common\models\vk\Course;
-use common\widgets\ueditor\UeditorAsset;
-use frontend\modules\build_course\assets\ModuleAssets;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $model Course */
 
-
-ModuleAssets::register($this);
-UeditorAsset::register($this);
 
 $this->title = Yii::t('app', "{Update}{Course}：{$model->name}", [
     'Update' => Yii::t('app', 'Update'), 'Course' => Yii::t('app', 'Course')

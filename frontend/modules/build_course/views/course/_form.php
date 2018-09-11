@@ -5,7 +5,8 @@ use common\models\vk\Course;
 use common\utils\StringUtil;
 use common\widgets\depdropdown\DepDropdown;
 use common\widgets\tagsinput\TagsInputAsset;
-use common\widgets\webuploader\WebUploaderAsset;
+use common\widgets\ueditor\UeditorAsset;
+use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
@@ -19,6 +20,8 @@ use yii\widgets\ActiveForm;
 /* @var $model Course */
 /* @var $form ActiveForm */
 
+ModuleAssets::register($this);
+UeditorAsset::register($this);
 TagsInputAsset::register($this);
 
 //组装获取老师的下拉的格式对应数据

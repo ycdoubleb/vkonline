@@ -69,6 +69,7 @@ use common\widgets\Menu;
                         'icon' => 'bars',
                         'url' => '#',
                         'items' => [
+                            ['label' => '授权管理', 'icon' => 'circle-o', 'url' => ['/frontend_admin/brand-authorize']],
                             ['label' => '概况', 'icon' => 'circle-o', 'url' => ['/frontend_admin/default']],
                             ['label' => '客户', 'icon' => 'circle-o', 'url' => ['/frontend_admin/customer']],
                             ['label' => '用户', 'icon' => 'circle-o', 'url' => ['/frontend_admin/user']],
