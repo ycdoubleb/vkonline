@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\res_service\assets\ModuleAssets;
@@ -105,7 +106,9 @@ ModuleAssets::register($this);
                     'label' => '预览图',
                     'format' => 'raw',
                     'value' => function($data){
-                        return Html::img($data['cover_img'], ['style' => ['max-width' => '120px']]);
+                        return Html::img(empty($data['cover_img']) ? 
+                                Aliyun::absolutePath($data['cover_img'].'static/imgs/notfound.png') : 
+                                    $data['cover_img'], ['style' => ['max-width' => '120px', 'max-height' => '63.63px']]);
                     },
                     'headerOptions' => ['style' => 'width:125px'],
                     'contentOptions' => ['style' => 'white-space:normal'],

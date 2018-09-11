@@ -73,13 +73,15 @@ class BrandAuthorizeController extends Controller
         $from_id = ArrayHelper::getValue($post, 'BrandAuthorize.brand_from');   //授权方
         $to_id = ArrayHelper::getValue($post, 'BrandAuthorize.brand_to');       //被授权方
         
+        //授权方相同+被授权方相同+未失效 = 不能创建（空）
         $is_authorize = BrandAuthorize::find(['brand_from' => $from_id, 'brand_to' => $to_id, 'is_del' => 0])->one();
-        if(empty($is_authorize)){
-            if ($model->load($post) && $model->save()) {
+        if ($model->load($post)) {
+            if(empty($is_authorize)){
+                $model->save();
                 return $this->redirect(['view', 'id' => $model->id]);
+            }else {
+                \Yii::$app->getSession()->setFlash('error', '已授权，无需重复授权');
             }
-        } else {
-            \Yii::$app->getSession()->setFlash('error', '已授权，无需重复授权');
         }
         
         return $this->render('create', [
@@ -118,8 +120,11 @@ class BrandAuthorizeController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-
+        $model = $this->findModel($id);
+        
+        $model->is_del = 1;
+        $model->save(false,['is_del']);
+        
         return $this->redirect(['index']);
     }
 
