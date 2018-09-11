@@ -259,24 +259,14 @@ $this->registerJs($format, View::POS_HEAD);
                 ]) ?>
                 <div class="col-lg-11 col-md-11">
                     <div id="video-mts_watermark_ids">
-                        <div class="loading-box">
-                            <span class="loading"></span>
-                        </div>
+                        <p style="line-height:40px;">【无水印可选】</p>
                     </div>
+                    <br/>
+                    <!--预览-->
+                    <div id="preview" class="preview"></div>
                 </div>
                 <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
             </div>
-
-            <!--预览-->
-            <div class="form-group">
-                <?= Html::label(Yii::t('app', 'Preview'), 'customerwatermark-is_selected', [
-                    'class' => 'col-lg-1 col-md-1 control-label form-label'
-                ]) ?>
-                <div class="col-lg-7 col-md-7">
-                    <div id="preview" class="preview"></div>
-                </div>
-            </div>
-        
         </div>
         
     </div>
@@ -297,6 +287,7 @@ $this->registerJs($format, View::POS_HEAD);
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
+$isNewRecord = $model->isNewRecord ? 1 : 0;
 $js = 
 <<<JS
     /**
@@ -434,17 +425,22 @@ $js =
     '</div>';
     var item = '';
     $.each($watermarksFiles, function(){
-        //如果id存在已选的水印里则this.is_selected = "checked"
-        if($.inArray(this.id, $wateSelected) != '-1'){
-            this.is_selected = "checked";
+        
+        //创建情况下显示默认选中，更新情况下如果id存在已选的水印里则this.is_selected = "checked"，否则不显示选中
+        if(!$isNewRecord){
+            this.is_selected = $.inArray(this.id, $wateSelected) != -1 ? "checked" : "";
         }
+        
         item += Wskeee.StringUtil.renderDOM(item_dom, this);
         //添加水印
         if(this.is_selected != null){
             window.watermark.addWatermark('vkcw' + this.id, this);
         }
     });
-    $('#video-mts_watermark_ids').html(item);
+    if(item != ''){
+        $('#video-mts_watermark_ids').html(item);
+    }
+    
     /**
      * 选中水印图
      * @param object _this

@@ -77,6 +77,13 @@ class Aliyun extends Component {
         }
         return $path;
     }
+    
+    /**
+     * 获取阿里云 Host
+     */
+    public static function getOssHost(){
+        return "http://" . \Yii::$app->params['aliyun']['oss']['host-output'];
+    }
 
 }
 

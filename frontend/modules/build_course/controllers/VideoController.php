@@ -469,7 +469,7 @@ class VideoController extends Controller
             'Watermark.id', 'Watermark.width', 'Watermark.height', 
             'Watermark.dx AS shifting_X', 'Watermark.dy AS shifting_Y', 
             'Watermark.refer_pos', 'Watermark.is_selected',
-            'Uploadfile.path'
+            'Uploadfile.oss_key'
         ])->from(['Watermark' => CustomerWatermark::tableName()]);
         //关联实体文件
         $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Watermark.file_id AND Uploadfile.is_del = 0)');
@@ -484,7 +484,7 @@ class VideoController extends Controller
         //重置is_selected、path属性值
         foreach ($watermarks as $id => $item) {
             $watermarks[$id]['is_selected'] = $item['is_selected'] ? 'checked' : null;
-            $watermarks[$id]['path'] = StringUtil::completeFilePath($item['path']);
+            $watermarks[$id]['path'] = Aliyun::absolutePath($item['oss_key']);
         }
         
         return $watermarks;
