@@ -90,6 +90,7 @@ use yii\widgets\ActiveForm;
 </div>
 
 <?php
+$des = $model->isNewRecord ? '无' : $model->des;
 //视频详情
 $videoDetail = json_encode(isset($videoDetail) ? $videoDetail : []);
 //加载 LIST_DOM 模板
@@ -103,27 +104,30 @@ $js =
      */
     $('#knowledge-des').removeClass('form-control');
     if(window.knowledge_ue){
-        window.knowledge_ue.destroy();
-    }
-    /** 
-     * 初始化百度编辑器
-     */
-    window.knowledge_ue = UE.getEditor('knowledge-des', {
-        initialFrameHeight: 400, 
-        maximumWords: 100000,
-        toolbars:[
-            [
-                'fullscreen', 'source', '|', 
-                'paragraph', 'fontfamily', 'fontsize', '|',
-                'forecolor', 'backcolor', '|',
-                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
-                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
-                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
-                'selectall', 'cleardoc', 
-                'undo', 'redo',  
+        /* 重新渲染 */
+        window.knowledge_ue.render('knowledge-des');
+    }else{
+        /** 
+         * 初始化百度编辑器
+         */
+        window.knowledge_ue = UE.getEditor('knowledge-des', {
+            initialFrameHeight: 400, 
+            maximumWords: 100000,
+            toolbars:[
+                [
+                    'fullscreen', 'source', '|', 
+                    'paragraph', 'fontfamily', 'fontsize', '|',
+                    'forecolor', 'backcolor', '|',
+                    'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                    'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                    'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                    'selectall', 'cleardoc', 
+                    'undo', 'redo',  
+                ]
             ]
-        ]
-    });
+        });
+    }
+    
     /**
      * 引用视频事件
      */   
