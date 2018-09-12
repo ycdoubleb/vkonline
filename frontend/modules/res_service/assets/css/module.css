@@ -30,6 +30,10 @@ video {
     object-fit: fill;
 }
 
+.main .framebtn{
+    display: inline-block;
+    float: right;
+}
 /*******************************************************************************
  * 面包屑
  *******************************************************************************/
@@ -48,6 +52,135 @@ video {
 }
 .crumbs .btngroup > a {
    border-radius: 0;
+}
+/*******************************************************************************
+ * 授权的品牌
+ *******************************************************************************/
+.res_service-index .crumbs {
+    height: 40px;
+    padding: 0px;
+    line-height: 40px;
+    color: #ccc;
+    font-size: 14px;
+}
+
+.res_service-index .crumbs .search-icon {
+    position: relative;
+    top: -39px;
+    left: 10px;
+    color: #666;
+}
+
+.res_service-index .crumbs .search-brand {
+    border: 1px solid #ccc;
+    width: 100%;
+    height: 40px;
+    padding: 0 100px 0 30px;
+}
+
+.res_service-index .crumbs .search-result {
+    float: right;
+    position: relative;
+    top: -41px;
+    right: 15px;
+}
+
+.res_service-index .panel {
+    margin-top: -5px !important;
+    background-color: transparent;
+    border: transparent;
+    box-shadow: none;
+}
+
+.res_service-index .panel .list {
+    margin-right: -46px;
+    width: auto;
+}
+
+.res_service-index .panel .list .customer-item{
+    display: inline-block;
+    width: 218px;
+    height: 146px;
+    margin: 0 42px 30px 0;
+    padding: 112px 20px 20px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    
+}
+
+.res_service-index .panel .list .customer-item .name {
+    font-size: 12px;
+    color: #AAAAAA;
+}
+
+.res_service-index .panel .list .customer-item:hover,
+.res_service-index .panel .list .customer-item:focus {
+    text-decoration: none;
+}
+
+.from-view .course-search .vk-title,
+.from-view .course-search .vk-form {
+    margin-bottom: 0px;
+    box-shadow: none;
+}
+
+.from-view .course-search .vk-form.set-spacing {
+    padding: 20px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.from-view .vk-panel {
+    margin-top: -5px;
+    padding: 10px 20px;
+}
+
+.from-view .vk-panel .result-num {
+    height: 48px;
+    line-height: 36px;
+    color: #999;
+}
+
+.from-view .vk-panel ._check:hover{
+    cursor: pointer;
+    background-color: #f9f9f9
+}
+
+.from-view .vk-panel input[type="checkbox"] {
+    height: 48px;
+    cursor: pointer;
+}
+
+.from-course_info .crumbs {
+    margin-bottom: 0px;
+}
+
+.from-course_info .crumbs span {
+    font-size: 14px;
+    color: #999999;
+}
+
+.from-course_info .vk-panel {
+    margin-top: 0px;
+    padding: 20px;
+}
+
+.from-course_info .vk-panel .copy-link {
+    width: 80px;
+    margin-right: 8px;
+    
+}
+
+.from-course_info .vk-panel .btn-links {
+    color: #fff;
+    background-color: #999999;
+    border-color: #999999;
+}
+
+.from-course_info .vk-panel .btn-links:hover {
+    color: #fff;
+    background-color: #888888;
+    border-color: #888888;
 }
 /*******************************************************************************
  * 表单样式
@@ -352,10 +485,7 @@ body .select2-container--krajee
  * table样式
  *******************************************************************************/
 .content .table {
-    margin: -1px 0 0;
     color: #666;
-    border-right: none;
-    border-left: none;
 }
 .table .detail-th {
     width: 125px;
@@ -379,13 +509,7 @@ body .select2-container--krajee
 .main .table > thead  > tr > th,
 .main .table > tbody > tr > th,
 .main .table > tbody > tr > td {
-    height: 48px;
-    text-align: center;
-    vertical-align: middle;
-    white-space: nowrap;
     border-color: #e4e4e4;
-    border-right-width: 0;
-    border-left-width: 0;
 }
 /*******************************************************************************
  * 模态框样式

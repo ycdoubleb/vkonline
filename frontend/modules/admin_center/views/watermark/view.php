@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\CustomerWatermark;
 use common\widgets\watermark\WatermarkAsset;
 use frontend\modules\admin_center\assets\ModuleAssets;
@@ -126,7 +127,7 @@ $this->title = Yii::t('app', "{Watermark}{Detail}：{$model->name}", [
 </div>
 
 <?php
-$path = !empty($model->file_id) ? $model->file->path : '';
+$path = !empty($model->file_id) ? Aliyun::absolutePath($model->file->oss_key) : '';
 $js = <<<JS
     //初始化组件
     window.watermark = new youxueba.Watermark({

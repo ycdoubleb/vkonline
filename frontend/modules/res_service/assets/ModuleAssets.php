@@ -23,6 +23,7 @@ class ModuleAssets extends AssetBundle {
        'css/fileInput.css',
     ];
     public $js = [
+        'js/clipboard.min.js'
     ];
     public $depends = [
         'yii\web\YiiAsset'
