@@ -15,6 +15,7 @@ use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
+use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Prophecy\Util\StringUtil;
