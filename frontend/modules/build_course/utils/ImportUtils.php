@@ -8,8 +8,10 @@
 
 namespace frontend\modules\build_course\utils;
 
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
+use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Yii;
@@ -46,10 +48,11 @@ class ImportUtils {
     
     /**
      * 批量导入视频
-     * @param integer $format   格式：0是post，1是ajax格式
+     * @param integer $requestMode   格式：0是post，1是ajax格式
+     * @param array $post
      * @return json|array
      */
-    public function importVideo($format)
+    public function importVideo($request_mode, $post)
     {
         $upload = UploadedFile::getInstanceByName('importfile');
         if($upload != null){
@@ -71,27 +74,25 @@ class ImportUtils {
                     $dataProvider[] = $sheetColumns;
                 }
             }
-            
-            //如果是ajax则返回json格式的数据
-            if($format){
-                
-            }else{
-                
-                foreach ($dataProvider as &$data) {
-                    $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
-                    $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
-                }
-//                var_dump($dataProvider);exit;
-                return [
-                    'repeat_total' => 0,
-                    'exist_total' => 0,
-                    'insert_total' => 0,
-                    'dataProvider' => new ArrayDataProvider([
-                        'allModels' => $dataProvider,
-                    ]),
-                ];
-            }            
+            foreach ($dataProvider as &$data) {
+                $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
+                $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
+                $data['video.tagsid'] = $this->checkTagsExists($data['video.tags']);
+            }
         }
+        //如果是ajax则返回json格式的数据
+        if($request_mode){
+            return $this->saveVideo($post);
+        }else{
+            return [
+                'repeat_total' => 0,
+                'exist_total' => 0,
+                'insert_total' => count($dataProvider),
+                'dataProvider' => new ArrayDataProvider([
+                    'allModels' => $dataProvider,
+                ]),
+            ];
+        }       
     }
     
     /**
@@ -231,6 +232,11 @@ class ImportUtils {
         ];
     }
     
+    protected function saveVideo($post)
+    {
+        var_dump($post);exit;
+    }
+
     /**
      * 保存绘图
      * @param MemoryDrawing $drawing
@@ -380,19 +386,52 @@ class ImportUtils {
         $teacher_results = $teacher->all();
         
         if($key_to_value){
-            if(count($teacher_results) > 1){
-                return ArrayHelper::map($teacher_results, 'id', 'avatar');
-            }else{
-                return [
-                    'id' => isset($teacher_results[0]) ? $teacher_results[0]['id'] : null,
-                    'avatar' => isset($teacher_results[0]) ? $teacher_results[0]['avatar'] : null
+            $teacherFormat = [];
+            foreach ($teacher_results as $teacher_data) {
+                $teacherFormat[$teacher_data['id']] = [
+                    'id' => $teacher_data['id'],
+                    'avatar' => StringUtil::completeFilePath($teacher_data['avatar']), 
                 ];
             }
+            return $teacherFormat;
         }else{
-            return $teacher_results;;
+            return $teacher_results;
         }
     }
-
+    
+    /**
+     * 检查标签是否已存在
+     * @param string $video_tags    视频标签
+     * @return array    返回已存在和新插入的标签id
+     */
+    protected function checkTagsExists($video_tags)
+    {
+        $tagIds = [];   //保存插入表返回的所有id
+        /* 判断分割符的格式 */
+        if(strpos($video_tags ,"、")){  
+            $videoTags =  explode("、", $video_tags);  
+        }else if(strpos($video_tags ,'，')){  
+            $videoTags =  explode("，", $video_tags);  
+        }else{
+            $videoTags = explode(',', $video_tags);
+        }
+        //查询已存在的标签
+        $tags = (new Query())->from(['Tags' => Tags::tableName()]);
+        $tags->select(['id', 'name'])->where(['name' => $videoTags]);
+        $tag_results = $tags->all();
+        $tag_ids = ArrayHelper::getColumn($tag_results, 'id');    //获取已存在的id
+        $tag_names = ArrayHelper::getColumn($tag_results, 'name'); //获取已存在的name
+        //保存不存在的标签
+        foreach ($videoTags as $tags_name) {
+            if(!in_array($tags_name, $tag_names)){
+                $tagModel = new Tags(['name' => $tags_name]);
+                $tagModel->save(true, ['name']);
+                $tagIds[] += $tagModel->id;
+            }
+        }
+        
+        return array_merge(array_values($tag_ids), $tagIds);
+    }
 
     /**
      * 检查目标路径是否存在，不存即创建目标

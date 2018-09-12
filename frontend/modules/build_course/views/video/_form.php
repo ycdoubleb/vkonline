@@ -22,6 +22,7 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $model Video */
 /* @var $form ActiveForm */
+
 GrowlAsset::register($this);
 TagsInputAsset::register($this);
 UeditorAsset::register($this);
@@ -55,7 +56,6 @@ $format = <<< SCRIPT
             '<a href="' + links.replace(/\s/g,"") + '" class="links" target="_blank" onmouseup=";event.cancelBubble = true;"><i class="fa fa-eye"></i></a>' +
         '</div>';
     } 
-        
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
@@ -365,7 +365,9 @@ $js =
             },
             //指定接受哪些类型的文件
             accept: {
+                title: 'Mp4',
                 extensions: 'mp4',
+                mimeTypes: 'video/mp4',
             },
             formData: {
                 _csrf: "$csrfToken",
