@@ -218,6 +218,7 @@ $js =
             //指定接受哪些类型的文件
             accept: {
                 extensions: 'png',
+                mimeTypes: 'image/png',
             },
             formData: {
                 _csrf: "$csrfToken",
