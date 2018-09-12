@@ -14,6 +14,7 @@ use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\ImportUtils;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -107,12 +108,16 @@ class CourseController extends Controller
      * @param string $id
      * @return mixed 
      */
-    public function actionView($id)
+    public function actionView($id, $format = 0)
     {
         $model = $this->findModel($id);
         $searchUserModel = new CourseUserSearch();
         $searchNodeModel = new CourseNodeSearch();
         $searchCourseLog = new CourseActLogSearch();
+        
+        if (Yii::$app->request->isPost) {
+            ImportUtils::getInstance()->importFrame($id);
+        }
         
         return $this->render('view', [
             'model' => $model,  //模型

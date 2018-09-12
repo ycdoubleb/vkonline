@@ -181,14 +181,12 @@ $js = <<<JS
     
     //导出
     $(".export-btn").click(function() {
-        console.log($("input[type='checkbox']").is(':checked'));
         if($("input[name='checkbox[]']:checked").length > 0){
             var value = "";
             $.each($("input[name='checkbox[]']:checked"),function(){
                 value += $(this).val()+',';
             });
             location.href="/res_service/export/more?ids=" + value;
-            console.log(value);
         }else{
             alert("请选择要导出的课程");
         }
