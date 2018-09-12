@@ -692,6 +692,46 @@
     background-color: #f2f2f2;
 }
 
+/***************************
+ * 视频批量导入
+ ***************************/
+.video-import .select2-container--krajee 
+.select2-selection--single {
+    height: 80px;
+}
+
+.video-import .select2-container 
+.select2-selection--single .select2-selection__rendered {
+    white-space: normal;
+}
+
+.video-import .select2-container--krajee 
+.select2-selection--single .select2-selection__arrow{
+    height: 78px;
+    border-left: none;
+}
+
+.video-import .vk-table > tbody > tr > td {
+    position: relative;
+}
+
+.video-import .vk-table .bgerror {
+    background-color: #ffecec;
+}
+
+.video-import .error-icon {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-image: url('../imgs/error-icon.png');
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
 /*******************************************************************************
  * 我的老师
  *******************************************************************************/

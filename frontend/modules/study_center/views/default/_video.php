@@ -1,6 +1,6 @@
 <li class="list-panel">
     <div class="list-header">
-        <a class="icon" data-videoid="{%video_id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
+        <a class="icon" data-video_id="{%video_id%}" onclick="removeItem($(this))"><i class="fa fa-times"></i></a>
         <a href="../default/video-info?id={%video_id%}" title="{%name%}" target="_blank">
             <img src="{%img%}" width="100%" height="100%" />
         </a>
