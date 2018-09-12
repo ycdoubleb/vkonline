@@ -1,6 +1,6 @@
 <li class="list-panel">
     <div class="list-header pull-left">
-        <a href="../default/view?id={%course_id%}" title="{%name%}" target="_blank">
+        <a href="/course/default/view?id={%course_id%}" title="{%name%}" target="_blank">
             <img src="{%cover_img%}" width="280" height="210" />
         </a>
     </div>
@@ -26,6 +26,6 @@
         </div>
     </div>
     <div class="list-footer pull-right">
-        <a href="../default/view?id={%course_id%}" class="btn btn-success study pull-right">继续学习</a>
+        <a href="/study_center/default/view?id={%last_knowledge%}" class="btn btn-success study pull-right" target="_blank">继续学习</a>
     </div>
 </li>
