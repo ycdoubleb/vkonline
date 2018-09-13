@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
@@ -215,7 +216,8 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 <?= Yii::t('app', '{Course}{Catalog}',[
                     'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
                 ]) ?>
-                <a href="javascrip:;" style="color: #337ab7;font-size: 14px;text-decoration:none">
+                <a href="<?= Aliyun::absolutePath('static/doc/template/courseframe_import_template.xlsx')?>"
+                   style="color: #337ab7; font-size: 14px; text-decoration:none">
                     （框架模版下载）
                 </a>
             </span>
