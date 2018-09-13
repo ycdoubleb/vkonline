@@ -93,19 +93,22 @@ class BrandAuthorizeController extends Controller
      */
     public function actionFromView($id)
     {
-        $to_id = BrandAuthorize::findOne(['id' => $id])->brand_to;  //获得授权的ID
+        $model =  BrandAuthorize::findOne(['id' => $id]);
+        $from_id = $model->brand_from;  //授权方的ID
+        $to_id = $model->brand_to;      //获得授权的ID
         $i_customer_id = \Yii::$app->user->identity->customer->id;  //本人所在的集团ID
         
         if($to_id != $i_customer_id){
             throw new ForbiddenHttpException('没有权限访问！');
         }
         $searchModel = new BrandAuthorizeSearch();
-        $result = $searchModel->searchAuthorizeCourse(Yii::$app->request->queryParams);
+        $result = $searchModel->searchAuthorizeCourse($from_id, Yii::$app->request->queryParams);
         $dataProvider = new ArrayDataProvider([
             'allModels' => $result['data']['course']
         ]);
         
         return $this->render('from-view',[
+            'from_id' => $from_id,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'totalCount' => $result['total'],       //课程总数量
@@ -139,6 +142,18 @@ class BrandAuthorizeController extends Controller
         ]);
     }
 
+    /**
+     * 获取子级分类
+     * @param type $id
+     */
+    public function actionSearchChildren($id){
+        Yii::$app->getResponse()->format = 'json';
+        return [
+            'result' => 1,
+            'data' => Category::getCatChildren($id),
+        ];
+    }
+    
     /**
      * 获得授权课程的信息
      * @param string $id    课程ID

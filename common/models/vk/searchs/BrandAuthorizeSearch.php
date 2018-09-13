@@ -20,13 +20,20 @@ use yii\helpers\ArrayHelper;
  */
 class BrandAuthorizeSearch extends BrandAuthorize
 {
+    /** 补充分类ID属性 */
+    public $category_id;
+    /** 补充课程名称属性 */
+    public $course_name;
+
+
     /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'level', 'start_time', 'end_time', 'is_del', 'created_at', 'updated_at'], 'integer'],
+            [['id', 'level', 'start_time', 'end_time', 'is_del', 'created_at', 'updated_at', 'category_id'], 'integer'],
+            [['course_name'], 'string'],
             [['brand_from', 'brand_to', 'created_by'], 'safe'],
         ];
     }
@@ -158,27 +165,25 @@ class BrandAuthorizeSearch extends BrandAuthorize
     }
     
     /**
-     * 查找授权品牌下的课程
+     * 查找授权方品牌下的课程
+     * @param string $from_id    授权方ID
      * @param array $params
      * @return array
      */
-    public function searchAuthorizeCourse($params)
+    public function searchAuthorizeCourse($from_id, $params)
     {
-        $id = ArrayHelper::getValue($params, 'id');
-        $page = ArrayHelper::getValue($params, 'page', 1); //分页
-        $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        $course_name = ArrayHelper::getValue($params, 'course_name'); //课程名称
-        $brandAuthorize = BrandAuthorize::findOne($id);
-        
+        $page = ArrayHelper::getValue($params, 'page', 1);      //分页
+        $limit = ArrayHelper::getValue($params, 'limit', 20);   //显示数
+
         $query = BrandAuthorize::find()
                 ->select(['Course.category_id', 'Category.name AS category_name', 'Course.id', 'Course.name', 'Course.cover_img',
                     'Teacher.name AS teacher_name', 'COUNT(CourseNode.id) AS node_num'])
                 ->from(['BrandAuthorize' => BrandAuthorize::tableName()]);
         $query->andFilterWhere(['is_publish' => Course::YES_PUBLISH]);    //只可以查看已发布的课程数据
         $this->load($params);
-        
-        $categoryId = Category::getCatChildrenIds($this->start_time, true);    //获取分类的子级ID
-        $query->andFilterWhere(['Course.customer_id' => $brandAuthorize->brand_from]);
+
+        $categoryId = Category::getCustomerCatChildrenIds($this->category_id, $from_id, true);    //获取分类的子级ID
+        $query->andFilterWhere(['Course.customer_id' => $from_id]);
         
         //关联查询
         $query->leftJoin(['BrandFrom' => Customer::tableName()], 'BrandFrom.id = BrandAuthorize.brand_from');
@@ -189,10 +194,10 @@ class BrandAuthorizeSearch extends BrandAuthorize
         
         //条件查询
         $query->andFilterWhere([
-            'Course.category_id' => !empty($categoryId) ? ArrayHelper::merge([$this->start_time], $categoryId) : $this->start_time,
+            'Course.category_id' => !empty($categoryId) ? ArrayHelper::merge([$this->category_id], $categoryId) : $this->category_id,
         ]);
         //模糊查询
-        $query->andFilterWhere(['like', 'Course.name', $course_name]);
+        $query->andFilterWhere(['like', 'Course.name', $this->course_name]);
         $query->groupBy(['Course.id']);
         //查询总数
         $totalCount = $query->count('id');
