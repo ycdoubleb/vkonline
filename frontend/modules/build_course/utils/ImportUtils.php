@@ -18,7 +18,6 @@ use common\models\vk\Video;
 use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
-use Prophecy\Util\StringUtil;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Exception;
@@ -172,9 +171,15 @@ class ImportUtils {
                     $dataProvider[] = $sheetColumns;
                 }
             }
-            $video_id = ArrayHelper::getColumn($dataProvider, 'video.id');   //视频ID
-            if(in_array('', $video_id)){
-                \Yii::$app->getSession()->setFlash('error', 'video.id列不能存在空值!');
+            $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
+            $is_error = [];
+            foreach ($video_ids as $key => $video_id) {
+                $is_error += [$key => Video::findOne(['id' => $video_id])];     //根据videoid查找数据
+            }
+            if(in_array('', $video_ids)){   //是否存在空值
+                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
+            } elseif (in_array('', $is_error)) {
+                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据!');
             } else {
                 return $this->saveCourseFrame($id, $dataProvider);
             }
@@ -219,7 +224,7 @@ class ImportUtils {
                 $knowledge = [
                     'id' => $knowledge_id,
                     'node_id' => $node_id,
-                    'type' => 0,
+                    'type' => 1,
                     'name' => $data_val['knowledge.name'],
                     'des' => empty($data_val['des']) ?  Video::findOne(['id' => $data_val['video.id']])->des : 
                                 Html::encode($data_val['knowledge.des']),

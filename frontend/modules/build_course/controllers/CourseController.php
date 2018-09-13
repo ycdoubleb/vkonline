@@ -6,10 +6,7 @@ use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseAttribute;
-use common\models\vk\searchs\CourseActLogSearch;
-use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseSearch;
-use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
 use common\utils\StringUtil;
@@ -108,15 +105,12 @@ class CourseController extends Controller
      * @param string $id
      * @return mixed 
      */
-    public function actionView($id, $format = 0)
+    public function actionView($id)
     {
         $model = $this->findModel($id);
-        $searchUserModel = new CourseUserSearch();
-        $searchNodeModel = new CourseNodeSearch();
-        $searchCourseLog = new CourseActLogSearch();
         
         if (Yii::$app->request->isPost) {
-            ImportUtils::getInstance()->importFrame($id);
+            ImportUtils::getInstance()->importFrame($id);   //导入课程框架信息
         }
         
         return $this->render('view', [
