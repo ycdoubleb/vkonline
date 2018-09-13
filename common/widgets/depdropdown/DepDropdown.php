@@ -42,8 +42,14 @@ class DepDropdown extends InputWidget {
 
     public function init() {
         parent::init();
-        $this->input = Html::activeInput('text', $this->model, $this->attribute, ['style' => ['display' => 'none']]);
-        $this->input_id = Html::getInputId($this->model, $this->attribute);
+        if ($this->hasModel()) {
+            $this->input = Html::activeInput('text', $this->model, $this->attribute, ['style' => ['display' => 'none']]);
+            $this->input_id = Html::getInputId($this->model, $this->attribute);
+        } else {
+            $this->input = Html::input('text', $this->name, $this->value, ['id' => $this->name,'style' => ['display' => 'none']]);
+            $this->input_id = $this->name;
+        }
+
 
         $this->pluginOptions = array_merge([
             'plug_id' => 'DepDropdown_' . rand(1000, 9999),
