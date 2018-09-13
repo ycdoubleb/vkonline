@@ -5,6 +5,8 @@ namespace frontend\modules\build_course\controllers;
 use common\models\vk\CourseNode;
 use common\models\vk\searchs\CourseNodeSearch;
 use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\ImportUtils;
+use frontend\modules\build_course\utils\ExportUtils;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -51,7 +53,7 @@ class CourseNodeController extends Controller
     {
         $searchModel = new CourseNodeSearch();
         $dataProvider = $searchModel->search(['course_id' => $course_id]);
-        
+
         return $this->renderAjax('index', [
             'dataProvider' => $dataProvider,    //课程节点数据
             'course_id' => $course_id,      //课程id
@@ -185,6 +187,15 @@ class CourseNodeController extends Controller
         ];
     }
     
+    /**
+     * 导出课程框架
+     * @param array $id 课程ID
+     */
+    public function actionExport($id)
+    {
+        ExportUtils::getInstance()->exportFrame($id);
+    }
+
     /**
      * 基于其主键值找到 CourseNode 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。

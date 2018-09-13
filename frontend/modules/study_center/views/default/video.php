@@ -119,12 +119,12 @@ $js = <<<JS
      * @param {obj} _this
      */
     window.removeItem = function(_this){
-        var videoId = _this.attr("data-videoid");
+        var video_id = _this.attr("data-video_id");
         var totalCount = $(".summary > span > b").text();
-        $.get('/study_center/api/del-favorite',{video_id: videoId},function(result){
-            if(result.code == 200){
-                totalCount = parseInt(totalCount) - 1;
+        $.get('/study_center/api/del-favorite',{video_id: video_id},function(rel){
+            if(rel.code == '200'){
                 _this.parents("li").remove();
+                totalCount = parseInt(totalCount) - 1;
                 $(".summary > span > b").html(totalCount);
             }
         });

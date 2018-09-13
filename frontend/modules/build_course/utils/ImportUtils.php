@@ -8,8 +8,14 @@
 
 namespace frontend\modules\build_course\utils;
 
+use common\models\vk\CourseNode;
+use common\models\vk\Knowledge;
+use common\models\vk\KnowledgeVideo;
+use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
+use common\models\vk\Video;
+use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Yii;
@@ -46,10 +52,11 @@ class ImportUtils {
     
     /**
      * 批量导入视频
-     * @param integer $format   格式：0是post，1是ajax格式
+     * @param integer $requestMode   格式：0是post，1是ajax格式
+     * @param array $post
      * @return json|array
      */
-    public function importVideo($format)
+    public function importVideo($request_mode, $post)
     {
         $upload = UploadedFile::getInstanceByName('importfile');
         if($upload != null){
@@ -71,27 +78,25 @@ class ImportUtils {
                     $dataProvider[] = $sheetColumns;
                 }
             }
-            
-            //如果是ajax则返回json格式的数据
-            if($format){
-                
-            }else{
-                
-                foreach ($dataProvider as &$data) {
-                    $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
-                    $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
-                }
-//                var_dump($dataProvider);exit;
-                return [
-                    'repeat_total' => 0,
-                    'exist_total' => 0,
-                    'insert_total' => 0,
-                    'dataProvider' => new ArrayDataProvider([
-                        'allModels' => $dataProvider,
-                    ]),
-                ];
-            }            
+            foreach ($dataProvider as &$data) {
+                $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
+                $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
+                $data['video.tagsid'] = $this->checkTagsExists($data['video.tags']);
+            }
         }
+        //如果是ajax则返回json格式的数据
+        if($request_mode){
+            return $this->saveVideo($post);
+        }else{
+            return [
+                'repeat_total' => 0,
+                'exist_total' => 0,
+                'insert_total' => count($dataProvider),
+                'dataProvider' => new ArrayDataProvider([
+                    'allModels' => $dataProvider,
+                ]),
+            ];
+        }       
     }
     
     /**
@@ -137,6 +142,118 @@ class ImportUtils {
             
             return $this->batchSaveTeacher($dataProvider);
         }
+    }
+
+    /**
+     * 导入框架信息
+     * @param string $id    课程ID
+     * @return type
+     */
+    public function importFrame($id)
+    {
+        $upload = UploadedFile::getInstanceByName('importfile');
+        if($upload != null){
+            $spreadsheet = IOFactory::load($upload->tempName); // 载入excel文件
+            $sheet = $spreadsheet->getActiveSheet();    // 读取第一個工作表 
+            $sheetdata = $sheet->toArray(null, true, true, true);   //转换为数组                
+            $sheetColumns = [];
+            $dataProvider = [];
+            //获取组装的工作表数据
+            for ($row = 3; $row <= count($sheetdata); $row++) {
+                //组装对应数组值
+                foreach ($sheetdata[2] as $key => $value) {
+                    if(!empty($value)){ //值非空
+                        $sheetColumns[$value] = $sheetdata[$row][$key];
+                    }
+                }
+                //判断每一行是否存在空值，若存在则过滤
+                if(!empty(array_filter($sheetdata[$row]))){
+                    $dataProvider[] = $sheetColumns;
+                }
+            }
+            $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
+            $is_error = [];
+            foreach ($video_ids as $key => $video_id) {
+                $is_error += [$key => Video::findOne(['id' => $video_id])];     //根据videoid查找数据
+            }
+            if(in_array('', $video_ids)){   //是否存在空值
+                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
+            } elseif (in_array('', $is_error)) {
+                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据!');
+            } else {
+                return $this->saveCourseFrame($id, $dataProvider);
+            }
+        }
+    }
+
+    /**
+     * 保存课程框架信息
+     * @param string $id    课程ID
+     * @param array $dataProvider   框架数据
+     */
+    protected function saveCourseFrame($id, $dataProvider)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            foreach ($dataProvider as $key => $data_val) {
+                $knowledge_id = md5(time() . rand(1, 99999999));
+                //判断循环到第二次之后的node.name是否与前一次的node.name相同
+                $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
+                if(!empty($data_val['node.name']) && $is_true){     //node.name不为空
+                    $node_id = md5(time() . rand(1, 99999999));
+                    $course_node = [
+                        'id' => $node_id,
+                        'course_id' => $id,
+                        'parent_id' => '',
+                        'level' => 0,
+                        'name' => $data_val['node.name'],
+                        'des' => Html::encode($data_val['node.des']),
+                        'is_del' => 0,
+                        'sort_order' => $key,
+                        'created_at' => time(),
+                        'updated_at' => time(),
+                    ];
+                    Yii::$app->db->createCommand()->insert(CourseNode::tableName(), $course_node)->execute(); //保存节点
+                    $pre_node_id = $node_id;    //前一个node_id
+                    $pre_node_name = $data_val['node.name'];    //作为前一个的节点名称
+                } else {
+                    $node_id = $pre_node_id;
+                }
+                $knowledge = [
+                    'id' => $knowledge_id,
+                    'node_id' => $node_id,
+                    'type' => 1,
+                    'name' => $data_val['knowledge.name'],
+                    'des' => empty($data_val['des']) ?  Video::findOne(['id' => $data_val['video.id']])->des : 
+                                Html::encode($data_val['knowledge.des']),
+                    'data' => '',
+                    'zan_count' => 0,
+                    'favorite_count' => 0,
+                    'is_del' => 0,
+                    'has_resource' => 0,
+                    'sort_order' => $key,
+                    'created_by' => Yii::$app->user->id,
+                    'created_at' => time(),
+                    'updated_at' => time(),
+                ];
+                Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
+                $knowledge_video = [
+                    'knowledge_id' => $knowledge_id,
+                    'video_id' => $data_val['video.id'],
+                    'is_del' => 0,
+                ];
+                //关联知识点和视频
+                Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
+            }
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','导入成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','导入失败::'.$ex->getMessage());
+        }
+        
     }
 
     /**
@@ -231,6 +348,11 @@ class ImportUtils {
         ];
     }
     
+    protected function saveVideo($post)
+    {
+        var_dump($post);exit;
+    }
+
     /**
      * 保存绘图
      * @param MemoryDrawing $drawing
@@ -380,19 +502,52 @@ class ImportUtils {
         $teacher_results = $teacher->all();
         
         if($key_to_value){
-            if(count($teacher_results) > 1){
-                return ArrayHelper::map($teacher_results, 'id', 'avatar');
-            }else{
-                return [
-                    'id' => isset($teacher_results[0]) ? $teacher_results[0]['id'] : null,
-                    'avatar' => isset($teacher_results[0]) ? $teacher_results[0]['avatar'] : null
+            $teacherFormat = [];
+            foreach ($teacher_results as $teacher_data) {
+                $teacherFormat[$teacher_data['id']] = [
+                    'id' => $teacher_data['id'],
+                    'avatar' => StringUtil::completeFilePath($teacher_data['avatar']), 
                 ];
             }
+            return $teacherFormat;
         }else{
-            return $teacher_results;;
+            return $teacher_results;
         }
     }
-
+    
+    /**
+     * 检查标签是否已存在
+     * @param string $video_tags    视频标签
+     * @return array    返回已存在和新插入的标签id
+     */
+    protected function checkTagsExists($video_tags)
+    {
+        $tagIds = [];   //保存插入表返回的所有id
+        /* 判断分割符的格式 */
+        if(strpos($video_tags ,"、")){  
+            $videoTags =  explode("、", $video_tags);  
+        }else if(strpos($video_tags ,'，')){  
+            $videoTags =  explode("，", $video_tags);  
+        }else{
+            $videoTags = explode(',', $video_tags);
+        }
+        //查询已存在的标签
+        $tags = (new Query())->from(['Tags' => Tags::tableName()]);
+        $tags->select(['id', 'name'])->where(['name' => $videoTags]);
+        $tag_results = $tags->all();
+        $tag_ids = ArrayHelper::getColumn($tag_results, 'id');    //获取已存在的id
+        $tag_names = ArrayHelper::getColumn($tag_results, 'name'); //获取已存在的name
+        //保存不存在的标签
+        foreach ($videoTags as $tags_name) {
+            if(!in_array($tags_name, $tag_names)){
+                $tagModel = new Tags(['name' => $tags_name]);
+                $tagModel->save(true, ['name']);
+                $tagIds[] += $tagModel->id;
+            }
+        }
+        
+        return array_merge(array_values($tag_ids), $tagIds);
+    }
 
     /**
      * 检查目标路径是否存在，不存即创建目标

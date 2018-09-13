@@ -107,6 +107,18 @@ FrontendAssets::register($this);
                     ],
                 ],
                 [
+                    'attribute' => 'is_del',
+                    'filter' => false,
+                    'value' => function($model){
+                        return $model['is_del'] == 0 ? '否' : '是';
+                    },
+                    'contentOptions' => [
+                        'style' => [
+                            'text-align' => 'center',
+                        ],
+                    ],
+                ],
+                [
                     'attribute' => 'created_by',
                     'filter' => false,
                     'value' => function($model){

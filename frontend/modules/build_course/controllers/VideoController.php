@@ -402,10 +402,10 @@ class VideoController extends Controller
     /**
      * 导入 现有的 Video 模板。
      * 如果导入成功，浏览器将返回导入的 Video。
-     * @param integer $format   格式：0是post，1是ajax格式
+     * @param integer $requestMode   格式：0是post，1是ajax格式
      * @return json|mixed
      */
-    public function actionImport($format = 0)
+    public function actionImport($request_mode = 0)
     {
         $results = [
             'repeat_total' => 0,
@@ -415,11 +415,14 @@ class VideoController extends Controller
                 'allModels' => [],
             ]),
         ];
+
         if (Yii::$app->request->isPost) {
-            $results = ImportUtils::getInstance()->importVideo($format);
+            $results = ImportUtils::getInstance()->importVideo($request_mode, Yii::$app->request->post());
         }
         
-        return $this->render('import', $results);
+        if(!$request_mode){
+            return $this->render('import', $results);
+        }
     }
     
     /**

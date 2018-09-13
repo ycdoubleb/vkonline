@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\widgets\depdropdown\DepDropdown;
 use frontend\modules\res_service\assets\ModuleAssets;
@@ -105,7 +106,9 @@ ModuleAssets::register($this);
                     'label' => '预览图',
                     'format' => 'raw',
                     'value' => function($data){
-                        return Html::img($data['cover_img'], ['style' => ['max-width' => '120px']]);
+                        return Html::img(empty($data['cover_img']) ? 
+                                Aliyun::absolutePath($data['cover_img'].'static/imgs/notfound.png') : 
+                                    $data['cover_img'], ['style' => ['max-width' => '120px', 'max-height' => '63.63px']]);
                     },
                     'headerOptions' => ['style' => 'width:125px'],
                     'contentOptions' => ['style' => 'white-space:normal'],
@@ -178,14 +181,12 @@ $js = <<<JS
     
     //导出
     $(".export-btn").click(function() {
-        console.log($("input[type='checkbox']").is(':checked'));
         if($("input[name='checkbox[]']:checked").length > 0){
             var value = "";
             $.each($("input[name='checkbox[]']:checked"),function(){
                 value += $(this).val()+',';
             });
             location.href="/res_service/export/more?ids=" + value;
-            console.log(value);
         }else{
             alert("请选择要导出的课程");
         }

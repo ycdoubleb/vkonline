@@ -58,7 +58,15 @@ class BrandAuthorizeController extends Controller
     
     public function actionToIndex()
     {
-        return $this->render('to-index');
+        $params = Yii::$app->request->queryParams;
+        $searchModel = new BrandAuthorizeSearch();
+        $dataProvider = $searchModel->searchBrandToAuthrize($params);
+        
+        return $this->render('to-index',[
+            'params' => $params,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
     
     /**
@@ -69,7 +77,7 @@ class BrandAuthorizeController extends Controller
     {
         $params = Yii::$app->request->queryParams;
         $searchModel = new BrandAuthorizeSearch();
-        $dataProvider = $searchModel->searchBrandAuthrize($params);
+        $dataProvider = $searchModel->searchBrandFromAuthrize($params);
 
         return $this->render('from-index',[
             'params' => $params,
@@ -113,6 +121,12 @@ class BrandAuthorizeController extends Controller
      */
     public function actionFromCourse_info($id)
     {
+        $course_customer_id = Course::findOne(['id' => $id])->customer_id;       //课程的ID
+        $to_id = BrandAuthorize::findOne(['brand_from' => $course_customer_id])->brand_to;  //获得授权的ID
+        $i_customer_id = \Yii::$app->user->identity->customer->id;      //本人所在的集团ID
+        if($to_id != $i_customer_id){
+            throw new ForbiddenHttpException('没有权限访问！');
+        }
         $result = $this->getFromCourseInfo($id);
         $dataProvider = new ArrayDataProvider([
             'allModels' => $result,

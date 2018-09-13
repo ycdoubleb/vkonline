@@ -35,7 +35,7 @@ ModuleAssets::register($this);
         <?php ActiveForm::end(); ?>
     </div>
     
-    <!--数据统计-->
+    <!--授权的课程-->
     <div class="panel">
         <div class="list">
             <?php foreach ($dataProvider->models as $data):?>

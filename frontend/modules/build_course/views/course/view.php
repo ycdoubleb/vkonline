@@ -7,6 +7,7 @@ use kartik\switchinput\SwitchInputAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
+use yii\widgets\ActiveForm;
 use yii\widgets\DetailView;
 
 /* @var $this View */
@@ -214,19 +215,32 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 <?= Yii::t('app', '{Course}{Catalog}',[
                     'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
                 ]) ?>
+                <a href="javascrip:;" style="color: #337ab7;font-size: 14px;text-decoration:none">
+                    （框架模版下载）
+                </a>
             </span>
             <div class="btngroup pull-right">
                 <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
-                    echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
-                        'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
-                    ]);
-//                    echo '&nbsp;' . Html::a(Yii::t('app', '导入'), 'javascript:;', [
-//                        'class' => 'btn btn-info btn-flat'
-//                    ]);
-//                    echo '&nbsp;' . Html::a(Yii::t('app', '导出'), 'javascript:;', [
-//                        'class' => 'btn btn-info btn-flat'
-//                    ]);
-                } ?>
+                        echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
+                            'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
+                        ]);
+                        $form = ActiveForm::begin([
+                            'options'=>[
+                                'id' => 'build-course-form',
+                                'class'=>'form-horizontal',
+                                'enctype' => 'multipart/form-data',
+                                'style' => 'display:inline-block'
+                            ],
+                        ]);
+                        echo '&nbsp;<div class="vk-uploader"><div class="btn btn-info btn-flat">导入</div>'
+                                . '<div class="file-box">'
+                                    . '<input type="file" name="importfile" class="file-input" onchange="submitForm();">' 
+                                . '</div></div>';
+                        ActiveForm::end();
+                    } 
+                    echo '&nbsp;' . Html::button(Yii::t('app', '导出'), [
+                        'class' => 'btn btn-info btn-flat export-frame'
+                    ]);?>
             </div>
         </div>
         
@@ -309,6 +323,15 @@ $js = <<<JS
         $('.myModal').modal("show").load(_this.attr("href"));
         return false;
     }    
+    
+    window.submitForm = function(){
+        $('#build-course-form').submit();
+    }
+    
+    //导出框架数据
+    $(".export-frame").click(function(){
+        location.href="/build_course/course-node/export?id=" + "$model->id";
+    })
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

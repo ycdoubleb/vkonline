@@ -51,7 +51,7 @@ class BrandAuthorizeSearch extends BrandAuthorize
     {
         $query = (new Query())
                 ->select(['BrandAuthorize.id', 'BrandFrom.name AS from_name', 'BrandTo.name AS to_name', 
-                    'start_time', 'end_time', 'AdminUser.nickname AS created_by'])
+                    'start_time', 'end_time', 'BrandAuthorize.is_del', 'AdminUser.nickname AS created_by'])
                 ->from(['BrandAuthorize' => BrandAuthorize::tableName()]);
 
         $query->leftJoin(['BrandFrom' => Customer::tableName()], 'BrandFrom.id = BrandAuthorize.brand_from');
@@ -86,11 +86,47 @@ class BrandAuthorizeSearch extends BrandAuthorize
     }
     
     /**
+     * 查找我方授权的品牌
+     * @param array $params
+     * @return ActiveDataProvider
+     */
+    public function searchBrandToAuthrize($params)
+    {
+        $brand_to = ArrayHelper::getValue($params, 'BrandAuthorizeSearch.brand_to');
+
+        $query = (new Query())
+                ->select(['BrandAuthorize.id', 'BrandAuthorize.is_del', 'BrandTo.name', 'BrandTo.logo'])
+                ->from(['BrandAuthorize' => BrandAuthorize::tableName()]);
+
+        $query->where(['BrandAuthorize.brand_from' => Yii::$app->user->identity->customer->id]);
+        $query->andFilterWhere(['BrandAuthorize.is_del' => 0]);     //授权有效
+        $query->andFilterWhere(['>=', 'BrandAuthorize.end_time', time()]);  //授权未过期
+        // add conditions that should always apply here
+        $query->leftJoin(['BrandTo' => Customer::tableName()], 'BrandTo.id = BrandAuthorize.brand_to');
+        
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere(['like', 'BrandTo.name', $brand_to]);
+
+        return $dataProvider;
+    }
+    
+    /**
      * 查找获得授权的品牌
      * @param array $params
      * @return ActiveDataProvider
      */
-    public function searchBrandAuthrize($params)
+    public function searchBrandFromAuthrize($params)
     {
         $brand_from = ArrayHelper::getValue($params, 'BrandAuthorizeSearch.brand_from');
 

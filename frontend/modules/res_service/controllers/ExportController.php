@@ -12,7 +12,10 @@ use yii\web\Controller;
 
 class ExportController extends Controller
 {
-    
+    /**
+     * 导出单个课程信息
+     * @param string $id 课程ID
+     */
     public function actionSingle($id)
     {
         $categoryPath = BrandAuthorizeController::getCategoryFullPath($id);
@@ -24,6 +27,10 @@ class ExportController extends Controller
         $this->saveCourseInfo($courseName, $courseFullPath, array_values($courseInfos));
     }
 
+    /**
+     * 导出多个课程信息
+     * @param string $ids   多个课程ID
+     */
     public function actionMore($ids)
     {
         $course_ids = array_filter(explode(',', $ids)); //切割字符串为数组并过滤空值
@@ -40,7 +47,7 @@ class ExportController extends Controller
                 ]
             ];
         }
-//        var_dump($customer);exit;
+
         $this->saveCourseInfos($customer, $courseInfos);
     }
 
