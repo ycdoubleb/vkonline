@@ -209,6 +209,7 @@ class ImportUtils {
         {  
             $node_num = 0; $knowledge_num = 0;
             foreach ($dataProvider as $key => $data_val) {
+                $video_model = Video::findOne(['id' => $data_val['video.id']]);     //视频模型
                 $knowledge_id = md5(time() . rand(1, 99999999));
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
                 $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
@@ -236,15 +237,15 @@ class ImportUtils {
                 $knowledge = [
                     'id' => $knowledge_id,
                     'node_id' => $node_id,
-                    'type' => 1,
+                    'type' => 1,        //类型；1为视频
                     'name' => $data_val['knowledge.name'],
-                    'des' => empty($data_val['des']) ?  Video::findOne(['id' => $data_val['video.id']])->des : 
+                    'des' => empty($data_val['des']) ?  $video_model->des : 
                                 Html::encode($data_val['knowledge.des']),
-                    'data' => '',
+                    'data' => $video_model->duration,   //视频时长
                     'zan_count' => 0,
                     'favorite_count' => 0,
                     'is_del' => 0,
-                    'has_resource' => 1,
+                    'has_resource' => 1,        //是否关联资源 1
                     'sort_order' => $key,
                     'created_by' => Yii::$app->user->id,
                     'created_at' => time(),
