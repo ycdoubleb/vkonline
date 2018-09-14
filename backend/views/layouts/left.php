@@ -12,7 +12,7 @@ use common\widgets\Menu;
         <?php if(!Yii::$app->user->isGuest): ?>
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="<?= WEB_ROOT.$user->avatar?>" class="img-circle" alt="User Image"/>
+                <img src="<?= $user->avatar; ?>" class="img-circle" alt="User Image"/>
             </div>
             <div class="pull-left info">
                 <p><?= $user->nickname ?></p>

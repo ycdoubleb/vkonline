@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'path',
                     'format' => 'raw',
-                    'value' => Html::img(WEB_ROOT . $model->path, ['style' => ['max-width' => '680px']]),
+                    'value' => Html::img($model->path, ['style' => ['max-width' => '680px']]),
                 ],
                 'link',
                 [

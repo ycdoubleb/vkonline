@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\AdminUser;
 use kartik\widgets\FileInput;
 use yii\helpers\Html;
@@ -62,8 +63,8 @@ use yii\widgets\ActiveForm;
                     'browseLabel' => '选择上传图像...',
                     'initialPreview' => [
                         $model->isNewRecord ?
-                                Html::img(WEB_ROOT . '/upload/avatars/default.jpg', ['class' => 'file-preview-image', 'width' => '213']) :
-                                Html::img(WEB_ROOT . $model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
+                                Html::img(Aliyun::absolutePath('upload/avatars/default.jpg'), ['class' => 'file-preview-image', 'width' => '213']) :
+                                Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => '213']),
                     ],
                     'overwriteInitial' => true,
                 ],

@@ -47,8 +47,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'avatar',
                     'format' => 'raw',
                     'value' => !empty($model->avatar) ? 
-                        Html::img(WEB_ROOT . $model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']) . 
-                            ($model->is_certificate == 1 ? Html::img(WEB_ROOT . '/imgs/teacher/certificate.png', ['class' => 'certificate']) : '')    
+                        Html::img($model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']) . 
+                            ($model->is_certificate == 1 ? Html::img('/imgs/teacher/certificate.png', ['class' => 'certificate']) : '')    
                                 : null,
                 ],
                 [
