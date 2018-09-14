@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\aliyuncs\Aliyun;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -145,17 +146,15 @@ class Banner extends ActiveRecord
             if(!$this->created_by){
                 $this->created_by = Yii::$app->user->id;
             }
-            $file_name = md5(time());
             //图片上传
             $upload = UploadedFile::getInstance($this, 'path');
             if ($upload !== null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
-                //获取后缀名，默认名为.jpg
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/banner/'));
-                $upload->saveAs($uploadpath . $file_name . '.' . $ext);
-                $this->path = '/upload/banner/' . $file_name . '.' . $ext . '?r=' . rand(1, 10000);
+                //获取后缀名，默认为 png 
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $img_path = "upload/banner/{$this->id}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->path = $img_path . '?rand=' . rand(0, 9999);
             }
             if (trim($this->path) == '') {
                 $this->path = $this->getOldAttribute('path');
@@ -169,6 +168,7 @@ class Banner extends ActiveRecord
     public function afterFind()
     {
         $this->des = Html::decode($this->des);
+        $this->path = Aliyun::absolutePath(!empty($this->path) ? $this->path : 'upload/banner/banner1.jpg');
     }
 
     /**

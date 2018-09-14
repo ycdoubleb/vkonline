@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Customer;
 use common\utils\SecurityUtil;
 use linslin\yii2\curl\Curl;
@@ -247,13 +248,12 @@ class User extends ActiveRecord implements IdentityInterface {
             //上传头像
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
-                //获取后缀名，默认为 jpg 
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/avatars/'));
-                $upload->saveAs($uploadpath . $this->username . '.' . $ext);
-                $this->avatar = '/upload/avatars/' . $this->username . '.' . $ext . '?rand=' . rand(0, 1000);
+                //获取后缀名，默认为 png 
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $img_path = "upload/avatars/{$this->username}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->avatar = $img_path . '?rand=' . rand(0, 9999);                
             }
             
             if ($this->scenario == self::SCENARIO_CREATE) {
@@ -262,8 +262,8 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->generateAuthKey();
                 //设置默认头像
                 if (trim($this->avatar) == '' || !isset($this->avatar)){
-                    $this->avatar = ($this->sex == null) ? '/upload/avatars/default.jpg' :
-                            '/upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                    $this->avatar = ($this->sex == null) ? 'upload/avatars/default.jpg' :
+                            'upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
                 }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
                 if (trim($this->password_hash) == ''){
@@ -289,6 +289,12 @@ class User extends ActiveRecord implements IdentityInterface {
         }
         return false;
     }
+    
+    public function afterFind()
+    {
+        $this->avatar = Aliyun::absolutePath(!empty($this->avatar) ? $this->avatar : 'upload/avatars/default.jpg');
+    }
+    
     /**
      * 保存完成
      * @param bool $insert                  是否为插入数据

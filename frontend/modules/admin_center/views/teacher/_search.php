@@ -1,15 +1,6 @@
 <?php
 
-use common\models\vk\Category;
-use common\models\vk\Course;
-use common\utils\StringUtil;
-use common\widgets\depdropdown\DepDropdown;
-use frontend\modules\admin_center\assets\ModuleAssets;
-use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
