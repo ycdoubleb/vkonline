@@ -9,11 +9,12 @@
 namespace frontend\modules\build_course\utils;
 
 use common\components\aliyuncs\Aliyun;
-use common\models\vk\CustomerWatermark;
-use common\models\vk\TagRef;
+use common\models\vk\CourseActLog;
 use common\models\vk\CourseNode;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
+use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
@@ -206,6 +207,7 @@ class ImportUtils {
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $node_num = 0; $knowledge_num = 0;
             foreach ($dataProvider as $key => $data_val) {
                 $knowledge_id = md5(time() . rand(1, 99999999));
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
@@ -227,6 +229,7 @@ class ImportUtils {
                     Yii::$app->db->createCommand()->insert(CourseNode::tableName(), $course_node)->execute(); //保存节点
                     $pre_node_id = $node_id;    //前一个node_id
                     $pre_node_name = $data_val['node.name'];    //作为前一个的节点名称
+                    $node_num++;
                 } else {
                     $node_id = $pre_node_id;
                 }
@@ -248,6 +251,7 @@ class ImportUtils {
                     'updated_at' => time(),
                 ];
                 Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
+                $knowledge_num++;
                 $knowledge_video = [
                     'knowledge_id' => $knowledge_id,
                     'video_id' => $data_val['video.id'],
@@ -256,6 +260,7 @@ class ImportUtils {
                 //关联知识点和视频
                 Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
             }
+            $this->saveCourseActLog($id, $node_num, $knowledge_num);    //保存导入记录
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','导入成功！');
         }catch (Exception $ex) {
@@ -263,6 +268,30 @@ class ImportUtils {
             Yii::$app->getSession()->setFlash('error','导入失败::'.$ex->getMessage());
         }
         
+    }
+    
+    /**
+     * 保存导入记录
+     * @param string $id
+     * @param integer $node_num
+     * @param integer $knowledge_num
+     */
+    private function saveCourseActLog($id, $node_num, $knowledge_num)
+    {
+        //$actLog数组
+        $actLog = [
+            'action' => '导入',
+            'title' => '导入课程目录',
+            'content' => '共导入'.$node_num.'个节点，'.$knowledge_num.'个知识点',
+            'created_by' => Yii::$app->user->id,
+            'course_id' => $id, 
+            'related_id' => '',
+            'created_at' => time(),
+            'updated_at' => time(),
+        ];
+        
+        /** 添加$actLog数组到表里 */
+        Yii::$app->db->createCommand()->insert(CourseActLog::tableName(), $actLog)->execute();
     }
 
     /**
