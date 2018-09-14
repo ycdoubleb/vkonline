@@ -56,7 +56,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'logo',
                         'format' => 'raw',
-                        'value' => Html::img(WEB_ROOT . $model->logo),
+                        'value' => Html::img($model->logo, ['style' => 'height: 146px']),
                     ],
                     'address',
                     [

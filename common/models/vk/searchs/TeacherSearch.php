@@ -2,13 +2,11 @@
 
 namespace common\models\vk\searchs;
 
-use common\models\vk\Course;
 use common\models\vk\Teacher;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
-use yii\data\Pagination;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -70,8 +68,8 @@ class TeacherSearch extends Teacher
         //显示数量
         $query->offset(($page - 1) * $limit)->limit($limit);
         //查询结果
-        $result = $query->asArray()->all();
-        
+        $result = $query->all();
+
         return [
             'filter' => $params,
             'total' => $totalCount,

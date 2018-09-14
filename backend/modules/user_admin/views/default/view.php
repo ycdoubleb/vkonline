@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'avatar',
                 'format' => 'raw',
-                'value' => Html::img(WEB_ROOT.$model->avatar, ['width' => '140', 'height' => '140']),
+                'value' => Html::img($model->avatar, ['width' => '140', 'height' => '140']),
                
             ],
             'username',

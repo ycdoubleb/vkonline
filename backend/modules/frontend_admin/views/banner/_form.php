@@ -44,7 +44,7 @@ use yii\widgets\ActiveForm;
             'initialPreview' => [
                 $model->isNewRecord ?
                         Html::img('', ['class' => 'file-preview-image', 'width' => '213']) :
-                            Html::img(WEB_ROOT . $model->path, ['class' => 'file-preview-image', 'width' => '213']),
+                            Html::img($model->path, ['class' => 'file-preview-image', 'width' => '213']),
             ],
             'overwriteInitial' => true,
         ],

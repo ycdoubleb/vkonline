@@ -239,13 +239,13 @@ use yii\web\View;
                 
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <img src="<?= WEB_ROOT.$user->avatar?>" class="user-image" alt="User Image"/>
+                        <img src="<?= $user->avatar?>" class="user-image" alt="User Image"/>
                         <span class="hidden-xs"><?= $user->nickname ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
-                            <img src="<?= WEB_ROOT.$user->avatar?>" class="img-circle"
+                            <img src="<?= $user->avatar?>" class="img-circle"
                                  alt="User Image"/>
 
                             <p>

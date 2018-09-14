@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php foreach($dataProvider as $key => $data):?>
             <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $data['id']])]) ?>
                 <div class="teacher-content">
-                    <?= Html::img(WEB_ROOT . $data['avatar'], ['class' => 'img-circle teacher-img'])?>
+                    <?= Html::img($data['avatar'], ['class' => 'img-circle teacher-img'])?>
                     <?php if($data['is_certificate']): ?>
                         <i class="fa fa-vimeo"></i>
                     <?php else: ?>
