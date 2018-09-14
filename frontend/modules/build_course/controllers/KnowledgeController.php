@@ -416,7 +416,7 @@ class KnowledgeController extends Controller
             $item['des'] = Html::decode($item['des']);
             $item['created_at'] = Date('Y-m-d H:i', $item['created_at']);
             $item['level_name'] = Video::$levelMap[$item['level']];
-            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
         

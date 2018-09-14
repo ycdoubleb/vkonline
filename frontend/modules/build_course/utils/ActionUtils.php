@@ -1268,7 +1268,7 @@ class ActionUtils
      * @param array $tagArrays  标签
      * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
      */
-    private function saveObjectTags($objectId, $tagArrays, $type = 1)
+    protected function saveObjectTags($objectId, $tagArrays, $type = 1)
     {
         $tagRefs = [];
         $tagArrays = array_filter($tagArrays);
@@ -1435,7 +1435,7 @@ class ActionUtils
      * @param string $fileId    实体文件id
      * @return array
      */
-    protected function getUploadVideoFileUserInfo($fileId)
+    public function getUploadVideoFileUserInfo($fileId)
     {
         //查询视频关联实体文件
         $videoFile = (new Query())->select([

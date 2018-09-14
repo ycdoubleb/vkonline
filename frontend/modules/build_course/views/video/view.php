@@ -23,7 +23,7 @@ $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
 //组装视频下关联的水印图
 $watermarks = '';
 foreach ($watermarksFiles as $watermark) {
-    $watermarks .= Html::img($watermark['path'], ['width' => 32, 'height' => 20]);
+    $watermarks .= Html::img($watermark['path'], ['width' => 64, 'height' => 40]) . '&nbsp;&nbsp;';
 }
 
 ?>
@@ -165,7 +165,7 @@ foreach ($watermarksFiles as $watermark) {
                     'label' => Yii::t('app', 'Video'),
                     'format' => 'raw',
                     'value' => !empty($model->videoFile) ? 
-                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . Aliyun::absolutePath(!empty($model->img) ? $model->img : 'static/imgs/notfound.png') . '"></video>' : null,
+                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . $model->img . '"></video>' : null,
                 ],
             ],
         ]) ?>

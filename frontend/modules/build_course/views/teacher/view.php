@@ -100,7 +100,7 @@ $this->title = Yii::t('app', "{Teacher}{Detail}：{$model->name}", [
                     'attribute' => 'avatar',
                     'format' => 'raw',
                     'value' => '<div class="avatars img-circle">' .
-                            Html::img([$model->avatar], ['class' => 'img-circle', 'width' => '100%', 'height' => '96px']) .
+                            Html::img($model->avatar, ['class' => 'img-circle', 'width' => '100%', 'height' => 96]) .
                             ($model->is_certificate ? '<i class="fa fa-vimeo"></i>' : '') .
                         '</div>',
                 ],

@@ -32,7 +32,7 @@ WatermarkAsset::register($this);
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
-        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'avatar' => $teacher->avatar, 
         'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
         'sex' => $teacher->sex == 1 ? '男' : '女',
         'job_title' => $teacher->job_title,
@@ -121,9 +121,9 @@ $this->registerJs($format, View::POS_HEAD);
                         'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
                         'browseLabel' => '选择图片...',
                         'initialPreview' => [
-                            $model->isNewRecord || empty($model->cover_img)?
-                                    Html::img(['/upload/course/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
-                                    Html::img(Aliyun::absolutePath($model->img), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140'])
+                            $model->isNewRecord || empty($model->img) ?
+                                    Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+                                    Html::img($model->img, ['class' => 'file-preview-image', 'width' => '215', 'height' => '140'])
                         ],
                         'overwriteInitial' => true,
                     ],
@@ -259,7 +259,8 @@ $this->registerJs($format, View::POS_HEAD);
                 ]) ?>
                 <div class="col-lg-11 col-md-11">
                     <div id="video-mts_watermark_ids">
-                        <p style="line-height:40px;">【无水印可选】</p>
+                        <!--加载-->
+                        <div class="loading-box"><span class="loading"></span></div>
                     </div>
                     <br/>
                     <!--预览-->
@@ -287,6 +288,9 @@ $this->registerJs($format, View::POS_HEAD);
 $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this)->sourcePath);
 $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
+//加载 ITEM_DOM 模板
+$item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+    $this->renderFile('@frontend/modules/build_course/views/video/_watermark.php')));
 $isNewRecord = $model->isNewRecord ? 1 : 0;
 $js = 
 <<<JS
@@ -415,42 +419,37 @@ $js =
         });
     });
     //初始化水印组件
-    window.watermark = new youxueba.Watermark({
-        container: '#preview'
-    });
+    window.watermark = new youxueba.Watermark({container: '#preview'});
     /**
      * 显示客户下已启用的水印图
      */
-    var item_dom = '<div class="video-watermark">' +
-        '<input name="Video[mts_watermark_ids][]" type="checkbox" value="{%id%}" {%is_selected%} onchange="checkedWatermark($(this))">' + 
-        '<img src="{%path%}" width="64" height="40"/>' +
-    '</div>';
-    var item = '';
+    var isPageLoading = false;  //取消加载Loading状态
     $.each($watermarksFiles, function(){
-        
-        //创建情况下显示默认选中，更新情况下如果id存在已选的水印里则this.is_selected = "checked"，否则不显示选中
-        if(!$isNewRecord){
-            this.is_selected = $.inArray(this.id, $wateSelected) != -1 ? "checked" : "";
+        if(!isPageLoading){
+            $('#video-mts_watermark_ids').html('');
         }
-        
-        item += Wskeee.StringUtil.renderDOM(item_dom, this);
-        //添加水印
-        if(this.is_selected != null){
+        //创建情况下显示默认选中，更新情况下如果id存在已选的水印里则this.is_selected = true，否则不显示选中
+        if(!$isNewRecord){
+            this.is_selected = $.inArray(this.id, $wateSelected) != -1 ? true : false;
+        }
+        var watermarks = $(Wskeee.StringUtil.renderDOM($item_dom, this)).appendTo($('#video-mts_watermark_ids'));
+        watermarks.find('input[name="video_watermark"]').prop('checked', this.is_selected);
+        //如果是默认选中，则在预览图上添加该选中的水印
+        if(this.is_selected){
             window.watermark.addWatermark('vkcw' + this.id, this);
         }
+        isPageLoading = true;
     });
-    if(item != ''){
-        $('#video-mts_watermark_ids').html(item);
-    }
-    
+        
     /**
      * 选中水印图
      * @param object _this
      */
     window.checkedWatermark = function(_this){
+        /* 判断用户是否有选中水印图，如果选中，则添加水印，否则删除水印 */
         if($(_this).is(":checked")){
             $.each($watermarksFiles, function(){
-                //添加水印
+                //如果客户水印的id等于用户选中的值，则在预览图上添加水印
                 if(this.id == $(_this).val()){
                     window.watermark.addWatermark('vkcw' + this.id, this);
                     return false;

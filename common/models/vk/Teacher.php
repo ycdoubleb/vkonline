@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use Yii;
 use yii\behaviors\TimestampBehavior;

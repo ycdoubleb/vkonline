@@ -620,7 +620,8 @@
 /***************************
  * 水印样式
  ***************************/
-.video-form .video-watermark {
+.video-form .video-watermark,
+.video-import .video-watermark {
     position: relative;
     display: inline-block;
     width: 92px;
@@ -631,13 +632,15 @@
     text-align: center;
     border: 1px solid #e4e4e4;
 }
-.video-form .video-watermark > input[type="checkbox"] {
+.video-form .video-watermark > input[type="checkbox"],
+.video-import .video-watermark > input[type="checkbox"] {
     position: absolute;
     top: 3px;
     left: 3px;
     margin-top: 0px;
 }
-.video-form .loading-box {
+.video-form .loading-box,
+.video-import .loading-box {
     text-align: left;
 }
 
@@ -700,7 +703,7 @@
     background-color: #ffecec;
 }
 
-.video-import .error-icon {
+.video-import .warnicon {
     position: absolute;
     left: 0px;
     top: 0px;
@@ -708,9 +711,16 @@
     display: inline-block;
     width: 10px;
     height: 10px;
-    background-image: url('../imgs/error-icon.png');
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.video-import .warnicon.has-success {
+    background-image: url('../imgs/has-success.png');
+}
+
+.video-import .warnicon.has-error {
+    background-image: url('../imgs/has-error.png');
 }
 
 /*******************************************************************************
