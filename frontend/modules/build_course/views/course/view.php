@@ -216,7 +216,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 <?= Yii::t('app', '{Course}{Catalog}',[
                     'Course' => Yii::t('app', 'Course'), 'Catalog' => Yii::t('app', 'Catalog')
                 ]) ?>
-                <a href="<?= Aliyun::absolutePath('static/doc/template/courseframe_import_template.xlsx')?>"
+                <a href="<?= Aliyun::absolutePath('static/doc/template/courseframe_import_template.xlsx?id=' . rand(0, 999))?>"
                    style="color: #337ab7; font-size: 14px; text-decoration:none">
                     （框架模版下载）
                 </a>
