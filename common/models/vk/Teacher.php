@@ -144,20 +144,19 @@ class Teacher extends ActiveRecord
             }
             $upload = UploadedFile::getInstance($this, 'avatar');
             if ($upload != null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
-                //获取后缀名，默认为 jpg 
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
-                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
-                $this->avatar = '/upload/teacher/avatars/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
+                //获取后缀名，默认为 png 
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $img_path = "upload/teacher/avatars/{$this->id}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->avatar = $img_path . '?rand=' . rand(0, 9999); 
             }
             //更新并且没有修改头像情况即使用旧头像
             if (trim($this->avatar) == '' && !$this->isNewRecord){
                 $this->avatar = $this->getOldAttribute('avatar');
             }else{
                 //设置默认头像
-                $this->avatar = '/upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+                $this->avatar = 'upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
             }
             $this->des = Html::encode($this->des);
             
@@ -169,6 +168,7 @@ class Teacher extends ActiveRecord
     public function afterFind()
     {
         $this->des = Html::decode($this->des);
+        $this->avatar = Aliyun::absolutePath(!empty($this->avatar) ? $this->avatar : 'upload/avatars/default.jpg');
     }
     
     /**

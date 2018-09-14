@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\AdminUser;
 use common\models\Region;
 use common\models\User;
@@ -207,15 +208,13 @@ class Customer extends ActiveRecord
             }
             //Logo上传
             $upload = UploadedFile::getInstance($this, 'logo');
-            $logo_name = md5(time());
             if($upload !== null){
-                $string = $upload->name;
-                $array = explode('.', $string);
-                //获取后缀名，默认名为.jpg
-                $ext = count($array) == 0 ? 'jpg' : $array[count($array)-1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/customer/'));
-                $upload->saveAs($uploadpath . $logo_name . '.' . $ext) ;
-                $this->logo = '/upload/customer/' . $logo_name . '.' . $ext . '?r=' . rand(0, 10000);
+                //获取后缀名，默认为 png 
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $img_path = "upload/customer/{$this->id}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->logo = $img_path . '?rand=' . rand(0, 9999); 
             }
             if(trim($this->logo) == ''){
                 $this->logo = $this->getOldAttribute('logo');
@@ -225,6 +224,11 @@ class Customer extends ActiveRecord
         return false;
     }
         
+    public function afterFind()
+    {
+        $this->logo = Aliyun::absolutePath(!empty($this->logo) ? $this->logo : 'static/imgs/notfound.png');
+    }
+    
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param type $uploadpath  目标路径

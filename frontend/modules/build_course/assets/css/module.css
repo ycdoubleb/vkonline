@@ -79,6 +79,16 @@
     width: 604px;
     margin-right: 15px;
 }
+.course-view .vk-uploader .file-box {
+    top: 13px;
+    width: 76px;
+    cursor: pointer;
+}
+
+.course-view .vk-uploader .file-box .file-input {
+    width: 76px;
+    height: 35px;
+}
 /**
  * 课程协作人员
  */

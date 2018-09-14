@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
@@ -169,13 +170,12 @@ class Course extends ActiveRecord
             }
             $upload = UploadedFile::getInstance($this, 'cover_img');
             if ($upload != null) {
-                $string = $upload->name;
-                $array = explode('.', $string);
                 //获取后缀名，默认为 png 
-                $ext = count($array) == 0 ? 'png' : $array[count($array) - 1];
-                $uploadpath = $this->fileExists(Yii::getAlias('@frontend/web/upload/course/cover_imgs/'));
-                $upload->saveAs($uploadpath . $this->id . '.' . $ext);
-                $this->cover_img = '/upload/course/cover_imgs/' . $this->id . '.' . $ext . '?rand=' . rand(0, 1000);
+                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
+                $img_path = "upload/course/cover_imgs/{$this->id}.{$ext}";
+                //上传到阿里云
+                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
+                $this->cover_img = $img_path . '?rand=' . rand(0, 9999);
             }
 
             if ($this->isNewRecord) {
@@ -199,6 +199,7 @@ class Course extends ActiveRecord
     public function afterFind()
     {
         $this->des = html_entity_decode($this->des);
+        $this->cover_img = Aliyun::absolutePath(!empty($this->cover_img) ? $this->cover_img : 'static/imgs/notfound.png');
     }
     
     /**

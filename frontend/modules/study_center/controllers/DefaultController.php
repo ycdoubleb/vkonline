@@ -95,8 +95,8 @@ class DefaultController extends Controller
         $courses = array_values($results['data']['course']);    //课程数据
         //重修课程数据里面的元素值
         foreach ($courses as &$item) {
-            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
-            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['percent'] = isset($item['node_num']) && isset($item['finish_num']) ? floor($item['node_num'] / $item['finish_num']) : 0;
             $item['progress_width'] = 'width:' . $item['percent'] . '%';
             $item['data'] = Yii::$app->formatter->asDuration($item['data'], '');
@@ -145,8 +145,8 @@ class DefaultController extends Controller
         $courses = array_values($results['data']['course']);    //课程数据
         //重修课程数据里面的元素值
         foreach ($courses as &$item) {
-            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
-            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
         
@@ -194,6 +194,7 @@ class DefaultController extends Controller
         //重修视频数据里面的元素值
         foreach($videos as &$item){
             $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['duration'] = DateUtil::intToTime($item['duration']);
         }
         
@@ -201,21 +202,23 @@ class DefaultController extends Controller
             Yii::$app->getResponse()->format = 'json';
             try
             { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $videos, 
-                        'page' => $results['filter']['page']
-                    ],
-                    'message' => '请求成功！',
-                ];
+                $is_success = true;
+                $data = ['result' => $videos, 'page' => $results['filter']['page']];
+                $message = '请求成功。';
             }catch (Exception $ex) {
+                $is_success = false;
+                $message = '请求失败::' . $ex->getMessage();
                 return [
                     'code'=> 404,
                     'data' => [],
                     'message' => '请求失败::' . $ex->getMessage(),
                 ];
             }
+            return [
+                'code'=> $is_success ? 200 : 404,
+                'data' => $is_success ? $data : [],
+                'message' => '请求失败::' . $ex->getMessage(),
+            ];
         }
         
         //传参到布局文件
@@ -314,6 +317,9 @@ class DefaultController extends Controller
         $videoData = $videoQuery->one();
         $videoData['des'] = Html::decode($videoData['des']);      //decode并替换
         $videoData['teacher_des'] = Html::decode($videoData['teacher_des']);      //decode并替换
+        $videoData['path'] = Aliyun::absolutePath($videoData['path']);      //decode并替换
+        $videoData['img'] = Aliyun::absolutePath($videoData['img']);      //decode并替换
+        $videoData['avatar'] = Aliyun::absolutePath($videoData['avatar']);      //decode并替换
 
         return ArrayHelper::merge($videoData, $playQuery->asArray()->one());
     }

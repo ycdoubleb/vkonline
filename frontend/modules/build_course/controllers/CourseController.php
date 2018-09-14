@@ -2,18 +2,16 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseAttribute;
-use common\models\vk\searchs\CourseActLogSearch;
-use common\models\vk\searchs\CourseNodeSearch;
 use common\models\vk\searchs\CourseSearch;
-use common\models\vk\searchs\CourseUserSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
-use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
+use frontend\modules\build_course\utils\ImportUtils;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -110,9 +108,10 @@ class CourseController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        $searchUserModel = new CourseUserSearch();
-        $searchNodeModel = new CourseNodeSearch();
-        $searchCourseLog = new CourseActLogSearch();
+        
+        if (Yii::$app->request->isPost) {
+            ImportUtils::getInstance()->importFrame($id);   //导入课程框架信息
+        }
         
         return $this->render('view', [
             'model' => $model,  //模型

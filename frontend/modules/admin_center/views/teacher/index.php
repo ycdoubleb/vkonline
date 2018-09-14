@@ -1,11 +1,7 @@
 <?php
 
 use frontend\modules\build_course\assets\ModuleAssets;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
-use yii\widgets\ActiveForm;
 
 /* @var $this View */
 

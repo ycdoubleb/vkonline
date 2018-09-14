@@ -2,6 +2,7 @@
 
 namespace frontend\modules\course\actions;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\searchs\CourseListSearch;
 use Exception;
 use frontend\modules\course\model\CourseApiResponse;
@@ -26,6 +27,11 @@ class SearchCourseAction extends Action {
     public function run() {
         try {
             $result = CourseListSearch::search(Yii::$app->request->queryParams, 2);
+            //重置cover_img、teacher_avater
+            foreach($result['courses'] as &$item){
+                $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+                $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
+            }
         } catch (Exception $ex) {
             return new CourseApiResponse(CourseApiResponse::CODE_SEARCH_COURSE_FAIL,null,$ex->getMessage());
         }

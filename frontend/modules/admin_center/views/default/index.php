@@ -1,11 +1,11 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Customer;
 use frontend\modules\admin_center\assets\ModuleAssets;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\DetailView;
 
@@ -48,7 +48,7 @@ $this->title = '概况';
                 [
                     'attribute' => 'logo',
                     'format' => 'raw',
-                    'value' => Html::img(WEB_ROOT . $model->logo),
+                    'value' => Html::img($model->logo),
                 ],
                 'address',
                 [

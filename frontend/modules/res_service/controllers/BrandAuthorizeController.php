@@ -3,6 +3,7 @@
 namespace frontend\modules\res_service\controllers;
 
 use common\components\aliyuncs\Aliyun;
+use common\models\User;
 use common\models\vk\BrandAuthorize;
 use common\models\vk\Category;
 use common\models\vk\Course;
@@ -55,90 +56,132 @@ class BrandAuthorizeController extends Controller
         return $this->render('index');
     }
     
-    
+    /**
+     * 我方授权的品牌
+     * @return mixed
+     * @throws ForbiddenHttpException
+     */
     public function actionToIndex()
     {
-        $params = Yii::$app->request->queryParams;
-        $searchModel = new BrandAuthorizeSearch();
-        $dataProvider = $searchModel->searchBrandToAuthrize($params);
-        
-        return $this->render('to-index',[
-            'params' => $params,
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        $is_official = User::findOne(Yii::$app->user->id)->is_official;
+        if($is_official == 0){
+            throw new ForbiddenHttpException('没有权限访问！');
+        } else {
+            $params = Yii::$app->request->queryParams;
+            $searchModel = new BrandAuthorizeSearch();
+            $dataProvider = $searchModel->searchBrandToAuthrize($params);
+
+            return $this->render('to-index',[
+                'params' => $params,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }        
     }
     
     /**
      * 获得授权的品牌
      * @return mixed
+     * @throws ForbiddenHttpException
      */
     public function actionFromIndex()
     {
-        $params = Yii::$app->request->queryParams;
-        $searchModel = new BrandAuthorizeSearch();
-        $dataProvider = $searchModel->searchBrandFromAuthrize($params);
+        $is_official = User::findOne(Yii::$app->user->id)->is_official;
+        if($is_official == 0){
+            throw new ForbiddenHttpException('没有权限访问！');
+        } else {
+            $params = Yii::$app->request->queryParams;
+            $searchModel = new BrandAuthorizeSearch();
+            $dataProvider = $searchModel->searchBrandFromAuthrize($params);
 
-        return $this->render('from-index',[
-            'params' => $params,
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+            return $this->render('from-index',[
+                'params' => $params,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+        }        
     }
     
     /**
      * 品牌详情
      * @param integer $id
      * @return mixed
+     * @throws ForbiddenHttpException
      */
     public function actionFromView($id)
     {
-        $to_id = BrandAuthorize::findOne(['id' => $id])->brand_to;  //获得授权的ID
-        $i_customer_id = \Yii::$app->user->identity->customer->id;  //本人所在的集团ID
-        
-        if($to_id != $i_customer_id){
+        $is_official = User::findOne(Yii::$app->user->id)->is_official;
+        if($is_official == 0){
             throw new ForbiddenHttpException('没有权限访问！');
-        }
-        $searchModel = new BrandAuthorizeSearch();
-        $result = $searchModel->searchAuthorizeCourse(Yii::$app->request->queryParams);
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $result['data']['course']
-        ]);
-        
-        return $this->render('from-view',[
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'totalCount' => $result['total'],       //课程总数量
-            'filters' => $result['filter'],         //过滤条件
-            'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'id')),    //分类全路径
-        ]);
+        } else {
+            $model =  BrandAuthorize::findOne(['id' => $id]);
+            $from_id = $model->brand_from;  //授权方的ID
+            $to_id = $model->brand_to;      //获得授权的ID
+            $i_customer_id = \Yii::$app->user->identity->customer->id;  //本人所在的集团ID
+
+            if($to_id != $i_customer_id){
+                throw new ForbiddenHttpException('没有权限访问！');
+            }
+            $searchModel = new BrandAuthorizeSearch();
+            $result = $searchModel->searchAuthorizeCourse($from_id, Yii::$app->request->queryParams);
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $result['data']['course']
+            ]);
+
+            return $this->render('from-view',[
+                'from_id' => $from_id,
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+                'totalCount' => $result['total'],       //课程总数量
+                'filters' => $result['filter'],         //过滤条件
+                'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'id')),    //分类全路径
+            ]);
+        }        
     }
     
     /**
      * 课程详情
      * @param string $id
      * @return mixed
+     * @throws ForbiddenHttpException
      */
     public function actionFromCourse_info($id)
     {
-        $course_customer_id = Course::findOne(['id' => $id])->customer_id;       //课程的ID
-        $to_id = BrandAuthorize::findOne(['brand_from' => $course_customer_id])->brand_to;  //获得授权的ID
-        $i_customer_id = \Yii::$app->user->identity->customer->id;      //本人所在的集团ID
-        if($to_id != $i_customer_id){
+        $is_official = User::findOne(Yii::$app->user->id)->is_official;
+        if($is_official == 0){
             throw new ForbiddenHttpException('没有权限访问！');
-        }
-        $result = $this->getFromCourseInfo($id);
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => $result,
-        ]);
+        } else {
+            $course_customer_id = Course::findOne(['id' => $id])->customer_id;       //课程的ID
+            $to_id = BrandAuthorize::findOne(['brand_from' => $course_customer_id])->brand_to;  //获得授权的ID
+            $i_customer_id = \Yii::$app->user->identity->customer->id;      //本人所在的集团ID
+            if($to_id != $i_customer_id){
+                throw new ForbiddenHttpException('没有权限访问！');
+            }
+            $result = $this->getFromCourseInfo($id);
+            $dataProvider = new ArrayDataProvider([
+                'allModels' => $result,
+            ]);
 
-        return $this->render('from-course_info',[
-            'id' => $id,
-            'dataProvider' => $dataProvider,
-            'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'course_id')),    //分类全路径
-        ]);
+            return $this->render('from-course_info',[
+                'id' => $id,
+                'dataProvider' => $dataProvider,
+                'catFullPath' => $this->getCategoryFullPath(ArrayHelper::getColumn($dataProvider->allModels, 'course_id')),    //分类全路径
+            ]);
+        }
     }
 
+    /**
+     * 获取子级分类
+     * @param type $id
+     */
+    public function actionSearchChildren($id){
+        Yii::$app->getResponse()->format = 'json';
+        return [
+            'result' => 1,
+            'data' => Category::getCatChildren($id),
+        ];
+    }
+    
     /**
      * 获得授权课程的信息
      * @param string $id    课程ID

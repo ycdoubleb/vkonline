@@ -16,7 +16,9 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = '品牌课程';
+$this->title = Yii::t('app', '{Brand}{Course}', [
+    'Brand' => Yii::t('app', 'Brand'), 'Course' => Yii::t('app', 'Course')
+]);
 
 ModuleAssets::register($this);
 
@@ -34,7 +36,7 @@ ModuleAssets::register($this);
                 'action' => array_merge([Yii::$app->controller->action->id], $filters),
                 'method' => 'get',
                 'options'=>[
-                    'id' => 'admin-center-form',
+                    'id' => 'from-view-form',
                     'class'=>'form-horizontal',
                 ],
                 'fieldConfig' => [  
@@ -45,30 +47,23 @@ ModuleAssets::register($this);
                 ], 
             ]); ?>
             <!--分类-->
-            <?= $form->field($searchModel, 'start_time')->widget(DepDropdown::class, [
+            <?= $form->field($searchModel, 'category_id')->widget(DepDropdown::class, [
                 'pluginOptions' => [
-                    'url' => Url::to('/admin_center/category/search-children', false),
+                    'url' => Url::to('/res_service/brand-authorize/search-children', false),
                     'max_level' => 4,
-                    'onChangeEvent' => new JsExpression('function(){$("#admin-center-form").submit();}')
+                    'onChangeEvent' => new JsExpression('function(){$("#from-view-form").submit();}')
                 ],
-                'items' => Category::getSameLevelCats($searchModel->start_time, true),
-                'values' => $searchModel->start_time == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->start_time)->path))),
+                'items' => Category::getCustomerSameLevelCats($searchModel->category_id, $from_id, true),
+                'values' => $searchModel->category_id == 0 ? [] : array_values(array_filter(explode(',', Category::getCatById($searchModel->category_id)->path))),
                 'itemOptions' => [
                     'style' => 'width: 115px; display: inline-block;',
                 ],
             ])->label(Yii::t('app', '{Course}{Category}',['Course' => Yii::t('app', 'Course'),'Category' => Yii::t('app', 'Category')]) . '：') ?>
             <!--课程名称-->
-            <div class="form-group">
-                <label class="col-lg-1 col-md-1 control-label form-label" for="brandauthorizesearch-course_name">课程名称：</label>
-                <div class="col-lg-11 col-md-11">
-                    <?= Html::input('text', 'course_name', ArrayHelper::getValue($filters, 'course_name', ''), [
-                        'placeholder' => '请输入...',
-                        'class' => "form-control" ,
-                        'id' => 'course_name',
-                        'onchange' => 'submitForm();',
-                    ])?>
-                </div>
-            </div>
+            <?= $form->field($searchModel, 'course_name')->textInput([
+                'placeholder' => '请输入...',
+                'onchange' => 'submitForm();',
+            ])->label(Yii::t('app', '{Course}{Name}',['Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')]) . '：')?>
             
             <?php ActiveForm::end(); ?>
         </div>
@@ -181,14 +176,12 @@ $js = <<<JS
     
     //导出
     $(".export-btn").click(function() {
-        console.log($("input[type='checkbox']").is(':checked'));
         if($("input[name='checkbox[]']:checked").length > 0){
             var value = "";
             $.each($("input[name='checkbox[]']:checked"),function(){
                 value += $(this).val()+',';
             });
             location.href="/res_service/export/more?ids=" + value;
-            console.log(value);
         }else{
             alert("请选择要导出的课程");
         }
@@ -196,7 +189,7 @@ $js = <<<JS
         
     //提交表单 
     window.submitForm = function(){
-        $('#admin-center-form').submit();
+        $('#from-view-form').submit();
     }
         
 JS;

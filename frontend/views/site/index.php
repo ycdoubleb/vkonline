@@ -1,7 +1,7 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use frontend\assets\SiteAssets;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 
@@ -65,7 +65,7 @@ SiteAssets::register($this);
                     <span>热搜</span>
                 </div>
                 <div class="list">
-<?php foreach ($hotSearchs as $keyword => $keynum): ?>
+                    <?php foreach ($hotSearchs as $keyword => $keynum): ?>
                         <?php if ($keyword === null || $keyword === '') continue; ?>
                         <div class="tag"><?= Html::a($keyword . "<span> ( {$keynum} )</span>", ['/course/default/list', 'keyword' => $keyword], ['target' => '_black']) ?></div>
                     <?php endforeach; ?>
@@ -105,11 +105,11 @@ SiteAssets::register($this);
                     <span>入驻品牌</span>
                 </div>
                 <div class="list">
-<?php foreach ($customers as $customer): ?>
-                        <div class="customer-item" style="background:url(<?= $customer['logo'] ?>)">
+                    <?php foreach ($customers as $customer): ?>
+                        <div class="customer-item" style="background-image:url(<?= Aliyun::absolutePath($customer['logo']) ?>)">
                             <span class="name single-clamp"><?= $customer['name'] ?></span>
                         </div>
-<?php endforeach; ?>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -135,7 +135,6 @@ $recommend_course_tile_dom = str_replace("\n", ' ', $this->render('__recommend_c
     function changeRecommend(page) {
         recommend_page = page;
         $.get('/course/api/get-recommend', {page: page, size: recommend_size}, function (result) {
-            console.log(result);
             if (result.success && result.data.code == '0') {
                 $('.recommend .list').empty();
                 $.each(result.data.data.courses, function () {

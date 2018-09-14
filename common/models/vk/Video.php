@@ -214,7 +214,7 @@ class Video extends ActiveRecord {
                 $img_path = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$ext}";
                 //上传到阿里云
                 Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
-                $this->img = $img_path;
+                $this->img = $img_path . '?rand=' . rand(0, 9999);
             }
             //都没做修改的情况下保存旧数据
             if (trim($this->img) == '') {
@@ -230,6 +230,7 @@ class Video extends ActiveRecord {
 
     public function afterFind() {
         $this->des = Html::decode($this->des);
+        $this->img = Aliyun::absolutePath(!empty($this->img) ? $this->img : 'static/imgs/notfound.png');
     }
 
     /**

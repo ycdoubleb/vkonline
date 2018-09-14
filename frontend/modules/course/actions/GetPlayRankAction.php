@@ -2,6 +2,7 @@
 
 namespace frontend\modules\course\actions;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
@@ -83,6 +84,12 @@ class GetPlayRankAction extends Action {
 
         ArrayHelper::multisort($courses, 'rank');
 
+        //重置cover_img、teacher_avater
+        foreach($courses as &$item){
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
+        }
+        
         return new CourseApiResponse(CourseApiResponse::CODE_COMMON_OK, null, [
             'rank_num' => $rank_num,
             'year' => $year,

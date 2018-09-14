@@ -2,6 +2,7 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\CourseUser;
 use common\models\vk\RecentContacts;
@@ -192,8 +193,13 @@ class CourseUserController extends Controller
         $query->leftJoin(['User'=> User::tableName()],'User.id = RecentContacts.contacts_id');
         $query->where(['user_id'=> Yii::$app->user->id]);
         $query->orderBy(['RecentContacts.updated_at' => SORT_DESC]);
+        $results = $query->limit(8)->all();
+        //重置avatar
+        foreach ($results as &$item) {
+            $item['avatar'] = Aliyun::absolutePath(!empty($item['avatar']) ? $item['avatar'] : 'upload/avatars/default.jpg');
+        }
         
-        return $query->limit(8)->all();
+        return $results;
     }
 
 
