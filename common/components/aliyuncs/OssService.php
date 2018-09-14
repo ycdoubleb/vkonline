@@ -132,6 +132,19 @@ class OssService extends Component {
         var_dump(__FUNCTION__ . ": completeMultipartUpload OK\n");
     }
     
+     /**
+     * 上传内存中的内容
+     *
+     * @param string $object objcet名称
+     * @param string $content 上传的内容
+     * @param array $options
+     * @return null
+     */
+     public function putObject($object, $content, $options) {
+        $bucket = Yii::$app->params['aliyun']['oss']['bucket-input'];
+        return $this->ossClient->putObject($bucket, $object, $content, $options);
+    }
+
     /**
      * 获得Object内容
      *
