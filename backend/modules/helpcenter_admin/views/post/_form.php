@@ -63,7 +63,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'content')->textarea([
             'id' => 'container',
             'type' => 'text/plain', 
-            'style' => 'width:100%; min-height:400px;',
+            'style' => 'width:100%; min-height:600px;',
             'placeholder' => '文章内容...'
     ]) ?>
 
@@ -80,9 +80,21 @@ $js =
 <<<JS
     /** 富文本编辑器 */
     $('#container').removeClass('form-control');
-    var ue = UE.getEditor('container', {
-        initialFrameHeight: 200, 
+    UE.getEditor('container', {
+        initialFrameHeight: 600, 
         maximumWords: 100000,
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
+            ]
+        ]
     });
   
     /** 下拉选择父级分类 */
