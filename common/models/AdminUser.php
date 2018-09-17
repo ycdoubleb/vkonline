@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
@@ -23,7 +24,7 @@ use yii\web\IdentityInterface;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
-class AdminUser extends User implements IdentityInterface
+class AdminUser extends BaseUser
 {
     public function scenarios() 
     {
@@ -49,11 +50,6 @@ class AdminUser extends User implements IdentityInterface
      */
     public function attributeLabels()
     {
-        return array_merge(parent::attributeLabels(), ['guid' => Yii::t('app', 'Guid'),]);
+        return parent::attributeLabels() + ['guid' => Yii::t('app', 'Guid'),];
     }
-    
-//    public function afterFind() {
-//        
-//        //parent::afterFind();
-//    }
 }
