@@ -2,6 +2,7 @@
 
 namespace frontend\modules\course\actions;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\TagRef;
@@ -60,10 +61,17 @@ class GetRecommendAction extends Action {
         //限制数量
         $query->offset(($page - 1) * $size);
         $query->limit($size);
-
+        $result = $query->all();
+        
+        //重置cover_img、teacher_avater
+        foreach($result as &$item){
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
+        }
+        
         return new CourseApiResponse(CourseApiResponse::CODE_COMMON_OK, null, [
             'page' => $page,
-            'courses' => $query->all(),
+            'courses' => $result,
         ]);
     }
 

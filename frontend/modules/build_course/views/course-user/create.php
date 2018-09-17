@@ -47,7 +47,7 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                         <div class="col-lg-12 col-md-12">
                             <?php foreach ($userRecentContacts as $item): ?>
                             <div class="recent">
-                                <?= Html::img(StringUtil::completeFilePath($item['avatar']),['width' => 40, 'height' => 37]) ?>
+                                <?= Html::img($item['avatar'], ['width' => 40, 'height' => 37]) ?>
                                 <span id="<?= $item['id'] ?>"><?= $item['nickname']; ?></span>
                             </div>
                             <?php endforeach; ?>

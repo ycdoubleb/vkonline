@@ -16,7 +16,7 @@ ModuleAssets::register($this);
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
-        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'avatar' => $teacher->avatar, 
         'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
         'sex' => $teacher->sex == 1 ? '男' : '女',
         'job_title' => $teacher->job_title,

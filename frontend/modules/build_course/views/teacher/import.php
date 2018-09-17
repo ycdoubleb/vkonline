@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Teacher;
 use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
@@ -39,7 +40,7 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                 1、老师头像分辨率建议为正方形，96x96 到 200x200的范围内<a href="javascript:;" class="alert-link">（模板下载）</a>。
                 储存为web所有格式<a href="javascript:;" class="alert-link">（操作教程）</a>
             </p>
-            <p>2、批量导入<a href="javascript:;" class="alert-link">模板下载</a></p>
+            <p>2、批量导入<?= Html::a('模板下载', Aliyun::absolutePath('static/doc/template/teacher_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
         </div>
         
         <!--文件上传-->
@@ -53,11 +54,9 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
         
         <div class="vk-uploader">
             <div class="btn btn-pick">选择文件</div>
-            <div class="file-box"><input type="file" name="importfile" class="file-input"></div>
+            <div class="file-box"><input type="file" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="submitForm();"></div>
         </div>
-        
-        <?= Html::submitButton(Yii::t('app', 'Submit'), ['class' => 'btn btn-success btn-flat']) ?>
-        
+                
         <?php ActiveForm::end(); ?>
         
     </div>
@@ -205,8 +204,10 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
 
 <?php
 $js = <<<JS
-    
-        
+    //提交表单 
+    window.submitForm = function(){
+        $('#build-course-form').submit();
+    }  
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

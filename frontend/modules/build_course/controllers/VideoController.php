@@ -408,8 +408,7 @@ class VideoController extends Controller
     public function actionImport($request_mode = 0)
     {
         $results = [
-            'repeat_total' => 0,
-            'exist_total' => 0,
+            'error_total' => 0,
             'insert_total' => 0,
             'dataProvider' => new ArrayDataProvider([
                 'allModels' => [],
@@ -421,7 +420,11 @@ class VideoController extends Controller
         }
         
         if(!$request_mode){
-            return $this->render('import', $results);
+            return $this->render('import', array_merge($results, [
+                'watermarksFiles' => json_encode($this->getCustomerWatermark())
+            ]));
+        }else{
+            return $results;
         }
     }
     
@@ -471,8 +474,7 @@ class VideoController extends Controller
         $query = (new Query())->select([
             'Watermark.id', 'Watermark.width', 'Watermark.height', 
             'Watermark.dx AS shifting_X', 'Watermark.dy AS shifting_Y', 
-            'Watermark.refer_pos', 'Watermark.is_selected',
-            'Uploadfile.oss_key'
+            'Watermark.refer_pos', 'Watermark.is_selected', 'Uploadfile.oss_key'
         ])->from(['Watermark' => CustomerWatermark::tableName()]);
         //关联实体文件
         $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Watermark.file_id AND Uploadfile.is_del = 0)');
@@ -485,9 +487,9 @@ class VideoController extends Controller
         //查询结果
         $watermarks = $query->all();
         //重置is_selected、path属性值
-        foreach ($watermarks as $id => $item) {
-            $watermarks[$id]['is_selected'] = $item['is_selected'] ? 'checked' : null;
-            $watermarks[$id]['path'] = Aliyun::absolutePath($item['oss_key']);
+        foreach ($watermarks as $id => &$item) {
+            $item['is_selected'] = $item['is_selected'] ? true : false;
+            $item['path'] = Aliyun::absolutePath(!empty($item['oss_key'])? $item['oss_key'] : 'static/imgs/notfound.png' );
         }
         
         return $watermarks;

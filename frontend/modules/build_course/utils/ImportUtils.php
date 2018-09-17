@@ -8,13 +8,19 @@
 
 namespace frontend\modules\build_course\utils;
 
+use common\components\aliyuncs\Aliyun;
+use common\models\vk\CourseActLog;
 use common\models\vk\CourseNode;
+use common\models\vk\CustomerWatermark;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
+use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
+use common\models\vk\VideoFile;
+use common\modules\webuploader\models\Uploadfile;
 use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
@@ -79,18 +85,16 @@ class ImportUtils {
                 }
             }
             foreach ($dataProvider as &$data) {
-                $data['video.dirid'] = $this->checkVideoDirExists($data['video.dir']);
                 $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
-                $data['video.tagsid'] = $this->checkTagsExists($data['video.tags']);
             }
         }
         //如果是ajax则返回json格式的数据
         if($request_mode){
+            Yii::$app->getResponse()->format = 'json';
             return $this->saveVideo($post);
         }else{
             return [
-                'repeat_total' => 0,
-                'exist_total' => 0,
+                'error_total' => 0,
                 'insert_total' => count($dataProvider),
                 'dataProvider' => new ArrayDataProvider([
                     'allModels' => $dataProvider,
@@ -130,7 +134,8 @@ class ImportUtils {
                         }
                         //判断工作表的性别是否与定义的性别数组相符合
                         if(isset($sexName[$sheetdata[$row][$key]])){
-                            $sheetColumns['sex'] = $sexName[$sheetdata[$row][$key]];
+                            $sex = trim(!empty($sheetdata[$row][$key]) ? $sheetdata[$row][$key] : '保密');
+                            $sheetColumns['sex'] = $sexName[$sex];
                         }
                     }
                 }
@@ -138,6 +143,11 @@ class ImportUtils {
                 if(!empty(array_filter($sheetdata[$row]))){
                     $dataProvider[] = $sheetColumns;
                 }
+            }
+            //重置name、job_title，过滤字符串左后空格
+            foreach($dataProvider as &$data){
+                $data['name'] = trim($data['name']);
+                $data['job_title'] = trim($data['job_title']);
             }
             
             return $this->batchSaveTeacher($dataProvider);
@@ -197,7 +207,9 @@ class ImportUtils {
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $node_num = 0; $knowledge_num = 0;
             foreach ($dataProvider as $key => $data_val) {
+                $video_model = Video::findOne(['id' => $data_val['video.id']]);     //视频模型
                 $knowledge_id = md5(time() . rand(1, 99999999));
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
                 $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
@@ -207,7 +219,7 @@ class ImportUtils {
                         'id' => $node_id,
                         'course_id' => $id,
                         'parent_id' => '',
-                        'level' => 0,
+                        'level' => 1,
                         'name' => $data_val['node.name'],
                         'des' => Html::encode($data_val['node.des']),
                         'is_del' => 0,
@@ -218,27 +230,29 @@ class ImportUtils {
                     Yii::$app->db->createCommand()->insert(CourseNode::tableName(), $course_node)->execute(); //保存节点
                     $pre_node_id = $node_id;    //前一个node_id
                     $pre_node_name = $data_val['node.name'];    //作为前一个的节点名称
+                    $node_num++;
                 } else {
                     $node_id = $pre_node_id;
                 }
                 $knowledge = [
                     'id' => $knowledge_id,
                     'node_id' => $node_id,
-                    'type' => 1,
+                    'type' => 1,        //类型；1为视频
                     'name' => $data_val['knowledge.name'],
-                    'des' => empty($data_val['des']) ?  Video::findOne(['id' => $data_val['video.id']])->des : 
+                    'des' => empty($data_val['des']) ?  $video_model->des : 
                                 Html::encode($data_val['knowledge.des']),
-                    'data' => '',
+                    'data' => $video_model->duration,   //视频时长
                     'zan_count' => 0,
                     'favorite_count' => 0,
                     'is_del' => 0,
-                    'has_resource' => 0,
+                    'has_resource' => 1,        //是否关联资源 1
                     'sort_order' => $key,
                     'created_by' => Yii::$app->user->id,
                     'created_at' => time(),
                     'updated_at' => time(),
                 ];
                 Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
+                $knowledge_num++;
                 $knowledge_video = [
                     'knowledge_id' => $knowledge_id,
                     'video_id' => $data_val['video.id'],
@@ -247,6 +261,7 @@ class ImportUtils {
                 //关联知识点和视频
                 Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
             }
+            $this->saveCourseActLog($id, $node_num, $knowledge_num);    //保存导入记录
             $trans->commit();  //提交事务
             Yii::$app->getSession()->setFlash('success','导入成功！');
         }catch (Exception $ex) {
@@ -254,6 +269,30 @@ class ImportUtils {
             Yii::$app->getSession()->setFlash('error','导入失败::'.$ex->getMessage());
         }
         
+    }
+    
+    /**
+     * 保存导入记录
+     * @param string $id
+     * @param integer $node_num
+     * @param integer $knowledge_num
+     */
+    private function saveCourseActLog($id, $node_num, $knowledge_num)
+    {
+        //$actLog数组
+        $actLog = [
+            'action' => '导入',
+            'title' => '导入课程目录',
+            'content' => '共导入'.$node_num.'个节点，'.$knowledge_num.'个知识点',
+            'created_by' => Yii::$app->user->id,
+            'course_id' => $id, 
+            'related_id' => '',
+            'created_at' => time(),
+            'updated_at' => time(),
+        ];
+        
+        /** 添加$actLog数组到表里 */
+        Yii::$app->db->createCommand()->insert(CourseActLog::tableName(), $actLog)->execute();
     }
 
     /**
@@ -271,29 +310,28 @@ class ImportUtils {
         //excel传值上来的老师信息
         $teacher_name = ArrayHelper::getColumn($dataProvider, 'name');   //老师名称
         $teacher_sex = ArrayHelper::getColumn($dataProvider, 'sex');     //老师性别
-        $teacher_job_title = ArrayHelper::getColumn($dataProvider, 'job_title');     //老师职称
+        $teacher_jobTitle = ArrayHelper::getColumn($dataProvider, 'job_title');     //老师职称
         
         //获取重复的老师信息
         $repeat_name = array_diff_assoc($teacher_name, array_unique($teacher_name));  //重复老师名
         $repeat_sex = array_diff_assoc($teacher_sex, array_unique($teacher_sex));     //重复老师性别
-        $repeat_job_title = array_diff_assoc($teacher_job_title, array_unique($teacher_job_title));   //重复老师职称
+        $repeat_jobTitle = array_diff_assoc($teacher_jobTitle, array_unique($teacher_jobTitle));   //重复老师职称
         
         //查询已经存在的老师
         $teacher_result = $this->checkTeacherExists([
             'name' => array_unique($teacher_name), 
             'sex' => array_unique($teacher_sex),
         ]);
-        //已经存在的数据
+        //重组已经存在的数据格式
         foreach ($teacher_result as $value) {
             $key = $value['name'] . '_' . $value['sex'];
             $data_exist[$key] = $value;
         }
-        
         //循环判断是否存在重复的数据和已经存在的数据
         foreach($dataProvider as $key => $data){
             $data_key = $data['name'] . '_' . $data['sex'];    //组装存在的key值
             //根据老师名、老师性别和老师职称判断
-            if(isset($repeat_name[$key]) && isset($repeat_sex[$key]) && isset($repeat_job_title[$key])){
+            if(isset($repeat_name[$key]) && isset($repeat_sex[$key]) && isset($repeat_jobTitle[$key])){
                 $data_repeat[] = [
                     'avatar' => null,
                     'name' => $data['name'],
@@ -308,7 +346,6 @@ class ImportUtils {
                 $data_insert[] = $data;
             }
         }
-        
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
@@ -316,8 +353,8 @@ class ImportUtils {
             foreach ($data_insert as &$data_val) {
                 if(!$is_success){
                     $data_val['id'] = md5(time() . rand(1, 99999999));
-                    $fileName = $this->saveDrawing($data_val['coordinates'], $data_val['id'], Yii::getAlias('@frontend/web/upload/teacher/avatars/'));
-                    $data_val['avatar'] = '/upload/teacher/avatars/' . $fileName . '?rand=' . rand(0, 1000);
+                    $fileName = $this->saveDrawing($data_val['coordinates'], $data_val['id'], 'upload/teacher/avatars/');
+                    $data_val['avatar'] = $fileName . '?rand=' . rand(0, 9999);
                     $data_val['customer_id'] = Yii::$app->user->identity->customer_id;
                     $data_val['des'] = Html::encode($data_val['des']);
                     $data_val['created_by'] = Yii::$app->user->id;
@@ -348,9 +385,79 @@ class ImportUtils {
         ];
     }
     
+    /**
+     * 保存视频信息
+     * @param array $post
+     * @return json
+     */
     protected function saveVideo($post)
     {
-        var_dump($post);exit;
+        $is_success = true;
+        $dir_path = ArrayHelper::getValue($post, 'dir_path'); //目录路径
+        $file_id = ArrayHelper::getValue($post, 'file_id'); //文件id
+        $tags_name = ArrayHelper::getValue($post, 'tags_name'); //标签名
+        $watermark_ids = implode(',', ArrayHelper::getValue($post, 'watermark_id', [])); //水印id
+        //新建一个 video 模型
+        $videoModel = new Video([
+            'id' => md5(time() . rand(1, 99999999)),
+            'teacher_id' => ArrayHelper::getValue($post, 'teacher_id'),
+            'customer_id' => Yii::$app->user->identity->customer_id,
+            'name' => ArrayHelper::getValue($post, 'name'),
+            'is_publish' => 1,
+            'created_by' => Yii::$app->user->id
+        ]);
+        //检查上传的视频文件是否已经被占用
+        $userInfo = ActionUtils::getInstance()->getUploadVideoFileUserInfo($file_id);
+        if($userInfo['results']){
+            $is_success = false;
+            $videoModel->id = $userInfo['data']['video_id'];
+            $message = '视频已被使用。';
+        }
+        /* 如果is_success是true，则执行 */
+        if($is_success){
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            {
+                /* 以 file_id 查询 Uploadfile 信息，再赋值给 video 模型 */
+                $uploadfileModel = Uploadfile::findOne($file_id);
+                $videoModel->duration = $uploadfileModel->duration;
+                $videoModel->img = $uploadfileModel->thumb_path;
+                $videoModel->is_link = $uploadfileModel->is_link;
+                $videoModel->mts_watermark_ids = $this->checkCustomerWatermark($watermark_ids);
+                $videoModel->user_cat_id = $this->checkVideoDirExists($dir_path);   //用户自定义目录id
+                //如果 video 保存成功，则执行
+                if($videoModel->save()){
+                    $videoFile = new VideoFile([
+                        'video_id' => $videoModel->id, 'is_source' => 1, 'file_id' => $file_id,
+                    ]);
+                    //如果 videoFile 模型 保存成功，则执行视频转码
+                    if($videoFile->save()){
+                        VideoAliyunAction::addVideoTranscode($videoModel->id);
+                        VideoAliyunAction::addVideoSnapshot($videoModel->id);
+                    }
+                    //保存视频引用标签
+                    $this->saveVideoTagRefs($videoModel->id, $tags_name);
+                }else{
+                    $is_success = false;
+                }
+                /* 如果is_success是true，则执行 */
+                if($is_success){
+                    $trans->commit();  //提交事务
+                    $message = '保存成功。';
+                }
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
+                $is_success = false;
+                $message = '保存失败::' . $ex->getMessage();
+            }
+        }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => ['id' => $videoModel->id, 'name' => $videoModel->name],
+            'message' => $message
+        ];
     }
 
     /**
@@ -392,9 +499,9 @@ class ImportUtils {
         }
         
         $myFileName = $objectId . '.' . $extension;     //文件名
-        file_put_contents($myFilePath . $myFileName, $imageContents);   //写入文件到指定目录下
+        Aliyun::getOss()->putObject($myFilePath . $myFileName, $imageContents, []); //写入文件到指定目录下
         
-        return $myFileName;
+        return $myFilePath . $myFileName;
     }
 
     /**
@@ -406,7 +513,7 @@ class ImportUtils {
     protected function saveVideoDir($name, $parent_id = 0)
     {
         $category = new UserCategory([
-            'name' => $name, 'parent_id' => $parent_id, 
+            'name' => $name, 'parent_id' => $parent_id, 'type' => 1,
             'created_by' => \Yii::$app->user->id
         ]);
         
@@ -429,6 +536,55 @@ class ImportUtils {
     }
     
     /**
+     * 保存视频引用标签
+     * @param string $video_id      视频id
+     * @param string $video_tags    标签名
+     */
+    protected function saveVideoTagRefs($video_id, $video_tags)
+    {
+        $is_success = true;
+        $tagRefs = [];
+        $tags_ids = $this->checkTagsExists($video_tags);    //检查标签是否存在
+        /* 设置引用标签次数 */
+        foreach ($tags_ids as $id) {
+            $tags = Tags::findOne($id);
+            $tags->ref_count = $tags->ref_count + 1;
+            if(!$tags->save(true, ['ref_count'])){
+                $is_success = false;
+                break;
+            }
+            //组装引用的视频标签
+            $tagRefs[] = ['object_id' => $video_id, 'tag_id' => $id, 'type' => 2];
+        }
+        //保存标签引用次数成功后添加视频引用标签
+        if($is_success){
+            Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(), 
+                isset($tagRefs[0]) ? array_keys($tagRefs[0]) : [], $tagRefs)->execute();
+        }
+    }
+    
+    /**
+     * 检查是使用集团下默认选中的水印，还是用户自选的水印
+     * @param string $video_watermark   视频水印
+     * @return string  返回集团下默认选中的水印 或 用户自选的水印
+     */
+    protected function checkCustomerWatermark($video_watermark)
+    {
+        if($video_watermark == null){
+            //查询客户下的水印图
+            $watermark = (new Query())->from(['Watermark' => CustomerWatermark::tableName()]);
+            $watermark->select(['Watermark.id']);
+            $watermark->where([
+                'Watermark.customer_id' => \Yii::$app->user->identity->customer_id,
+                'Watermark.is_del' => 0, 'Watermark.is_selected' => 1
+            ]);
+            return implode(',', $watermark->all());
+        }
+        
+        return $video_watermark;
+    }
+
+    /**
      * 检查视频目录是否存在
      * @param string $video_dirs    视频目标
      * @return integer $dir_id 目录id
@@ -443,7 +599,7 @@ class ImportUtils {
         $existCategorys = [];   //已存在目录
         $userCategory = (new Query())->from(['UserCategory' => UserCategory::tableName()]);
         $userCategory->select(['UserCategory.id', 'UserCategory.parent_id']);
-        $userCategory->where(['UserCategory.name' => $dirs]);
+        $userCategory->where(['UserCategory.name' => $dirs, 'UserCategory.type' => 1]);
         $userCategory->andWhere(['or', ['UserCategory.created_by' => \Yii::$app->user->id], ['UserCategory.is_public' => 1]]);
         $userCategory->orderBy(['UserCategory.path' => SORT_ASC]);
         $categorys = $userCategory->all();

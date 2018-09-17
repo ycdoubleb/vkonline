@@ -95,6 +95,12 @@
 .bg-danger {
     background-color: #ff3300 !important;
 }
+/**
+ * 链接
+ */
+.text-link {
+    color: #337ab7 !important;
+}
 /*
  * 视频样式
  */

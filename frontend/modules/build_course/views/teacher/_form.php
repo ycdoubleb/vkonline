@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Teacher;
 use common\widgets\ueditor\UeditorAsset;
 use kartik\widgets\FileInput;
@@ -58,8 +59,8 @@ UeditorAsset::register($this);
             'browseLabel' => '选择上传图像...',
             'initialPreview' => [
                 $model->isNewRecord ?
-                        Html::img(['/upload/teacher/avatars/default.jpg'], ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']) :
-                        Html::img([$model->avatar], ['class' => 'file-preview-image', 'width' => '130', 'height' => '130']),
+                        Html::img(Aliyun::absolutePath('upload/avatars/default.jpg'), ['class' => 'file-preview-image', 'width' => 130, 'height' => 130]) :
+                        Html::img($model->avatar, ['class' => 'file-preview-image', 'width' => 130, 'height' => 130]),
             ],
             'overwriteInitial' => true,
         ],

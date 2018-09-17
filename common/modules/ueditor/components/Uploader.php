@@ -1,5 +1,8 @@
 <?php
 namespace common\modules\ueditor\components;
+
+use common\components\aliyuncs\Aliyun;
+use yii\base\Exception;
 /**
  * Created by JetBrains PhpStorm.
  * User: taoqili
@@ -108,20 +111,29 @@ class Uploader
             return;
         }
 
-        //创建目录失败
-        if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
-            return;
-        } else if (!is_writeable($dirname)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
-            return;
-        }
+        if($this->config['useAliyun']){
+            try {
+                Aliyun::getOss()->multiuploadFile($this->filePath, $file["tmp_name"]);
+                $this->stateInfo = $this->stateMap[0];
+            } catch (Exception $ex) {
+                $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
+            }
+        } else {
+            //创建目录失败
+            if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
+                return;
+            } else if (!is_writeable($dirname)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
+                return;
+            }
 
-        //移动文件
-        if (!(move_uploaded_file($file["tmp_name"], $this->filePath) && file_exists($this->filePath))) { //移动失败
-            $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
-        } else { //移动成功
-            $this->stateInfo = $this->stateMap[0];
+             //移动文件
+            if (!(move_uploaded_file($file["tmp_name"], $this->filePath) && file_exists($this->filePath))) { //移动失败
+                $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
+            } else { //移动成功
+                $this->stateInfo = $this->stateMap[0];
+            }
         }
     }
 
@@ -148,22 +160,31 @@ class Uploader
             return;
         }
 
-        //创建目录失败
-        if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
-            return;
-        } else if (!is_writeable($dirname)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
-            return;
-        }
+        if($this->config['useAliyun']){
+            try {
+                Aliyun::getOss()->putObject($this->filePath, $img);
+                $this->stateInfo = $this->stateMap[0];
+            } catch (Exception $ex) {
+                $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
+            }
+        } else {
+            //创建目录失败
+            if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
+                return;
+            } else if (!is_writeable($dirname)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
+                return;
+            }
 
-        //移动文件
-        if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
-            $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
-        } else { //移动成功
-            $this->stateInfo = $this->stateMap[0];
+            //移动文件
+            if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
+                $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
+            } else { //移动成功
+                $this->stateInfo = $this->stateMap[0];
+            }
         }
-
+        
     }
 
     /**
@@ -240,20 +261,29 @@ class Uploader
             return;
         }
 
-        //创建目录失败
-        if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
-            return;
-        } else if (!is_writeable($dirname)) {
-            $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
-            return;
-        }
+        if($this->config['useAliyun']){
+            try {
+                Aliyun::getOss()->putObject($this->filePath, $img);     //带测试
+                $this->stateInfo = $this->stateMap[0];
+            } catch (Exception $ex) {
+                $this->stateInfo = $this->getStateInfo("ERROR_FILE_MOVE");
+            }
+        } else {
+            //创建目录失败
+            if (!file_exists($dirname) && !mkdir($dirname, 0777, true)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_CREATE_DIR");
+                return;
+            } else if (!is_writeable($dirname)) {
+                $this->stateInfo = $this->getStateInfo("ERROR_DIR_NOT_WRITEABLE");
+                return;
+            }
 
-        //移动文件
-        if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
-            $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
-        } else { //移动成功
-            $this->stateInfo = $this->stateMap[0];
+            //移动文件
+            if (!(file_put_contents($this->filePath, $img) && file_exists($this->filePath))) { //移动失败
+                $this->stateInfo = $this->getStateInfo("ERROR_WRITE_CONTENT");
+            } else { //移动成功
+                $this->stateInfo = $this->stateMap[0];
+            }
         }
 
     }
@@ -327,11 +357,15 @@ class Uploader
     {
         $fullname = $this->fullName;
         //wskeee 
-        $rootPath = isset($this->config["basePath"]) ? $this->config["basePath"] :  $_SERVER['DOCUMENT_ROOT'];
-        if (substr($fullname, 0, 1) != '/') {
-            $fullname = '/' . $fullname;
+        if($this->config['useAliyun']){
+            $rootPath = '';
+        } else {
+            $rootPath = isset($this->config["basePath"]) ? $this->config["basePath"] :  $_SERVER['DOCUMENT_ROOT'];
+            if (substr($fullname, 0, 1) != '/') {
+                $fullname = '/' . $fullname;
+            }
         }
-
+        
         return $rootPath . $fullname;
     }
 
@@ -361,7 +395,7 @@ class Uploader
     {
         return array(
             "state" => $this->stateInfo,
-            "url" => $this->fullName,
+            "url" => $this->config['useAliyun'] ? Aliyun::absolutePath($this->fullName) : $this->fullName,
             "title" => $this->fileName,
             "original" => $this->oriName,
             "type" => $this->fileType,

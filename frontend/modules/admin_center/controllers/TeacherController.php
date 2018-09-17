@@ -2,9 +2,9 @@
 
 namespace frontend\modules\admin_center\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\searchs\TeacherSearch;
 use common\models\vk\Teacher;
-use common\utils\StringUtil;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
@@ -46,7 +46,7 @@ class TeacherController extends Controller
         $teachers = array_values($results['data']['teacher']);    //老师数据
         //重修老师数据里面的元素值
         foreach ($teachers as $index => $item) {
-            $teachers[$index]['avatar'] = StringUtil::completeFilePath($item['avatar']);
+            $teachers[$index]['avatar'] = Aliyun::absolutePath(!empty($item['avatar']) ? $item['avatar'] : 'upload/avatars/default.jpg');
             $teachers[$index]['is_hidden'] = $item['is_certificate'] ? 'show' : 'hidden';
         }
         

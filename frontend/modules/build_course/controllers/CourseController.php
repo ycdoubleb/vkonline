@@ -2,6 +2,7 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseAttr;
@@ -9,7 +10,6 @@ use common\models\vk\CourseAttribute;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
-use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use frontend\modules\build_course\utils\ImportUtils;
 use Yii;
@@ -62,12 +62,12 @@ class CourseController extends Controller
         $courses = array_values($results['data']['course']);    //课程数据
         //重修课程数据里面的元素值
         foreach ($courses as &$item) {
-            $item['cover_img'] = StringUtil::completeFilePath($item['cover_img']);
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
             $item['level'] = Course::$levelMap[$item['level']];
             $item['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
             $item['color_name'] = $item['is_publish'] ? 'success' : 'danger';
             $item['is_publish'] = Course::$publishStatus[$item['is_publish']];
-            $item['teacher_avatar'] = StringUtil::completeFilePath($item['teacher_avatar']);
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
        

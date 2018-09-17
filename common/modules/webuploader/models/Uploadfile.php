@@ -181,8 +181,7 @@ class Uploadfile extends ActiveRecord {
     {
         //查询实体文件
         $uploadFile = (new Query())->select([
-            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.path', 
-            'Uploadfile.thumb_path', 'Uploadfile.size'
+            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.oss_key', 'Uploadfile.size'
         ])->from(['Uploadfile' => self::tableName()]);
         //条件查询
         $uploadFile->where([
@@ -192,8 +191,7 @@ class Uploadfile extends ActiveRecord {
         $file = $uploadFile->one();
         if(!empty($file)){
             //重置path、thumb_path
-            $file['path'] = StringUtil::completeFilePath($file['path']);
-            $file['thumb_path'] = StringUtil::completeFilePath($file['thumb_path']);
+            $file['path'] = $file['thumb_path'] = Aliyun::absolutePath($file['oss_key']);
             return [$file];
         }else{
             return [];

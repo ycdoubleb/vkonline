@@ -1,11 +1,11 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\models\vk\CourseFavorite;
 use common\models\vk\PraiseLog;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
-use common\utils\StringUtil;
 use common\widgets\share\ShareAsset;
 use frontend\modules\course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
@@ -47,7 +47,7 @@ $shareLink = Url::to([
             <!-- 课程信息 -->
             <div class="course-info">
                 <div class="preview">
-                    <video poster="<?= StringUtil::completeFilePath($model['cover_img']) ?>" src=""></video>
+                    <video poster="<?= Aliyun::absolutePath(!empty($model['cover_img']) ? $model['cover_img'] : 'static/imgs/notfound.png'); ?>" src=""></video>
                 </div>
                 <div class="info-box">
                     <div class="name-box">
@@ -153,7 +153,7 @@ $shareLink = Url::to([
                 <div class="panel-body">
                     <div class="info">
                         <?= Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']]), 'target' => '_blank']) ?>
-                        <img class="avatar" src="<?= $model['teacher_avatar'] ?>" />
+                        <img class="avatar" src="<?= Aliyun::absolutePath(!empty($model['teacher_avatar']) ? $model['teacher_avatar'] : 'upload/avatars/default.jpg') ?>" />
                         <p class="name"><?= $model['teacher_name'] ?></p>
                         <p class="job_title"><?= $model['teacher_job_title'] ?></p>
                         <?= Html::endTag('a') ?></a>
@@ -165,7 +165,7 @@ $shareLink = Url::to([
                         <?php foreach ($teacher_other_courses as $course): ?>
                             <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
                                 <li>
-                                    <img class="course-cover" src="<?= $course['cover_img'] ?>">
+                                    <img class="course-cover" src="<?= Aliyun::absolutePath(!empty($course['cover_img']) ? $course['cover_img'] : 'static/imgs/notfound.png') ?>">
                                     <p class="single-clamp course-name"><?= $course['name'] ?></p>
                                 </li>
                             </a>
@@ -180,7 +180,7 @@ $shareLink = Url::to([
                         <?php foreach ($relative_courses as $course): ?>
                             <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
                                 <li>
-                                    <img class="course-cover" src="<?= $course['cover_img'] ?>">
+                                    <img class="course-cover" src="<?= Aliyun::absolutePath(!empty($course['cover_img']) ? $course['cover_img'] : 'static/imgs/notfound.png') ?>">
                                     <p class="single-clamp course-name"><?= $course['name'] ?></p>
                                 </li>
                             </a>

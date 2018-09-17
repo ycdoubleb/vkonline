@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\utils\StringUtil;
@@ -28,7 +29,7 @@ TagsInputAsset::register($this);
 $teacherFormat = [];
 foreach ($teacherMap as $teacher) {
     $teacherFormat[$teacher->id] = [
-        'avatar' => StringUtil::completeFilePath($teacher->avatar), 
+        'avatar' => $teacher->avatar, 
         'is_certificate' => $teacher->is_certificate ? 'show' : 'hidden',
         'sex' => $teacher->sex == 1 ? '男' : '女',
         'job_title' => $teacher->job_title,
@@ -167,9 +168,9 @@ $this->registerJs($format, View::POS_HEAD);
             'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
             'browseLabel' => '选择上传图像...',
             'initialPreview' => [
-                $model->isNewRecord || empty($model->cover_img)?
-                        Html::img(['/upload/course/default.png'], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
-                        Html::img([$model->cover_img], ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
+                $model->isNewRecord || empty($model->cover_img) ?
+                        Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+                        Html::img($model->cover_img, ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']),
             ],
             'overwriteInitial' => true,
         ],

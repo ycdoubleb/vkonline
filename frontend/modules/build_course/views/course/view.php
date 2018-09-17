@@ -159,7 +159,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                         'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                     ]),
                     'value' => !empty($model->teacher_id) ? 
-                        Html::img([$model->teacher->avatar], ['class' => 'img-circle', 'width' => 32, 'height' => 32]) . '&nbsp;' . $model->teacher->name : null,
+                        Html::img($model->teacher->avatar, ['class' => 'img-circle', 'width' => 32, 'height' => 32]) . '&nbsp;' . $model->teacher->name : null,
                 ],
                 [
                     'attribute' => 'level',
