@@ -229,7 +229,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                         $form = ActiveForm::begin([
                             'action' => ['import', 'id' => $model->id],
                             'options'=>[
-                                'id' => 'build-course-form',
+                                'id' => 'import-frame-form',
                                 'class'=>'form-horizontal',
                                 'enctype' => 'multipart/form-data',
                                 'style' => 'display:inline-block'
@@ -328,7 +328,7 @@ $js = <<<JS
     }    
     
     window.submitForm = function(){
-        $('#build-course-form').submit();
+        $('#import-frame-form').submit();
     }
     
     //导出框架数据
