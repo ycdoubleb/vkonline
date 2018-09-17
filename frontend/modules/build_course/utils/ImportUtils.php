@@ -181,17 +181,28 @@ class ImportUtils {
                     $dataProvider[] = $sheetColumns;
                 }
             }
-            $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
-            $is_error = [];
-            foreach ($video_ids as $key => $video_id) {
-                $is_error += [$key => Video::findOne(['id' => $video_id])];     //根据videoid查找数据
-            }
-            if(in_array('', $video_ids)){   //是否存在空值
-                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
-            } elseif (in_array('', $is_error)) {
-                \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据!');
+            if(empty($dataProvider)){
+                \Yii::$app->getSession()->setFlash('error', '未发现需要导入的数据!');
             } else {
-                return $this->saveCourseFrame($id, $dataProvider);
+                $node_names = ArrayHelper::getColumn($dataProvider, 'node.name');   //节点名称
+                //节点整列为空或第一个为空时不能导入
+                $has_first_node = empty($node_names) ? false : (empty($node_names['0']) ? false : true);
+                if($has_first_node){
+                    $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
+                    $is_error = [];
+                    foreach ($video_ids as $key => $video_id) {
+                        $is_error += [$key => Video::findOne(['id' => $video_id])];     //根据videoid查找数据
+                    }
+                    if(in_array('', $video_ids)){   //是否存在空值
+                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
+                    } elseif (in_array('', $is_error)) {
+                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据!');
+                    } else {
+                        return $this->saveCourseFrame($id, $dataProvider);
+                    }
+                } else {
+                    \Yii::$app->getSession()->setFlash('error', '导入失败：node.name列第一个为空或全部为空!');
+                }                
             }
         }
     }
@@ -214,56 +225,72 @@ class ImportUtils {
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
                 $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
                 if(!empty($data_val['node.name']) && $is_true){     //node.name不为空
-                    $node_id = md5(time() . rand(1, 99999999));
-                    $course_node = [
-                        'id' => $node_id,
-                        'course_id' => $id,
-                        'parent_id' => '',
-                        'level' => 1,
-                        'name' => $data_val['node.name'],
-                        'des' => Html::encode($data_val['node.des']),
-                        'is_del' => 0,
-                        'sort_order' => $key,
-                        'created_at' => time(),
-                        'updated_at' => time(),
-                    ];
-                    Yii::$app->db->createCommand()->insert(CourseNode::tableName(), $course_node)->execute(); //保存节点
-                    $pre_node_id = $node_id;    //前一个node_id
-                    $pre_node_name = $data_val['node.name'];    //作为前一个的节点名称
-                    $node_num++;
+                    $node_model = CourseNode::findOne(['course_id' => $id, 'name' => $data_val['node.name']]);  //节点模型
+                    //node.name不能存在数据表中
+                    if(empty($node_model)){
+                        $node_id = md5(time() . rand(1, 99999999));
+                        $course_node = [
+                            'id' => $node_id,
+                            'course_id' => $id,
+                            'parent_id' => '',
+                            'level' => 1,
+                            'name' => $data_val['node.name'],
+                            'des' => Html::encode($data_val['node.des']),
+                            'is_del' => 0,
+                            'sort_order' => $key,
+                            'created_at' => time(),
+                            'updated_at' => time(),
+                        ];
+                        Yii::$app->db->createCommand()->insert(CourseNode::tableName(), $course_node)->execute(); //保存节点
+                        $pre_node_id = $node_id;    //前一个node_id
+                        $pre_node_name = $data_val['node.name'];    //作为前一个的节点名称
+                        $node_num++;
+                    } else {
+                        $node_id = $node_model->id;
+                        $pre_node_id = $node_model->id;
+                        $pre_node_name = $node_model->name;
+                    }
                 } else {
                     $node_id = $pre_node_id;
                 }
-                $knowledge = [
-                    'id' => $knowledge_id,
-                    'node_id' => $node_id,
-                    'type' => 1,        //类型；1为视频
-                    'name' => $data_val['knowledge.name'],
-                    'des' => empty($data_val['des']) ?  $video_model->des : 
-                                Html::encode($data_val['knowledge.des']),
-                    'data' => $video_model->duration,   //视频时长
-                    'zan_count' => 0,
-                    'favorite_count' => 0,
-                    'is_del' => 0,
-                    'has_resource' => 1,        //是否关联资源 1
-                    'sort_order' => $key,
-                    'created_by' => Yii::$app->user->id,
-                    'created_at' => time(),
-                    'updated_at' => time(),
-                ];
-                Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
-                $knowledge_num++;
-                $knowledge_video = [
-                    'knowledge_id' => $knowledge_id,
-                    'video_id' => $data_val['video.id'],
-                    'is_del' => 0,
-                ];
-                //关联知识点和视频
-                Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
+                $knowledge_model = Knowledge::findOne(['node_id' => $node_id, 'name' => $data_val['knowledge.name']]); //知识点模型
+                //knowledge.name不能存在数据表中
+                if(empty($knowledge_model)){
+                    $knowledge = [
+                        'id' => $knowledge_id,
+                        'node_id' => $node_id,
+                        'type' => 1,        //类型；1为视频
+                        'name' => $data_val['knowledge.name'],
+                        'des' => empty($data_val['des']) ?  $video_model->des : 
+                                    Html::encode($data_val['knowledge.des']),
+                        'data' => $video_model->duration,   //视频时长
+                        'zan_count' => 0,
+                        'favorite_count' => 0,
+                        'is_del' => 0,
+                        'has_resource' => 1,        //是否关联资源 1
+                        'sort_order' => $key,
+                        'created_by' => Yii::$app->user->id,
+                        'created_at' => time(),
+                        'updated_at' => time(),
+                    ];
+                    Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
+                    $knowledge_num++;
+                    $knowledge_video = [
+                        'knowledge_id' => $knowledge_id,
+                        'video_id' => $data_val['video.id'],
+                        'is_del' => 0,
+                    ];
+                    //关联知识点和视频
+                    Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
+                }
             }
-            $this->saveCourseActLog($id, $node_num, $knowledge_num);    //保存导入记录
+            if($node_num > 0 || $knowledge_num > 0){
+                $this->saveCourseActLog($id, $node_num, $knowledge_num);    //保存导入记录
+                Yii::$app->getSession()->setFlash('success','导入成功！');
+            } else {
+                Yii::$app->getSession()->setFlash('error','未发现需要导入的新数据！');
+            }
             $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','导入成功！');
         }catch (Exception $ex) {
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','导入失败::'.$ex->getMessage());
