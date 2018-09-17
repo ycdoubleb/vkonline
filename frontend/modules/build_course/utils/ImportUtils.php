@@ -189,19 +189,18 @@ class ImportUtils {
                 $has_first_node = empty($node_names) ? false : (empty($node_names['0']) ? false : true);
                 if($has_first_node){
                     $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
-                    $is_error = [];
-                    foreach ($video_ids as $key => $video_id) {
-                        $is_error += [$key => Video::findOne(['id' => $video_id, 'is_del' => 0])];     //根据videoid查找数据
-                    }
+                    $has_video_ids = Video::find()->select(['id'])->where(['id' => $video_ids, 'is_del' => 0])->asArray()->column();
+                    $error_data = array_diff($video_ids, $has_video_ids);
                     if(in_array('', $video_ids)){   //是否存在空值
-                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
-                    } elseif (in_array('', $is_error)) {
-                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据!');
+                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值！');
+                    } elseif (count($error_data) > 0) {
+                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据！无效数据为：'
+                                . implode("<br>", $error_data));
                     } else {
                         return $this->saveCourseFrame($id, $dataProvider);
                     }
                 } else {
-                    \Yii::$app->getSession()->setFlash('error', '导入失败：node.name列第一个为空或全部为空!');
+                    \Yii::$app->getSession()->setFlash('error', '导入失败：node.name列第一个为空或全部为空！');
                 }                
             }
         }
