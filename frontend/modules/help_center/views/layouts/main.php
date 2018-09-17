@@ -23,8 +23,9 @@ $menuItems = DefaultController::getMenu($this->params);
 
 $menuHtml = ''; //父级菜单
 $menuChi = '';  //子菜单
-$parCat = PostCategory::find()->where(['is_show' => 1, 'level' => 1])->orderBy('sort_order')->one();
-$chiCat = PostCategory::findOne(['parent_id' => $parCat->id]); //默认进来的第一个分类
+$parCat = PostCategory::find()->where(['is_show' => 1, 'level' => 1])->orderBy(['sort_order' => SORT_ASC])->one();
+//默认进来的第一个分类
+$chiCat = PostCategory::find()->where(['parent_id' => $parCat->id])->orderBy(['sort_order' => SORT_ASC])->one();
 
 foreach ($menuItems as $index => $item) {
     $urlId = Yii::$app->request->get('id'); //获取当前参数中的ID
