@@ -191,7 +191,7 @@ class ImportUtils {
                     $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
                     $is_error = [];
                     foreach ($video_ids as $key => $video_id) {
-                        $is_error += [$key => Video::findOne(['id' => $video_id])];     //根据videoid查找数据
+                        $is_error += [$key => Video::findOne(['id' => $video_id, 'is_del' => 0])];     //根据videoid查找数据
                     }
                     if(in_array('', $video_ids)){   //是否存在空值
                         \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值!');
@@ -220,12 +220,12 @@ class ImportUtils {
         {  
             $node_num = 0; $knowledge_num = 0;
             foreach ($dataProvider as $key => $data_val) {
-                $video_model = Video::findOne(['id' => $data_val['video.id']]);     //视频模型
+                $video_model = Video::findOne(['id' => $data_val['video.id'], 'is_del' => 0]);     //视频模型
                 $knowledge_id = md5(time() . rand(1, 99999999));
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
                 $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
                 if(!empty($data_val['node.name']) && $is_true){     //node.name不为空
-                    $node_model = CourseNode::findOne(['course_id' => $id, 'name' => $data_val['node.name']]);  //节点模型
+                    $node_model = CourseNode::findOne(['course_id' => $id, 'name' => $data_val['node.name'], 'is_del' => 0]);  //节点模型
                     //node.name不能存在数据表中
                     if(empty($node_model)){
                         $node_id = md5(time() . rand(1, 99999999));
@@ -253,7 +253,7 @@ class ImportUtils {
                 } else {
                     $node_id = $pre_node_id;
                 }
-                $knowledge_model = Knowledge::findOne(['node_id' => $node_id, 'name' => $data_val['knowledge.name']]); //知识点模型
+                $knowledge_model = Knowledge::findOne(['node_id' => $node_id, 'name' => $data_val['knowledge.name'], 'is_del' => 0]); //知识点模型
                 //knowledge.name不能存在数据表中
                 if(empty($knowledge_model)){
                     $knowledge = [
