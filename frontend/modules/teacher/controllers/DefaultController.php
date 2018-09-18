@@ -2,6 +2,7 @@
 
 namespace frontend\modules\teacher\controllers;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\vk\searchs\CourseSearch;
 use common\models\vk\searchs\TeacherSearch;
 use common\models\vk\Teacher;
@@ -48,27 +49,39 @@ class DefaultController extends Controller
     public function actionSearch()
     {
         $searchModel = new TeacherSearch();
-        $result = $searchModel->teacherSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 10]));
-
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['teacher']),
-        ]);
+        $results = $searchModel->teacherSearch(array_merge(\Yii::$app->request->queryParams, ['limit' => 10]));
+        $teachers = array_values($results['data']['teacher']);    //老师数据
+        //重修老师数据里面的元素值
+        foreach ($teachers as $index => $item) {
+            $teachers[$index]['avatar'] = Aliyun::absolutePath(!empty($item['avatar']) ? $item['avatar'] : 'upload/avatars/default.jpg');
+            $teachers[$index]['is_hidden'] = $item['is_certificate'] ? 'show' : 'hidden';
+        }
         
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['teacher']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => $teachers, 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         return $this->render('search', [
             'searchModel' => $searchModel,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'filters' => $results['filter'],
+            'totalCount' => $results['total'],
         ]);
     }
 
@@ -80,29 +93,41 @@ class DefaultController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
-        
         $searchModel = new CourseSearch();
-        $result = $searchModel->teacherCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $results = $searchModel->teacherCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 6]));
+        $courses = array_values($results['data']['course']);    //课程数据
+        //重修课程数据里面的元素值
+        foreach ($courses as &$item) {
+            $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
+            $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
+            $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
+        }
         
-        $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($result['data']['course']),
-        ]);
-                
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
-            return [
-                'code'=> 200,
-                'page' => $result['filter']['page'],
-                'data' => array_values($result['data']['course']),
-                'message' => '请求成功！',
-            ];
+            try
+            { 
+                return [
+                    'code'=> 200,
+                    'data' => [
+                        'result' => $courses, 
+                        'page' => $results['filter']['page']
+                    ],
+                    'message' => '请求成功！',
+                ];
+            }catch (Exception $ex) {
+                return [
+                    'code'=> 404,
+                    'data' => [],
+                    'message' => '请求失败::' . $ex->getMessage(),
+                ];
+            }
         }
         
         return $this->render('view', [
             'model' => $model,
-            'filters' => $result['filter'],
-            'totalCount' => $result['total'],
-            'dataProvider' => $dataProvider,
+            'filters' => $results['filter'],
+            'totalCount' => $results['total'],
         ]);
     }
 

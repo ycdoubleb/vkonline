@@ -266,7 +266,7 @@
 
 .knowledge-reference .vk-list .folder > ul > li > a {
     display: inline-block;
-    width: 97px;
+    width: 93px;
     height: 100%;
     padding: 5px 0px;
     text-align: center;
@@ -498,6 +498,10 @@
 /***************************
  * 列表样式-目录
  ***************************/
+.video-index .vk-list .folder {
+    padding-right: 20px;
+    padding-left: 15px;
+}
 .video-index .vk-list .folder > ul,
 .video-index .vk-list .video > ul {
     width: auto;
@@ -513,7 +517,7 @@
 
 .video-index .vk-list .folder > ul > li > a {
     display: inline-block;
-    width: 93px;
+    width: 88px;
     height: 100%;
     padding: 5px 0px;
     text-align: center;

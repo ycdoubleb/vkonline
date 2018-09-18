@@ -1,12 +1,12 @@
-<li class="{%className%}">
+<li class="list-panel">
     <a href="../default/view?id={%id%}" target="_blank">
-        <div class="pic avatars img-circle">
+        <div class="list-header avatars img-circle">
             <img src="{%avatar%}" class="img-circle" width="100%" height="96" />
-            {%isShow%}
+            <i class="fa fa-vimeo {%is_hidden%}"></i>
         </div>
-        <div class="text">
+        <div class="list-body">
             <p>{%name%}</p>
-            <p class="tuip">{%jobTitle%}</p>
+            <p class="tuip">{%job_title%}</p>
         </div>
     </a>
 </li>

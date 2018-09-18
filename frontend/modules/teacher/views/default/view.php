@@ -19,28 +19,31 @@ $this->title = $model->name;
 <div class="container content">
     <div class="teacher-view main">
         <!--基本信息-->
-        <div class="main-left keep-left">
-            <div class="list">
-                <ul>
-                    <li class="clear-margin">
-                        <div class="pic avatars img-circle">
-                            <?= Html::img([$model->avatar], ['class' => 'img-circle', 'width' => '100%', 'height' => 128]) ?>
-                            <?php if($model->is_certificate): ?>
-                            <i class="fa fa-vimeo"></i>
-                            <?php endif; ?>
+        <div class="basic pull-left">
+            <div class="vk-list">
+                <ul class="list-unstyled">
+                    <li class="list-panel">
+                        <div class="list-header avatars img-circle">
+                            <?php
+                                echo Html::img($model->avatar, ['class' => 'img-circle', 'width' => '100%', 'height' => 128]);
+                                if($model->is_certificate){
+                                    echo '<i class="fa fa-vimeo"></i>';
+                                }
+                            ?>
                         </div>
-                        <div class="text">
+                        <div class="list-body">
                             <p><?= $model->name ?></p>
                             <p class="tuip"><?= $model->job_title ?></p>
                         </div>
                     </li>
-                </ul>    
+                </ul>
             </div>
         </div>
+        
         <!--老师详情-->
-        <div class="main-right keep-right">
-            <!--面包屑-->
-            <div class="crumbs">
+        <div class="details pull-right">
+            <!--页面标题-->
+            <div class="vk-title clear-margin">
                 <span>
                     <?= Yii::t('app', '{Teacher}{Synopsis}', [
                         'Teacher' => Yii::t('app', 'Teacher'), 'Synopsis' => Yii::t('app', 'Synopsis')
@@ -48,71 +51,32 @@ $this->title = $model->name;
                 </span>
             </div>
             <!--描述-->
-            <div class="teacher-des">
-                <?= $model->des ?>
+            <div class="vk-title set-bottom"><?= $model->des ?></div>
+            
+            <!--老师课程-->
+            <div class="vk-title">
+                <span>
+                    <?= Yii::t('app', '{Teacher}{Course}', [
+                        'Teacher' => Yii::t('app', 'Teacher'), 'Course' => Yii::t('app', 'Course')
+                    ]) ?>
+                </span>
             </div>
             
-            <div class="frame">
-                <div class="title">
-                    <span>
-                        <?= Yii::t('app', '{Teacher}{Course}', [
-                            'Teacher' => Yii::t('app', 'Teacher'), 'Course' => Yii::t('app', 'Course')
-                        ]) ?>
-                    </span>
-                </div>
-            </div>
-            <!--老师课程-->
-            <div class="list">
-                <ul>
-                    <?php if(count($dataProvider->allModels) <= 0): ?>
-                    <h5>没有找到数据。</h5>
-                    <?php endif; ?>
-                    <?php foreach ($dataProvider->allModels as $index => $model): ?>
-                    <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
-                        <div class="pic">
-                            <a href="/course/default/view?id=<?= $model['id'] ?>" title="<?= $model['name'] ?>" target="_blank">
-                                <?php if(empty($model['cover_img'])): ?>
-                                <div class="title"><?= $model['name'] ?></div>
-                                <?php else: ?>
-                                <img src="<?= $model['cover_img'] ?>" width="100%" height="100%" />
-                                <?php endif; ?>
-                            </a>
-                        </div>
-                        <div class="text">
-                            <div class="tuip">
-                                <span class="title title-size single-clamp keep-left"><?= $model['name'] ?></span>
-                                <span class="keep-right"><?= DateUtil::intToTime($model['content_time'], ':', true) ?></span>
-                            </div>
-                            <div class="tuip single-clamp">
-                                <?= isset($model['tags']) ? $model['tags'] : 'null' ?>
-                            </div>
-                            <div class="tuip">
-                                <span class="font-success keep-left"><?= $model['customer_name'] ?></span>
-                                <span class="font-success keep-right">
-                                    <?= isset($model['people_num']) ? $model['people_num'] : 0 ?> 人在学
-                                </span>
-                            </div>
-                        </div>
-                        <div class="teacher">
-                            <div class="tuip">
-                                <div class="avatars img-circle keep-left">
-                                    <?= Html::img($model['teacher_avatar'], ['class' => 'img-circle', 'width' => 25, 'height' => 25]) ?>
-                                </div>
-                                <span class="keep-left"><?= $model['teacher_name'] ?></span>
-                                <span class="avg-star font-warning keep-right"><?= $model['avg_star'] ?> 分</span>
-                            </div>
-                        </div>
-                    </li>
-                    <?php endforeach; ?>
+            <!--列表-->
+            <div class="vk-list">
+                <ul class="list-unstyled">
+
                 </ul>
             </div>
+            
             <!--加载-->
             <div class="loading-box">
                 <span class="loading" style="display: none"></span>
                 <span class="no_more" style="display: none">没有更多了</span>
             </div>
+            
             <!--总结记录-->
-            <div class="summary">
+            <div class="summary set-bottom">
                 <span>共 <b><?= $totalCount ?></b> 条记录</span>
             </div>
             
@@ -121,85 +85,75 @@ $this->title = $model->name;
 </div>
 
 <?php
-$url = Url::to(array_merge(['view'], $filters));   //链接
-$domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+$params_js = json_encode($filters); //js参数
+//加载 LIST_DOM 模板
+$list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/teacher/views/default/_view.php')));
-$js = 
-<<<JS
-        
-    //鼠标经过、离开事件
-    hoverEvent();        
-        
-    //下拉加载更多
-    var page = 1;
+$js = <<<JS
+    /**
+     * 滚屏自动换页
+     */
+    var page = 0; //页数
     var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
-            dataLoad(page);
+            loaddata(page, '/teacher/default/view');
         }
-    });       
-    //分页请求加载数据
-    function dataLoad(pageNum) {
-        var maxPageNum =  ($totalCount - 6) / 6;
+    });
+        
+    //加载第一页的课程数据
+    loaddata(page, '/teacher/default/view');
+    /**
+     * 加载数据
+     * @param int target_page 指定页
+     * @param string url 指定的链接
+     */
+    function loaddata (target_page, url) {
+        var maxPageNum =  $totalCount / 6;
         // 当前页数是否大于最大页数
-        if((pageNum) > Math.ceil(maxPageNum)){
-            $('.loading').hide();
-            $('.no_more').show();
+        if(target_page > Math.ceil(maxPageNum)){
+            $('.loading-box .loading').hide();
+            $('.loading-box .no_more').show();
             return;
         }
+        /**
+         * 如果页面非加载当中执行
+         */
         if(!isPageLoading){
-            //设置已经加载当中...
-            isPageLoading = true;
-            $.get("$url", {page: (pageNum + 1)}, function(rel){
-                isPageLoading = false;
-                page = Number(rel['page']);
-                var items = $domes;
-                var dome = "";
-                var data = rel['data'];
+            isPageLoading = true;   //设置已经加载当中...
+            var params = $.extend($params_js, {page: (target_page + 1)});  //传值
+            $.get(url, params, function(rel){
+                isPageLoading = false;  //取消设置加载当中...
+                var data = rel.data;     //获取返回的数据
+                page = Number(data.page);    //当前页
+                //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
-                    for(var i in data){
-                        dome += Wskeee.StringUtil.renderDOM(items, {
-                            className: i % 3 == 2 ? 'clear-margin' : '',
-                            id: data[i].id,
-                            isExist: data[i].cover_img == null || data[i].cover_img == '' ? '<div class="title">' + data[i].name + '</div>' : '<img src="' + data[i].cover_img + '" width="100%" heigth="100%" />',
-                            name: data[i].name,
-                            contentTime: Wskeee.DateUtil.intToTime(data[i].content_time),
-                            tags: data[i].tags != undefined ? data[i].tags : 'null',
-                            customerName: data[i].customer_name,
-                            number: data[i].people_num != undefined ? data[i].people_num : 0,
-                            teacherAvatar: data[i].teacher_avatar,
-                            teacherName: data[i].teacher_name,
-                            avgStar: data[i].avg_star
+                    for(var i in data.result){
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".details .vk-list > ul"));
+                        //鼠标经过、离开事件
+                        item.hover(function(){
+                            $(this).addClass('hover');
+                        }, function(){
+                            $(this).removeClass('hover');
                         });
                     }
-                    $(".main-right .list > ul").append(dome);
-                    hoverEvent();
+                    //如果当前页大于最大页数显示“没有更多了”
                     if(page > Math.ceil(maxPageNum)){
-                        //没有更多了
-                        $('.no_more').show();
+                        $('.loading-box .no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],    //提示消息
+                    },{
+                        type: "danger", //错误类型
+                    });
                 }
-                //隐藏loading
-                $('.loading').hide();
+                $('.loading-box .loading').hide();   //隐藏loading
             });
-            $('.loading').show();
-            $('.no_more').hide();
+            $('.loading-box .loading').show();
+            $('.loading-box .no_more').hide();
         }
     }
-        
-    //经过、离开事件
-    function hoverEvent(){
-        $(".main-right .list > ul > li").each(function(){
-            var elem = $(this);
-            elem.hover(function(){
-                elem.addClass('hover');
-                
-            },function(){
-                elem.removeClass('hover');
-            });    
-        });
-    }    
-
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

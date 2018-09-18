@@ -84,14 +84,14 @@ class CourseNodeController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->createCourseNode($model);
-        } else {
-            return $this->renderAjax('create', [
-                'model' => $model,      //模型
-            ]);
         }
+        
+        return $this->renderAjax('create', [
+            'model' => $model,      //模型
+        ]);
     }
     
     /**
@@ -118,14 +118,14 @@ class CourseNodeController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->updateCourseNode($model);
-        } else {
-            return $this->renderAjax('update', [
-                'model' => $model,      //模型
-            ]);
         }
+        
+        return $this->renderAjax('update', [
+            'model' => $model,      //模型
+        ]);
     }
 
     /**
