@@ -173,7 +173,7 @@ class ImportUtils {
                 //组装对应数组值
                 foreach ($sheetdata[2] as $key => $value) {
                     if(!empty($value)){ //值非空
-                        $sheetColumns[$value] = $sheetdata[$row][$key];
+                        $sheetColumns[$value] = trim($sheetdata[$row][$key]);
                     }
                 }
                 //判断每一行是否存在空值，若存在则过滤
