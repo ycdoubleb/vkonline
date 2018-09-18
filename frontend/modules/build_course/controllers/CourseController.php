@@ -109,10 +109,6 @@ class CourseController extends Controller
     {
         $model = $this->findModel($id);
         
-        if (Yii::$app->request->isPost) {
-            ImportUtils::getInstance()->importFrame($id);   //导入课程框架信息
-        }
-        
         return $this->render('view', [
             'model' => $model,  //模型
             'courseAttrs' => $this->getCourseAttrByCourseId($model->id),    //已选的课程属性
@@ -122,6 +118,20 @@ class CourseController extends Controller
         ]);
     }
    
+    /**
+     * 导入课程框架数据
+     * @param string $id
+     * @return mixed
+     */
+    public function actionImport($id)
+    {
+        if (Yii::$app->request->isPost) {
+            ImportUtils::getInstance()->importFrame($id);   //导入课程框架信息
+        }
+        
+        return $this->redirect(['view', 'id' => $id]);
+    }
+
     /**
      * 创建 一个新的 Course 模块
      * 如果创建成功，浏览器将被重定向到“查看”页面。

@@ -116,7 +116,7 @@ class DefaultController extends Controller {
         }
         $config['basePath'] = Yii::getAlias('@webroot');
         /* 生成上传实例对象并完成上传 */
-        $up = new Uploader($fieldName, $config, $base64);
+        $up = new Uploader($fieldName, array_merge($CONFIG, $config), $base64);
 
         /**
          * 得到上传文件所对应的各个参数,数组结构

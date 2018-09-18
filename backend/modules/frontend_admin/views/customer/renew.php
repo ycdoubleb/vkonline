@@ -100,16 +100,20 @@ $js =
 
     /** 富文本编辑器 */
     $('#container').removeClass('form-control');
-    var ue = UE.getEditor('container', {toolbars:[
-        [
-            'fullscreen', 'source', '|', 'undo', 'redo', '|',  
-            'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
-            'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
-            'paragraph', 'fontfamily', 'fontsize', '|',
-            'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
-            'simpleupload', 'horizontal'
+    var ue = UE.getEditor('container', {
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
+            ]
         ]
-    ]});
+    });
    
     /** 提交表单 */
     $("#submitsave").click(function(){

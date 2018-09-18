@@ -1,5 +1,6 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
 use frontend\modules\res_service\assets\ModuleAssets;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -39,7 +40,7 @@ ModuleAssets::register($this);
     <div class="panel">
         <div class="list">
             <?php foreach ($dataProvider->models as $data):?>
-                <a href="from-view?id=<?=$data['id']?>" class="customer-item" style="background:url(<?= $data['logo'] ?>)">
+                <a href="from-view?id=<?=$data['id']?>" class="customer-item" style="background:url(<?= Aliyun::absolutePath($data['logo']) ?>)">
                     <span class="name single-clamp"><?= $data['name'] ?></span>
                 </a>
             <?php endforeach;?>

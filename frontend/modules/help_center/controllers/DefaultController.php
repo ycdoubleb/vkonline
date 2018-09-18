@@ -197,7 +197,7 @@ class DefaultController extends Controller
 //        $parentCats->leftJoin(['Post' => Post::tableName()], 'Post.category_id = PostCategory.id');
         $parentCats->where(['PostCategory.is_show' => true,'app_id' => $app_id])
                 ->andFilterWhere(['level' => $level])
-                ->orderBy('sort_order');
+                ->orderBy(['sort_order' => SORT_ASC]);
         
         return $parentCats;
     }

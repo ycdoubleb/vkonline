@@ -227,8 +227,9 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                             'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
                         ]);
                         $form = ActiveForm::begin([
+                            'action' => ['import', 'id' => $model->id],
                             'options'=>[
-                                'id' => 'build-course-form',
+                                'id' => 'import-frame-form',
                                 'class'=>'form-horizontal',
                                 'enctype' => 'multipart/form-data',
                                 'style' => 'display:inline-block'
@@ -236,7 +237,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                         ]);
                         echo '&nbsp;<div class="vk-uploader"><div class="btn btn-info btn-flat">导入</div>'
                                 . '<div class="file-box">'
-                                    . '<input type="file" name="importfile" class="file-input" onchange="submitForm();">' 
+                                    . '<input type="file" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="submitForm();">' 
                                 . '</div></div>';
                         ActiveForm::end();
                     } 
@@ -327,7 +328,7 @@ $js = <<<JS
     }    
     
     window.submitForm = function(){
-        $('#build-course-form').submit();
+        $('#import-frame-form').submit();
     }
     
     //导出框架数据
