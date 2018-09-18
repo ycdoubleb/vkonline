@@ -106,21 +106,19 @@ class DefaultController extends Controller
             Yii::$app->getResponse()->format = 'json';
             try
             { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $courses, 
-                        'page' => $results['filter']['page']
-                    ],
-                    'message' => '请求成功！',
-                ];
+                $is_success = true;
+                $data = ['result' => $courses, 'page' => $results['filter']['page']];
+                $message = '请求成功。';
             }catch (Exception $ex) {
-                return [
-                    'code'=> 404,
-                    'data' => [],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
+                $is_success = false;
+                $message = '请求失败::' . $ex->getMessage();
             }
+            
+            return [
+                'code'=> $is_success ? 200 : 404,
+                'data' => $is_success ? $data : [],
+                'message' => $message,
+            ];
         }
         
         //传参到布局文件
@@ -154,21 +152,19 @@ class DefaultController extends Controller
             Yii::$app->getResponse()->format = 'json';
             try
             { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $courses, 
-                        'page' => $results['filter']['page']
-                    ],
-                    'message' => '请求成功！',
-                ];
+                $is_success = true;
+                $data = ['result' => $courses, 'page' => $results['filter']['page']];
+                $message = '请求成功。';
             }catch (Exception $ex) {
-                return [
-                    'code'=> 404,
-                    'data' => [],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
+                $is_success = false;
+                $message = '请求失败::' . $ex->getMessage();
             }
+            
+            return [
+                'code'=> $is_success ? 200 : 404,
+                'data' => $is_success ? $data : [],
+                'message' => $message,
+            ];
         }
         
         //传参到布局文件
@@ -208,16 +204,12 @@ class DefaultController extends Controller
             }catch (Exception $ex) {
                 $is_success = false;
                 $message = '请求失败::' . $ex->getMessage();
-                return [
-                    'code'=> 404,
-                    'data' => [],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
             }
+            
             return [
                 'code'=> $is_success ? 200 : 404,
                 'data' => $is_success ? $data : [],
-                'message' => '请求失败::' . $ex->getMessage(),
+                'message' => $message,
             ];
         }
         
@@ -319,7 +311,7 @@ class DefaultController extends Controller
         $videoData['teacher_des'] = Html::decode($videoData['teacher_des']);      //decode并替换
         $videoData['path'] = Aliyun::absolutePath($videoData['path']);      //decode并替换
         $videoData['img'] = Aliyun::absolutePath($videoData['img']);      //decode并替换
-        $videoData['avatar'] = Aliyun::absolutePath($videoData['avatar']);      //decode并替换
+        $videoData['avatar'] = Aliyun::absolutePath(!empty($videoData['avatar']) ? $videoData['avatar'] : 'upload/avatars/default.jpg');      //decode并替换
 
         return ArrayHelper::merge($videoData, $playQuery->asArray()->one());
     }
@@ -421,6 +413,7 @@ class DefaultController extends Controller
                 ->one();
         
         $videoQuery['video_des'] = Html::decode($videoQuery['video_des']);      //decode并替换
+        $videoQuery['avatar'] = Aliyun::absolutePath(!empty($videoQuery['avatar']) ? $videoQuery['avatar'] : 'upload/avatars/default.jpg');      //decode并替换
         
         return $videoQuery;
     }

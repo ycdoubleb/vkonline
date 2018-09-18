@@ -3,8 +3,6 @@
 use common\models\vk\searchs\TeacherSearch;
 use frontend\modules\teacher\assets\ModuleAssets;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -20,38 +18,22 @@ $this->title = "名师堂";
 ?>
 
 <div class="container content">
+    
     <div class="teacher-search main">
-        <!-- 面包屑 -->
-        <div class="crumbs">
+        <!--搜索结果-->
+        <div class="vk-title">
             <span>
                 老师搜索结果：共搜索到 “<?= ArrayHelper::getValue($filters, 'name') ?>”  <?= $totalCount ?> 条记录。
             </span>
         </div>
+        
         <!--列表-->
-        <div class="list">
-            <ul>
-                <?php if(count($dataProvider->allModels) <= 0): ?>
-                <h5>没有找到数据。</h5>
-                <?php endif; ?>
-                <?php foreach ($dataProvider->allModels as $index => $model):  ?>
-                <li class="<?= $index % 5 == 4 ? 'clear-margin' : '' ?>">
-                    <a href="../default/view?id=<?= $model['id'] ?>" target="_blank">
-                        <div class="pic avatars img-circle">
-                            <?= Html::img([$model['avatar']], ['class' => 'img-circle', 'width' => '100%', 'height' => 96]) ?>
-                            <?php if($model['is_certificate']): ?>
-                            <i class="fa fa-vimeo"></i>
-                            <?php endif; ?>
-                        </div>
-                        <div class="text">
-                            <p><?= $model['name'] ?></p>
-                            <p class="tuip"><?= $model['job_title'] ?></p>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-                </li>
+        <div class="vk-list">
+            <ul class="list-unstyled">
+
             </ul>
         </div>
-
+        
         <!--加载-->
         <div class="loading-box">
             <span class="loading" style="display: none"></span>
@@ -62,78 +44,74 @@ $this->title = "名师堂";
 </div>
 
 <?php
-$url = Url::to(array_merge(['search'], $filters));   //链接
+$params_js = json_encode($filters); //js参数
 $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/teacher/views/default/_search.php')));
-$js = 
-<<<JS
-   
-    //鼠标经过、离开事件
-    hoverEvent();        
-        
-    //下拉加载更多
-    var page = 1;
+    $this->renderFile('@frontend/modules/teacher/views/default/_list.php')));
+$js = <<<JS
+    /**
+     * 滚屏自动换页
+     */
+    var page = 0; //页数
     var isPageLoading = false;
     $(window).scroll(function(){
         if($(document).scrollTop() >= $(document).height() - $(window).height()){
-           dataLoad(page);
+           loaddata(page, '/teacher/default/search');
         }
-    });       
-    //分页请求加载数据
-    function dataLoad(pageNum) {
-        var maxPageNum =  ($totalCount - 10) / 10;
+    });
+        
+    //加载第一页的课程数据
+    loaddata(page, '/teacher/default/search');
+        
+    /**
+     * 加载数据
+     * @param int target_page 指定页
+     * @param string url 指定的链接
+     */
+    function loaddata (target_page, url) {
+        var maxPageNum =  $totalCount / 8;
         // 当前页数是否大于最大页数
-        if((pageNum) > Math.ceil(maxPageNum)){
+        if(target_page > Math.ceil(maxPageNum)){
             $('.loading').hide();
             $('.no_more').show();
             return;
         }
+        /**
+         * 如果页面非加载当中执行
+         */
         if(!isPageLoading){
-            //设置已经加载当中...
-            isPageLoading = true;
-            $.get("$url", {page: (pageNum + 1)}, function(rel){
-                isPageLoading = false;
-                page = Number(rel['page']);
-                var items = $domes;
-                var dome = "";
-                var data = rel['data'];
+            isPageLoading = true;   //设置已经加载当中...
+            var params = $.extend($params_js, {page: (target_page + 1)});  //传值
+            $.get(url, params, function(rel){
+                isPageLoading = false;  //取消设置加载当中...
+                var data = rel.data;     //获取返回的数据
+                page = Number(data.page);    //当前页
+                //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
-                    for(var i in data){
-                        dome += Wskeee.StringUtil.renderDOM(items, {
-                            className: i % 4 == 3 ? 'clear-margin' : '',
-                            id: data[i].id,
-                            avatar: data[i].avatar,
-                            isShow: data[i].is_certificate == 1 ? '<i class="fa fa-vimeo"></i>' : '',
-                            name: data[i].name,
-                            jobTitle: data[i].job_title
+                    for(var i in data.result){
+                        var item = $(Wskeee.StringUtil.renderDOM($domes, data.result[i])).appendTo($(".vk-list > ul"));                       
+                        //鼠标经过、离开事件
+                        item.hover(function(){
+                            $(this).addClass('hover');
+                        }, function(){
+                            $(this).removeClass('hover');
                         });
                     }
-                    $(".list > ul").append(dome);
-                    hoverEvent();   
+                    //如果当前页大于最大页数显示“没有更多了”
                     if(page > Math.ceil(maxPageNum)){
-                        //没有更多了
                         $('.no_more').show();
                     }
+                }else{
+                    $.notify({
+                        message: rel['message'],    //提示消息
+                    },{
+                        type: "danger", //错误类型
+                    });
                 }
-                //隐藏loading
-                $('.loading').hide();
+                $('.loading').hide();   //隐藏loading
             });
             $('.loading').show();
             $('.no_more').hide();
         }
-    }        
-        
-    //经过、离开事件
-    function hoverEvent(){
-        $(".list > ul > li").each(function(){
-            var elem = $(this);
-            elem.hover(function(){
-                elem.addClass('hover');
-                
-            },function(){
-                elem.removeClass('hover');
-            });    
-        });
     }    
 JS;
     $this->registerJs($js,  View::POS_READY);

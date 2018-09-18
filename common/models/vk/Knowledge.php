@@ -5,6 +5,7 @@ namespace common\models\vk;
 use common\models\User;
 use common\utils\DateUtil;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\Query;
@@ -65,6 +66,16 @@ class Knowledge extends ActiveRecord
         ];
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function behaviors() 
+    {
+        return [
+            TimestampBehavior::className()
+        ];
+    }
+    
     /**
      * {@inheritdoc}
      */

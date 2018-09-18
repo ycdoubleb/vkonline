@@ -18,9 +18,9 @@ use yii\widgets\ActiveForm;
 
 
 ModuleAssets::register($this);
-ClipboardAssets::register($this);
 GrowlAsset::register($this);
 WatermarkAsset::register($this);
+ClipboardAssets::register($this);
 
 $this->title = Yii::t('app', '{Batch}{Import}{Video}', [
     'Batch' => Yii::t('app', 'Batch'),  'Import' => Yii::t('app', 'Import'),  'Video' => Yii::t('app', 'Video')
@@ -279,11 +279,11 @@ SCRIPT;
                     ]),
                     'format' => 'raw',
                     'value'=> function($data, $key){
-                        return "<span class=\"multi-line-clamp\">{$data['video.filename']}</span>" 
+                        return "<span class=\"filename multi-line-clamp\">{$data['video.filename']}</span>" 
                             . "<div class=\"hidden\">" 
                                 . Select2::widget([
                                     'name' => 'video_filename',
-                                    'data' => explode(',', $data['video.filename']), 
+                                    'data' => [], 
                                     'options' => ['placeholder'=>'同名冲突',],
                                     'hideSearch' => true,
                                     'pluginEvents' => [
@@ -309,22 +309,7 @@ SCRIPT;
                     'class' => 'yii\grid\ActionColumn',
                     'buttons' => [
                         'view' => function ($url, $data, $key) {
-                            if(isset($data['id'])){
-                                $buttonHtml = [
-                                    'name' => '<span class="fa fa-eye"></span>',
-                                    'url' => ['view', 'id' => $data['id']],
-                                    'options' => [
-                                        'title' => Yii::t('yii', 'View'),
-                                        'aria-label' => Yii::t('yii', 'View'),
-                                        'data-pjax' => '0',
-                                        'target' => '_black'
-                                    ],
-                                    'symbol' => '&nbsp;',
-                                ];
-                                return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
-                            }else{
-                                return '';
-                            }
+                            return '<span class="hidden" data-video_status="false"></span>';
                         },
                     ],
                     'headerOptions' => [
@@ -333,6 +318,7 @@ SCRIPT;
                         ],
                     ],
                     'contentOptions' =>[
+                        'class' => 'video-status',
                         'style' => [
                             'padding' => '4px 0px',
                             'white-space' => 'normal',
@@ -488,13 +474,11 @@ $js = <<<JS
      */
     setTimeout(function(){  //设置定时
         $(window.uploader).on('uploadFinished',function(){
-            var option = '';
             var uploadvideo_list = $('#euploader-list > tbody').find('tr'); //获取uploadvideo上传的table下的tr
             for(var i = 0; i < exclevideo_list.length; i++){
+                if($(exclevideo_list[i]).find('td.video-status > span.hidden').attr('data-video_status') == 'true') continue;
+                var excleFileName = $(exclevideo_list[i]).find('td.video-filename > span.filename').text();    //excle的文件名 
                 var dropdown = $(exclevideo_list[i]).find('select[name="video_filename"]');     //获取下拉框
-                    var excleFileName = dropdown.find('option').eq(1).text();   //excle的文件名 
-                dropdown.html('');  //清除下拉框的选项
-                $('<option />').val('').text('同名冲突').appendTo(dropdown);    //添加提示消息
                 for(var k = 0; k < uploadvideo_list.length; k++){
                     var uploadFileId = $(uploadvideo_list[k]).find('input').val();  //upload的文件id
                     var uploadFileName = $(uploadvideo_list[k]).find('td.euploader-item-filename').children().text();   //upload的文件名
@@ -506,7 +490,7 @@ $js = <<<JS
                 }
                 /* 判断下拉框的选项是否超过 2 */
                 if(dropdown.find('option').length > 2){
-                    dropdown.parent('div').prev('span').addClass('hidden');
+                    dropdown.parent('div').prev('span.filename').addClass('hidden');
                     dropdown.parent('div').removeClass('hidden');
                     dropdown.parents('td.video-filename').prepend($('<i class="warnicon has-error"/>'));
                 }else{
@@ -565,23 +549,29 @@ $js = <<<JS
         };
         //如果老师id 或 视频文件名为空则执行
         if(teacher_id == 0 || video_filename == 0){
-            $(target).find('td:last').html($('<span class="text-danger" />').text('请先解决同名冲突'));
+            $(target).find('td.video-status > span.text-danger').remove();
+            if($(target).find('select[name="video_filename"] > option').length >= 2){
+                $('<span class="text-danger">请先解决同名冲突</span>').appendTo($(target).find('td.video-status'));
+            }else{
+                $('<span class="text-danger">缺少对应的视频文件</span>').appendTo($(target).find('td.video-status'));
+            }
             $(target).addClass('bgerror');
         }else{
             $.post('../video/import?request_mode=1', param_js, function(rel){
                 if(rel.code == '200'){  //如果提交成功则返回生成“复制id”按钮  
-                    var button_html = $('<button class="btn btn-links copy-video_id" data-clipboard-text="' + rel.data.id + '">').text('复制ID');
-                    $(target).find('td:last').html(button_html);
-                    //复制视频ID
-                    button_html.click(function(){
-                        copyToClipboard($(this).attr('data-clipboard-text'));
-                    });
+                    var button_html = $('<button id="copy_'+ rel.data.id + '" class="btn btn-links" data-clipboard-text="' + rel.data.id + '">复制ID</button>');
+                    $(target).find('td.video-status > span.hidden').attr('data-video_status', true);
+                    $(target).find('td.video-status > span.text-danger').remove();
+                    button_html.appendTo($(target).find('td:last'));
+                    copyVideoId('#copy_' + rel.data.id);
+                    $(target).removeClass('bgerror');
                 }else{  //如果保存的视频文件被占用，则提示视频已被使用
-                    var url = '/study_center/default/video-info?id=' + rel.data.id;
+                    var url = '/study_center/default/video-info?id=' + rel.data.id;     //链接
                     var span_html = '<span class="text-danger">' + rel.message + '</span>';
                     var a_html = '<a href="' + url + '" class="text-link" target="_blick">点击查看</a>';
                     $(target).find('td.video-filename').html('<i class="error-icon"></i>' + span_html + a_html);
-                    $(target).addClass('bgerror').find('td:last').html('<span class="text-danger">未保存</span>');
+                    $(target).find('td.video-status > button').remove();
+                    $('<span class="text-danger">未保存</span>').appendTo($(target).addClass('bgerror').find('td.video-status'));
                 }
                 $(target).find('select').attr('disabled', true);   //禁用下拉选择
                 $('#error_total').html($('.bgerror').length);   //判断有多少个错误
@@ -616,36 +606,24 @@ $js = <<<JS
         
     /**
      * 点击复制视频id
+     * @param {obj} target   目标对象  
      */
-    function copyToClipboard(maintext){
-        if (window.clipboardData){
-            window.clipboardData.setData("Text", maintext);
-            }else if (window.netscape){
-                try{
-                netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
-            }catch(e){
-                alert("该浏览器不支持一键复制！n请手工复制文本框链接地址～");
-            }
-            var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
-            if (!clip) return;
-            var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
-            if (!trans) return;
-            trans.addDataFlavor('text/unicode');
-            var str = new Object();
-            var len = new Object();
-            var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
-            var copytext=maintext;
-            str.data=copytext;
-            trans.setTransferData("text/unicode",str,copytext.length*2);
-            var clipid=Components.interfaces.nsIClipboard;
-            if (!clip) return false;
-            clip.setData(trans,null,clipid.kGlobalClipboard);
-        }
-        $.notify({
-            message: '复制成功',
-        },{
-            type: "success",
+    function copyVideoId(target){ 
+        var clipboard = new ClipboardJS(target);
+        clipboard.on('success', function(e) {
+            $.notify({
+                message: '复制成功',
+            },{
+                type: "success",
+            });
         });
+        clipboard.on('error', function(e) {
+            $.notify({
+                message: '复制失败',
+            },{
+                type: "danger",
+            });
+        });              
     }
 JS;
     $this->registerJs($js,  View::POS_READY);

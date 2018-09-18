@@ -45,7 +45,7 @@ $domes = json_encode(str_replace(array("\r\n", "\r", "\n"), " ",
 $js = <<<JS
     /** 提交表单 */
     $("#submitsave").click(function(){
-        //$('#build-course-form').submit(); return;
+//        $('#build-course-form').submit(); return;
         if($('#coursenode-name').val() == ''){
             $('.field-coursenode-name').addClass('has-error');
             $('.field-coursenode-name .help-block').html('名称不能为空。');

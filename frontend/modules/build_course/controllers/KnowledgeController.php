@@ -78,15 +78,15 @@ class KnowledgeController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->createKnowledge($model, Yii::$app->request->post());
-        }else{
-            return $this->renderAjax('create', [
-                'model' => $model,  //模型
-                'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
-            ]);
         }
+        
+        return $this->renderAjax('create', [
+            'model' => $model,  //模型
+            'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
+        ]);
     }
 
     /**
@@ -113,17 +113,17 @@ class KnowledgeController extends Controller
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             Yii::$app->getResponse()->format = 'json';
             return ActionUtils::getInstance()->updateKnowledge($model, Yii::$app->request->post());
-        } else {
-            return $this->renderAjax('update', [
-                'model' => $model,  //模型,
-                //如果有引用资源加载单个video详细
-                'videoDetail' => $model->has_resource ? 
-                    $this->findVideoDetails($model->knowledgeVideo->video_id) : [],
-            ]);
         }
+        
+        return $this->renderAjax('update', [
+            'model' => $model,  //模型,
+            //如果有引用资源加载单个video详细
+            'videoDetail' => $model->has_resource ? 
+                $this->findVideoDetails($model->knowledgeVideo->video_id) : [],
+        ]);
     }
 
     /**

@@ -188,24 +188,6 @@ $this->registerJs($format, View::POS_HEAD);
                 'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
             ])) ?>
 
-            <!--查看权限-->
-            <?php
-//            $form->field($model, 'level')->radioList(Video::$levelMap, [
-//                'value' => $model->isNewRecord ? Video::PUBLIC_LEVEL : $model->level,
-//                'itemOptions'=>[
-//                    'labelOptions'=>[
-//                        'style'=>[
-//                            'margin'=>'10px 15px 10px 0',
-//                            'color' => '#999',
-//                            'font-weight' => 'normal',
-//                        ]
-//                    ]
-//                ],
-//            ])->label(Yii::t('app', '{View}{Privilege}', [
-//                'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-//            ])) 
-            ?>
-
             <!--视频文件-->
             <div class="form-group field-videofile-file_id">
                 <?= Html::label(Yii::t('app', '{Video}{File}', [
@@ -433,7 +415,7 @@ $js =
             this.is_selected = $.inArray(this.id, $wateSelected) != -1 ? true : false;
         }
         var watermarks = $(Wskeee.StringUtil.renderDOM($item_dom, this)).appendTo($('#video-mts_watermark_ids'));
-        watermarks.find('input[name="video_watermark"]').prop('checked', this.is_selected);
+        watermarks.find('input[name="video_watermark"]').attr('name', 'video_watermarks[]').prop('checked', this.is_selected);
         //如果是默认选中，则在预览图上添加该选中的水印
         if(this.is_selected){
             window.watermark.addWatermark('vkcw' + this.id, this);

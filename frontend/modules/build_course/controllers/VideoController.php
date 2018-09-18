@@ -173,7 +173,6 @@ class VideoController extends Controller
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
-        
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             if($is_success){
@@ -207,7 +206,7 @@ class VideoController extends Controller
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-    
+       
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->updateVideo($model, Yii::$app->request->post());
             if($is_success){
@@ -401,7 +400,7 @@ class VideoController extends Controller
     
     /**
      * 导入 现有的 Video 模板。
-     * 如果导入成功，浏览器将返回导入的 Video。
+     * 如果导入成功，浏览器将返回导入的 Video内容。
      * @param integer $requestMode   格式：0是post，1是ajax格式
      * @return json|mixed
      */
