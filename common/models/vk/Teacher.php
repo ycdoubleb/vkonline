@@ -151,12 +151,12 @@ class Teacher extends ActiveRecord
                 Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
                 $this->avatar = $img_path . '?rand=' . rand(0, 9999); 
             }
-            //更新并且没有修改头像情况即使用旧头像
-            if (trim($this->avatar) == '' && !$this->isNewRecord){
-                $this->avatar = $this->getOldAttribute('avatar');
-            }else{
+            if (trim($this->avatar) == '' && $this->isNewRecord){
                 //设置默认头像
                 $this->avatar = 'upload/teacher/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
+            } elseif (trim($this->avatar) == '' && !$this->isNewRecord) {
+                //更新并且没有修改头像情况即使用旧头像
+                $this->avatar = $this->getOldAttribute('avatar');
             }
             $this->des = Html::encode($this->des);
             

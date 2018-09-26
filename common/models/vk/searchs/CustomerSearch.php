@@ -266,7 +266,7 @@ class CustomerSearch extends Customer
     {
         $query = (new Query())
                 ->select([ 'ActLog.id', 'ActLog.title', 'Good.name AS good_id', 'ActLog.content', 'ActLog.start_time', 
-                    'ActLog.end_time', 'AdminUser.nickname AS created_by', 'ActLog.created_at', 'sort_order'])
+                    'ActLog.end_time', 'AdminUser.nickname AS created_by', 'ActLog.created_at'])
                 ->from(['ActLog' => CustomerActLog::tableName()]);
         
         $query->leftJoin(['AdminUser' => AdminUser::tableName()], 'AdminUser.id = ActLog.created_by');  //关联查询创建者
