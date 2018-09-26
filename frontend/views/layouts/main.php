@@ -13,7 +13,6 @@ use yii\widgets\Breadcrumbs;
 
 
 AppAsset::register($this);
-BaseAssets::register($this);
 
 ?>
 <?php $this->beginPage() ?>
