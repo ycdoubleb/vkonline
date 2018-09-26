@@ -373,10 +373,9 @@ class ActionUtils
         return [
             'code'=> $is_success ? 200 : 404,
             'data' => [
-                'id' => $model->id, 'course_id' => $model->course_id, 
-                'name' => $model->name
+                'course_id' => $model->course_id, 
             ],
-            'message' => '操作成功！'
+            'message' => $message
         ];
     }
     
@@ -828,7 +827,7 @@ class ActionUtils
     {
         $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
         $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
-        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids',[]));    //水印id
+        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks',[]));    //水印id
         $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
         //如果上传的视频文件已经被使用过, 则返回使用者的信息
         $userInfo = $this->getUploadVideoFileUserInfo($fileId);
@@ -887,7 +886,7 @@ class ActionUtils
     {
         $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
         $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
-        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'Video.mts_watermark_ids', []));    //水印id
+        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks', []));    //水印id
         $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($fileId);

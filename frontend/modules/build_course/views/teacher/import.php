@@ -37,10 +37,10 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                 <span aria-hidden="true">&times;</span>
             </button>
             <p>
-                1、老师头像分辨率建议为正方形，96x96 到 200x200的范围内<a href="javascript:;" class="alert-link">（模板下载）</a>。
-                储存为web所有格式<a href="javascript:;" class="alert-link">（操作教程）</a>
+                1、老师头像分辨率建议为正方形，96x96 到 400x400的范围内<a href="<?= Aliyun::absolutePath('/static/imgs/teacher_avatar.psd') ?>" class="alert-link">（头像模板下载）</a>。
+                储存为web所有格式（在PS的操作：文件 > 储存为Web格式 > '预设'选择JPEG高 > 储存）
             </p>
-            <p>2、批量导入<?= Html::a('模板下载', Aliyun::absolutePath('static/doc/template/teacher_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
+            <p>2、批量导入<?= Html::a('表格模板下载', Aliyun::absolutePath('static/doc/template/teacher_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
         </div>
         
         <!--文件上传-->

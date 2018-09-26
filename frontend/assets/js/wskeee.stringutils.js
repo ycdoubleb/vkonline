@@ -145,23 +145,22 @@
 
         return isAppendStr ? appendStr + path : path;
     }
-
+    
     /**
-     * 拆分一个字符串,以大写字母作为标识
-     * @param {string} str  被拆分的字符串
-     * @return {array}
+     * 格式化字节   如：传 formatBytes(1024) 返回 1k
+     * @param {int} bytes           字节数
+     * @param {int} decimals        小数默认 2
+     * @returns {String}
      */
-//    StringUtil.splitStringToLetterSize = function(str){
-//        var splitChar = ',';
-//        var formatStr = str.search("/([A-Z])/", ",\\1");
-//        var strArray = str.split(formatStr);
-//        console.log(formatStr, strArray);
-//        for(var i = 0; i < strArray.length; i ++){
-//             System.out.println(strArray[i]);
-//        }
-//        
-//        return  strArray;
-//    }
+    StringUtil.formatBytes = function (bytes, decimals) {
+        if (bytes == 0)
+            return '0 Bytes';
+        var k = 1024,
+                dm = decimals || 2,
+                sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+                i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
 
     /**
      * 判断字符串对象是否是Integer类型

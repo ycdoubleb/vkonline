@@ -152,8 +152,7 @@ class CourseSearch extends Course
         ]);
         //添加字段
         $addArrays = ['Customer.name AS customer_name', 'Course.name',
-            'Course.learning_count AS people_num', 
-            'Course.cover_img',  'Course.content_time', 'Course.avg_star', 
+            'Course.cover_img', 'Course.learning_count', 'Course.avg_star', 
             'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
       

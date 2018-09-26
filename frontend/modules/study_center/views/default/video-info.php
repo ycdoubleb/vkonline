@@ -22,7 +22,7 @@ VideoInfoAssets::register($this);
         <span class="title-name"><?= $model['name'] ?></span>
     </div>
     <div class="player">
-        <video id="myVideo" src="<?= Aliyun::absolutePath($model['path']) ?>" controls poster="<?= Aliyun::absolutePath($model['img']) ?>" width="100%" height="500"></video>
+        <video id="myVideo" src="<?= $model['path'] ?>" controls poster="<?= $model['img'] ?>" width="100%" height="500"></video>
     </div>
     <!--主讲老师+相关课程-->
     <div class="left-box">
@@ -31,7 +31,7 @@ VideoInfoAssets::register($this);
             <div class="panel-body">
                 <div class="info">
                     <?= Html::beginTag('a', ['href' => Url::to(['/teacher/default/view', 'id' => $model['teacher_id']]), 'target' => '_blank']) ?>
-                    <?= Html::img(StringUtil::completeFilePath($model['avatar']), ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
+                    <?= Html::img($model['avatar'], ['class' => 'img-circle', 'width' => 120, 'height' => 120]) ?>
                     <p class="name"><?= $model['teacher_name'] ?></p>
                     <p class="job-title"><?= $model['teacher_des'] ?></p>
                     <?= Html::endTag('a') ?>
@@ -46,11 +46,7 @@ VideoInfoAssets::register($this);
                         <li class="<?= $index % 3 == 2 ? 'clear-margin' : '' ?>">
                             <div class="pic">
                                 <a href="/course/default/view?id=<?= $data['id'] ?>" title="<?= $data['course_name'] ?>" target="_blank">
-                                    <?php if (empty($data['cover_img'])): ?>
-                                        <div class="title"><?= $data['course_name'] ?></div>
-                                    <?php else: ?>
-                                        <img src="<?= $data['cover_img'] ?>" width="100%" height="100%" />
-                                    <?php endif; ?>
+                                    <img src="<?= Aliyun::absolutePath(!empty($data['cover_img']) ? $data['cover_img'] : 'static/imgs/notfound.png') ?>" width="100%" height="100%" />
                                     <p class="single-clamp course-name"><?= $data['course_name'] ?></p>
                                 </a>
                             </div>

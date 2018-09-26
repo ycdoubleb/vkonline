@@ -432,6 +432,7 @@ class ImportUtils {
             $videoModel->id = $userInfo['data']['video_id'];
             $message = '视频已被使用。';
         }
+        
         /* 如果is_success是true，则执行 */
         if($is_success){
             /** 开启事务 */
@@ -444,7 +445,7 @@ class ImportUtils {
                 $videoModel->img = $uploadfileModel->thumb_path;
                 $videoModel->is_link = $uploadfileModel->is_link;
                 $videoModel->mts_watermark_ids = $this->checkCustomerWatermark($watermark_ids);
-                $videoModel->user_cat_id = $this->checkVideoDirExists($dir_path);   //用户自定义目录id
+                $videoModel->user_cat_id = $this->checkVideoDirExists($dir_path);   //用户自定义目录id;
                 //如果 video 保存成功，则执行
                 if($videoModel->save()){
                     $videoFile = new VideoFile([
@@ -531,24 +532,32 @@ class ImportUtils {
      */
     protected function saveVideoDir($name, $parent_id = 0)
     {
-        $category = new UserCategory([
-            'name' => $name, 'parent_id' => $parent_id, 'type' => 1,
-            'created_by' => \Yii::$app->user->id
-        ]);
+        $category = UserCategory::findOne(['name' => $name, 'parent_id' => $parent_id]);
         
-        $category->level = $category->parent_id == 0 ? 1 : UserCategory::getCatById($category->parent_id)->level + 1;
-        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            if($category->save()){
-                $category->updateParentPath();      //更新路径
-                $trans->commit();  //提交事务
+        if($category == null ){
+            /** 开启事务 */
+            $trans = Yii::$app->db->beginTransaction();
+            try
+            {  
+                $category = new UserCategory([
+                    'name' => trim($name), 'parent_id' => $parent_id, 'type' => 1,
+                    'created_by' => \Yii::$app->user->id
+                ]);
+                //如果parent_id == 0，则level = 1，否则level就是父级的level + 1
+                if($category->parent_id == 0){
+                    $category->level = 1;
+                }else{
+                    $category->level = UserCategory::getCatById($category->parent_id)->level + 1;
+                }
+                //如果保存成功则更新路径和提交事务
+                if($category->save()){
+                    $category->updateParentPath();      //更新路径
+                    $trans->commit();  //提交事务
+                }
+                UserCategory::invalidateCache();    //清除缓存    
+            }catch (Exception $ex) {
+                $trans ->rollBack(); //回滚事务
             }
-            UserCategory::invalidateCache();    //清除缓存    
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
         }
         
         return $category->id;
@@ -617,44 +626,36 @@ class ImportUtils {
         //查询已存在的目录
         $existCategorys = [];   //已存在目录
         $userCategory = (new Query())->from(['UserCategory' => UserCategory::tableName()]);
-        $userCategory->select(['UserCategory.id', 'UserCategory.parent_id']);
+        $userCategory->select(['UserCategory.id', 'UserCategory.path']);
         $userCategory->where(['UserCategory.name' => $dirs, 'UserCategory.type' => 1]);
         $userCategory->andWhere(['or', ['UserCategory.created_by' => \Yii::$app->user->id], ['UserCategory.is_public' => 1]]);
         $userCategory->orderBy(['UserCategory.path' => SORT_ASC]);
         $categorys = $userCategory->all();
         //获取需要的已存在目录
         foreach ($categorys as $cat) {
-            foreach ($dirs as $dir) {
-                //上级目录名
-                $parentname = UserCategory::getCatById($cat['parent_id'] > 0 ? $cat['parent_id'] : $cat['id'])->name;
-                //上传目录的值和存在的上级目录名相同，则返回id
-                if($dir == $parentname){
-                    $existCategorys[] = $cat['id'];
+            $full_path = $this->getCategoryFullPath($cat['id']);    //获取已存在的目录的全路径
+            //上传目录的路径和存在的目录路径相同，则返回id
+            if($video_dirs == $full_path){
+                $cat_path = explode(',', $cat['path']);
+                foreach ($cat_path as $id) {
+                    if($id > 0) $existCategorys[] = $id;
                 }
             }
         }
         //计算已存在的目录个数
-        $catCount = count($existCategorys);     
-        
+        $catCount = count($existCategorys);    
         $dir_id = 0;    //目录id
-        //如果已存在的目录等于上传的目录，并且已存在的目录大于0，则目录id为最后一个已存在的目录id
-        if($catCount == $dirCount && $catCount > 0){
+        //如果已存在的目录大于0，则目录id为最后一个已存在的目录id， 否则新建目录
+        if($catCount > 0){
             $dir_id = end($existCategorys);
-        //如果已存在的目录小于上传的目录，并且已存在的目录大于0，则目录id为新建的目录id*/
-        }else if($catCount < $dirCount && $catCount > 0 ){
-            foreach ($dirs as $key => $name) {
-                if(isset($existCategorys[$key])) continue;
-                $dir_id = $this->saveVideoDir($name, $existCategorys[$key - 1]);
-            }
-        //如果已存在的目录等于0，则创建目录结构并且目录id为新建的目录目录结构等级最高的那个id
-        }else if($catCount == 0){
+        }else{
             $dir_id = $this->saveVideoDir($dirs[0]);
             for($i = 1; $i < $dirCount; $i++){
                 if($dir_id == null) break;
                 $dir_id = $this->saveVideoDir($dirs[$i], $dir_id);
             }
         }
-       
+        
         return $dir_id;
     }
     
@@ -733,6 +734,25 @@ class ImportUtils {
         if (!file_exists($path)) {
             mkdir($path);
         }
+        return $path;
+    }
+    
+    /**
+     * 获取分类全路径
+     * @param integer $categoryId
+     * @return string
+     */
+    protected function getCategoryFullPath($categoryId) 
+    {
+        $path = '';
+        $userCategory = UserCategory::getCatById($categoryId);
+        if($userCategory != null){
+            $parentids = array_values(array_filter(explode(',', $userCategory->path)));
+            foreach ($parentids as $index => $id) {
+                $path .= ($index == 0 ? '' : ' > ') . UserCategory::getCatById($id)->name;
+            }
+        }
+        
         return $path;
     }
 }

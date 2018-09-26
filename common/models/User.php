@@ -2,16 +2,13 @@
 
 namespace common\models;
 
-use common\components\aliyuncs\Aliyun;
 use common\models\vk\Customer;
 use common\utils\SecurityUtil;
 use linslin\yii2\curl\Curl;
 use Yii;
-use yii\behaviors\TimestampBehavior;
+use yii\base\Exception;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-use yii\web\UploadedFile;
 
 /**
  * User model
@@ -40,19 +37,9 @@ use yii\web\UploadedFile;
  * 
  * @property Customer $customer 客户
  */
-class User extends ActiveRecord implements IdentityInterface {
+class User extends BaseUser implements IdentityInterface {
 
     public $byte;
-    
-    /** 创建场景 */
-    const SCENARIO_CREATE = 'create';
-
-    /** 更新场景 */
-    const SCENARIO_UPDATE = 'update';
-    //已停账号
-    const STATUS_STOP = 0;
-    //活动账号
-    const STATUS_ACTIVE = 10;
     
     //自由用户
     const TYPE_FREE = 1;
@@ -60,27 +47,10 @@ class User extends ActiveRecord implements IdentityInterface {
     const TYPE_GROUP = 2;
     
 
-    /** 性别 保密 */
-    const SEX_SECRECY = 0;
-    /** 性别 男 */
-    const SEX_MALE = 1;
-    /** 性别 女 */
-    const SEX_WOMAN = 2;
-    
     /** 空间大小 MB */
     const MBYTE = 1024 * 1024;
     /** 空间大小 GB */
     const GBYTE = 1024 * 1024 * 1024;
-    
-    /**
-     * 性别
-     * @var array 
-     */
-    public static $sexName = [
-        self::SEX_SECRECY => '保密',
-        self::SEX_MALE => '男',
-        self::SEX_WOMAN => '女',
-    ];
     
     /**
      * 账号
@@ -109,9 +79,6 @@ class User extends ActiveRecord implements IdentityInterface {
          self::GBYTE => 'GB',    
     ];
     
-    /* 重复密码验证 */
-    public $password2;
-
     public function scenarios() {
         return [
             self::SCENARIO_CREATE =>
@@ -128,15 +95,6 @@ class User extends ActiveRecord implements IdentityInterface {
      */
     public static function tableName() {
         return '{{%user}}';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors() {
-        return [
-            TimestampBehavior::class,
-        ];
     }
 
     /**
@@ -192,26 +150,11 @@ class User extends ActiveRecord implements IdentityInterface {
      * @inheritdoc
      */
     public function attributeLabels() {
-        return [
-            'id' => Yii::t('app', 'ID'),
+        return parent::attributeLabels() + [
             'customer_id' => Yii::t('app', '{The}{Customer}',['The' => Yii::t('app', 'The'),'Customer' => Yii::t('app', 'Customer'),]),
-            'username' => Yii::t('app', 'Account Number'),
-            'nickname' => Yii::t('app', '{True}{Name}',['True' => Yii::t('app', 'True'),'Name' => Yii::t('app', 'Name'),]),
-            'password_hash' => Yii::t('app', 'Password Hash'),
-            'password2' => Yii::t('app', 'Password2'),
-            'password_reset_token' => Yii::t('app', 'Password Reset Token'),
             'type' => Yii::t('app', 'Type'),
-            'sex' => Yii::t('app', 'Sex'),
-            'phone' => Yii::t('app', 'Phone'),
-            'email' => Yii::t('app', 'Email'),
-            'avatar' => Yii::t('app', 'Avatar'),
-            'status' => Yii::t('app', 'Status'),
             'max_store' => Yii::t('app', '{Storage}{Space}',['Storage' => Yii::t('app', 'Storage'),'Space' => Yii::t('app', 'Space'),]),
-            'des' => Yii::t('app', 'Des'),
-            'auth_key' => Yii::t('app', 'Auth Key'),
             'is_official' => Yii::t('app', 'Is Official'), 
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
     
@@ -224,17 +167,8 @@ class User extends ActiveRecord implements IdentityInterface {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
     
-//    public function afterFind() {
-//        
-//        parent::afterFind();
-//    }
-    
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
-            //设置ID
-            if (!$this->id) {
-                $this->id = md5(time() . rand(1, 99999999));
-            }
             //设置是否属于官网账号/企业用户or散户
             if($this->customer_id != null){
                 $isOfficial = Customer::findOne(['id' => $this->customer_id]);
@@ -245,54 +179,18 @@ class User extends ActiveRecord implements IdentityInterface {
                 $this->is_official = 0; //非官网用户
             }
             
-            //上传头像
-            $upload = UploadedFile::getInstance($this, 'avatar');
-            if ($upload != null) {
-                //获取后缀名，默认为 png 
-                $ext = pathinfo($upload->name,PATHINFO_EXTENSION);
-                $img_path = "upload/avatars/{$this->username}.{$ext}";
-                //上传到阿里云
-                Aliyun::getOss()->multiuploadFile($img_path, $upload->tempName);
-                $this->avatar = $img_path . '?rand=' . rand(0, 9999);                
-            }
-            
             if ($this->scenario == self::SCENARIO_CREATE) {
                 $this->max_store = $this->max_store * $this->byte;
-                $this->setPassword($this->password_hash);
-                $this->generateAuthKey();
-                //设置默认头像
-                if (trim($this->avatar) == '' || !isset($this->avatar)){
-                    $this->avatar = ($this->sex == null) ? 'upload/avatars/default.jpg' :
-                            'upload/avatars/default/' . ($this->sex == 1 ? 'man' : 'women') . rand(1, 25) . '.jpg';
-                }
             }else if ($this->scenario == self::SCENARIO_UPDATE) {
-                if (trim($this->password_hash) == ''){
-                    $this->password_hash = $this->getOldAttribute('password_hash');
-                }else{
-                    $this->setPassword($this->password_hash);
-                }
                 if($this->max_store == $this->getOldAttribute('max_store')){
                     $this->max_store = $this->getOldAttribute('max_store');
                 }else{
                     $this->max_store = $this->max_store * $this->byte;
                 }
-                if (trim($this->avatar) == ''){
-                    $this->avatar = $this->getOldAttribute('avatar');
-                }
             }
-
-            if (trim($this->nickname) == ''){
-                $this->nickname = $this->username;
-            }
-
             return true;
         }
         return false;
-    }
-    
-    public function afterFind()
-    {
-        $this->avatar = Aliyun::absolutePath(!empty($this->avatar) ? $this->avatar : 'upload/avatars/default.jpg');
     }
     
     /**
@@ -308,7 +206,13 @@ class User extends ActiveRecord implements IdentityInterface {
             'encrypt' => SecurityUtil::encryption(['User' => $this->toArray(['id', 'username', 'nickname', 'password_hash', "sex", "phone", "email", "avatar", "status", "des"])]),
         ]);
 
-        $response = $curl->post($url, false);
+        try{
+            $response = $curl->post($url, false);
+        } catch (Exception $ex) {
+            $response['success'] = false;
+            $response['data'] = ['msg' => $ex->getMessage()];
+        }
+        
         if ($response['success'] && $response['data']['code'] == "0") {
             Yii::info("同步用户 {$this->id} 成功！",__FUNCTION__);
         } else {
@@ -317,151 +221,4 @@ class User extends ActiveRecord implements IdentityInterface {
         
         parent::afterSave($insert, $changedAttributes);
     }
-    
-    /**
-     * 检查目标路径是否存在，不存即创建目标
-     * @param string $uploadpath    目录路径
-     * @return string
-     */
-    protected function fileExists($uploadpath) {
-
-        if (!file_exists($uploadpath)) {
-            mkdir($uploadpath);
-        }
-        return $uploadpath;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentity($id) {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public static function findIdentityByAccessToken($token, $type = null) {
-        $identity = self::find()
-                ->where(['access_token' => $token , 'status' => self::STATUS_ACTIVE ])->one();
-                //->andWhere(['>=','access_token_expire_time',time()])->one();
-        return $identity;
-    }
-
-    /**
-     * Finds user by username
-     *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username) {
-        return static::find()->where(['and', ['or', ['username' => $username], ['phone' => $username]], ['status' => self::STATUS_ACTIVE]])
-                ->one();
-    }
-
-    /**
-     * Finds user by password reset token
-     *
-     * @param string $token password reset token
-     * @return static|null
-     */
-    public static function findByPasswordResetToken($token) {
-        if (!static::isPasswordResetTokenValid($token)) {
-            return null;
-        }
-
-        return static::findOne([
-                    'password_reset_token' => $token,
-                    'status' => self::STATUS_ACTIVE,
-        ]);
-    }
-
-    /**
-     * Finds out if password reset token is valid
-     *
-     * @param string $token password reset token
-     * @return bool
-     */
-    public static function isPasswordResetTokenValid($token) {
-        if (empty($token)) {
-            return false;
-        }
-
-        $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        $expire = Yii::$app->params['user.passwordResetTokenExpire'];
-        return $timestamp + $expire >= time();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId() {
-        return $this->getPrimaryKey();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey() {
-        return $this->auth_key;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey) {
-        return $this->getAuthKey() === $authKey;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password) {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
-    }
-
-    /**
-     * Generates password hash from password and sets it to the model
-     *
-     * @param string $password
-     */
-    public function setPassword($password) {
-        $this->password_hash = Yii::$app->security->generatePasswordHash($password);
-    }
-
-    /**
-     * Generates "remember me" authentication key
-     */
-    public function generateAuthKey() {
-        $this->auth_key = Yii::$app->security->generateRandomString();
-    }
-    
-    /**
-     * 生成访问令牌
-     */
-    public function generateAccessToken($new_force = false) {
-        /* 强制或者过期 */
-        if ($new_force || $this->access_token == "" || (time() - $this->access_token_expire_time > Yii::$app->params['user.passwordAccessTokenExpire'])) {
-            $this->access_token = Yii::$app->security->generateRandomString();
-        }
-        $this->access_token_expire_time = time() + Yii::$app->params['user.passwordAccessTokenExpire'];
-    }
-
-    /**
-     * Generates new password reset token
-     */
-    public function generatePasswordResetToken() {
-        $this->password_reset_token = Yii::$app->security->generateRandomString() . '_' . time();
-    }
-
-    /**
-     * Removes password reset token
-     */
-    public function removePasswordResetToken() {
-        $this->password_reset_token = null;
-    }
-   
 }
