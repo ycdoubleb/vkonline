@@ -82,12 +82,13 @@
 .course-view .vk-uploader .file-box {
     top: 13px;
     width: 76px;
-    cursor: pointer;
 }
 
 .course-view .vk-uploader .file-box .file-input {
     width: 76px;
     height: 35px;
+    cursor: pointer;
+    font-size: 0;
 }
 /**
  * 课程协作人员
