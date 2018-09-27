@@ -21,7 +21,6 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Yii;
@@ -133,10 +132,12 @@ class ImportUtils {
                             $sheetColumns['coordinates'] = $drawingDatas[$key . $row];
                         }
                         //判断工作表的性别是否与定义的性别数组相符合
-                        if(isset($sexName[$sheetdata[$row][$key]])){
-                            $sex = trim(!empty($sheetdata[$row][$key]) ? $sheetdata[$row][$key] : '保密');
-                            $sheetColumns['sex'] = $sexName[$sex];
-                        }
+//                        var_dump(isset($sexName[$sheetdata[$row][$key]]) && !empty($sheetdata[$row][$key]));
+//                        if(isset($sexName[$sheetdata[$row][$key]]) && !empty($sheetdata[$row][$key])){
+//                            $sheetColumns['sex'] = $sexName[trim($sheetdata[$row][$key])];
+//                        }else{
+//                            $sheetColumns['sex'] = 0;
+//                        }
                     }
                 }
                 //判断每一行是否存在空值，若存在则过滤
@@ -147,9 +148,11 @@ class ImportUtils {
             //重置name、job_title，过滤字符串左后空格
             foreach($dataProvider as &$data){
                 $data['name'] = trim($data['name']);
+                //判断excel表的sex是否与定义的$sexName数组相符合并且excel表的sex非空，否则全部设置为‘保密’性别
+                $data['sex'] = isset($sexName[trim($data['sex'])]) && !empty(trim($data['sex'])) ? $sexName[trim($data['sex'])] : 0;
                 $data['job_title'] = trim($data['job_title']);
             }
-            
+            var_dump($dataProvider);exit;
             return $this->batchSaveTeacher($dataProvider);
         }
     }
@@ -188,17 +191,7 @@ class ImportUtils {
                 //节点整列为空或第一个为空时不能导入
                 $has_first_node = empty($node_names) ? false : (empty($node_names['0']) ? false : true);
                 if($has_first_node){
-                    $video_ids = ArrayHelper::getColumn($dataProvider, 'video.id');     //视频ID
-                    $has_video_ids = Video::find()->select(['id'])->where(['id' => $video_ids, 'is_del' => 0])->asArray()->column();
-                    $error_data = array_diff($video_ids, $has_video_ids);
-                    if(in_array('', $video_ids)){   //是否存在空值
-                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列不能存在空值！');
-                    } elseif (count($error_data) > 0) {
-                        \Yii::$app->getSession()->setFlash('error', '导入失败：video.id列存在无效数据！无效数据为：'
-                                . implode("<br>", $error_data));
-                    } else {
-                        return $this->saveCourseFrame($id, $dataProvider);
-                    }
+                    return $this->saveCourseFrame($id, $dataProvider);
                 } else {
                     \Yii::$app->getSession()->setFlash('error', '导入失败：node.name列第一个为空或全部为空！');
                 }                
@@ -219,7 +212,6 @@ class ImportUtils {
         {  
             $node_num = 0; $knowledge_num = 0;
             foreach ($dataProvider as $key => $data_val) {
-                $video_model = Video::findOne(['id' => $data_val['video.id'], 'is_del' => 0]);     //视频模型
                 $knowledge_id = md5(time() . rand(1, 99999999));
                 //判断循环到第二次之后的node.name是否与前一次的node.name相同
                 $is_true = $key == 0 ? true : ($data_val['node.name'] != $pre_node_name);
@@ -255,18 +247,20 @@ class ImportUtils {
                 $knowledge_model = Knowledge::findOne(['node_id' => $node_id, 'name' => $data_val['knowledge.name'], 'is_del' => 0]); //知识点模型
                 //knowledge.name不能存在数据表中
                 if(empty($knowledge_model)){
+                    $has_video_id = !empty($data_val['video.id']);
+                    $video_model = Video::findOne(['id' => $data_val['video.id'], 'is_del' => 0]);     //视频模型
                     $knowledge = [
                         'id' => $knowledge_id,
                         'node_id' => $node_id,
                         'type' => 1,        //类型；1为视频
                         'name' => $data_val['knowledge.name'],
-                        'des' => empty($data_val['des']) ?  $video_model->des : 
+                        'des' => empty($data_val['des']) ? ($has_video_id ? $video_model->des : '') : 
                                     Html::encode($data_val['knowledge.des']),
-                        'data' => $video_model->duration,   //视频时长
+                        'data' => $has_video_id ? $video_model->duration : '',  //视频时长
                         'zan_count' => 0,
                         'favorite_count' => 0,
                         'is_del' => 0,
-                        'has_resource' => 1,        //是否关联资源 1
+                        'has_resource' => $has_video_id ? 1 : 0,        //是否关联资源 1
                         'sort_order' => $key,
                         'created_by' => Yii::$app->user->id,
                         'created_at' => time(),
@@ -274,13 +268,15 @@ class ImportUtils {
                     ];
                     Yii::$app->db->createCommand()->insert(Knowledge::tableName(), $knowledge)->execute();  //保存知识点
                     $knowledge_num++;
-                    $knowledge_video = [
-                        'knowledge_id' => $knowledge_id,
-                        'video_id' => $data_val['video.id'],
-                        'is_del' => 0,
-                    ];
-                    //关联知识点和视频
-                    Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
+                    if($has_video_id){
+                        $knowledge_video = [
+                            'knowledge_id' => $knowledge_id,
+                            'video_id' => $data_val['video.id'],
+                            'is_del' => 0,
+                        ];
+                        //关联知识点和视频
+                        Yii::$app->db->createCommand()->insert(KnowledgeVideo::tableName(), $knowledge_video)->execute();
+                    }
                 }
             }
             if($node_num > 0 || $knowledge_num > 0){
@@ -689,7 +685,7 @@ class ImportUtils {
             foreach ($teacher_results as $teacher_data) {
                 $teacherFormat[$teacher_data['id']] = [
                     'id' => $teacher_data['id'],
-                    'avatar' => StringUtil::completeFilePath($teacher_data['avatar']), 
+                    'avatar' => Aliyun::absolutePath(!empty($teacher_data['avatar']) ? $teacher_data['avatar'] : 'upload/avatars/default.jpg'), 
                 ];
             }
             return $teacherFormat;

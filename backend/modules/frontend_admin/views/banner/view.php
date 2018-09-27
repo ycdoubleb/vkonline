@@ -66,7 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'created_by',
                     'format' => 'raw',
-                    'value' => $model->adminUser->nickname,
+                    'value' => !empty($model->created_by) ? $model->adminUser->nickname : 'null',
                 ],
                 'des:ntext',
                 'created_at:datetime',

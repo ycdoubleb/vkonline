@@ -84,7 +84,7 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                     'label' => Yii::t('app', 'Avatar'),
                     'format' => 'raw',
                     'value'=> function($data){
-                        return Html::img(StringUtil::completeFilePath($data['avatar']), ['width' => 54, 'height' => 64]);
+                        return Html::img(Aliyun::absolutePath(!empty($data['avatar']) ? $data['avatar'] : 'upload/avatars/default.jpg'), ['width' => 54, 'height' => 64]);
                     },
                     'headerOptions' => [
                         'style' => [

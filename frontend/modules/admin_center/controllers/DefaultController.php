@@ -53,12 +53,10 @@ class DefaultController extends Controller
         $id = Yii::$app->user->identity->customer_id;
         $searchModel = new CustomerSearch();
         $resourceData = $searchModel->searchResources($id);
-        $recordData = $searchModel->searchActLog($id);
 
         return $this->render('index',[
             'model' => Customer::findOne($id),
             'resourceData' => $resourceData,
-            'recordData' => $recordData,
             'customerAdmin' => $this->getCustomerAdmin($id),   //客户管理员
             'usedSpace' => $this->getUsedSpace($id),
         ]);

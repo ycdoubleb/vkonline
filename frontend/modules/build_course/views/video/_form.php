@@ -3,7 +3,6 @@
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
-use common\utils\StringUtil;
 use common\widgets\depdropdown\DepDropdown;
 use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\ueditor\UeditorAsset;
@@ -206,7 +205,7 @@ $this->registerJs($format, View::POS_HEAD);
                     <div class="col-lg-6 col-md-6">
                         <?php 
                             $path = !$model->isNewRecord && $model->is_link ? 
-                                    StringUtil::completeFilePath($model->videoFile->uploadfile->path) : null;
+                                    Aliyun::absolutePath($model->videoFile->uploadfile->path) : null;
                             echo Html::textInput(null, $path, [
                                 'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
                             ]) 
