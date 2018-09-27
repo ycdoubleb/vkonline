@@ -21,7 +21,7 @@
     <td data-id="action">
         <div class="c-box" data-toggle="popover" data-placement="auto top">
             <p class="info-mes"></p>
-            <a class="btn btn-default"></a>
+            <a class="btn btn-default" role="btn"></a>
         </div>
     </td>
 </tr>

@@ -377,6 +377,16 @@
         
         /* 渲染状态/操作栏 */
         $video_tr.find('.btn').hide().removeClass('btn-danger');
+        /* 状态按钮提示，每次更新选隐藏 */
+        $video_tr.find('.btn').popover({
+                    trigger : 'hover',
+                    placement : 'auto top',
+                    delay: { "hide": 1000 },
+                    html : true,
+                    content : function(){
+                        return videoData.submit_status ? videoData.submit_feedback : videoData.getErrorSummary();
+                    }
+                });
         
         if(videoData.submit_status){
             if(videoData.submit_status == 1){
@@ -391,12 +401,7 @@
             }else{
                 //提交失败
                 $video_tr.find('.info-mes').html('失败').removeClass('success').addClass('error');
-                $video_tr.find('.btn').show().html('详情').addClass('btn-danger').popover({
-                    trigger : 'click',
-                    placement : 'auto top',
-                    html : true,
-                    content : videoData.submit_feedback
-                });
+                $video_tr.find('.btn').show().html('详情').addClass('btn-danger');
             }
         }else if(videoData.validate()){
             //未提交，验证通过
@@ -404,13 +409,8 @@
         }else{
             //未提交，验证未通过
             $video_tr.find('.info-mes').html('验证未通过').removeClass('success').addClass('error');
-            $video_tr.find('.btn').show().html('详情').addClass('btn-danger').popover({
-                trigger : 'click',
-                placement : 'auto top',
-                content : videoData.getErrorSummary()
-            });
+            $video_tr.find('.btn').show().html('详情').addClass('btn-danger');
         }
-        $video_tr.find('.btn:not(.btn-danger)').popover('hide').popover('destroy');
     };
     
     /**
