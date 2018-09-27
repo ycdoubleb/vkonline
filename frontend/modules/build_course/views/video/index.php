@@ -1,6 +1,7 @@
 <?php
 
 use common\models\vk\UserCategory;
+use frontend\assets\ClipboardAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\ArrayHelper;
@@ -11,6 +12,7 @@ use yii\web\View;
 
 ModuleAssets::register($this);
 GrowlAsset::register($this);
+ClipboardAssets::register($this);
 
 $this->title = Yii::t('app', '{My}{Video}', [
     'My' => Yii::t('app', 'My'), 'Video' => Yii::t('app', 'Video')
@@ -133,8 +135,7 @@ $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
-$js = 
-<<<JS
+$js = <<<JS
     
     var is_arrange = false;   //是否在整理状态
     var is_checked = false;   //是否选中状态
@@ -235,12 +236,8 @@ $js =
                         //鼠标经过、离开事件
                         item.hover(function(){
                             $(this).addClass('hover');
-                            $(this).find(".list-footer span.avg-star").hide();
-                            $(this).find(".list-footer a.btn-edit").show();
                         }, function(){
                             $(this).removeClass('hover');
-                            $(this).find(".list-footer span.avg-star").show();
-                            $(this).find(".list-footer a.btn-edit").hide();
                         });
                     }
                     //如果当前页大于最大页数显示“没有更多了”
@@ -261,6 +258,29 @@ $js =
         }
     }
     
+    /**
+     * 点击复制视频id
+     * @param {obj} _this   目标对象  
+     */
+    window.copyVideoId = function(_this){ 
+        targetId = '#' + _this.attr('id');
+        var clipboard = new ClipboardJS(targetId);
+        clipboard.on('success', function(e) {
+            $.notify({
+                message: '复制成功',
+            },{
+                type: "success",
+            });
+        });
+        clipboard.on('error', function(e) {
+            $.notify({
+                message: '复制失败',
+            },{
+                type: "danger",
+            });
+        });              
+    }     
+        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

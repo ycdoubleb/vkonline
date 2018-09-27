@@ -56,53 +56,6 @@ class ImportUtils {
     }
     
     /**
-     * 批量导入视频
-     * @param integer $requestMode   格式：0是post，1是ajax格式
-     * @param array $post
-     * @return json|array
-     */
-    public function importVideo($request_mode, $post)
-    {
-        $upload = UploadedFile::getInstanceByName('importfile');
-        if($upload != null){
-            $spreadsheet = IOFactory::load($upload->tempName); // 载入excel文件
-            $sheet = $spreadsheet->getActiveSheet();    // 读取第一個工作表 
-            $sheetdata = $sheet->toArray(null, true, true, true);   //转换为数组
-            $sheetColumns = [];
-            $dataProvider = [];
-            //获取组装的工作表数据
-            for ($row = 3; $row <= count($sheetdata); $row++) {
-                //组装对应数组值
-                foreach ($sheetdata[2] as $key => $value) {
-                    if(!empty($value)){ //值非空
-                        $sheetColumns[$value] = $sheetdata[$row][$key];
-                    }
-                }
-                //判断每一行是否存在空值，若存在则过滤
-                if(!empty(array_filter($sheetdata[$row]))){
-                    $dataProvider[] = $sheetColumns;
-                }
-            }
-            foreach ($dataProvider as &$data) {
-                $data['teacher.data'] = $this->checkTeacherExists(['name' => $data['teacher.name']], true);
-            }
-        }
-        //如果是ajax则返回json格式的数据
-        if($request_mode){
-            Yii::$app->getResponse()->format = 'json';
-            return $this->saveVideo($post);
-        }else{
-            return [
-                'error_total' => 0,
-                'insert_total' => count($dataProvider),
-                'dataProvider' => new ArrayDataProvider([
-                    'allModels' => $dataProvider,
-                ]),
-            ];
-        }       
-    }
-    
-    /**
      * 批量导入老师
      * @return array
      */
@@ -408,82 +361,6 @@ class ImportUtils {
     }
     
     /**
-     * 保存视频信息
-     * @param array $post
-     * @return json
-     */
-    protected function saveVideo($post)
-    {
-        $is_success = true;
-        $dir_path = ArrayHelper::getValue($post, 'dir_path'); //目录路径
-        $file_id = ArrayHelper::getValue($post, 'file_id'); //文件id
-        $tags_name = ArrayHelper::getValue($post, 'tags_name'); //标签名
-        $watermark_ids = implode(',', ArrayHelper::getValue($post, 'watermark_id', [])); //水印id
-        //新建一个 video 模型
-        $videoModel = new Video([
-            'id' => md5(time() . rand(1, 99999999)),
-            'teacher_id' => ArrayHelper::getValue($post, 'teacher_id'),
-            'customer_id' => Yii::$app->user->identity->customer_id,
-            'name' => ArrayHelper::getValue($post, 'name'),
-            'is_publish' => 1,
-            'created_by' => Yii::$app->user->id
-        ]);
-        //检查上传的视频文件是否已经被占用
-        $userInfo = ActionUtils::getInstance()->getUploadVideoFileUserInfo($file_id);
-        if($userInfo['results']){
-            $is_success = false;
-            $videoModel->id = $userInfo['data']['video_id'];
-            $message = '视频已被使用。';
-        }
-        
-        /* 如果is_success是true，则执行 */
-        if($is_success){
-            /** 开启事务 */
-            $trans = Yii::$app->db->beginTransaction();
-            try
-            {
-                /* 以 file_id 查询 Uploadfile 信息，再赋值给 video 模型 */
-                $uploadfileModel = Uploadfile::findOne($file_id);
-                $videoModel->duration = $uploadfileModel->duration;
-                $videoModel->img = $uploadfileModel->thumb_path;
-                $videoModel->is_link = $uploadfileModel->is_link;
-                $videoModel->mts_watermark_ids = $this->checkCustomerWatermark($watermark_ids);
-                $videoModel->user_cat_id = $this->checkVideoDirExists($dir_path);   //用户自定义目录id;
-                //如果 video 保存成功，则执行
-                if($videoModel->save()){
-                    $videoFile = new VideoFile([
-                        'video_id' => $videoModel->id, 'is_source' => 1, 'file_id' => $file_id,
-                    ]);
-                    //如果 videoFile 模型 保存成功，则执行视频转码
-                    if($videoFile->save()){
-                        VideoAliyunAction::addVideoTranscode($videoModel->id);
-                        VideoAliyunAction::addVideoSnapshot($videoModel->id);
-                    }
-                    //保存视频引用标签
-                    $this->saveVideoTagRefs($videoModel->id, $tags_name);
-                }else{
-                    $is_success = false;
-                }
-                /* 如果is_success是true，则执行 */
-                if($is_success){
-                    $trans->commit();  //提交事务
-                    $message = '保存成功。';
-                }
-            }catch (Exception $ex) {
-                $trans ->rollBack(); //回滚事务
-                $is_success = false;
-                $message = '保存失败::' . $ex->getMessage();
-            }
-        }
-        
-        return [
-            'code'=> $is_success ? 200 : 404,
-            'data' => ['id' => $videoModel->id, 'name' => $videoModel->name],
-            'message' => $message
-        ];
-    }
-
-    /**
      * 保存绘图
      * @param MemoryDrawing $drawing
      * @param type $objectId    对象id
@@ -565,55 +442,6 @@ class ImportUtils {
         
         return $category->id;
     }
-    
-    /**
-     * 保存视频引用标签
-     * @param string $video_id      视频id
-     * @param string $video_tags    标签名
-     */
-    protected function saveVideoTagRefs($video_id, $video_tags)
-    {
-        $is_success = true;
-        $tagRefs = [];
-        $tags_ids = $this->checkTagsExists($video_tags);    //检查标签是否存在
-        /* 设置引用标签次数 */
-        foreach ($tags_ids as $id) {
-            $tags = Tags::findOne($id);
-            $tags->ref_count = $tags->ref_count + 1;
-            if(!$tags->save(true, ['ref_count'])){
-                $is_success = false;
-                break;
-            }
-            //组装引用的视频标签
-            $tagRefs[] = ['object_id' => $video_id, 'tag_id' => $id, 'type' => 2];
-        }
-        //保存标签引用次数成功后添加视频引用标签
-        if($is_success){
-            Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(), 
-                isset($tagRefs[0]) ? array_keys($tagRefs[0]) : [], $tagRefs)->execute();
-        }
-    }
-    
-    /**
-     * 检查是使用集团下默认选中的水印，还是用户自选的水印
-     * @param string $video_watermark   视频水印
-     * @return string  返回集团下默认选中的水印 或 用户自选的水印
-     */
-    protected function checkCustomerWatermark($video_watermark)
-    {
-        if($video_watermark == null){
-            //查询客户下的水印图
-            $watermark = (new Query())->from(['Watermark' => CustomerWatermark::tableName()]);
-            $watermark->select(['Watermark.id']);
-            $watermark->where([
-                'Watermark.customer_id' => \Yii::$app->user->identity->customer_id,
-                'Watermark.is_del' => 0, 'Watermark.is_selected' => 1
-            ]);
-            return implode(',', $watermark->all());
-        }
-        
-        return $video_watermark;
-    }
 
     /**
      * 检查视频目录是否存在
@@ -694,39 +522,7 @@ class ImportUtils {
         }
     }
     
-    /**
-     * 检查标签是否已存在
-     * @param string $video_tags    视频标签
-     * @return array    返回已存在和新插入的标签id
-     */
-    protected function checkTagsExists($video_tags)
-    {
-        $tagIds = [];   //保存插入表返回的所有id
-        /* 判断分割符的格式 */
-        if(strpos($video_tags ,"、")){  
-            $videoTags =  explode("、", $video_tags);  
-        }else if(strpos($video_tags ,'，')){  
-            $videoTags =  explode("，", $video_tags);  
-        }else{
-            $videoTags = explode(',', $video_tags);
-        }
-        //查询已存在的标签
-        $tags = (new Query())->from(['Tags' => Tags::tableName()]);
-        $tags->select(['id', 'name'])->where(['name' => $videoTags]);
-        $tag_results = $tags->all();
-        $tag_ids = ArrayHelper::getColumn($tag_results, 'id');    //获取已存在的id
-        $tag_names = ArrayHelper::getColumn($tag_results, 'name'); //获取已存在的name
-        //保存不存在的标签
-        foreach ($videoTags as $tags_name) {
-            if(!in_array($tags_name, $tag_names)){
-                $tagModel = new Tags(['name' => $tags_name]);
-                $tagModel->save(true, ['name']);
-                $tagIds[] += $tagModel->id;
-            }
-        }
-        
-        return array_merge(array_values($tag_ids), $tagIds);
-    }
+    
 
     /**
      * 检查目标路径是否存在，不存即创建目标

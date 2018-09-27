@@ -400,35 +400,6 @@ class VideoController extends Controller
     }
     
     /**
-     * 导入 现有的 Video 模板。
-     * 如果导入成功，浏览器将返回导入的 Video内容。
-     * @param integer $requestMode   格式：0是post，1是ajax格式
-     * @return json|mixed
-     */
-    public function actionImport($request_mode = 0)
-    {
-        $results = [
-            'error_total' => 0,
-            'insert_total' => 0,
-            'dataProvider' => new ArrayDataProvider([
-                'allModels' => [],
-            ]),
-        ];
-
-        if (Yii::$app->request->isPost) {
-            $results = ImportUtils::getInstance()->importVideo($request_mode, Yii::$app->request->post());
-        }
-        
-        if(!$request_mode){
-            return $this->render('import', array_merge($results, [
-                'watermarksFiles' => json_encode($this->getCustomerWatermark())
-            ]));
-        }else{
-            return $results;
-        }
-    }
-    
-    /**
      * 基于其主键值找到 Video 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
