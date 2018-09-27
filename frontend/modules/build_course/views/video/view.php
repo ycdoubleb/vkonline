@@ -341,8 +341,11 @@ $js = <<<JS
      * @param {obj} _this   目标对象  
      */
     window.copyVideoId = function(_this){ 
-        targetId = '#' + _this.attr('id');
-        var clipboard = new ClipboardJS(targetId);
+        //如果ClipboardJS已存在，则先清除
+        if(window.clipboard){
+            window.clipboard.destroy();
+        }
+        window.clipboard = new ClipboardJS('#' + _this.attr('id'));
         clipboard.on('success', function(e) {
             $.notify({
                 message: '复制成功',
