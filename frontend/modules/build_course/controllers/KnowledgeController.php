@@ -285,52 +285,6 @@ class KnowledgeController extends Controller
     }
     
     /**
-     * 引用 品牌内部的视频
-     * 如果是 page 非为空，返回成功的json数据，否则返回自己的视频
-     * @return json
-     
-    public function actionInsideVideo()
-    {
-        $searchModel = new VideoSearch();
-        $results = $searchModel->adminCenterSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 15]), false);
-        $videos = array_values($results['data']['video']);    //视频数据
-        //重修视频数据里面的元素值
-        foreach ($videos as $index => $item) {
-            $videos[$index]['img'] = StringUtil::completeFilePath($item['img']);
-            $videos[$index]['duration'] = DateUtil::intToTime($item['duration']);
-            $videos[$index]['is_disabled'] = $item['mts_status'] != Video::MTS_STATUS_YES ? 'disabled' : '';
-        }
-        
-        //分页查询
-        if(isset($results['filter']['page'])){
-            Yii::$app->getResponse()->format = 'json';
-            try
-            { 
-                return [
-                    'code'=> 200,
-                    'data' => [
-                        'result' => $videos, 
-                        'page' => $results['filter']['page']
-                    ],
-                    'message' => '请求成功！',
-                ];
-            }catch (Exception $ex) {
-                return [
-                    'code'=> 404,
-                    'data' => [],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
-            }
-        }
-        
-        return $this->renderAjax('reference', [
-            'searchModel' => $searchModel,      //搜索模型
-            'filters' => $results['filter'],    //查询过滤的属性
-            'totalCount' => $results['total'],  //总数量
-        ]);
-    }*/
-    
-    /**
      * 选择 引用的资源视频
      * @param string $video_id
      * @return json

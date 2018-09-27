@@ -21,7 +21,6 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\StringUtil;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
 use Yii;
@@ -133,10 +132,12 @@ class ImportUtils {
                             $sheetColumns['coordinates'] = $drawingDatas[$key . $row];
                         }
                         //判断工作表的性别是否与定义的性别数组相符合
-                        if(isset($sexName[$sheetdata[$row][$key]])){
-                            $sex = trim(!empty($sheetdata[$row][$key]) ? $sheetdata[$row][$key] : '保密');
-                            $sheetColumns['sex'] = $sexName[$sex];
-                        }
+//                        var_dump(isset($sexName[$sheetdata[$row][$key]]) && !empty($sheetdata[$row][$key]));
+//                        if(isset($sexName[$sheetdata[$row][$key]]) && !empty($sheetdata[$row][$key])){
+//                            $sheetColumns['sex'] = $sexName[trim($sheetdata[$row][$key])];
+//                        }else{
+//                            $sheetColumns['sex'] = 0;
+//                        }
                     }
                 }
                 //判断每一行是否存在空值，若存在则过滤
@@ -147,6 +148,8 @@ class ImportUtils {
             //重置name、job_title，过滤字符串左后空格
             foreach($dataProvider as &$data){
                 $data['name'] = trim($data['name']);
+                //判断excel表的sex是否与定义的$sexName数组相符合并且excel表的sex非空，否则全部设置为‘保密’性别
+                $data['sex'] = isset($sexName[trim($data['sex'])]) && !empty(trim($data['sex'])) ? $sexName[trim($data['sex'])] : 0;
                 $data['job_title'] = trim($data['job_title']);
             }
             
@@ -682,7 +685,7 @@ class ImportUtils {
             foreach ($teacher_results as $teacher_data) {
                 $teacherFormat[$teacher_data['id']] = [
                     'id' => $teacher_data['id'],
-                    'avatar' => StringUtil::completeFilePath($teacher_data['avatar']), 
+                    'avatar' => Aliyun::absolutePath(!empty($teacher_data['avatar']) ? $teacher_data['avatar'] : 'upload/avatars/default.jpg'), 
                 ];
             }
             return $teacherFormat;
