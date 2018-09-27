@@ -173,7 +173,7 @@ class VideoController extends Controller
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
-        var_dump(Yii::$app->request->post());exit;
+        
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             if($is_success){

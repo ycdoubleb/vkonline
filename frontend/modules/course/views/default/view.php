@@ -163,7 +163,7 @@ $shareLink = Url::to([
                     <p style="margin-bottom: 20px;">主讲的其他课程：</p>
                     <ul>
                         <?php foreach ($teacher_other_courses as $course): ?>
-                            <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
+                            <a href="/course/default/view?id=<?= $course['id'] ?>" target="_blank">
                                 <li>
                                     <img class="course-cover" src="<?= Aliyun::absolutePath(!empty($course['cover_img']) ? $course['cover_img'] : 'static/imgs/notfound.png') ?>">
                                     <p class="single-clamp course-name"><?= $course['name'] ?></p>
@@ -178,7 +178,7 @@ $shareLink = Url::to([
                 <div class="panel-body">
                     <ul>
                         <?php foreach ($relative_courses as $course): ?>
-                            <a href="/course/default/view?id=<?= $course['id'] ?>" target="_black">
+                            <a href="/course/default/view?id=<?= $course['id'] ?>" target="_blank">
                                 <li>
                                     <img class="course-cover" src="<?= Aliyun::absolutePath(!empty($course['cover_img']) ? $course['cover_img'] : 'static/imgs/notfound.png') ?>">
                                     <p class="single-clamp course-name"><?= $course['name'] ?></p>
@@ -215,7 +215,7 @@ $shareLink = Url::to([
             "bdText": "<?= '该分享来自[游学吧]中国领先的教育网站' ?>",
             "bdMini": "2",
             "bdMiniList": ["qzone", "tsina", "weixin", "renren", "tqq", "tqf", "tieba", "douban", "sqq", "isohu", "ty"],
-            "bdPic": "<?= Url::to($model['cover_img'], true) ?>",
+            "bdPic": "<?= Url::to(Aliyun::absolutePath($model['cover_img']), true) ?>",
             "bdStyle": "1",
             "bdSize": "32",
             "onBeforeClick": function (cmd, config) {
@@ -234,7 +234,7 @@ $shareLink = Url::to([
      */
     function initShare() {
         //添加分享图片到第一位置，以便在微信分享时可以被微信捕捉到作为分享缩略图
-        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= $model['cover_img'] ?>"></div>');
+        $('body').prepend('<div style="overflow:hidden; width:0px; height:0; margin:0 auto; position:absolute; top:0px;"><img src="<?= Aliyun::absolutePath($model['cover_img']) ?>"></div>');
         //设置二维码容器大小
         $('.share-panel .wx-qrcode').attr({width: 150, height: 150});
         //初始微信二维码

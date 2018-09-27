@@ -80,7 +80,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                         <div class="title">视频水印：</div>
                         <div class="watermark-box">
                             <!-- 水印 -->
-                            <div id="video-mts_watermark_ids" class="watermark_ids"></div>
+                            <div id="video-mts_watermark_ids" class="watermark_ids">找不到水印</div>
                             <!-- 预览 -->
                             <div id="preview" class="preview"></div>
                         </div>
@@ -127,17 +127,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- <tr><td colspan="8"><div class="empty">没有找到数据。</div></td></tr> -->
-                        <?php for ($i = 0; $i < 0; $i++): ?>
-                            <tr>
-                                <td><?= $i ?></td>
-                                <td>视频名称视频名称视频名称</td>
-                                <td><select class="teacher-select"><option></option></select></td>
-                                <td><div class="video-tags"><input class="video-tags" name="tags" value="1,2" data-role="tagsinput"/></div></td>
-                                <td><select class="file-select"><option></option></select></td>
-                                <td></td>
-                            </tr>
-                        <?php endfor; ?>
+                        
                     </tbody>
                 </table>
             </div>
@@ -227,6 +217,9 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
      **/
     function initWatermark(){
         watermark = new youxueba.Watermark({container: '#preview'});
+        if(!$.isEmptyObject(php_watermarks)){
+            $('#video-mts_watermark_ids').empty();
+        }
         $.each(php_watermarks, function(){
             var $watermark_item = $(Wskeee.StringUtil.renderDOM(php_watermark_dom, this)).appendTo($('#video-mts_watermark_ids'));
             //显示默认选中

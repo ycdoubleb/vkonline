@@ -36,9 +36,10 @@ use yii\web\UploadedFile;
  */
 class Teacher extends ActiveRecord
 {
+    /* 保密 */
+    const SEX_NONE = 0;
     /** 性别 男 */
     const SEX_MALE = 1;
-
     /** 性别 女 */
     const SEX_WOMAN = 2;
     
@@ -60,6 +61,7 @@ class Teacher extends ActiveRecord
      * @var array 
      */
     public static $sexName = [
+        self::SEX_NONE => '保密',
         self::SEX_MALE => '男',
         self::SEX_WOMAN => '女',
     ];

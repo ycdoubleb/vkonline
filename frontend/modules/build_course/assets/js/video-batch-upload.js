@@ -197,7 +197,7 @@
      */
     function VideoBatchUpload(config) {
         this.config = $.extend({
-            add_video_url : 'video-import/add-video',  //添加视频             
+            add_video_url : '/build_course/video-import/add-video',  //添加视频             
             submit_force: false,                            //已提交的强制提交
             submit_common_params: {},                    //提交公共参数，如_scrf，wartermaker，catgory_id
             
@@ -362,9 +362,8 @@
             $video_tr.find('.teacher-select').val(videoData.teacher_id).trigger("change");
             $video_tr.find('.file-select').val(videoData.file_id).trigger("change");
         }
-        
         //删除所有错误
-        $video_tr.find('td .c-box').removeClass('border-error').popover('destroy');
+        $video_tr.find('td .c-box').removeClass('border-error');
         /* 显示提示 */
         $.each(videoData.errors, function (key, mes) {
             $video_tr.find('td[data-id='+key+'] .c-box').addClass("border-error").popover({
@@ -373,9 +372,11 @@
                 content : mes
             });
         });
+        //销毁没用提示
+        $video_tr.find('td .c-box:not(.border-error)').popover('hide').popover('destroy');
         
         /* 渲染状态/操作栏 */
-        $video_tr.find('.btn').hide().removeClass('btn-danger').popover('destroy');
+        $video_tr.find('.btn').hide().removeClass('btn-danger');
         
         if(videoData.submit_status){
             if(videoData.submit_status == 1){
@@ -401,7 +402,7 @@
             //未提交，验证通过
             $video_tr.find('.info-mes').html('待提交').removeClass('error success');
         }else{
-            //未提交，验证通过
+            //未提交，验证未通过
             $video_tr.find('.info-mes').html('验证未通过').removeClass('success').addClass('error');
             $video_tr.find('.btn').show().html('详情').addClass('btn-danger').popover({
                 trigger : 'click',
@@ -409,6 +410,7 @@
                 content : videoData.getErrorSummary()
             });
         }
+        $video_tr.find('.btn:not(.btn-danger)').popover('hide').popover('destroy');
     };
     
     /**
@@ -437,7 +439,7 @@
         if (index >= this.videos.length - 1) {
             //完成
             this.is_submiting = false;
-            $(this).trigger('submitCompleted');
+            $(this).trigger('submitFinished');
         } else {
             this.submit_index = ++index;
             this.__submitVideoData(index, this.config['submit_force']);
