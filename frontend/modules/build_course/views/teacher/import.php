@@ -116,7 +116,7 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
                 [
                     'label' => Yii::t('app', 'Sex'),
                     'value'=> function($data){
-                        return Teacher::$sexName[$data['sex']];
+                        return isset(Teacher::$sexName[$data['sex']]) ? Teacher::$sexName[$data['sex']] : '保密';
                     },
                     'headerOptions' => [
                         'style' => [

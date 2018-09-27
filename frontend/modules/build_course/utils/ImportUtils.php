@@ -152,7 +152,7 @@ class ImportUtils {
                 $data['sex'] = isset($sexName[trim($data['sex'])]) && !empty(trim($data['sex'])) ? $sexName[trim($data['sex'])] : 0;
                 $data['job_title'] = trim($data['job_title']);
             }
-            var_dump($dataProvider);exit;
+            
             return $this->batchSaveTeacher($dataProvider);
         }
     }
