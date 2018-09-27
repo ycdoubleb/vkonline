@@ -3,8 +3,9 @@
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\Video;
-use common\utils\StringUtil;
+use frontend\assets\ClipboardAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -16,6 +17,8 @@ use yii\widgets\DetailView;
 
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
+ClipboardAssets::register($this);
 
 $this->title = Yii::t('app', "{Video}{Detail}：{$model->name}", [
     'Video' => Yii::t('app', 'Video'), 'Detail' => Yii::t('app', 'Detail')
@@ -99,6 +102,17 @@ foreach ($watermarksFiles as $watermark) {
             'options' => ['class' => 'table detail-view vk-table'],
             'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
             'attributes' => [
+                [
+                    'attribute' => 'id',
+                    'format' => 'raw',
+                    'value' => $model->id . Html::button('复制ID', [
+                        'id' => 'copy_' . $model->id,
+                        'class' => 'btn btn-default btn-sm',
+                        'data-clipboard-text' => $model->id,
+                        'style' => 'margin-left: 15px;',
+                        'onclick' => 'copyVideoId($(this))'
+                    ]),
+                ],
                 [
                     'attribute' => 'user_cat_id',
                     'label' => Yii::t('app', 'Catalog'),
@@ -319,3 +333,32 @@ foreach ($watermarksFiles as $watermark) {
         </div>
     </div>
 </div>
+
+<?php
+$js = <<<JS
+    /**
+     * 点击复制视频id
+     * @param {obj} _this   目标对象  
+     */
+    window.copyVideoId = function(_this){ 
+        targetId = '#' + _this.attr('id');
+        var clipboard = new ClipboardJS(targetId);
+        clipboard.on('success', function(e) {
+            $.notify({
+                message: '复制成功',
+            },{
+                type: "success",
+            });
+        });
+        clipboard.on('error', function(e) {
+            $.notify({
+                message: '复制失败',
+            },{
+                type: "danger",
+            });
+        });              
+    }     
+        
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

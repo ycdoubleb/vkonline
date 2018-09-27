@@ -82,12 +82,13 @@
 .course-view .vk-uploader .file-box {
     top: 13px;
     width: 76px;
-    cursor: pointer;
 }
 
 .course-view .vk-uploader .file-box .file-input {
     width: 76px;
     height: 35px;
+    cursor: pointer;
+    font-size: 0;
 }
 /**
  * 课程协作人员
@@ -574,6 +575,18 @@
 }
 
 .video-index .vk-list 
+.list-panel .list-header .copy-video_id {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: none;
+}
+.video-index .vk-list 
+.list-panel .list-header:hover .copy-video_id {
+    display: block;
+}
+
+.video-index .vk-list 
 .list-panel .list-header .level {
     bottom: 2px;
     left: 2px;
@@ -603,7 +616,6 @@
 
 .video-index .vk-list 
 .list-panel .list-body .title {
-    width: 90%;
     text-align: center;
 }
 
