@@ -62,14 +62,15 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                         <div class="title">存放目录：</div>
                         <div class="video-dir-box"><?=
                             DepDropdown::widget([
-                                'name' => 'category_id',
+                                'name' => 'user_cat_id',
+                                'value' => $user_cat_id,
                                 'pluginOptions' => [
-                                    'url' => Url::to('/user-category/search-children', false),
+                                    'url' => Url::to('/build_course/user-category/search-children', false),
                                     'max_level' => 4,
                                     'onChangeEvent' => new JsExpression('function(value){  }')
                                 ],
-                                'items' => UserCategory::getSameLevelCats($category_id, UserCategory::TYPE_MYVIDOE, true),
-                                'values' => $category_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($category_id)->path))),
+                                'items' => UserCategory::getSameLevelCats($user_cat_id, UserCategory::TYPE_MYVIDOE, true),
+                                'values' => $user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($user_cat_id)->path))),
                                 'itemOptions' => [
                                     'style' => 'width: 150px; display: inline-block;',
                                 ],
@@ -163,9 +164,13 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
 </div>
 
 <script type="text/javascript">
-    var php_swfpath = '<?= $swfpath ?>'
+    var php_swfpath = '<?= $swfpath ?>';
     //阿里云host 如：http://file.studying8.com
     var php_aliyun_host = '<?= Aliyun::getOssHost() ?>';
+    //是否为导入中
+    var php_isImport = <?= $isImport ? 1 : 0 ?>;
+    //已选水印ID
+    var php_watermark_ids = <?= json_encode(explode(',', $mts_watermark_ids)) ?>;
     //品牌水印数据
     var php_watermarks = <?= $watermarks ?>;
     //老师数据
@@ -222,15 +227,16 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
             $('#video-mts_watermark_ids').empty();
         }
         $.each(php_watermarks, function(){
+            var is_selected = php_isImport ? $.inArray(this.id, php_watermark_ids) !=-1 : this.is_selected;
             var $watermark_item = $(Wskeee.StringUtil.renderDOM(php_watermark_dom, this)).appendTo($('#video-mts_watermark_ids'));
             //显示默认选中
-            $watermark_item.find('input[name="video_watermark"]').attr('name', 'video_watermarks[]').prop('checked', this.is_selected);
+            $watermark_item.find('input[name="video_watermark"]').attr('name', 'video_watermarks[]').prop('checked', is_selected);
             //check 更改后通知preview显示更改
             $watermark_item.find('input').on('change',function(){
                 checkedWatermark($(this));
             });
             //如果是默认选中，则在预览图上添加该选中的水印
-            if(this.is_selected){
+            if(is_selected){
                 watermark.addWatermark('vkcw' + this.id, this);
             }
         });
@@ -275,7 +281,12 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
     }
     /* 提交表数据 */
     function uploadVideoInfo(){
+        var cps = getSubmitCommonParams();
+        var cps_str = "user_cat_id="+cps['user_cat_id']+"&mts_watermark_ids="+cps['mts_watermark_ids'];
+        //添加传参数
+        $('#videoinfo-upload-form').attr("action", "/build_course/video-import?"+cps_str);
         $('#videoinfo-upload-form').submit();
+        return false;
     }
     
     /**
@@ -422,17 +433,25 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
      */
     function initSubmit(){
         $('#video-submit').on('click',function(){
-            var watermark_ids = [];
-            $('#video-mts_watermark_ids :checkbox:checked').each(function (index, item) {
-                watermark_ids.push($(this).val());
-            });
-            /* 设置公共上传参数 */
-            var submit_common_params = {
-                user_cat_id : $('#category_id').val(),
-                watermark_ids : watermark_ids.join(',')
-            };
-            submit_common_params[php_csrf_param] = php_csrf_value;
-            videoBatchUpload.submit(submit_common_params);
+            videoBatchUpload.submit(getSubmitCommonParams());
         });
+    }
+    
+    /**
+     * 获取公共配置
+     * @returns {object}
+     */
+    function getSubmitCommonParams(){
+        var watermark_ids = [];
+        $('#video-mts_watermark_ids :checkbox:checked').each(function (index, item) {
+            watermark_ids.push($(this).val());
+        });
+        /* 设置公共上传参数 */
+        var submit_common_params = {
+            user_cat_id : $('#user_cat_id').val(),
+            mts_watermark_ids : watermark_ids.join(',')
+        };
+        submit_common_params[php_csrf_param] = php_csrf_value;
+        return submit_common_params;
     }
 </script>

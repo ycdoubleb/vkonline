@@ -60,17 +60,21 @@ class VideoImportController extends Controller{
      */
     public function actionIndex(){
         $params = \Yii::$app->request->queryParams;
-        $videos = $this->getSpreadsheet('importfile');
-        $teachers = $this->getTeachers(ArrayHelper::getColumn($videos, 'teacher.name'));
+        $isImport = Yii::$app->request->isPost;
         
+        $videos = $isImport ? $this->getSpreadsheet('importfile') : [];
+        $teachers = $isImport ? $this->getTeachers(ArrayHelper::getColumn($videos, 'teacher.name')) : [];
+
         return $this->render('index',[
-            'category_id' => ArrayHelper::getValue($params, 'category_id', 0),      //存放目录
+            'isImport' => $isImport,                                                //导入中，选择文件表上传后
+            'user_cat_id' => ArrayHelper::getValue($params, 'user_cat_id', 0),      //存放目录
+            'mts_watermark_ids'   => ArrayHelper::getValue($params, 'mts_watermark_ids' , ''), 
             'watermarks' => json_encode($this->getCustomerWatermark()),             //品牌水印数据
             'videos' => $videos,                                                    //excel表的视频信息
             'teachers' => $teachers,                                                //表中所有涉及的老师
         ]);
     }
-
+    
     /**
      * 添加视频
      * post = 
