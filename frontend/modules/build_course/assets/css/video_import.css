@@ -27,6 +27,11 @@
     height: 100% !important;
 }
 
+/* 上传按钮样式 */
+.vk-uploader .file-box{
+    height: 100% !important;
+}
+
 
 /*******************************************************************************
  * panel
@@ -91,6 +96,7 @@
 }
 .video-import .setting .setting-item .watermark-box .watermark_ids{
     margin-bottom: 10px;
+    line-height: 42px;
 }
 .video-import .setting .setting-item .watermark-box .video-watermark{
     position: relative;
@@ -184,10 +190,14 @@
     position: relative;
     display: list-item;
     text-align: left;
+    height: 64px;
 }
 .video-import .video-info .file-item-box .thumb-box{
+    position: relative;
     display: inline-block;
     text-align: center;
+    float: left;
+    margin-right: 5px;
 }
 .video-import .video-info .file-item-box .thumb-box .play-btn{
     position: absolute;
@@ -207,10 +217,15 @@
     display: inline-block;
     line-height: 20px;
     width: 130px;
+    margin-right: -20px;
 }
 .video-import .video-info .file-item-box .info-box p{
     margin: 0px;
     width: 100%;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: initial;
+    font-size: 12px;
 }
 .video-import .video-info .file-item-box .info-box .video-size{
     color: #ccc;

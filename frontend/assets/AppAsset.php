@@ -18,7 +18,7 @@ class AppAsset extends AssetBundle
         'css/common.css',
     ];
     public $js = [
-        'js/hm.js',     //百度站点统计
+        //'js/hm.js',     //百度站点统计
         'js/wskeee.stringutils.js',  //渲染
         'js/wskeee.dateUtils.js'  //日期格式
     ];

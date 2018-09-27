@@ -1,6 +1,6 @@
 <div class="course-tile">
     <div class="pic-box">
-        <a href="/course/default/view?id={%id%}" target="_black">
+        <a href="/course/default/view?id={%id%}" target="_blank">
             <img src="{%cover_img%}"/>
         </a>
     </div>

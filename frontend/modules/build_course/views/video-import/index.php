@@ -80,7 +80,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                         <div class="title">视频水印：</div>
                         <div class="watermark-box">
                             <!-- 水印 -->
-                            <div id="video-mts_watermark_ids" class="watermark_ids"></div>
+                            <div id="video-mts_watermark_ids" class="watermark_ids">找不到水印</div>
                             <!-- 预览 -->
                             <div id="preview" class="preview"></div>
                         </div>
@@ -127,17 +127,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- <tr><td colspan="8"><div class="empty">没有找到数据。</div></td></tr> -->
-                        <?php for ($i = 0; $i < 0; $i++): ?>
-                            <tr>
-                                <td><?= $i ?></td>
-                                <td>视频名称视频名称视频名称</td>
-                                <td><select class="teacher-select"><option></option></select></td>
-                                <td><div class="video-tags"><input class="video-tags" name="tags" value="1,2" data-role="tagsinput"/></div></td>
-                                <td><select class="file-select"><option></option></select></td>
-                                <td></td>
-                            </tr>
-                        <?php endfor; ?>
+                        
                     </tbody>
                 </table>
             </div>
@@ -173,6 +163,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
 </div>
 
 <script type="text/javascript">
+    var php_swfpath = '<?= $swfpath ?>'
     //阿里云host 如：http://file.studying8.com
     var php_aliyun_host = '<?= Aliyun::getOssHost() ?>';
     //品牌水印数据
@@ -227,6 +218,9 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
      **/
     function initWatermark(){
         watermark = new youxueba.Watermark({container: '#preview'});
+        if(!$.isEmptyObject(php_watermarks)){
+            $('#video-mts_watermark_ids').empty();
+        }
         $.each(php_watermarks, function(){
             var $watermark_item = $(Wskeee.StringUtil.renderDOM(php_watermark_dom, this)).appendTo($('#video-mts_watermark_ids'));
             //显示默认选中
@@ -304,7 +298,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
         require(['euploader'], function (euploader) {
             //公共配置
             var config = {
-                swf: "$swfpath" + "/Uploader.swf",
+                swf: php_swfpath + "/Uploader.swf",
                 //文件接收服务端。
                 server: '/webuploader/default/upload',
                 //检查文件是否存在
@@ -339,7 +333,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                 var files = uploader.uploader.getFiles('complete');
                 uploaderVideos = [];
                 $.each(files,function(){
-                    uploaderVideos.push(covertFileData(this.dbFile));
+                    uploaderVideos.push(covertFileData(this.dbFile,this.name));
                 });
                 updateFiles();  //同步到 videoBatchUpload
             });
@@ -389,13 +383,15 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
     /**
      * dbfile_data 转换为指定格式object
      * @param {object} dbdata
+     * @param {string} name     指定名称
      * @returns {object}    {id,name,text,oss_key,thumb_path,size}
      */
-    function covertFileData(db_file){
+    function covertFileData(db_file,name){
+        var text = name || (db_file.is_link ? db_file.oss_key : db_file.name);         //为seelct2组件设置 text 属性，可用于显示名称、过滤功能，外链情况下使用oss_key
         var data = {
                     id : db_file.id,
-                    name : db_file.name,
-                    text : db_file.is_link ? db_file.oss_key : db_file.name,         //为seelct2组件设置 text 属性，可用于显示名称、过滤功能，外链情况下使用oss_key
+                    name : name || db_file.name,
+                    text : text,
                     oss_key : absolutePath(db_file.oss_key),        //转换成阿里路径
                     thumb_path : absolutePath(db_file.thumb_path == '' ? 'static/imgs/notfound.png' : db_file.thumb_path),  //转换成阿里路径
                     size : Wskeee.StringUtil.formatBytes(db_file.size)
