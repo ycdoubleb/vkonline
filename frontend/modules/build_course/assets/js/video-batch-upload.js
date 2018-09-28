@@ -93,7 +93,6 @@
                 _self.errors['file_id'] = "找不到【" + _self.video_filename + "】" + ',视频文件不能为空！';
             }
         }
-
         this.sentChangeEvent();
     };
 
@@ -273,7 +272,9 @@
             }
             return data.id ? Wskeee.StringUtil.renderDOM(_self.config['teacher_select_dom'], data) : data.text;
         };
-        var select2 = this.videoinfo.find('.teacher-select').select2({
+        //已经成功的不用刷新
+        this.videoinfo.find('.teacher-select:not([disabled])').html('<option></option>');
+        var select2 = this.videoinfo.find('.teacher-select:not([disabled])').select2({
             placeholder: "请选择对应老师",
             data:_self.teachers,
             width:'100%',
@@ -315,7 +316,9 @@
         var format = function(data) {
             return data.id ? Wskeee.StringUtil.renderDOM(_self.config['file_select_dom'], data) : data.text;
         }
-        var select2 = this.videoinfo.find('.file-select').select2({
+        //已经成功的不用刷新
+        this.videoinfo.find('.file-select:not([disabled])').html('<option></option>');
+        var select2 = this.videoinfo.find('.file-select:not([disabled])').select2({
             placeholder: "请选择对应视频",
             data:_self.files,
             width:'100%',
@@ -557,6 +560,21 @@
         $.each(this.videos,function(){
             /* VideoData */
             this.setFile(_self.__getFileByName(this.video_filename));
+        });
+    };
+    
+    /**
+     * 视频文件已经移除
+     * 
+     * @param {string} file_id 
+     * @returns {void}
+     */
+    VideoBatchUpload.prototype.fileRemoved = function(file_id){
+        $.each(this.videos,function(){
+            /* VideoData 成功提交的忽略*/
+            if(file_id == this.file_id && !this.submit_result ){
+                this.file_id = null;
+            }
         });
     };
     

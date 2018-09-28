@@ -135,7 +135,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
             
             <!-- 视频文件 -->
             <div class="video-file">
-                <div class="title">视频文件上传</div>
+                <div class="title">上传视频文件</div>
                 <div class="uploader-box">
                     <div id="uploader-container" class="clear-padding"></div>
                 </div>
@@ -144,6 +144,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
         <!-- 提交 -->
         <div class="panel-foot submit-box">
             <a id="video-submit" class="btn btn-highlight btn-flat">提交</a>
+            <span id="submit-result"></span>
         </div>
     </div>
     
@@ -270,6 +271,21 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
         });
         videoBatchUpload.init( php_videodatas, php_teachers );
         
+        /**
+         * 上传完成
+         */
+        $(videoBatchUpload).on('submitFinished',function(){
+            var max_num = this.videos.length;
+            var completed_num = 0;
+            $.each(this.videos,function(){
+                if(this.submit_result){
+                    completed_num++;
+                }
+            });
+            $('#submit-result').html("共有 "+max_num+" 个视频需要上传，其中 "+completed_num+" 个成功， "+(max_num - completed_num)+" 个失败！");
+            $.notify({message: '提交完成'}, {type: "success"});
+        });
+        
         
         /* 弹出视频模态框 */
         $('#pop-modal').on('shown.bs.modal',function(){
@@ -338,14 +354,21 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
 
             };
             uploader = new euploader.Uploader(config, euploader.FilelistView);
-            /* 上传完成 */
-            $(uploader).on('uploadFinished',function(){
-                //所有上传完成的文件
-                var files = uploader.uploader.getFiles('complete');
-                uploaderVideos = [];
-                $.each(files,function(){
-                    uploaderVideos.push(covertFileData(this.dbFile,this.name));
-                });
+            /* 上传完成、文件移除 */
+            $(uploader).on('uploadFinished',function(event){
+                updateFiles();  //同步到 videoBatchUpload
+            });
+            
+            $(uploader).on('fileDequeued',function(event,data){
+                //外链data = file.id
+                var is_link = typeof data == 'string';
+                var file_id = is_link ? data : data.dbFile.id;
+                //先通知文件已经删除，再更新
+                videoBatchUpload.fileRemoved(file_id);
+                //文件移除有两种情况，一种是移除外链（删除外链file），另一种是移除用户手动上传的
+                if(is_link){
+                    removeLinkVideo(file_id);
+                }
                 updateFiles();  //同步到 videoBatchUpload
             });
             
@@ -383,10 +406,25 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
     }
     
     /**
+     * 删除外链视频
+     * @argument {string} file_id 
+     * @returns {void}
+     */
+    function removeLinkVideo(file_id){
+        linkVideos=$.grep(linkVideos,function(file_item,i){
+            return file_item.id != file_id;
+        });
+    }
+    /**
      * 更新视频文件到批量控制器
      * @returns {void}
      */
     function updateFiles(){
+        //所有上传完成的文件
+        uploaderVideos = [];
+        $.each(uploader.uploader.getFiles('complete'),function(){
+            uploaderVideos.push(covertFileData(this.dbFile,this.name));
+        });
         //设置新的视频文件
         videoBatchUpload.setFiles(uploaderVideos.concat(linkVideos));
     }
