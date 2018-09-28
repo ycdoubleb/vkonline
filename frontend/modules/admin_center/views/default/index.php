@@ -2,6 +2,7 @@
 
 use common\models\vk\Customer;
 use frontend\modules\admin_center\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\helpers\Html;
@@ -12,6 +13,7 @@ use yii\widgets\DetailView;
 /* @var $model Customer */
 
 ModuleAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t('app', 'Survey');
 
@@ -310,7 +312,17 @@ $js = <<<JS
         e.select();                         //选择复制对象
         tag = document.execCommand("Copy");   //执行浏览器复制命令
         if(tag){
-          alert('复制邀请链接成功');
+          $.notify({
+                message: '复制邀请链接成功',
+            },{
+                type: "success",
+            });
+        }else{
+            $.notify({
+                message: '复制邀请链接失败',
+            },{
+                type: "danger",
+            });
         }
     }; 
 JS;
