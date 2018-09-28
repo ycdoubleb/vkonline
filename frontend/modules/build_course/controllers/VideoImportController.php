@@ -264,7 +264,7 @@ class VideoImportController extends Controller{
                         ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
                         ->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id')
                         ->where([
-                            'videoFile.file_id' => $file_id,
+                            'VideoFile.file_id' => $file_id,
                             'VideoFile.is_del' => 0,
                             'Video.is_del' => 0,
                         ])->one();
