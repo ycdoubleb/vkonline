@@ -363,9 +363,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                 //外链data = file.id
                 var is_link = typeof data == 'string';
                 var file_id = is_link ? data : data.dbFile.id;
-                //先通知文件已经删除，再更新
-                videoBatchUpload.fileRemoved(file_id);
-                //文件移除有两种情况，一种是移除外链（删除外链file），另一种是移除用户手动上传的
+                //文件移除有两种情况，一种是移除外链（删除外链file），另一种是移除用户手动上传的（）
                 if(is_link){
                     removeLinkVideo(file_id);
                 }

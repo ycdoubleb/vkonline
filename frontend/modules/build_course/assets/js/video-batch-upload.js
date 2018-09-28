@@ -555,29 +555,23 @@
      */
     VideoBatchUpload.prototype.setFiles = function (files) {
         var _self = this;
+        var fileIds = [];
         this.files = files;
         this.__createFileDom();
+        
+        $.each(this.files,function(){
+            fileIds.push(this.id);
+        });
         $.each(this.videos,function(){
+            /* 不在文件列表里将设置为null */
+            if(!this.submit_result && $.inArray(this.file_id,fileIds) == -1){
+                this.file_id = null;
+            }
             /* VideoData */
             this.setFile(_self.__getFileByName(this.video_filename));
         });
     };
-    
-    /**
-     * 视频文件已经移除
-     * 
-     * @param {string} file_id 
-     * @returns {void}
-     */
-    VideoBatchUpload.prototype.fileRemoved = function(file_id){
-        $.each(this.videos,function(){
-            /* VideoData 成功提交的忽略*/
-            if(file_id == this.file_id && !this.submit_result ){
-                this.file_id = null;
-            }
-        });
-    };
-    
+   
     /**
      * 提交数据，已经提交的不再提交
      * @param {object} submit_common_params     设置上传公共参数
@@ -653,18 +647,10 @@
         }
         this.clipboard = new ClipboardJS(target);
         this.clipboard.on('success', function (e) {
-            $.notify({
-                message: '复制成功',
-            }, {
-                type: "success",
-            });
+            $.notify({message: '复制成功',}, {type: "success",});
         });
         this.clipboard.on('error', function (e) {
-            $.notify({
-                message: '复制失败',
-            }, {
-                type: "danger",
-            });
+            $.notify({message: '复制失败',}, {type: "danger",});
         });              
     }
 
