@@ -373,6 +373,8 @@ class ActionUtils
         return [
             'code'=> $is_success ? 200 : 404,
             'data' => [
+                'id' => $model->id,
+                'name' => $model->name,
                 'course_id' => $model->course_id, 
             ],
             'message' => $message
@@ -604,6 +606,7 @@ class ActionUtils
         return [
             'code'=> $is_success ? 200 : 404,
             'data' => [
+                'id' => $model->id, 
                 'name' => $model->name, 'data' => Knowledge::getKnowledgeResourceInfo($model->id, 'data')
             ],
             'message' => $message
