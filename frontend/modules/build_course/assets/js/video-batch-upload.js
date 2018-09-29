@@ -93,7 +93,6 @@
                 _self.errors['file_id'] = "找不到【" + _self.video_filename + "】" + ',视频文件不能为空！';
             }
         }
-
         this.sentChangeEvent();
     };
 
@@ -273,7 +272,9 @@
             }
             return data.id ? Wskeee.StringUtil.renderDOM(_self.config['teacher_select_dom'], data) : data.text;
         };
-        var select2 = this.videoinfo.find('.teacher-select').select2({
+        //已经成功的不用刷新
+        this.videoinfo.find('.teacher-select:not([disabled])').html('<option></option>');
+        var select2 = this.videoinfo.find('.teacher-select:not([disabled])').select2({
             placeholder: "请选择对应老师",
             data:_self.teachers,
             width:'100%',
@@ -315,7 +316,9 @@
         var format = function(data) {
             return data.id ? Wskeee.StringUtil.renderDOM(_self.config['file_select_dom'], data) : data.text;
         }
-        var select2 = this.videoinfo.find('.file-select').select2({
+        //已经成功的不用刷新
+        this.videoinfo.find('.file-select:not([disabled])').html('<option></option>');
+        var select2 = this.videoinfo.find('.file-select:not([disabled])').select2({
             placeholder: "请选择对应视频",
             data:_self.files,
             width:'100%',
@@ -552,14 +555,23 @@
      */
     VideoBatchUpload.prototype.setFiles = function (files) {
         var _self = this;
+        var fileIds = [];
         this.files = files;
         this.__createFileDom();
+        
+        $.each(this.files,function(){
+            fileIds.push(this.id);
+        });
         $.each(this.videos,function(){
+            /* 不在文件列表里将设置为null */
+            if(!this.submit_result && $.inArray(this.file_id,fileIds) == -1){
+                this.file_id = null;
+            }
             /* VideoData */
             this.setFile(_self.__getFileByName(this.video_filename));
         });
     };
-    
+   
     /**
      * 提交数据，已经提交的不再提交
      * @param {object} submit_common_params     设置上传公共参数
@@ -635,18 +647,10 @@
         }
         this.clipboard = new ClipboardJS(target);
         this.clipboard.on('success', function (e) {
-            $.notify({
-                message: '复制成功',
-            }, {
-                type: "success",
-            });
+            $.notify({message: '复制成功',}, {type: "success",});
         });
         this.clipboard.on('error', function (e) {
-            $.notify({
-                message: '复制失败',
-            }, {
-                type: "danger",
-            });
+            $.notify({message: '复制失败',}, {type: "danger",});
         });              
     }
 
