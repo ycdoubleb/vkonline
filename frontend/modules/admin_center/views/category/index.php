@@ -126,8 +126,8 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
         <div class="table-responsive set-padding">
             <table id="table-fancytree_1" class="table table-bordered table-hover detail-view vk-table">
                 <colgroup>
-                    <col width="345px"></col>
-                    <col width="100px"></col>
+                    <col width="200px"></col>
+                    <col width="245px"></col>
                     <col width="55px"></col>
                     <col width="55px"></col>
                 </colgroup>
