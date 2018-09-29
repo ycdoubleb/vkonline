@@ -152,27 +152,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         $isPass = !empty($post) ? array_key_exists('username', $post['LoginForm']) : true;  //是否为密码登录true
-        //检查客户是否到期停用
-        if(!empty($post)){
-            if($isPass){
-                $username = ArrayHelper::getValue($post, 'LoginForm.username');
-                $user = User::findOne(['username' => $username]);
-            } else {
-                $phone = ArrayHelper::getValue($post, 'LoginForm.phone');   //获取输入的号码
-                $user = User::findOne(['phone' => $phone]);
-            }
-            if($user->type == User::TYPE_GROUP){
-                $customer = Customer::findOne($user->customer_id);
-                if($customer->status == Customer::STATUS_STOP){
-                    Yii::$app->getSession()->setFlash('error', '客户套餐已到期！待管理员续费后可继续使用');
-                    return $this->goHome();
-                }
-            }
-        }
         
         if($isPass){
             $model->scenario = LoginForm::SCENARIO_PASS;    //设置密码登录场景
-            
+
             if ($model->load(Yii::$app->request->post()) && $model->login()) {
                 return $this->goBack();
             } else {

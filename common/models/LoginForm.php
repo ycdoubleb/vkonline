@@ -1,6 +1,7 @@
 <?php
 namespace common\models;
 
+use common\models\vk\Customer;
 use Yii;
 use yii\base\Model;
 
@@ -88,7 +89,16 @@ class LoginForm extends Model
     public function login()
     {
         if ($this->validate()) {
-            $hasLogin = Yii::$app->user->login($this->getUser(), $this->rememberMe ? 3600 * 24 * 30 : 0);
+            $userModel = $this->getUser();
+            //检查客户是否到期停用 停用则不能登录
+            if($userModel->type == User::TYPE_GROUP){
+                $customer = Customer::findOne($userModel->customer_id);
+                if($customer->status == Customer::STATUS_STOP){
+                    Yii::$app->getSession()->setFlash('error', '客户套餐已到期！待管理员续费后可继续使用');
+                    return false;
+                }
+            }
+            $hasLogin = Yii::$app->user->login($userModel, $this->rememberMe ? 3600 * 24 * 30 : 0);
             if($hasLogin && $this->userClass == User::class){
                 $this->_user->generateAccessToken();
                 $this->_user->save(false);
