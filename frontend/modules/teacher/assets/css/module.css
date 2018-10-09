@@ -96,7 +96,7 @@
     width: 280px;
 }
 
-.teacher-view .pull-left .vk-list .list-panel {
+.teacher-view .basic .vk-list .list-panel {
     height: 264px;
     padding-top: 20px;
     padding-bottom: 20px;
@@ -104,7 +104,7 @@
     text-align: center;
 }
 
-.teacher-view .pull-left .vk-list .avatars {
+.teacher-view .basic .vk-list .avatars {
     width: 128px !important;
     height: 128px !important;
     margin-bottom: 15px;
@@ -114,16 +114,22 @@
     width: 885px;
 }
 
-.teacher-view .pull-right .vk-list {
+.teacher-view .details .vk-list {
     margin-right: -50px;
     overflow: hidden;
 }
 
-.teacher-view .pull-right .vk-list .list-panel {
+.teacher-view .details .teacher-des {
+    height: auto;
+    line-height: 30px;
+    font-size: 14px;
+}
+
+.teacher-view .details .vk-list .list-panel {
     margin-right: 23px;
 }
 
-.teacher-view .pull-right 
+.teacher-view .details 
 .vk-list .list-panel .list-header {
     height: 210px;
 }

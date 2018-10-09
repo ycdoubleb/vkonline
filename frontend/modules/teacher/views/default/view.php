@@ -51,7 +51,7 @@ $this->title = $model->name;
                 </span>
             </div>
             <!--描述-->
-            <div class="vk-title set-bottom"><?= $model->des ?></div>
+            <div class="vk-title set-bottom teacher-des"><?= $model->des ?></div>
             
             <!--老师课程-->
             <div class="vk-title">
