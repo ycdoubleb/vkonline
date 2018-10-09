@@ -108,7 +108,7 @@ class CourseSearch extends Course
         ]);
         self::$query->andFilterWhere(['OR', 
             ['Course.created_by' => \Yii::$app->user->id],
-            ['CourseUser.user_id' => \Yii::$app->user->id]
+            ['CourseUser.user_id' => \Yii::$app->user->id, 'CourseUser.is_del' => 0]
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);

@@ -22,9 +22,9 @@ use yii\helpers\Url;
                     <li class="level_2">
                         <?php $id = ArrayHelper::getValue($params, 'id'); ?>
                         <?= Html::beginTag('a', ['href' => Url::to(['view', 'id' => $knowledge['knowledge_id']])]) ?>
-                            <div class="head single-clamp <?= $knowledge['knowledge_id'] == $id ? 'active' : '' ?>">
+                            <div class="head <?= $knowledge['knowledge_id'] == $id ? 'active' : '' ?>">
                                 <i class="fa <?= $knowledge['knowledge_id'] == $id ? 'fa-play-circle' : ''  ?>"></i>
-                                <span><?= $knowledge['knowledge_name'] ?></span>
+                                <span class="single-clamp"><?= $knowledge['knowledge_name'] ?></span>
                                 <div class="control">
                                     <div class="progress">
                                         <!-- 每个视频的完成进度 -->

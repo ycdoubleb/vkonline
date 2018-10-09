@@ -201,10 +201,16 @@ html, body{
 }
 
 .node-list .level_2 .head i {
-    display: inline-block;
+    float: left;
     width: 12px;
-    height: 14px;
+    height: 13.6px;
+    margin-top: 19px;
     color: #28B28B;
+}
+
+.node-list .level_2 .head span {
+    display: inline-block;
+    width: 220px;
 }
 
 .node-list .level_2 .head.active,

@@ -187,16 +187,18 @@ class CourseUserController extends Controller
      */
     protected function getUserRecentContacts()
     {
-        $query = (new Query())->select(['User.id','User.nickname','User.avatar'])
-            ->from(['RecentContacts'=>RecentContacts::tableName()]);
+        $userQuery = (new Query())->select(['User.id', 'User.nickname', 'User.avatar'])
+            ->from(['User' => User::tableName()]);
+        $userQuery->leftJoin(['RecentContacts' => RecentContacts::tableName()], 'RecentContacts.contacts_id = `User`.`id`');
+        $userQuery->where(['RecentContacts.user_id' => Yii::$app->user->id]);
+        $userQuery->orderBy(['RecentContacts.updated_at' => SORT_DESC]);
+        $results = $userQuery->limit(8)->all();
         
-        $query->leftJoin(['User'=> User::tableName()],'User.id = RecentContacts.contacts_id');
-        $query->where(['user_id'=> Yii::$app->user->id]);
-        $query->orderBy(['RecentContacts.updated_at' => SORT_DESC]);
-        $results = $query->limit(8)->all();
-        //重置avatar
-        foreach ($results as &$item) {
-            $item['avatar'] = Aliyun::absolutePath(!empty($item['avatar']) ? $item['avatar'] : 'upload/avatars/default.jpg');
+        if($results != null){
+            //重置avatar
+            foreach ($results as &$item) {
+                $item['avatar'] = Aliyun::absolutePath(!empty($item['avatar']) ? $item['avatar'] : 'upload/avatars/default.jpg');
+            }
         }
         
         return $results;
