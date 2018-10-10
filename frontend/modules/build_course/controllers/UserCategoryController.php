@@ -51,7 +51,7 @@ class UserCategoryController extends GridViewChangeSelfController
 
         return $this->render('index', [
             'searchModel' => $searchModel,
-            'dataProvider' => $this->getCatalogFramework($dataProvider->models),
+            'dataProvider' => UserCategory::getUserCatListFramework($dataProvider->models),
         ]);
     }
 
@@ -277,7 +277,7 @@ class UserCategoryController extends GridViewChangeSelfController
 
         return $this->renderAjax('move', [
             'move_ids' => implode(',', $move_ids),    //所选的目录id
-            'dataProvider' => $this->getCatalogFramework($dataProvider->models),    //用户自定义的目录结构
+            'dataProvider' => UserCategory::getUserCatListFramework($dataProvider->models),    //用户自定义的目录结构
         ]);
     }
     
@@ -321,35 +321,5 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-    /**
-     * 递归生成目录框架
-     * @param array $dataProvider   目录
-     * @param integer $parent_id    上一级id
-     * @return array
-     */
-    protected function getCatalogFramework($dataProvider, $parent_id = 0)
-    {
-        $dataCatalog = [];
-        //组装目录结构
-        ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
-        foreach($dataProvider as $_data){
-            if($_data->parent_id == $parent_id){
-                $item = [
-                    'title'=> $_data->name,
-                    'key' => $_data->id,
-                    'level' => $_data->level,
-                    'is_show' => $_data->is_show,
-                    'is_public' => $_data->is_public,
-                    'sort_order' => $_data->sort_order,
-                    'folder' => true,
-                ];
-                $item['children'] = $this->getCatalogFramework($dataProvider, $_data->id);
-                $dataCatalog[] = $item;
-            }
-        }
-        
-        return $dataCatalog;
     }
 }
