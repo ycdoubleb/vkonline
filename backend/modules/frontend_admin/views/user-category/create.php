@@ -8,9 +8,9 @@ use yii\web\View;
 /* @var $this View */
 /* @var $model UserCategory */
 
-$this->title = Yii::t('app', '{My}{Video} / {Create}{Catalog}',[
-    'My' => Yii::t('app', 'My'),  'Video' => Yii::t('app', 'Video'),
-    'Create' => Yii::t('app', 'Create'),  'Catalog' => Yii::t('app', 'Catalog'),
+$this->title = Yii::t('app', '{Create}{Catalog}',[
+    'Create' => Yii::t('app', 'Create'),
+    'Catalog' => Yii::t('app', 'Catalog'),
 ]);
 
 ?>
