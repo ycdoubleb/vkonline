@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
             'enctype' => 'multipart/form-data',
         ],
         'fieldConfig' => [
-            'template' => "{label}\n<div class=\"col-lg-7 col-md-7\">{input}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-11 col-md-11\">{error}</div>",
             'labelOptions' => ['class' => 'col-lg-1 col-md-1 control-label form-label'],
         ],
     ]); ?>

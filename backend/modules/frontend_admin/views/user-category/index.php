@@ -2,13 +2,12 @@
 
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\vk\searchs\UserCategorySearch;
-use common\models\vk\UserCategory;
-use common\widgets\grid\GridViewChangeSelfColumn;
-use common\widgets\treegrid\TreegridAssets;
-use kartik\widgets\Select2;
+use common\widgets\tabselfcolumn\TabSelfColumnAssets;
+use kartik\switchinput\SwitchInputAsset;
+use wbraganca\fancytree\FancytreeWidget;
 use yii\data\ActiveDataProvider;
-use yii\grid\GridView;
 use yii\helpers\Html;
+use yii\web\JsExpression;
 use yii\web\View;
 
 /* @var $this View */
@@ -16,7 +15,8 @@ use yii\web\View;
 /* @var $dataProvider ActiveDataProvider */
 
 FrontendAssets::register($this);
-TreegridAssets::register($this);
+TabSelfColumnAssets::register($this);
+SwitchInputAsset::register($this);
 
 $this->title = Yii::t('app', '{Public}{Catalog}',[
     'Public' => Yii::t('app', 'Public'),
@@ -28,9 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-category-index customer">
 
     <p>
-        <?= Html::a(Yii::t('app', "{Create}{$this->title}", [
-            'Create' => Yii::t('app', 'Create')
-        ]), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', 'Add') . '顶级目录', ['create'], ['class' => 'btn btn-success', 'onclick' => 'showModal($(this)); return false;']) ?>
     </p>
     
     <div class="frame">
@@ -40,134 +38,120 @@ $this->params['breadcrumbs'][] = $this->title;
             <span><?= Yii::t('app', 'List') ?></span>
         </div>
         
-        <?= GridView::widget([
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'layout' => "{items}\n{summary}\n{pager}",
-            'rowOptions' => function($model, $key, $index, $this){
-                /* @var $model CategorySearch */
-                return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
-            },
-            'columns' => [
-//                ['class' => 'yii\grid\SerialColumn'],
-
-                [
-                    'attribute' => 'name',
-                    'format' => 'raw',
-                    'value' => function($model){
-                        return $model->name;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '400px',
-                        ]
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'left'
-                        ]
-                    ],
+        <?= FancytreeWidget::widget([
+            'options' =>[
+                'id' => 'table-fancytree_1', // 设置整体id
+                'checkbox' => true,
+                'selectMode' => 3,
+                'source' => $dataProvider,
+                'extensions' => ['table', 'dnd'],
+                'table' => [
+                    'indentation' => 20,
+                    'nodeColumnIdx' => 0
                 ],
-                [
-                    'attribute' => 'mobile_name',
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '200px',
-                        ]
-                    ]
-                ],
-                [
-                    'attribute' => 'is_show',
-                    'class' => GridViewChangeSelfColumn::class,
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'is_show',
-                        'data' => UserCategory::$showStatus,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
-                    'value' => function ($model){
-                        return UserCategory::$showStatus[$model->is_publish];
-                    },
-                    'disabled' => function($model) {
-                        return null;
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '60px'
-                        ]
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center'
-                        ]
-                    ],
-                ],
-                [
-                    'attribute' => 'sort_order',
-                    'filter' => false,
-                    'class' => GridViewChangeSelfColumn::class,
-                    'plugOptions' => [
-                        'type' => 'input',
-                    ],
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '60px'
-                        ]
-                    ],
-                ],
-               
-                [
-                    'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view}{update}{delete}',
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '60px'
-                        ]
-                    ],
-                    'contentOptions' => [
-                        'style' => [
-                            'text-align' => 'center',
-                        ],
-                    ],
-                    'buttons' => [
-                        'delete' => function ($url, $model, $key) use($catChildrens){
-                            $options = [
-                                'class' => count($catChildrens[$model->id]) > 0 || count($model->videos) > 0  ? 'disabled' : '',
-                                'title' => Yii::t('app', 'Delete'),
-                                'aria-label' => Yii::t('app', 'Delete'),
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method' => 'post',
-                                'data-pjax' => '0',
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-trash"></span>',
-                                'url' => ['delete', 'id' => $model->id],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
-                        },
-                    ]
-                ],         
-            ],
+                'select' => new JsExpression('function(event, data){
+                    var node = data.node,
+                        level = node.getLevel(),
+                        pList = node.getParentList();
+                    for(i in pList){
+                        if(level != pList[i].getLevel()){
+                            pList[i].selected = false;
+                            $(pList[i].tr).removeClass("fancytree-selected");
+                        }
+                    }
+                }'),
+                'renderColumns' => new JsExpression('function(event, data) {
+                    //初始化组件
+                    var tabColumn = new tabcolumn.TabSelfColumn();
+                    var node = data.node;
+                    //生成span标签
+                    var $span =  tabColumn.init({
+                        data:{key: node.key,fieldName:"is_show",value:node.data.is_show,dome:"this"}
+                    });
+                    //生成input框
+                    var $input = tabColumn.init({
+                        type:"input",data:{key:node.key,fieldName:"sort_order",value:node.data.sort_order,dome:"this"}
+                    });
+                    $(node.tr).find("> td.name span.fancytree-checkbox").each(function(){
+                        if(node.data.is_public){
+                            $(this).remove();
+                        }
+                    });
+                    $(node.tr).find("> td.is_show").html($span);
+                    $(node.tr).find("> td.sort_order").html($input);
+                    //设置a标签的属性
+                    $(node.tr).find("> td.btn_groups a").each(function(index){
+                        var _this = $(this);
+                        switch(index){
+                            case 0:
+                                _this.attr({href: \'/frontend_admin/user-category/create?id=\' + node.key});
+                                break;
+                            case 1:
+                                _this.attr({href: \'/frontend_admin/user-category/view?id=\' + node.key});
+                                break;
+                            case 2:
+                                _this.attr({href: \'/frontend_admin/user-category/update?id=\' + node.key});
+                                break;
+                            case 3:
+                                _this.click(function(){
+                                    if(confirm("您确定要删除此项吗？") == true){
+                                        $.post(\'/frontend_admin/user-category/delete?id=\' + node.key, function(rel){
+                                            alert(rel.message);
+                                        });
+                                    }
+                                    return false;
+                                });
+                                break;
+                        }
+                    });
+                }'),
+            ]
         ]); ?>
+        
+        <div class="table-responsive" style="width: 100%;">
+            <table id="table-fancytree_1" class="table table-bordered table-hover detail-view">
+                <colgroup>
+                    <col width="400px"></col>
+                    <col width="45px"></col>
+                    <col width="40px"></col>
+                    <col width="55px"></col>
+                </colgroup>
+                <thead>
+                  <tr>
+                      <th><?= Yii::t('app', 'Name') ?></th>
+                      <th><?= Yii::t('app', '{Is}{Show}',['Is' => Yii::t('app', 'Is'), 'Show' => Yii::t('app', 'Show')]) ?></th>
+                      <th><?= Yii::t('app', 'Sort Order') ?></th>
+                      <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="name" style="text-align: left;"></td>
+                        <td class="is_show" style="text-align: center;"></td>
+                        <td class="sort_order" style="text-align: center;"></td>
+                        <td class="btn_groups" style="text-align: center;">
+                            <?php
+                                echo Html::a('<span class="glyphicon glyphicon-plus"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this)); return false;'
+                                ]) . '&nbsp;';
+                                echo Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'View'),
+                                ]) . '&nbsp;';     
+                                echo Html::a('<span class="glyphicon glyphicon-pencil"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this)); return false;'
+                                ]) . '&nbsp;';     
+                                echo Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
+                                    'title' => Yii::t('app', 'Delete'), 
+                                ]);     
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
     </div>
     
 </div>
 
-<?php
-    
-$js = <<<JS
-    $('.table').treegrid({
-        //initialState: 'collapsed',
-    });        
-JS;
-    $this->registerJs($js, View::POS_READY);
-    
-?>
+<?= $this->render('/layouts/__model') ?>

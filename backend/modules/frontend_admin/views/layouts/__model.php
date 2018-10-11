@@ -1,14 +1,5 @@
-<?php
-
-use common\widgets\ueditor\UeditorAsset;
-
-/** 模态框 ///加载富文本编辑器 */
-    
-UeditorAsset::register($this);
-
-?>
-
 <div class="modal fade myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             
@@ -26,3 +17,18 @@ UeditorAsset::register($this);
        </div>
     </div> 
 </div>
+
+<script type="text/javascript">
+    
+    /**
+     * 显示模态框
+     * @param {type} _this
+     * @returns {Boolean}
+     */
+    function showModal(_this){
+        $(".myModal").html("");
+        $('.myModal').modal("show").load(_this.attr("href"));
+        return false;
+    }
+
+</script>

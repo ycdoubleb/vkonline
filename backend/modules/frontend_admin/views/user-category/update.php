@@ -1,22 +1,20 @@
 <?php
 
 use common\models\vk\UserCategory;
-use frontend\modules\build_course\assets\ModuleAssets;
 use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
 /* @var $model UserCategory */
 
-ModuleAssets::register($this);
-
-$this->title = Yii::t('app', "{My}{Video} / {Update}{Catalog}：{$model->name}",[
-    'My' => Yii::t('app', 'My'),  'Video' => Yii::t('app', 'Video'),
-    'Update' => Yii::t('app', 'Update'),  'Catalog' => Yii::t('app', 'Catalog'),
+$this->title = Yii::t('app', "{Update}{Catalog}：{$model->name}",[
+    'Update' => Yii::t('app', 'Update'),
+    'Catalog' => Yii::t('app', 'Catalog'),
 ]);
+
 ?>
 
-<div class="user-category-update main vk-modal">
+<div class="user-category-update">
 
     <div class="modal-dialog" style="width: 720px" role="document">
         <div class="modal-content">
@@ -45,15 +43,3 @@ $this->title = Yii::t('app', "{My}{Video} / {Update}{Catalog}：{$model->name}",
     </div>
 
 </div>
-
-<?php
-$js = <<<JS
-
-    // 提交表单
-    $("#submitsave").click(function(){
-        $('#user-category-form').submit();
-    });   
-        
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>

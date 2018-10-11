@@ -63,6 +63,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 'mobile_name',
                 'level',
                 [
+                    'attribute' => 'type',
+                    'label' => Yii::t('app', '{Catalog}{Type}', [
+                        'Catalog' => Yii::t('app', 'Catalog'), 'Type' => Yii::t('app', 'Type')
+                    ]),
+                    'value' => UserCategory::$catalogueTypeMap[$model->type],
+                ],
+                [
                     'attribute' => 'path',
                     'label' => Yii::t('app', 'Parent'),
                     'value' => !empty($model->path) ? $path : null,

@@ -46,6 +46,12 @@ class UserCategory extends ActiveRecord
     const TYPE_MYVIDOE = 1;
     /** 我的收藏 */
     const TYPE_MYCOLLECT = 2;
+    /** 类型：私人目录 */
+    const TYPE_PRIVATE = 1;
+    /** 类型：共享目录 */
+    const TYPE_SHARING = 2;
+    /** 类型：系统目录 */
+    const TYPE_SYSTEM = 3;
 
     /**
      * 显示状态
@@ -56,6 +62,16 @@ class UserCategory extends ActiveRecord
         self::YES_SHOW => '显示',
     ];
     
+    /**
+     * 目录类型
+     * @var array 
+     */
+    public static $catalogueTypeMap = [
+        self::TYPE_PRIVATE => '私人目录',
+        self::TYPE_SHARING => '共享目录',
+        self::TYPE_SYSTEM => '系统目录',
+    ];
+
     /* @var $cache Cache */
     private static $cache;
 
@@ -150,7 +166,7 @@ class UserCategory extends ActiveRecord
             if (empty($this->parent_id)) {
                 $this->parent_id = 0;
             }
-
+            
             $this->level = $this->parent_id == 0 ? 1 : self::getCatById($this->parent_id)->level + 1;
             return true;
         }
@@ -281,13 +297,12 @@ class UserCategory extends ActiveRecord
     /**
      * 获取分类
      * @param intger $level      默认返回所有分类
-     * @param intger $type       默认返回我的视频类型
      * @param bool $key_to_value    返回键值对形式
      * @param bool $include_unshow  是否包括隐藏的分类
      * 
      * @return array(array|Array) 
      */
-    public static function getCatsByLevel($level = 1, $created_by, $type = 1, $key_to_value = false, $include_unshow = false) {
+    public static function getCatsByLevel($level = 1, $created_by, $key_to_value = false, $include_unshow = false) {
         self::initCache();
         //不传created_by,默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
@@ -296,7 +311,7 @@ class UserCategory extends ActiveRecord
         $userCategorys = [];
         foreach (self::$userCategorys as $id => $category) {
             if ($category['level'] == $level && ($category['created_by'] == $created_by || $category['is_public'] == 1) 
-                    && $category['type'] == $type && ($include_unshow || $category['is_show'] == 1)) {
+                    && ($include_unshow || $category['is_show'] == 1)) {
                 $userCategorys[] = $category;
             }
         }
@@ -308,14 +323,14 @@ class UserCategory extends ActiveRecord
      * 获取用户分类的子级
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
-     * @param integer $type             默认返回我的视频类型
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
+     * @param bool $filter_condition    是否过滤条件
      * 
      * @return array [array|key=value]
      */
-    public static function getUserCatChildren($id, $created_by, $type = 1, $key_to_value = false, $recursion = false, $include_unshow = false) {
+    public static function getUserCatChildren($id, $created_by, $key_to_value = false, $recursion = false, $include_unshow = false, $filter_condition = false) {
         self::initCache();
         //不传created_by,默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
@@ -323,12 +338,14 @@ class UserCategory extends ActiveRecord
         }
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && $category['type'] == $type &&
-                    ($category['is_public'] == 1 || (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by))) &&
-                    ($include_unshow || $category['is_show'] == 1)) {
-                $childrens[] = $category;
-                if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, $type, false, $recursion, $include_unshow));
+            if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
+                if($filter_condition){
+                    $childrens[] = $category;
+                }else if(($category['is_public'] == 1 || (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by)))){
+                    $childrens[] = $category;
+                    if ($recursion) {
+                        $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, false, $recursion, $include_unshow));
+                    }
                 }
             }
         }
@@ -339,53 +356,27 @@ class UserCategory extends ActiveRecord
     /**
      * 获取分类的子级
      * @param integer $id               分类ID
-     * @param intger $type              默认返回我的视频类型
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
+     * @param bool $filter_condition    是否过滤条件
      * 
      * @return array [array|key=value]
      */
-    public static function getCatChildren($id, $type = 1, $key_to_value = false, $recursion = false, $include_unshow = false) {
-        return self::getUserCatChildren($id, null, $type, $key_to_value, $recursion, $include_unshow);
-    }
-
-    /**
-     * 获取用户分类的子级 （后台）
-     * @param integer $id               分类ID
-     * @param integer $type             默认返回我的视频类型
-     * @param bool $key_to_value        返回键值对形式
-     * @param bool $recursion           是否递归
-     * @param bool $include_unshow      是否包括隐藏的分类
-     * 
-     * @return array [array|key=value]
-     */
-    public static function getBackendCatChildren($id, $type = 1, $key_to_value = false, $recursion = false, $include_unshow = false) {
-        self::initCache();
-        $childrens = [];
-        foreach (self::$userCategorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && $category['type'] == $type && ($include_unshow || $category['is_show'] == 1)) {
-                $childrens[] = $category;
-                if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $type, false, $recursion, $include_unshow));
-                }
-            }
-        }
-        
-        return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
+    public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false, $filter_condition = false) {
+        return self::getUserCatChildren($id, null, $key_to_value, $recursion, $include_unshow, $filter_condition);
     }
     
     /**
      * 获取用户分类的子级ID
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
-     * @param integer $type             默认返回我的视频类型
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [id,id...]
      */
-    public static function getUserCatChildrenIds($id, $created_by, $type = 1, $recursion = false, $include_unshow = false) {
+    public static function getUserCatChildrenIds($id, $created_by, $recursion = false, $include_unshow = false) {
         self::initCache();
         //不传customerID,默认使用当前用户的客户ID
         if (!isset($created_by) || empty($created_by)) {
@@ -393,12 +384,12 @@ class UserCategory extends ActiveRecord
         }
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
-            if ($category['parent_id'] == $id && $category['type'] == $type && 
+            if ($category['parent_id'] == $id && 
                     (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by)) &&
                     ($include_unshow || $category['is_show'] == 1)) {
                 $childrens[] = $c_id;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $type, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $recursion, $include_unshow));
                 }
             }
         }
@@ -408,28 +399,26 @@ class UserCategory extends ActiveRecord
     /**
      * 获取分类的子级ID
      * @param integer $id               分类ID
-     * @param integer $type             默认返回我的视频类型
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [id,id...]
      */
-    public static function getCatChildrenIds($id, $type = 1, $recursion = false, $include_unshow = false) {
-        return self::getUserCatChildrenIds($id, null, $type, $recursion, $include_unshow);
+    public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false) {
+        return self::getUserCatChildrenIds($id, null, $recursion, $include_unshow);
     }
 
     /**
      * 返回用户当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
-     * @param integer $type             默认返回我的视频类型
      * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $recursion           是否递归（向上级递归）
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [[level_1],[level_2],..]
      */
-    public static function getUserSameLevelCats($id, $created_by, $type = 1, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
+    public static function getUserSameLevelCats($id, $created_by, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
         //不created_by,默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
@@ -438,7 +427,7 @@ class UserCategory extends ActiveRecord
         $userCategorys = [];
         if (($containerSelfLevel && $catgegory != null)) {
             //加上当前目录的子层级
-            $childrens = self::getUserCatChildren($id, $created_by, $type, true, false, $include_unshow);
+            $childrens = self::getUserCatChildren($id, $created_by, true, false, $include_unshow);
             if (count($childrens) > 0) {
                 $userCategorys [] = $childrens;
             }
@@ -447,10 +436,10 @@ class UserCategory extends ActiveRecord
         do {
             if ($catgegory == null) {
                 //当前分类为空时返回顶级分类
-                $userCategorys [] = self::getCatsByLevel(1, $created_by, $type, true);
+                $userCategorys [] = self::getCatsByLevel(1, $created_by, true);
                 break;
             } else {
-                array_unshift($userCategorys, self::getUserCatChildren($catgegory->parent_id, $created_by, $type, true, false, $include_unshow));
+                array_unshift($userCategorys, self::getUserCatChildren($catgegory->parent_id, $created_by, true, false, $include_unshow));
                 if (!$recursion)
                     break;
             }
@@ -465,15 +454,43 @@ class UserCategory extends ActiveRecord
      * 返回当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
-     * @param integer $type             默认返回我的视频类型
      * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $recursion           是否递归（向上级递归）
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [[level_1],[level_2],..]
      */
-    public static function getSameLevelCats($id, $type = 1, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
-        return self::getUserSameLevelCats($id, null, $type, $containerSelfLevel, $recursion, $include_unshow);
+    public static function getSameLevelCats($id, $containerSelfLevel = false, $recursion = true, $include_unshow = false) {
+        return self::getUserSameLevelCats($id, null, $containerSelfLevel, $recursion, $include_unshow);
+    }
+    
+    /**
+     * 递归生成目录列表框架结构
+     * @param array $dataProvider   数据提供者
+     * @param integer $parent_id    父级id
+     * @return type
+     */
+    public static function getUserCatListFramework($dataProvider, $parent_id = 0){
+        $listFramework = [];
+        //组装目录结构
+        ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
+        foreach($dataProvider as $_data){
+            if($_data->parent_id == $parent_id){
+                $item = [
+                    'title'=> $_data->name,
+                    'key' => $_data->id,
+                    'level' => $_data->level,
+                    'is_show' => $_data->is_show,
+                    'is_public' => $_data->is_public,
+                    'sort_order' => $_data->sort_order,
+                    'folder' => true,
+                ];
+                $item['children'] = self::getUserCatListFramework($dataProvider, $_data->id);
+                $listFramework[] = $item;
+            }
+        }
+        
+        return $listFramework;
     }
 
     /**

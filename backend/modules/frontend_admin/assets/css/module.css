@@ -237,3 +237,12 @@ and open the template in the editor.
     vertical-align: middle;
 }
 
+/*******************************************************************************
+*
+* 用户目录表单样式
+*
+*******************************************************************************/
+.user-category-form .form-horizontal .form-group {
+    margin-right: 0px;
+    margin-left: 0px;
+}
