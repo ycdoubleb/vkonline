@@ -60,7 +60,7 @@ TimerButtonAssets::register($this);
 	<fieldset>
             <h2 class="fs-title">账号信息</h2>
             <h3 class="fs-subtitle">设置您的用户名和密码</h3>
-            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名...'])
+            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名（英文或数字组合）...'])
                 ->label('')?>
             <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6,'maxlength' => 20,
                 'placeholder' => '密码...'])->label('') ?>

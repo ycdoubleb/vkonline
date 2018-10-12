@@ -200,7 +200,7 @@ class UserController extends GridViewChangeSelfController
         $customer = (new Query())
                 ->select(['id', 'name'])
                 ->from(['Customer' => Customer::tableName()])
-                ->where(['status' => Customer::STATUS_ACTIVE])
+//                ->where(['status' => Customer::STATUS_ACTIVE])
                 ->all();
 
         return ArrayHelper::map($customer, 'id', 'name');
