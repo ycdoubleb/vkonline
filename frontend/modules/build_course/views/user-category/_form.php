@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $model UserCategory */
-/* @var $form ActiveForm */
+/** @var $form ActiveForm */
 
 ?>
 
