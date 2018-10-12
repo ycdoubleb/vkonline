@@ -20,7 +20,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
 
 ?>
 
-<div class="video-index main">
+<div class="video-index vk-material main">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">
@@ -29,18 +29,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </span>
         <div class="btngroup pull-right">
             <?php
-                echo Html::a(Yii::t('app', '{Create}{Video}', [
-                        'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
-                    ]), ['create'], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
                     ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']);
-                echo '&nbsp;' . Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
-                    'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
-                ]);
-                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
-                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-primary btn-flat', 'target' => '_blank']);
             ?>
         </div>
     </div>
@@ -112,7 +103,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </div>
         
         <!--视频-->
-        <div class="video set-padding">
+        <div class="material set-padding">
             <ul class="list-unstyled">
 
             </ul>
@@ -224,7 +215,7 @@ $js = <<<JS
                 //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
                     for(var i in data.result){
-                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > div.video > ul"));
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > div.material > ul"));
                         //是否在整理状态，如果是，则换页时显示input
                         if(is_arrange){
                             var checkboxItem = item.find($('input[name="Video[id]"]'));

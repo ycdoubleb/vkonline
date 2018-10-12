@@ -65,7 +65,10 @@ return [
     'Login' => '登录',
     'Login Out' => '登出',
     'Course' => '课程',
+    'Material' => '素材',
     'Video' => '视频',
+    'Audio' => '音频',
+    'Document' => '文档',
     'Study' => '学习',
     'Center' => '中心',
     'Square' => '广场',
@@ -121,6 +124,7 @@ return [
     'Move' => '移动',
     'Import' => '导入',
     'Export' => '导出',
+    'Arrange' => '整理',
     
     //公共-属性
     'ID' => 'ID',

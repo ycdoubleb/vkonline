@@ -76,7 +76,7 @@ class VideoListSearch extends Video
         //目录
         if($sign){
             //获取分类的子级ID    
-            $userCatIds = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
+            $userCatIds = UserCategory::getCatChildrenIds($this->user_cat_id, true);     
             self::$query->andFilterWhere([
                 'Video.user_cat_id' => !empty($userCatIds) ? 
                     ArrayHelper::merge([$this->user_cat_id], $userCatIds) : $this->user_cat_id,

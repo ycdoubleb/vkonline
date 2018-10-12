@@ -381,14 +381,14 @@
 }
 
 /*******************************************************************************
- * 我的视频
+ * 我的素材
  *******************************************************************************/
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel {
     border: 1px solid #e4e4e4;
 }
 
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-header {
     height: 157px;
 }
@@ -396,26 +396,26 @@
 /***************************
  * 搜索样式-面包屑
  ***************************/
-.video-search .breadcrumb {
+.vk-material .breadcrumb {
     display: inline-block;
     width: 100%;
-    height: 40px;
+    min-height: 40px;
+    max-height: 50px;
     margin-bottom: 0px;
     border: 1px solid #ccc;
     border-radius: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
     background-color: transparent;
 }
 
-.video-search ul > li {
-    display: inline-block;
-}
-
-.video-search ul > li > a {
+.vk-material .breadcrumb > a {
     font-size: 13px;
     text-decoration: none;
 }
 
-.video-search ul > li > .set-route,
+.vk-material .breadcrumb .set-route,
 .video-index .vk-table .set-route {
     margin: 0 15px;
     font-size: 16px;
@@ -423,33 +423,38 @@
     font-weight: bold;
 }
 
-.video-search ul > li + li:before {
-    padding: 0px;
-    color: transparent;
-    content: "";
+/***************************
+ * 搜索样式-按钮组
+ ***************************/
+.vk-material .btn-group .material-btn{
+    padding: 9px 22px;
+}
+
+.vk-material .material-operation{
+    position: absolute;
+    right: 15px;
+    bottom: 20px;
 }
 
 /***************************
  * 搜索样式-高级搜索
  ***************************/
-.video-search .operate {
+.vk-material .operate {
     display: inline-block;
     margin-left: -15px;
 }
 
-.video-search .operate > a {
+.vk-material .operate > a {
     display: inline-block;
     width: 100px;
     height: 40px;
     text-align: center;
     line-height: 40px;
-    color: #fff;
     text-decoration: none;
-    background-color: #428bca;
     cursor: pointer;
 }
 
-.video-search .operate .arrow {
+.vk-material .operate .arrow {
     margin-left: 7px;
     font-weight: bold;
 }
@@ -457,7 +462,7 @@
 /***************************
  * 总结记录
  ***************************/
-.video-index .vk-tabs {
+.vk-material .vk-tabs {
     display: block;
     padding-right: 15px;
     padding-left: 20px;
@@ -467,19 +472,19 @@
     background-color: #fff;
 }
 
-.video-index .vk-tabs ul {
+.vk-material .vk-tabs ul {
     margin: 0px;
     padding: 0px;
 }
 
-.video-index .vk-tabs .summary {
+.vk-material .vk-tabs .summary {
     display: inline-block;
     color: #ccc;
     line-height: 54px;
     padding: 0px;
 }
 
-.video-index .vk-tabs .summary .times-close {
+.vk-material .vk-tabs .summary .times-close {
     font-size: 16px;
     color: #999999;
     padding: 0px 5px;
@@ -489,7 +494,7 @@
 /***************************
  * 列表样式
  ***************************/
-.video-index .vk-list {
+.vk-material .vk-list {
     display: block;
     width: 100%;
     padding-top: 0px !important;
@@ -499,24 +504,24 @@
 /***************************
  * 列表样式-目录
  ***************************/
-.video-index .vk-list .folder {
+.vk-material .vk-list .folder {
     padding-right: 20px;
     padding-left: 15px;
 }
-.video-index .vk-list .folder > ul,
-.video-index .vk-list .video > ul {
+.vk-material .vk-list .folder > ul,
+.vk-material .vk-list .material > ul {
     width: auto;
     margin-right: -25px;
     margin-bottom: 0px;
     overflow-x: hidden;
 }
 
-.video-index .vk-list .folder > ul > li {
+.vk-material .vk-list .folder > ul > li {
     float: left;
     margin-bottom: 25px;
 }
 
-.video-index .vk-list .folder > ul > li > a {
+.vk-material .vk-list .folder > ul > li > a {
     display: inline-block;
     width: 88px;
     height: 100%;
@@ -525,11 +530,11 @@
     text-decoration: none;
 }
 
-.video-index .vk-list .folder > ul > li > a:hover {
+.vk-material .vk-list .folder > ul > li > a:hover {
     background-color: #f9f9f9;
 }
 
-.video-index .vk-list .ifolder {
+.vk-material .vk-list .ifolder {
     display: inline-block;
     width: 100%;
     height: 32px;
@@ -539,20 +544,20 @@
     background-size: 40px 32px; 
 }
 
-.video-index .vk-list .ifolder.upper-level{
+.vk-material .vk-list .ifolder.upper-level{
     background-image: url('../imgs/upper-level.png');
 }
 
-.video-index .vk-list .ifolder.folder-public{
+.vk-material .vk-list .ifolder.folder-public{
     background-image: url('../imgs/folder-public.png');
 }
 
-.video-index .vk-list .folder-name {
+.vk-material .vk-list .folder-name {
     margin-top: 5px;
     margin-bottom: 0px;
 }
 
-.video-index .vk-list .list-panel 
+.vk-material .vk-list .list-panel 
 .list-header .icheck {
     position: absolute;
     top: 5px;
@@ -561,75 +566,68 @@
 }
 
 /***************************
- * 列表样式-视频
+ * 列表样式-素材
  ***************************/
-.video-index .vk-list .list-panel {
+.vk-material .vk-list .list-panel {
     width: 222px;
     margin-right: 25px;
     margin-bottom: 20px;
 }
 
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-header {
     height: 125px;
 }
 
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-header .copy-video_id {
     position: absolute;
     top: 4px;
     right: 4px;
     display: none;
 }
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-header:hover .copy-video_id {
     display: block;
 }
 
-.video-index .vk-list 
-.list-panel .list-header .level {
+.vk-material .vk-list 
+.list-panel .list-header .status {
     bottom: 2px;
     left: 2px;
 }
 
-.video-index .vk-list 
-.list-panel .list-header .status {
-    bottom: 2px;
-    left: 38px;
-}
-
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-header .duration {
     bottom: 2px;
     right: 2px;
 }
 
-.video-index .vk-list 
-.list-panel .list-body {
+.vk-material .vk-list .list-panel .list-body {
     padding: 9px 10px;
     border-bottom: none;
 }
 
-.video-index .vk-list .list-panel .tuip {
+.vk-material .vk-list .list-panel .tuip {
     margin-top: 0px;
 }
 
-.video-index .vk-list 
+.vk-material .vk-list 
 .list-panel .list-body .title {
     text-align: center;
 }
 
 /***************************
- * 视频列表-搜索结果
+ * 列表样式-搜索结果
  ***************************/
-.video-index .vk-table > thead > tr > th,
-.video-index .vk-table > tbody > tr > td {
+.vk-material .vk-table > thead > tr > th,
+.vk-material .vk-table > tbody > tr > td {
     border-right: none;
     border-left: none;
 }
 
 /***************************
- * 表单分页样式
+ * 表单样式-视频
  ***************************/
 .video-form .nav li a:hover, 
 .video-form .nav li a:focus {
@@ -644,7 +642,7 @@
 }
 
 /***************************
- * 水印样式
+ * 表单样式-水印
  ***************************/
 .video-form .video-watermark,
 .video-import .video-watermark {
@@ -671,7 +669,7 @@
 }
 
 /***************************
- * 用户自定义目录
+ * 目录样式-用户目录
  ***************************/
 .user-category-index .vk-panel .pointer{
     cursor: pointer;
@@ -703,7 +701,7 @@
 }
 
 /***************************
- * 视频批量导入
+ * 批量导入样式-视频导入
  ***************************/
 .video-import .select2-container--krajee 
 .select2-selection--single {

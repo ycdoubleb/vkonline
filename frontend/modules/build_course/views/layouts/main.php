@@ -52,9 +52,9 @@ $menuItems = [
         ],
         [
             'module' => 'build_course',
-            'controller' => ['video', 'user-category'],
+            'controller' => ['video', 'audio', 'document', 'image', 'user-category'],
             'action' => 'index',
-            'label' => Yii::t('app', 'Video'),
+            'label' => Yii::t('app', 'Material'),
             'url' => ['/build_course/video/index'],
             'icons' => null, 
             'condition' => true,

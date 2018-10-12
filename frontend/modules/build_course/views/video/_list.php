@@ -5,7 +5,6 @@
         <a href="../video/view?id={%id%}" title="{%name%}" target="_blank">
             <img src="{%img%}" width="100%" height="100%" />
         </a>
-        <div class="hyalinize level">{%level_name%}</div>
         <div class="hyalinize status">{%status%}</div>
         <div class="hyalinize duration">{%duration%}</div>
     </div>

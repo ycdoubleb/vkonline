@@ -299,10 +299,11 @@ class UserCategory extends ActiveRecord
      * @param intger $level      默认返回所有分类
      * @param bool $key_to_value    返回键值对形式
      * @param bool $include_unshow  是否包括隐藏的分类
+     * @param bool $filter_condition    是否过滤条件
      * 
      * @return array(array|Array) 
      */
-    public static function getCatsByLevel($level = 1, $created_by, $key_to_value = false, $include_unshow = false) {
+    public static function getCatsByLevel($level = 1, $created_by, $key_to_value = false, $include_unshow = false, $filter_condition = false) {
         self::initCache();
         //不传created_by,默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
@@ -310,9 +311,14 @@ class UserCategory extends ActiveRecord
         }
         $userCategorys = [];
         foreach (self::$userCategorys as $id => $category) {
-            if ($category['level'] == $level && ($category['created_by'] == $created_by || $category['is_public'] == 1) 
-                    && ($include_unshow || $category['is_show'] == 1)) {
-                $userCategorys[] = $category;
+            if($category['level'] == $level){
+                /* 如果过滤条件是true，返回分类 */
+                if($filter_condition){
+                    $userCategorys[] = $category;
+                }else if(($category['created_by'] == $created_by || $category['is_public'] == 1) 
+                        && ($include_unshow || $category['is_show'] == 1)){
+                    $userCategorys[] = $category;
+                }
             }
         }
 
@@ -338,10 +344,12 @@ class UserCategory extends ActiveRecord
         }
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
-            if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
+            if($category['parent_id'] == $id){
+                /* 如果过滤条件是true，返回分类下所有有关的子级 */
                 if($filter_condition){
                     $childrens[] = $category;
-                }else if(($category['is_public'] == 1 || (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by)))){
+                }else if(($category['is_public'] == 1 || (empty($category['created_by']) || ($created_by && $category['created_by'] == $created_by))) && 
+                        ($include_unshow || $category['is_show'] == 1)){
                     $childrens[] = $category;
                     if ($recursion) {
                         $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, false, $recursion, $include_unshow));

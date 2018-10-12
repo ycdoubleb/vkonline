@@ -501,7 +501,7 @@ class VideoController extends Controller
     protected function getSameLevelCats($categoryId)
     {
         if($categoryId != null){
-            $categoryMap = UserCategory::getCatChildren($categoryId, 1, false);
+            $categoryMap = UserCategory::getCatChildren($categoryId);
         }else{
             $categoryMap = UserCategory::getCatsByLevel(1, null);
         }
