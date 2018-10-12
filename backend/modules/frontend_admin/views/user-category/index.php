@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="user-category-index customer">
 
     <p>
-        <?= Html::a(Yii::t('app', 'Add') . '顶级目录', ['create'], ['class' => 'btn btn-success', 'onclick' => 'showModal($(this)); return false;']) ?>
+        <?= Html::a(Yii::t('app', 'Add') . '顶级目录', ['create'], ['class' => 'btn btn-success', 'onclick' => 'showModal($(this).attr("href")); return false;']) ?>
     </p>
     
     <div class="frame">
@@ -132,13 +132,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td class="btn_groups" style="text-align: center;">
                             <?php
                                 echo Html::a('<span class="glyphicon glyphicon-plus"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this).attr("href")); return false;'
                                 ]) . '&nbsp;';
                                 echo Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'View'),
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-pencil"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this).attr("href")); return false;'
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'Delete'), 

@@ -34,17 +34,17 @@ use yii\widgets\ActiveForm;
     
     <!--所属父级-->
     <?php
-        $params = Yii::$app->request->queryParams;
+        $id = Yii::$app->request->getQueryParam('id');
         //默认情况下的值
         $max_level = 1;
         $items = UserCategory::getSameLevelCats(null);
         $values = [];
         //如果有传参id，则拿传参id的UserCategory模型
-        if(isset($params['id'])){
-            $userCategory = UserCategory::getCatById($params['id']);
+        if($id != null){
+            $userCategory = UserCategory::getCatById($id);
             $sameLevelCats = UserCategory::getSameLevelCats($userCategory->id);
             //max_level = 传参id的UserCategory模型的level
-            $max_level = $userCategory->level > 3 ? $userCategory->level - 1 : $userCategory->level;
+            $max_level = $userCategory->level;
             //如果传参id的UserCategory模型的parent_id非0，则执行
             if($userCategory->parent_id != 0){
                 //values = 传参id的UserCategory模型的父级path
@@ -52,7 +52,6 @@ use yii\widgets\ActiveForm;
             }
             //如果是【更新】的情况下
             if(!$model->isNewRecord){
-                $max_level = 3;
                 //items = 传参id的UserCategory模型的当前（包括父级）分类同级的所有分类(不包含自己)
                 foreach ($sameLevelCats as $index => $cats){
                     if(in_array($userCategory->id, array_keys($cats))){
@@ -80,10 +79,12 @@ use yii\widgets\ActiveForm;
             'values' => $values,
             'itemOptions' => [
                 'style' => 'width: 175px; display: inline-block;',
-                'disabled' => $model->isNewRecord || !isset($params['id']) ? true : false,
+                'disabled' => $model->isNewRecord || $id == null ? true : false,
             ],
         ]) 
     ?>
+    
+    <?= $form->field($model, 'des')->textarea(['rows' => 5]) ?>
     
     <!--是否显示-->
     <?=$form->field($model, 'is_show')->widget(SwitchInput::class, [
