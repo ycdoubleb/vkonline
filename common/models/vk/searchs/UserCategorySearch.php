@@ -101,15 +101,16 @@ class UserCategorySearch extends UserCategory
         
         // grid filtering conditions
         $query->andFilterWhere(['NOT IN', 'id', $this->id]);
-        $query->andFilterWhere([
-            'type' => $this->type,
-            'sort_order' => $this->sort_order,
-            'is_show' => $this->is_show,
-            'created_by' => Yii::$app->user->id,
-        ]);
+         
+        $query->andFilterWhere(['created_by' => Yii::$app->user->id]);
         
-        $query->orFilterWhere([ 'is_public' => 1]);
+        $query->orFilterWhere(['is_public' => 1]);
         
+        $query->orWhere(new Expression("IF(type=:type, customer_id=:customer_id, null)", [
+            'type' => self::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
+        ]));
+            
+                
         $query->andFilterWhere(['like', 'name', $this->name]);
             
         $query->orderBy(['path' => SORT_ASC]);
