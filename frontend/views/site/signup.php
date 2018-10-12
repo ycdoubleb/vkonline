@@ -9,7 +9,7 @@ use yii\widgets\ActiveForm;
 
 /* @var $this View */
 /* @var $form ActiveForm */
-/* @var $model User    */
+/* @var $model User */
 
 $this->title = Yii::t('app', 'Signup');
 
