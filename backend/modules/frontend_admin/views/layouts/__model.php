@@ -22,12 +22,12 @@
     
     /**
      * 显示模态框
-     * @param {type} _this
+     * @param {String} url
      * @returns {Boolean}
      */
-    function showModal(_this){
+    function showModal(url){
         $(".myModal").html("");
-        $('.myModal').modal("show").load(_this.attr("href"));
+        $('.myModal').modal("show").load(url);
         return false;
     }
 
