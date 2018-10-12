@@ -10,12 +10,6 @@ $config = [
     'modules' => [
         
     ],
-    'as access' => [
-        'allowActions' => [
-            /* 本地开发模式下可用gii */
-            'gii/*',
-        ]
-    ],
     
 ];
 

@@ -10,6 +10,13 @@ return [
             'enableSchemaCache' => true,
             'tablePrefix' => 'vk_'   //加入前缀名称fc_
         ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => '172.16.163.111',
+            'port' => 6379,
+            'database' => 0, //'unixSocket' => '/var/run/redis/redis.sock',			
+            'password' => 'eecn.cn',
+        ],
         'mailer' => [
             'class' => 'yii\swiftmailer\Mailer',
             'viewPath' => '@common/mail',
