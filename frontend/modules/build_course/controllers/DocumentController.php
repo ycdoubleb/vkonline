@@ -60,7 +60,6 @@ class DocumentController extends Controller
         //重修课程数据里面的元素值
         foreach ($documents as &$item) {
             $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
-            $item['duration'] = DateUtil::intToTime($item['duration']);
         }
         
         //如果是ajax请求，返回json
@@ -126,7 +125,7 @@ class DocumentController extends Controller
      * 显示一个单一的 Document 模型。
      * @param string $id
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException 如果找不到模型
      */
     public function actionView($id)
     {
@@ -232,7 +231,7 @@ class DocumentController extends Controller
      * 如果找不到模型，将抛出404个HTTP异常。
      * @param string $id
      * @return Document the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws NotFoundHttpException 如果找不到模型
      */
     protected function findModel($id)
     {

@@ -11,6 +11,8 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
+use common\models\vk\Document;
+use common\models\vk\Image;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\RecentContacts;
@@ -1105,7 +1107,7 @@ class ActionUtils
         
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($model->file_id);
-        //需保存的Audio属性
+        //需保存的Document属性
         $model->duration = $uploadFile->duration;
         $model->is_publish = 1;
         /** 开启事务 */
@@ -1139,7 +1141,7 @@ class ActionUtils
         $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
         //查询实体文件
         $uploadFile = $this->findUploadfileModel($model->file_id);
-        //需保存的Video属性
+        //需保存的Document属性
         $model->duration = $uploadFile->duration;
         
         /** 开启事务 */
@@ -1168,6 +1170,103 @@ class ActionUtils
      * @throws Exception
      */
     public function deleteDocument($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 添加图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function createImage($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
+        
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Image属性
+        $model->thumb_path = $uploadFile->thumb_path;
+        $model->is_publish = 1;
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 5);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function updateImage($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Image属性
+        $model->thumb_path = $uploadFile->thumb_path;
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 5);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function deleteImage($model)
     {
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();

@@ -52,6 +52,7 @@ class DocumentSearch extends Document
         $this->user_cat_id = ArrayHelper::getValue($params, 'user_cat_id', null);    //用户分类id
         
         $query = Document::find()->from(['Document' => Document::tableName()]);
+        $this->load($params);
 
         //目录
         if($sign){

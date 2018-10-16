@@ -13,7 +13,7 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="audio-search vk-form clear-shadow vk-material"> 
+<div class="document-search vk-form clear-shadow vk-material"> 
 
     <?php $form = ActiveForm::begin([
         'action' => ['result'],

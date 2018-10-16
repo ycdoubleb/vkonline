@@ -16,13 +16,13 @@ use yii\widgets\LinkPager;
 ModuleAssets::register($this);
 GrowlAsset::register($this);
 
-$this->title = Yii::t('app', '{My}{Audio}', [
-    'My' => Yii::t('app', 'My'), 'Audio' => Yii::t('app', 'Audio')
+$this->title = Yii::t('app', '{My}{Document}', [
+    'My' => Yii::t('app', 'My'), 'Document' => Yii::t('app', 'Document')
 ]);
 
 ?>
 
-<div class="video-index vk-material main">
+<div class="document-index vk-material main">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">
@@ -118,8 +118,8 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                 ],
                 [
                     'attribute' => 'name',
-                    'header' => Yii::t('app', '{Audio}{Name}', [
-                        'Audio' => Yii::t('app', 'Audio'), 'Name' => Yii::t('app', 'Name')
+                    'header' => Yii::t('app', '{Document}{Name}', [
+                        'Document' => Yii::t('app', 'Document'), 'Name' => Yii::t('app', 'Name')
                     ]),
                     'filter' => false,
                     'headerOptions' => ['style' => 'width: 200px'],

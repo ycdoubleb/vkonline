@@ -2,7 +2,6 @@
 
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\UserCategory;
-use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\data\Pagination;
@@ -17,13 +16,13 @@ use yii\widgets\LinkPager;
 ModuleAssets::register($this);
 GrowlAsset::register($this);
 
-$this->title = Yii::t('app', '{My}{Audio}', [
-    'My' => Yii::t('app', 'My'), 'Audio' => Yii::t('app', 'Audio')
+$this->title = Yii::t('app', '{My}{Image}', [
+    'My' => Yii::t('app', 'My'), 'Image' => Yii::t('app', 'Image')
 ]);
 
 ?>
 
-<div class="audio-index vk-material main">
+<div class="image-index vk-material main">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">
@@ -65,7 +64,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move-material', 'table_name' => 'audio'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move-material', 'table_name' => 'image'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
                         'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>
@@ -101,7 +100,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                         if($model['type'] == UserCategory::TYPE_SHARING){
                             return '';
                         }else{
-                            return Html::checkbox('Audio[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
+                            return Html::checkbox('Image[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
                         }
                     }
                 ],
@@ -119,8 +118,8 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                 ],
                 [
                     'attribute' => 'name',
-                    'header' => Yii::t('app', '{Audio}{Name}', [
-                        'Audio' => Yii::t('app', 'Audio'), 'Name' => Yii::t('app', 'Name')
+                    'header' => Yii::t('app', '{Image}{Name}', [
+                        'Image' => Yii::t('app', 'Image'), 'Name' => Yii::t('app', 'Name')
                     ]),
                     'filter' => false,
                     'headerOptions' => ['style' => 'width: 200px'],
@@ -194,29 +193,29 @@ $js =
     
     //删除搜索条件
     $('.times-close').click(function(){
-        $(location).attr({'href': "../audio/index?user_cat_id={$userCatId}"});
+        $(location).attr({'href': "../image/index?user_cat_id={$userCatId}"});
     });
         
     //单击整理视频
     $("#arrange").click(function(){
         $(".vk-tabs .pull-right").removeClass("hidden");
-        $('input[name="Audio[id]"]').removeClass("hidden").prop("checked", false);
+        $('input[name="Image[id]"]').removeClass("hidden").prop("checked", false);
     });
         
     //单击取消
     $("#cancel").click(function(){
         $(".vk-tabs .pull-right").addClass("hidden");
-        $('input[name="Audio[id]"]').addClass("hidden").prop("checked", false);
+        $('input[name="Image[id]"]').addClass("hidden").prop("checked", false);
     });
         
     //单击全选
     $("#allChecked").click(function(){
-        $('input[name="Audio[id]"]').prop("checked", true);
+        $('input[name="Image[id]"]').prop("checked", true);
     });
         
     //单机全不选
     $("#noAllChecked").click(function(){
-        $('input[name="Audio[id]"]').prop("checked", false);
+        $('input[name="Image[id]"]').prop("checked", false);
     });
         
     /**
@@ -224,7 +223,7 @@ $js =
      * @param {Object} _this
      */
     window.showCatalogModal = function(_this){
-        var checkObject = $("input[name='Audio[id]']");  
+        var checkObject = $("input[name='Image[id]']");  
         var val = [];
         for(i in checkObject){
             if(checkObject[i].checked){
@@ -247,7 +246,7 @@ $js =
             if (NodeType == "INPUT") {
                 return;
             }
-            var a = $('<a href="../audio/view?id=' + key + '"' + 'target="_blank" />').get(0);
+            var a = $('<a href="../image/view?id=' + key + '"' + 'target="_blank" />').get(0);
             var e = document.createEvent('MouseEvents');
             e.initEvent('click', true, true );
             a.dispatchEvent(e);
