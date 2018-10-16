@@ -109,6 +109,13 @@
     height: 200px;
     object-fit: fill;
 }
+/*
+ * 音频样式
+ */
+.vk-audio {
+    width: 500px;
+    object-fit: fill;
+}
 /**
  * 加阴影部分
  */

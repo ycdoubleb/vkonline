@@ -10,7 +10,7 @@ use yii\web\View;
 /* @var $this View */
 /* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Select the mobile video to the directory');
+$this->title = Yii::t('app', 'Select the mobile material to the directory');
 
 ?>
 <div class="video-move main vk-modal">
@@ -79,10 +79,9 @@ $js = <<<JS
     $('#newFolder').click(function(){
         var _nodes = $("#table-fancytree").fancytree("getActiveNode");
         if(_nodes == null){
-            var _nodes = $("#table-fancytree").fancytree("getRootNode");
-            _nodes.key = 0;
+            alert('请选择父级目录');
         }
-        $.post('../video/create-catalog', {parent_id: _nodes.key, name: '新建目录'}, function(rel){
+        $.post('../arrange/create-catalog', {parent_id: _nodes.key, name: '新建目录'}, function(rel){
             if(rel['code'] == '200'){
                 _nodes.editCreateNode('child', {title: "新建目录", tooltip: '按F2键可以重命名', folder: true});   //添加子级目录
                 var _childNode = _nodes.getLastChild();   //获取新建的子级目录
@@ -105,7 +104,7 @@ $js = <<<JS
         if (_oldName == _newName || !_newName) {
             return false;
         }
-        $.post('../video/update-catalog?id=' + _id, {name: _newName}, function(rel){
+        $.post('../arrange/update-catalog?id=' + _id, {name: _newName}, function(rel){
             if(rel['code'] != '200'){
                 alert(rel['message']);
             }
@@ -114,9 +113,10 @@ $js = <<<JS
         
     //移动视频到指定目录
     var moveIds = "$move_ids";
+    var table = "$table_name";
     $('#submitsave').click(function(){
         var _nodes = $("#table-fancytree").fancytree("getActiveNode");
-        $.post('../video/move-video?move_ids=' + moveIds + '&target_id=' + _nodes.key);
+        $.post('../arrange/move-material', {table_name: table, move_ids: moveIds, target_id: _nodes.key});
     });           
         
 JS;

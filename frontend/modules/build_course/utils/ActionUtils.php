@@ -3,6 +3,7 @@
 namespace frontend\modules\build_course\utils;
 
 use common\models\User;
+use common\models\vk\Audio;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
@@ -24,7 +25,6 @@ use Yii;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
 
 
@@ -997,6 +997,103 @@ class ActionUtils
     }
     
     /**
+     * 添加音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function createAudio($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
+        
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Audio属性
+        $model->duration = $uploadFile->duration;
+        $model->is_publish = 1;
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 3);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function updateAudio($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Video属性
+        $model->duration = $uploadFile->duration;
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 3);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function deleteAudio($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
      * 创建老师操作
      * @param Teacher $model
      * @param array $post
@@ -1268,7 +1365,7 @@ class ActionUtils
      * 保存对象标签
      * @param string $objectId  对象id
      * @param array $tagArrays  标签
-     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
+     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 音频]）
      */
     protected function saveObjectTags($objectId, $tagArrays, $type = 1)
     {

@@ -91,17 +91,17 @@ $this->registerJs($format, View::POS_HEAD);
         <div role="tabpanel" class="tab-pane fade active in" id="basics" aria-labelledby="basics-tab">
             <!--所属目录-->
             <?= $form->field($model, 'user_cat_id', [
-                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-9 col-md-9\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>",  
+                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>",  
             ])->widget(DepDropdown::class, [
                 'pluginOptions' => [
                     'url' => Url::to('../user-category/search-children', false),
-                    'max_level' => 4,
+                    'max_level' => 10,
         //            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
                 ],
                 'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
                 'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
                 'itemOptions' => [
-                    'style' => 'width: 150px; display: inline-block;',
+                    'style' => 'width: 180px; display: inline-block;',
                 ],
             ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')])) ?>
 
@@ -165,7 +165,7 @@ $this->registerJs($format, View::POS_HEAD);
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
             ])) ?>
 
-             <!--标签-->
+            <!--标签-->
             <div class="form-group field-tagref-tag_id required">
                 <span class="form-must text-danger" style="left: 43px;">*</span>
                 <?= Html::label(Yii::t('app', 'Tag'), 'tagref-tag_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
@@ -273,8 +273,7 @@ $app_id = Yii::$app->id ;
 $item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
     $this->renderFile('@frontend/modules/build_course/views/video/_watermark.php')));
 $isNewRecord = $model->isNewRecord ? 1 : 0;
-$js = 
-<<<JS
+$js = <<<JS
     /**
      * 初始化百度编辑器
      */

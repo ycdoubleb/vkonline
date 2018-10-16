@@ -100,12 +100,15 @@ use yii\widgets\ActiveForm;
                 ]);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
+                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat disabled', 'target' => '_blank']);
             ?>
         </div>
         
     </div>
 
+    <!--标记搜索方式-->
+    <?= Html::hiddenInput('sign', 1); ?>
+    
     <?php ActiveForm::end(); ?>
 
 </div>

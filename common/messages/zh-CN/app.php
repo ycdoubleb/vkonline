@@ -210,6 +210,8 @@ return [
     'The video has been transcoding without repeating the transcoding.' => '该视频已经转码，无需重复转码。',
     'Select the mobile video to the directory' => '选择移动视频到目录',
     'Uploading course resources' => '课程资源上传',
+    'The audio does not exist.' => '该音频不存在。',
+    'Select the mobile material to the directory' => '选择移动素材到目录',
     
     //后台-公共配置
     'Config' => '配置',

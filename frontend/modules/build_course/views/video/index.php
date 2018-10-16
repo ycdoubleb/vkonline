@@ -60,9 +60,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['move-video'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move-material', 'table_name' => 'video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
-                        'onclick' => 'showModal($(this)); return false;'
+                        'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>
                 </span>
             </li>
@@ -157,10 +157,10 @@ $js = <<<JS
     });
         
     /**
-     * 显示模态框  
+     * 显示目录模态框  
      * @param {Object} _this
      */
-    window.showModal = function(_this){
+    window.showCatalogModal = function(_this){
         var checkObject = $("input[name='Video[id]']");  
         var val = [];
         for(i in checkObject){
@@ -169,8 +169,7 @@ $js = <<<JS
             }
         }
         if(val.length > 0){
-            $(".myModal").html("");
-            $('.myModal').modal("show").load(_this.attr("href") + "?move_ids=" + val);
+            showModal(_this.attr("href") + "&move_ids=" + val);
         }else{
             alert("请选择移动的视频");
         }
@@ -196,6 +195,7 @@ $js = <<<JS
      */
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 8;
+        console.log(target_page, maxPageNum);
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
             $('.loading-box .loading').hide();

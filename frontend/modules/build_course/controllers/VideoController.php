@@ -151,8 +151,11 @@ class VideoController extends Controller
     public function actionView($id)
     {
         $model = $this->findModel($id);
+        if($model->is_del){
+            throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+        }
         $searchModel = new VideoSearch();
-
+        
         return $this->render('view', [
             'model' => $model,  //video模型
             'dataProvider' => $searchModel->relationSearch($model->id),    //相关课程数据
@@ -200,7 +203,7 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
             if($model->is_del){
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
@@ -235,7 +238,7 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
             if($model->is_del){
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
@@ -264,7 +267,7 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == Yii::$app->user->id){
+        if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
             if($model->is_del){
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
@@ -282,121 +285,6 @@ class VideoController extends Controller
             ActionUtils::getInstance()->transcodingVideo($model);
             return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
         }
-    }
-    
-    /**
-     * 移动 现有的视频到指定的目录。
-     * 如果移动成功，浏览器将被重定向到“列表”页。
-     * @param string $move_ids   移动id
-     * @param string $target_id  目标id
-     * @return mixed
-     */
-    public function actionMoveVideo($move_ids = null, $target_id = null)
-    {
-        $searchModel = new UserCategorySearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
-        if (Yii::$app->request->isPost){
-            /** 开启事务 */
-            $trans = Yii::$app->db->beginTransaction();
-            try
-            {  
-                $move_ids = explode(',', $move_ids);
-                Video::updateAll(['user_cat_id' => $target_id], ['id' => $move_ids]);
-                $trans->commit();  //提交事务
-                Yii::$app->getSession()->setFlash('success','操作成功！');
-            }catch (Exception2 $ex) {
-                $trans ->rollBack(); //回滚事务
-                Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-            }
-            
-            return $this->redirect(['index', 'user_cat_id' => $target_id]);
-        }
-
-        return $this->renderAjax('movevideo', [
-            'move_ids' => $move_ids,    //所选的视频id
-            'dataProvider' => $this->getCatalogFramework($dataProvider->models),    //用户自定义的目录结构
-        ]);
-    }
-    
-    /**
-     * 创建 目录到指定的目录，
-     * 如果添加成功，返回json。
-     * @return json
-     */
-    public function actionCreateCatalog()
-    {
-        $is_success = false;
-        Yii::$app->getResponse()->format = 'json';
-        if (Yii::$app->request->isPost){
-            /** 开启事务 */
-            $trans = Yii::$app->db->beginTransaction();
-            try
-            {  
-                $model = new UserCategory([
-                    'type' => UserCategory::TYPE_MYVIDOE, 
-                    'created_by' => \Yii::$app->user->id
-                ]);
-                $model->parent_id = ArrayHelper::getValue(Yii::$app->request->post(), 'parent_id');
-                $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
-                if($model->save()){
-                    $model->updateParentPath();
-                    UserCategory::invalidateCache();
-                }
-                if($model->level <= 4){
-                    $trans->commit();  //提交事务
-                    $is_success = true;
-                    $message = '添加成功。';
-                }else{
-                    $message = '添加失败::目录结构不能超过4级。';
-                }
-            }catch (Exception $ex) {
-                $trans ->rollBack(); //回滚事务
-                $message = '添加失败：' . $ex->getMessage();
-            }
-        }
-        
-        return [
-            'code' => $is_success ? 200 : 404,
-            'data' => ['id' => $model->id, 'name' => $model->name],
-            'message' => $message
-        ];
-    }
-    
-    /**
-     * 更新 选中目录，
-     * 如果添加成功，返回json。
-     * @param integer $id 
-     * @return json
-     */
-    public function actionUpdateCatalog($id)
-    {
-        $is_success = false;
-        Yii::$app->getResponse()->format = 'json';
-        if (Yii::$app->request->isPost){
-            /** 开启事务 */
-            $trans = Yii::$app->db->beginTransaction();
-            try
-            {  
-                $model = UserCategory::findOne($id);
-                $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
-                if($model->save(false, ['name'])){
-                    $trans->commit();  //提交事务
-                    UserCategory::invalidateCache();
-                    $is_success = true;
-                    $message = '修改成功。';
-                }
-            }catch (Exception $ex) {
-                $trans ->rollBack(); //回滚事务
-                $message = '修改失败：' . $ex->getMessage();
-            }
-        }
-        
-        return [
-            'code' => $is_success ? 200 : 404,
-            'data' => ['id' => $model->id, 'name' => $model->name],
-            'message' => $message
-        ];
     }
     
     /**
@@ -501,16 +389,22 @@ class VideoController extends Controller
     protected function getSameLevelCats($categoryId)
     {
         if($categoryId != null){
-            $categoryMap = UserCategory::getCatChildren($categoryId);
+            $categoryMap = UserCategory::getCatChildren($categoryId, false, false, false, true);
         }else{
-            $categoryMap = UserCategory::getCatsByLevel(1, null);
+            $categoryMap = UserCategory::getCatsByLevel(1, null, false, false, true);
         }
         
         $categorys = [];
         ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
         foreach ($categoryMap as $category) {
+            //如果目录类型是私人并且是非公开目录，跳过本次循环
+            if($category['type'] == UserCategory::TYPE_PRIVATE && !$category['is_public']){
+                if($category['created_by'] != \Yii::$app->user->id) continue;
+            }
+            
             $categorys[] = [
                 'id' => $category['id'],
+                'type' => $category['type'],
                 'name' => $category['name'],
                 'is_public' => $category['is_public'],
             ];
