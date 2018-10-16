@@ -271,7 +271,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 //加载 ITEM_DOM 模板
 $item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/video/_watermark.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/____watermark_dom.php')));
 $isNewRecord = $model->isNewRecord ? 1 : 0;
 $js = <<<JS
     /**
@@ -398,6 +398,7 @@ $js = <<<JS
             }
         });
     });
+        
     //初始化水印组件
     window.watermark = new youxueba.Watermark({container: '#preview'});
     /**

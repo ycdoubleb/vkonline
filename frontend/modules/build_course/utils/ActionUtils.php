@@ -1094,6 +1094,103 @@ class ActionUtils
     }
     
     /**
+     * 添加文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function createDocument($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
+        
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Audio属性
+        $model->duration = $uploadFile->duration;
+        $model->is_publish = 1;
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 4);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function updateDocument($model, $post)
+    {
+        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+        $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
+        //查询实体文件
+        $uploadFile = $this->findUploadfileModel($model->file_id);
+        //需保存的Video属性
+        $model->duration = $uploadFile->duration;
+        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 4);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function deleteDocument($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            if($model->update(true, ['is_del'])){
+                
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
      * 创建老师操作
      * @param Teacher $model
      * @param array $post

@@ -48,7 +48,7 @@ class AudioController extends Controller
     }
 
     /**
-     * 列出所有 VideoSearch 模型。
+     * 列出所有 AudioSearch 模型。
      * @return mixed
      */
     public function actionIndex()
@@ -62,7 +62,6 @@ class AudioController extends Controller
             $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
             $item['duration'] = DateUtil::intToTime($item['duration']);
         }
-        
         
         //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
@@ -96,7 +95,7 @@ class AudioController extends Controller
     }
     
     /**
-     * 列出所有 VideoSearch 模型，搜索后的结果。
+     * 列出所有 AudioSearch 模型，搜索后的结果。
      * @return string|json
      */
     public function actionResult()
@@ -124,7 +123,7 @@ class AudioController extends Controller
     }
 
     /**
-     * 显示一个单一的 Video 模型。
+     * 显示一个单一的 Audio 模型。
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException 如果找不到模型
@@ -143,7 +142,7 @@ class AudioController extends Controller
     }
 
     /**
-     * 创建一个新的音频模型。
+     * 创建 一个新的音频模型。
      * 如果创建成功，浏览器将被重定向到“查看”页。
      * @return mixed
      */
@@ -169,7 +168,7 @@ class AudioController extends Controller
     }
 
     /**
-     * 更新现有音频模型。
+     * 更新 现有音频模型。
      * 如果更新成功，浏览器将被重定向到“查看”页。
      * @param string $id
      * @return mixed
@@ -202,7 +201,7 @@ class AudioController extends Controller
     }
 
     /**
-     * 删除现有音频模型。
+     * 删除 现有音频模型。
      * 如果删除成功，浏览器将被重定向到“索引”页。
      * @param string $id
      * @return mixed

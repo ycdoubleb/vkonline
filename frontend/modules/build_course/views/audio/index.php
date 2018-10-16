@@ -127,7 +127,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/audio/_list.php')));
+    $this->renderFile('@frontend/modules/build_course/views/audio/____list_dom.php')));
 $js = <<<JS
     
     var is_arrange = false;   //是否在整理状态

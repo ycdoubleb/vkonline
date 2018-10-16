@@ -83,7 +83,7 @@ class AudioSearch extends Audio
         //如果目录类型是共享类型则显示共享文件
         $query->andFilterWhere(['OR', 
             ['Audio.created_by' => \Yii::$app->user->id], 
-            new Expression("IF(UserCategory.type=:type, Audio.customer_id=:customer_id, null)", [
+            new Expression("IF(UserCategory.type=:type, Audio.customer_id=:customer_id AND Audio.is_del = 0, null)", [
                 'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
             ])
         ]);
@@ -93,7 +93,7 @@ class AudioSearch extends Audio
         //查询总数
         $totalCount = $query->count('id');
         //添加字段
-        $query->addSelect([
+        $query->select([
             'Audio.id', 'Audio.user_cat_id', 'Audio.name', 'Audio.duration', 'Audio.created_at', 
             'Audio.is_publish', 'Audio.level', 'UserCategory.type', 'User.nickname'
         ]);

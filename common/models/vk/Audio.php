@@ -64,6 +64,7 @@ class Audio extends ActiveRecord
     public function rules()
     {
         return [
+            [['user_cat_id', 'name'], 'required'],
             [['user_cat_id', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['des'], 'string'],

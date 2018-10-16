@@ -2,10 +2,13 @@
 
 namespace common\models\vk;
 
+use common\models\User;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\Html;
 
 /**
  * This is the model class for table "{{%document}}".
@@ -30,7 +33,11 @@ use yii\db\ActiveRecord;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  *
- * @property Uploadfile $file
+ * @property UserCategory $userCategory 获取用户自定义分类
+ * @property Customer $customer 获取客户
+ * @property User $createdBy 获取创建者
+ * @property Uploadfile $file   获取上传文件
+ * @property TagRef[] $tagRefs 获取标签
  */
 class Document extends ActiveRecord
 {
@@ -43,12 +50,21 @@ class Document extends ActiveRecord
     }
 
     /**
+     * @inheritdoc
+     */
+    public function behaviors() {
+        return [
+            TimestampBehavior::class
+        ];
+    }
+    
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id'], 'required'],
+            [['user_cat_id', 'name'], 'required'],
             [['user_cat_id', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['des'], 'string'],
@@ -87,11 +103,59 @@ class Document extends ActiveRecord
         ];
     }
 
+    public function beforeSave($insert) {
+        if (parent::beforeSave($insert)) {
+            if (!$this->id) {
+                $this->id = md5(time() . rand(1, 99999999));
+            }
+            $this->des = Html::encode($this->des);
+            
+            return true;
+        }
+
+        return false;
+    }
+
+    public function afterFind() {
+        $this->des = Html::decode($this->des);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getUserCategory()
+    {
+        return $this->hasOne(UserCategory::class, ['id' => 'user_cat_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getCustomer()
+    {
+        return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getCreatedBy() {
+        return $this->hasOne(User::class, ['id' => 'created_by']);
+    }
+    
     /**
      * @return ActiveQuery
      */
     public function getFile()
     {
         return $this->hasOne(Uploadfile::className(), ['id' => 'file_id']);
+    }
+    
+    /**
+     * @return ActiveQuery
+     */
+    public function getTagRefs() {
+        return $this->hasMany(TagRef::class, ['object_id' => 'id'])
+            ->where(['is_del' => 0])->with('tags');
     }
 }

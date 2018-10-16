@@ -1,53 +1,151 @@
 <?php
 
+use common\components\aliyuncs\Aliyun;
+use common\models\vk\Document;
+use common\models\vk\UserCategory;
+use frontend\assets\ClipboardAssets;
+use frontend\modules\build_course\assets\ModuleAssets;
+use kartik\growl\GrowlAsset;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\View;
 use yii\widgets\DetailView;
 
-/* @var $this yii\web\View */
-/* @var $model common\models\vk\Document */
+/* @var $this View */
+/* @var $model Document */
 
-$this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Documents'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
+ModuleAssets::register($this);
+GrowlAsset::register($this);
+ClipboardAssets::register($this);
+
+$this->title = Yii::t('app', "{Document}{Detail}：{$model->name}", [
+    'Document' => Yii::t('app', 'Document'), 'Detail' => Yii::t('app', 'Detail')
+]);
+
 ?>
-<div class="document-view">
+<div class="document-view main">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <!--页面标题-->
+    <div class="vk-title">
+        <span>
+            <?= $this->title ?>
+        </span>
+    </div>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
+    <!--基本信息-->
+    <div class="vk-panel set-bottom">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', '{Basic}{Info}',[
+                    'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
+                ]) ?>
+            </span>
+            <div class="btngroup pull-right">
+                <?php if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
+                    echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
+                        ['class' => 'btn btn-primary btn-flat']) . '&nbsp;';
+                    echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
+                        'class' => 'btn btn-danger btn-flat', 
+                        'data' => [
+                            'pjax' => 0, 
+                            'confirm' => Yii::t('app', "{Are you sure}{Delete}【{$model->name}】{Document}", [
+                                'Are you sure' => Yii::t('app', 'Are you sure '), 'Delete' => Yii::t('app', 'Delete'), 
+                                'Document' => Yii::t('app', 'Document')
+                            ]),
+                            'method' => 'post',
+                        ],
+                    ]);
+                }?>
+            </div>
+        </div>
+    
+        <?= DetailView::widget([
+            'model' => $model,
+            'options' => ['class' => 'table detail-view vk-table'],
+            'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
+            'attributes' => [
+                [
+                    'attribute' => 'id',
+                    'format' => 'raw',
+                    'value' => $model->id . Html::button('复制ID', [
+                        'id' => 'copy_' . $model->id,
+                        'class' => 'btn btn-default btn-sm',
+                        'data-clipboard-text' => $model->id,
+                        'style' => 'margin-left: 15px;',
+                        'onclick' => 'copyVideoId($(this))'
+                    ]),
+                ],
+                [
+                    'attribute' => 'user_cat_id',
+                    'label' => Yii::t('app', 'Catalog'),
+                    'format' => 'raw',
+                    'value' => !empty($model->user_cat_id) ? $path : null,
+                ],
+                [
+                    'attribute' => 'name',
+                    'format' => 'raw',
+                    'value' => $model->name,
+                ],
+                [
+                    'label' => Yii::t('app', 'Des'),
+                    'format' => 'raw',
+                    'value' => "<div class=\"detail-des\">". str_replace(array("\r\n", "\r", "\n"), "<br/>", $model->des) ."</div>",
+                ],
+                [
+                    'label' => Yii::t('app', 'Tag'),
+                    'value' => count($model->tagRefs) > 0 ? 
+                        implode('、', array_unique(ArrayHelper::getColumn(ArrayHelper::getColumn($model->tagRefs, 'tags'), 'name'))) : null,
+                ],
+                [
+                    'attribute' => 'created_by',
+                    'format' => 'raw',
+                    'value' => !empty($model->created_by) ? $model->createdBy->nickname : null,
+                ],
+                [
+                    'attribute' => 'created_at',
+                    'format' => 'raw',
+                    'value' => date('Y-m-d H:i', $model->created_at),
+                ],
+                [
+                    'attribute' => 'updated_at',
+                    'format' => 'raw',
+                    'value' => date('Y-m-d H:i', $model->updated_at),
+                ],
             ],
         ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'file_id',
-            'customer_id',
-            'user_cat_id',
-            'name',
-            'duration',
-            'content_level',
-            'des:ntext',
-            'level',
-            'is_recommend',
-            'is_publish',
-            'is_official',
-            'zan_count',
-            'favorite_count',
-            'is_del',
-            'sort_order',
-            'created_by',
-            'created_at',
-            'updated_at',
-        ],
-    ]) ?>
+    
+    </div>
 
 </div>
+
+<?php
+$js = <<<JS
+    /**
+     * 点击复制视频id
+     * @param {obj} _this   目标对象  
+     */
+    window.copyVideoId = function(_this){ 
+        //如果ClipboardJS已存在，则先清除
+        if(window.clipboard){
+            window.clipboard.destroy();
+        }
+        window.clipboard = new ClipboardJS('#' + _this.attr('id'));
+        clipboard.on('success', function(e) {
+            $.notify({
+                message: '复制成功',
+            },{
+                type: "success",
+            });
+        });
+        clipboard.on('error', function(e) {
+            $.notify({
+                message: '复制失败',
+            },{
+                type: "danger",
+            });
+        });              
+    }     
+        
+JS;
+    $this->registerJs($js,  View::POS_READY);
+?>

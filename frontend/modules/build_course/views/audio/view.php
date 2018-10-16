@@ -2,6 +2,7 @@
 
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\Audio;
+use common\models\vk\UserCategory;
 use frontend\assets\ClipboardAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
@@ -40,7 +41,7 @@ $this->title = Yii::t('app', "{Audio}{Detail}：{$model->name}", [
                 ]) ?>
             </span>
             <div class="btngroup pull-right">
-                <?php if($model->created_by == Yii::$app->user->id){
+                <?php if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']) . '&nbsp;';
                     echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [

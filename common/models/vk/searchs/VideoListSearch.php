@@ -131,7 +131,7 @@ class VideoListSearch extends Video
         //如果目录类型是共享类型则显示共享文件
         self::$query->andFilterWhere(['OR', 
             ['Video.created_by' => \Yii::$app->user->id], 
-            new Expression("IF(UserCategory.type=:type, Video.customer_id=:customer_id, null)", [
+            new Expression("IF(UserCategory.type=:type, Video.customer_id=:customer_id AND Video.is_del = 0, null)", [
                 'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
             ])
         ]);
