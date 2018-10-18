@@ -41,17 +41,6 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'enableStrictParsing' => true,
-            'rules' => [
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/users'],
-                    'extraPatterns' => [
-                        'GET login' => 'login',
-                        'GET signup-test' => 'signup-test',
-                    ]
-                ],
-            ],
         ],
     ],
     'modules' => [

@@ -1,20 +1,16 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 namespace apiend\controllers;
 
 use Yii;
+use yii\base\Controller;
 use yii\base\ErrorException;
 use yii\base\Event;
 use yii\base\UserException;
 use yii\db\Exception;
 use yii\filters\auth\QueryParamAuth;
-use yii\rest\ActiveController;
+use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
 use yii\web\Response;
@@ -24,22 +20,34 @@ use yii\web\Response;
  *
  * @author Administrator
  */
-class ApiController extends ActiveController {
-
+class ApiController extends Controller {
+    
+    /* 关掉 csrf 认证 */
+    public $enableCsrfValidation = false;
+    
     /**
      * 使用令牌认证
      * @return type
      */
     public function behaviors() {
         $behaviors = parent::behaviors();
+        /* 使用令牌访问规则 */
         $behaviors['authenticator'] = [
             'class' => QueryParamAuth::className(),
             'optional' => [
+                //'login',  //设置login接口可忽视该规则
+            ],
+        ];
+        /* 路径规则 */
+        $behaviors['verbs'] = [
+            'class' => VerbFilter::className(),
+            'actions' => [
+                //'login' => ['post'],  设置login接口使用POST提交
             ],
         ];
         return $behaviors;
     }
-    
+
     public function beforeAction($action) {
         //绑定beforeSend事件，更改数据输出格式
         Yii::$app->getResponse()->on(Response::EVENT_BEFORE_SEND, [$this, 'beforeSend']);
@@ -129,13 +137,13 @@ class ApiController extends ActiveController {
         }
         $response = [
             'msg' => $exception->getMessage(),
-            'code' => $exception->statusCode,
+            'code' => property_exists($exception,'statusCode') ? $exception->statusCode : 500,
         ];
         $array = [
             'name' => ($exception instanceof Exception2 || $exception instanceof ErrorException) ? $exception->getName() : 'Exception',
         ];
         if ($exception instanceof HttpException) {
-            $array['status'] = $exception->statusCode;
+            $array['status'] = property_exists($exception,'statusCode') ? $exception->statusCode : 500;
         }
         if (YII_DEBUG) {
             $array['type'] = get_class($exception);

@@ -20,16 +20,31 @@ class Response extends ApiResponse{
     // 账号 CODE 值范围 = 10100-10199
     // 
     //--------------------------------------------------------------------------------------------------------------
-    /* 登录验证失败 */
+    /** 登录验证失败 */
     const CODE_USER_AUTH_FAILED = '10100';
+    /** 该用户名已经注册 */
+    const CODE_USER_USERNAME_HAS_REGISTERED = '10101';
+    /** 该手机号已经注册 */
+    const CODE_USER_PHONE_HAS_REGISTERED = '10102';
+    /** 注册失败 */
+    const CODE_USER_REGISTER_FAILED = '10103';
+    /** 第三方账号已存在 */
+    const CODE_USER_AUTH_ACCOUNT_EXISTS = '10104';
     
     
     //--------------------------------------------------------------------------------------------------------------
     //
-    // 账号 CODE 值范围 = 10100-10199
+    // SMS CODE 值范围 = 10200-10299
     // 
     //--------------------------------------------------------------------------------------------------------------
-    
+    /** 验证码不匹对 */
+    const CODE_SMS_AUTH_FAILED = '10200';
+    /** 验证码已失效 */
+    const CODE_SMS_INVALID = '10201';
+    /** 发送失败 */
+    const CODE_SMS_SEND_FAILED = '10202';
+    /** 找不到对应模板 */
+    const CODE_SMS_TEMPLATE_NOT_FOUND = '10203';
     
     //--------------------------------------------------------------------------------------------------------------
     //
@@ -44,6 +59,16 @@ class Response extends ApiResponse{
         return parent::getCodeMap() + [
             /* USER */
             self::CODE_USER_AUTH_FAILED => '登录验证失败',
+            self::CODE_USER_USERNAME_HAS_REGISTERED => '该用户名已经注册',
+            self::CODE_USER_PHONE_HAS_REGISTERED => '该手机号已经注册',
+            self::CODE_USER_REGISTER_FAILED => '注册失败',
+            self::CODE_USER_AUTH_ACCOUNT_EXISTS => '第三方账号已存在',
+            
+            /* SMS */
+            self::CODE_SMS_AUTH_FAILED => '验证码不匹对',
+            self::CODE_SMS_INVALID => '验证码已失效',
+            self::CODE_SMS_SEND_FAILED => '发送失败',
+            self::CODE_SMS_TEMPLATE_NOT_FOUND => '找不到对应模板',
         ];
     }
 }
