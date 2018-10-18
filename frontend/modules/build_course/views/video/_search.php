@@ -144,7 +144,7 @@ $this->registerJs($format, View::POS_HEAD);
                     'change' => 'function(){ submitForm(); }'
                 ]
             ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
-                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
             ]))
             ?>
 

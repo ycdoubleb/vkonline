@@ -66,7 +66,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move-material', 'table_name' => 'video'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move', 'table_name' => 'video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
                         'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>

@@ -64,7 +64,11 @@ class Audio extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_cat_id', 'name'], 'required'],
+            [['user_cat_id'], 'checkUserCategoryType'],
+            [['name'], 'required', 'message' => Yii::t('app', "{Audio}{Name}{Can't be empty}", [
+                'Audio' => Yii::t('app', 'Audio'), 'Name' => Yii::t('app', 'Name'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ])],
             [['user_cat_id', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
             [['des'], 'string'],
@@ -75,6 +79,26 @@ class Audio extends ActiveRecord
         ];
     }
 
+    /**
+     * 检验素材文件是否为共享目录
+     * @param string $attribute     user_cat_id
+     * @param string $params
+     */
+    public function checkUserCategoryType($attribute)
+    {
+        $oldAttribute = $this->getOldAttribute($attribute); 
+        $newAttribute = $this->getAttribute($attribute); 
+        $oldCategoryModel = UserCategory::getCatById($oldAttribute);
+        $newCategoryModel = UserCategory::getCatById($newAttribute);
+        if($oldAttribute != null && $newAttribute > 0){
+            if($oldCategoryModel->type == UserCategory::TYPE_SHARING && $newCategoryModel->type != UserCategory::TYPE_SHARING){
+                $this->addError($attribute, '“共享文件”不能移动到非共享目录下。');  
+                return false; 
+            }
+        }
+        return true; 
+    }
+    
     /**
      * {@inheritdoc}
      */

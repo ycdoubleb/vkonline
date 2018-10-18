@@ -60,7 +60,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move-material', 'table_name' => 'video'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move', 'table_name' => 'video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
                         'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>
@@ -195,7 +195,6 @@ $js = <<<JS
      */
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 8;
-        console.log(target_page, maxPageNum);
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
             $('.loading-box .loading').hide();

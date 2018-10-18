@@ -16,3 +16,18 @@
        </div>
     </div> 
 </div>
+
+<script type="text/javascript">
+    
+    /**
+     * 显示模态框
+     * @param {String} url  链接
+     * @returns {Boolean}
+     */
+    function showModal(url){
+        $(".myModal").html("");
+        $('.myModal').modal("show").load(url);
+        return false;
+    }
+  
+</script>

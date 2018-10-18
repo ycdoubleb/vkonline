@@ -432,9 +432,9 @@ textarea {
     white-space: inherit !important;
 }
 .vk-table .detail-des {
-    min-height: 63px;
-    display:table-cell;
-    vertical-align:middle; 
+    min-height: 80px;
+    display: flex;
+    align-items: center;
 }
 .vk-table > thead > tr > th,
 .vk-table > thead > tr > td,

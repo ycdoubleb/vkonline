@@ -45,7 +45,6 @@ UeditorAsset::register($this);
         'pluginOptions' => [
             'url' => Url::to('../user-category/search-children', false),
             'max_level' => 10,
-//            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
         ],
         'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
         'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),

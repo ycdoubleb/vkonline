@@ -6,7 +6,6 @@ use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\CustomerWatermark;
-use common\models\vk\searchs\UserCategorySearch;
 use common\models\vk\searchs\VideoListSearch;
 use common\models\vk\searchs\VideoSearch;
 use common\models\vk\TagRef;
@@ -15,14 +14,10 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
-use common\utils\StringUtil;
-use Exception;
 use frontend\modules\build_course\utils\ActionUtils;
-use frontend\modules\build_course\utils\ImportUtils;
-use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\data\ArrayDataProvider;
-use yii\db\Exception as Exception2;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -30,7 +25,6 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-
 
 
 /**
@@ -83,7 +77,7 @@ class VideoController extends Controller
         }
         
         //如果是ajax请求，返回json
-        if(\Yii::$app->request->isAjax){
+        if(Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
             try
             { 
@@ -95,7 +89,7 @@ class VideoController extends Controller
                     ],
                     'message' => '请求成功！',
                 ];
-            }catch (Exception2 $ex) {
+            }catch (Exception $ex) {
                 return [
                     'code'=> 404,
                     'data' => [],
@@ -339,7 +333,7 @@ class VideoController extends Controller
         $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Watermark.file_id AND Uploadfile.is_del = 0)');
         //条件
         $query->where([
-            'Watermark.customer_id' => \Yii::$app->user->identity->customer_id,
+            'Watermark.customer_id' => Yii::$app->user->identity->customer_id,
             'Watermark.is_del' => 0,
         ]);
         $query->andFilterWhere(['Watermark.id' => $cw_id]);
@@ -399,7 +393,7 @@ class VideoController extends Controller
         foreach ($categoryMap as $category) {
             //如果目录类型是私人并且是非公开目录，跳过本次循环
             if($category['type'] == UserCategory::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != \Yii::$app->user->id) continue;
+                if($category['created_by'] != Yii::$app->user->id) continue;
             }
             
             $categorys[] = [
@@ -430,30 +424,5 @@ class VideoController extends Controller
         }
         
         return $path;
-    }
-    
-    /**
-     * 递归生成目录框架
-     * @param array $dataProvider   目录
-     * @param integer $parent_id    上一级id
-     * @return array
-     */
-    protected function getCatalogFramework($dataProvider, $parent_id = 0)
-    {
-        $dataCatalog = [];
-        ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
-        foreach($dataProvider as $_data){
-            if($_data->parent_id == $parent_id){
-                $item = [
-                    'title'=> $_data->name,
-                    'key' => $_data->id,
-                    'folder' => true,
-                ];
-                $item['children'] = $this->getCatalogFramework($dataProvider, $_data->id);
-                $dataCatalog[] = $item;
-            }
-        }
-        
-        return $dataCatalog;
     }
 }

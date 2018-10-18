@@ -91,12 +91,12 @@ $this->registerJs($format, View::POS_HEAD);
         <div role="tabpanel" class="tab-pane fade active in" id="basics" aria-labelledby="basics-tab">
             <!--所属目录-->
             <?= $form->field($model, 'user_cat_id', [
-                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>",  
+                'template' => "<span class=\"form-must text-danger\">*</span>"
+                . "{label}\n<div class=\"col-lg-11 col-md-11\">{input}</div>\n<div class=\"col-lg-9 col-md-9\">{error}</div>",  
             ])->widget(DepDropdown::class, [
                 'pluginOptions' => [
                     'url' => Url::to('../user-category/search-children', false),
                     'max_level' => 10,
-        //            'onChangeEvent' => new JsExpression('function(){ submitForm(); }')
                 ],
                 'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
                 'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
@@ -158,7 +158,8 @@ $this->registerJs($format, View::POS_HEAD);
 
             <!--视频名称-->
             <?= $form->field($model, 'name', [
-                'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
+                'template' => "<span class=\"form-must text-danger\">*</span>"
+                . "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
             ])->textInput([
                 'placeholder' => '请输入...'
             ])->label(Yii::t('app', '{Video}{Name}', [

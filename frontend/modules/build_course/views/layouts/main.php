@@ -21,8 +21,8 @@ $toolHtml = '';
 $moduleId = Yii::$app->controller->module->id;
 $controllerId = Yii::$app->controller->id;
 $actionId = Yii::$app->controller->action->id;
-//非管理员隐藏按钮
-$hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]);
+//是否为管理员用户
+$isAdminUser = CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id);
 /**
  * 子菜单导航
  * $menuItems = [
@@ -33,7 +33,7 @@ $hidden = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]);
  *          label => 菜单名,
  *          url => 菜单链接,
  *          icons => 图标,
- *          condition => 是否隐藏,
+ *          condition => 条件,
  *          options => 菜单配置 
  *      ]
  * ]
@@ -117,7 +117,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Survey'),
             'url' => ['/admin_center/default/index'],
             'icons' => null, 
-            'condition' => $hidden,
+            'condition' => $isAdminUser,
             'options' => ['class' => "links"]
         ],
         [
@@ -127,7 +127,7 @@ $menuItems = [
             'label' => Yii::t('app', 'User'),
             'url' => ['/admin_center/user/index'],
             'icons' => null, 
-            'condition' => $hidden,
+            'condition' => $isAdminUser,
             'options' => ['class' => "links"]
         ],
         [
@@ -137,7 +137,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Watermark'),
             'url' => ['/admin_center/watermark/index'],
             'icons' => null, 
-            'condition' => $hidden,
+            'condition' => $isAdminUser,
             'options' => ['class' => "links"]
         ],
         [
@@ -159,7 +159,17 @@ $menuItems = [
 //            'icons' => null, 
 //            'condition' => $hidden,
 //            'options' => ['class' => "links"]
-//        ]
+//        ],
+        [
+            'module' => 'admin_center',
+            'controller' => 'log',
+            'action' => 'index',
+            'label' => Yii::t('app', 'Log'),
+            'url' => ['/admin_center/log/index'],
+            'icons' => null, 
+            'condition' => true,
+            'options' => ['class' => 'links']
+        ],
     ]
 ];
 $id = Yii::$app->user->id;

@@ -69,8 +69,8 @@ $this->title = Yii::t('app', '{Add}{helpMan}',[
                             'selectOptions' => ['class' => 'text-success'],
                             'unselectOptions' => ['class' => 'text-danger'],
                         ],
-                    ])->label(Yii::t(null, '{Add}{People}',[
-                        'Add'=>Yii::t('app', 'Add'), 'People'=> Yii::t('app', 'People')
+                    ])->label(Yii::t(null, '{Add}{Personnel}',[
+                        'Add'=>Yii::t('app', 'Add'), 'Personnel'=> Yii::t('app', 'Personnel')
                     ])) ?>
 
                     <?= $form->field($model, 'privilege', [

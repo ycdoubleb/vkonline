@@ -308,7 +308,7 @@ class UserCategoryController extends GridViewChangeSelfController
         Yii::$app->getResponse()->format = 'json';
         return [
             'result' => 1,
-            'data' => UserCategory::getCatChildren($id),
+            'data' => $this->getSameLevelCats($id),
         ];
     }
     
@@ -340,5 +340,26 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 返回用户当前分类同级的所有分类
+     * @param integer $categoryId  
+     * @return array
+     */
+    protected function getSameLevelCats($categoryId)
+    {
+        $categoryMap = UserCategory::getCatChildren($categoryId, false, false, false, true);
+        $categorys = [];
+        ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
+        foreach ($categoryMap as $category) {
+            //如果目录类型是私人并且是非公开目录，跳过本次循环
+            if($category['type'] == UserCategory::TYPE_PRIVATE && !$category['is_public']){
+                if($category['created_by'] != \Yii::$app->user->id) continue;
+            }
+            $categorys[] = $category;
+        }
+        
+        return $categorys;
     }
 }

@@ -33,7 +33,7 @@ $this->title = Yii::t('app', "{Document}{Detail}：{$model->name}", [
     </div>
 
     <!--基本信息-->
-    <div class="vk-panel set-bottom">
+    <div class="vk-panel">
         <div class="title">
             <span>
                 <?= Yii::t('app', '{Basic}{Info}',[
@@ -114,6 +114,18 @@ $this->title = Yii::t('app', "{Document}{Detail}：{$model->name}", [
             ],
         ]) ?>
     
+    </div>
+    
+    <!--预览-->
+    <div class="vk-panel set-bottom">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', 'Preview') ?>
+            </span>
+        </div>
+        
+        <iframe src="http://eezxyl.gzedu.com/?furl=<?= Aliyun::absolutePath($model->file->oss_key) ?>" width="100%" height="700" style="border: none"></iframe>
+        
     </div>
 
 </div>

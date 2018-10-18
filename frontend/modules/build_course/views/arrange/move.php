@@ -116,7 +116,7 @@ $js = <<<JS
     var table = "$table_name";
     $('#submitsave').click(function(){
         var _nodes = $("#table-fancytree").fancytree("getActiveNode");
-        $.post('../arrange/move-material', {table_name: table, move_ids: moveIds, target_id: _nodes.key});
+        $.post('../arrange/move', {table_name: table, move_ids: moveIds, target_id: _nodes.key});
     });           
         
 JS;

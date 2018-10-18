@@ -2,10 +2,12 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\models\vk\Log;
 use common\models\vk\searchs\UserCategorySearch;
 use common\models\vk\UserCategory;
 use Yii;
 use yii\db\Exception;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -45,7 +47,7 @@ class ArrangeController extends Controller
      * 列出所有 UserCategorySearch 模型。
      * @return mixed
      */
-    public function actionMoveMaterial()
+    public function actionMove()
     {
         //所有参数
         $params = array_merge(Yii::$app->request->getQueryParams(), Yii::$app->request->post());
@@ -53,9 +55,11 @@ class ArrangeController extends Controller
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search($params);
         
+        $is_success = true;
         $table_name = ArrayHelper::getValue($params, 'table_name');   //表名
         $move_ids = ArrayHelper::getValue($params, 'move_ids'); //移动id
         $target_id = ArrayHelper::getValue($params, 'target_id'); //目标id
+        $datas = [];
         
         if (Yii::$app->request->isPost){
             /** 开启事务 */
@@ -63,9 +67,42 @@ class ArrangeController extends Controller
             try
             {  
                 $move_ids = explode(',', $move_ids);
-                Yii::$app->db->createCommand()->update("{{%$table_name}}", ['user_cat_id' => $target_id], ['id' => $move_ids])->execute();
-                $trans->commit();  //提交事务
-                Yii::$app->getSession()->setFlash('success','操作成功！');
+                //获取所有需要移动的素材
+                $moveMaterials = (new Query())->select(['user_cat_id', 'name'])->from("{{%$table_name}}")->where(['id' => $move_ids])->all();
+                $targetCategoryModel = UserCategory::getCatById($target_id);   //目标目录model
+                //循环判断需要移动的素材是否存在共享类型
+                foreach ($moveMaterials as $index => $material) {
+                    $moveCategoryModel = UserCategory::getCatById($material['user_cat_id']);    //移动的素材目录model
+                    if($moveCategoryModel != null){
+                        if($moveCategoryModel->type == UserCategory::TYPE_SHARING && $targetCategoryModel->type != UserCategory::TYPE_SHARING){
+                            $is_success = false;
+                            break;
+                        }else{
+                            $datas[] = [
+                                'material_name' => $material['name'],
+                                'old_parent_path' => $moveCategoryModel->getFullPath(),
+                                'new_parent_path' => $targetCategoryModel->getFullPath(),
+                            ];
+                        }
+                    }else{
+                        $datas[] = [
+                            'material_name' => $material['name'],
+                            'old_parent_path' => '根目录',
+                            'new_parent_path' => $targetCategoryModel->getFullPath(),
+                        ];
+                    }
+                }
+                //成功的情况下提交事务
+                if($is_success){
+                    Yii::$app->db->createCommand()->update("{{%$table_name}}", ['user_cat_id' => $target_id], ['id' => $move_ids])->execute();
+                    $trans->commit();  //提交事务
+                    //保存日志
+                    Log::savaLog('素材', '____material_move', ['dataProvider' => $datas]);
+                    
+                    Yii::$app->getSession()->setFlash('success','操作成功。');
+                }else{
+                    Yii::$app->getSession()->setFlash('error','操作失败::“共享文件”不能移动到非共享目录下');
+                }
             }catch (Exception2 $ex) {
                 $trans ->rollBack(); //回滚事务
                 Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
@@ -74,7 +111,7 @@ class ArrangeController extends Controller
             return $this->redirect(["$table_name/index", 'user_cat_id' => $target_id]);
         }
 
-        return $this->renderAjax('move-material', [
+        return $this->renderAjax('move', [
             'table_name' => $table_name,    //表名
             'move_ids' => $move_ids,    //所选移动id
             'dataProvider' => UserCategory::getUserCatListFramework($dataProvider->models),    //用户自定义的目录结构
@@ -95,7 +132,10 @@ class ArrangeController extends Controller
             $trans = Yii::$app->db->beginTransaction();
             try
             {  
-                $model = new UserCategory(['created_by' => \Yii::$app->user->id]);
+                $model = new UserCategory([
+                    'customer_id' => Yii::$app->user->identity->customer_id,
+                    'created_by' => Yii::$app->user->id
+                ]);
                 $model->parent_id = ArrayHelper::getValue(Yii::$app->request->post(), 'parent_id');
                 $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
                 if(UserCategory::getCatById($model->parent_id)->type == UserCategory::TYPE_SYSTEM){

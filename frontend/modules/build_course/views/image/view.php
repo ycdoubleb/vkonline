@@ -116,6 +116,20 @@ $this->title = Yii::t('app', "{Image}{Detail}：{$model->name}", [
     
     </div>
 
+    <!--预览-->
+    <div class="vk-panel set-bottom">
+        <div class="title">
+            <span>
+                <?= Yii::t('app', 'Preview') ?>
+            </span>
+        </div>
+        
+        <div class="set-padding">
+            <img src="<?= Aliyun::absolutePath($model->file->oss_key) ?>" width="100%" height="500" />
+        </div>
+        
+    </div>
+    
 </div>
 
 <?php
