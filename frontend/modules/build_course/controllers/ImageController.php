@@ -55,7 +55,7 @@ class ImageController extends Controller
         $searchModel = new ImageSearch();
         $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         $images = array_values($results['data']['image']);    //图像数据
-        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($images as &$item) {
             $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
@@ -87,8 +87,8 @@ class ImageController extends Controller
             'searchModel' => $searchModel,
             'filters' => $results['filter'],
             'totalCount' => $results['total'],   //总数量
-            'pathMap' => $this->getDirectoryLocation($userCatId),  //所属目录位置
-            'catalogMap' => $this->getSameLevelCats($userCatId),  //所有目录
+            'locationPathMap' => UserCategory::getUserCatLocationPath($user_cat_id),  //所属目录位置
+            'userCategoryMap' => $user_cat_id == null ? UserCategory::getCatsByLevel() : UserCategory::getCatChildren($user_cat_id),    //返回所有目录结构
         ]);
     }
     
@@ -100,6 +100,7 @@ class ImageController extends Controller
     {
         $searchModel = new ImageSearch();
         $results = $searchModel->search(array_merge(Yii::$app->request->queryParams));
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($results['data']['image']),
             'key' => 'id',
@@ -107,16 +108,13 @@ class ImageController extends Controller
                 'pageSize' => 20,
             ]
         ]);
-        $userCatId = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
-        $userCatIds = ArrayHelper::getColumn($dataProvider->allModels, 'user_cat_id');   //所有用户分类id
-        $cateIds = array_merge($userCatIds, [$userCatId]);
-       
+        
         return $this->render('result', [
             'searchModel' => $searchModel,      //搜索模型
             'dataProvider' => $dataProvider,    //搜索结果后的数据
             'filters' => $results['filter'],     //查询过滤的属性
             'totalCount' => $results['total'],   //总数量
-            'pathMap' => $this->getDirectoryLocation(array_filter($cateIds)),  //所属目录位置
+            'locationPathMap' => UserCategory::getUserCatLocationPath($user_cat_id),  //所属目录位置
         ]);
     }
 
@@ -135,7 +133,6 @@ class ImageController extends Controller
         
         return $this->render('view', [
             'model' => $model,
-            'path' => !empty($model->user_cat_id) ? $this->getCategoryFullPath($model->user_cat_id) : '',  //所属目录全路径
         ]);
     }
 
@@ -148,6 +145,7 @@ class ImageController extends Controller
     {
         $model = new Image([
             'customer_id' => Yii::$app->user->identity->customer_id, 
+            'user_cat_id' => ArrayHelper::getValue(Yii::$app->request->queryParams, 'user_cat_id'),
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
@@ -239,83 +237,5 @@ class ImageController extends Controller
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-    /**
-     * 获取目录位置
-     * @param integer|array $categoryId
-     * @return array
-     */
-    protected function getDirectoryLocation($categoryId)
-    {
-        $path = [];
-        $categoryIds = !is_array($categoryId) ? [$categoryId] : array_unique($categoryId);
-        if(!empty(array_filter($categoryIds))) {
-            foreach ($categoryIds as $catId) {
-                $userCategory = UserCategory::getCatById($catId);
-                if($userCategory != null){
-                    $parentids = array_values(array_filter(explode(',', $userCategory->path)));
-                    foreach ($parentids as $index => $id) {
-                        $path[$catId][] = [
-                            'id' => $id,
-                            'name' => UserCategory::getCatById($id)->name
-                        ];
-                    }
-                }
-            }
-        }
-        
-        return $path;
-    }
-    
-    /**
-     * 返回用户当前分类同级的所有分类
-     * @param integer $categoryId  
-     * @return array
-     */
-    protected function getSameLevelCats($categoryId)
-    {
-        if($categoryId != null){
-            $categoryMap = UserCategory::getCatChildren($categoryId, false, false, false, true);
-        }else{
-            $categoryMap = UserCategory::getCatsByLevel(1, null, false, false, true);
-        }
-        
-        $categorys = [];
-        ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
-        foreach ($categoryMap as $category) {
-            //如果目录类型是私人并且是非公开目录，跳过本次循环
-            if($category['type'] == UserCategory::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != \Yii::$app->user->id) continue;
-            }
-            
-            $categorys[] = [
-                'id' => $category['id'],
-                'type' => $category['type'],
-                'name' => $category['name'],
-                'is_public' => $category['is_public'],
-            ];
-        }
-        
-        return $categorys;
-    }
-    
-    /**
-     * 获取分类全路径
-     * @param integer $categoryId
-     * @return string
-     */
-    protected function getCategoryFullPath($categoryId) 
-    {
-        $path = '';
-        $userCategory = UserCategory::getCatById($categoryId);
-        if($userCategory != null){
-            $parentids = array_values(array_filter(explode(',', $userCategory->path)));
-            foreach ($parentids as $index => $id) {
-                $path .= ($index == 0 ? '' : ' \ ') . UserCategory::getCatById($id)->name;
-            }
-        }
-        
-        return $path;
     }
 }

@@ -98,10 +98,11 @@ $this->registerJs($format, View::POS_HEAD);
                     'url' => Url::to('../user-category/search-children', false),
                     'max_level' => 10,
                 ],
-                'items' => UserCategory::getSameLevelCats($model->user_cat_id, UserCategory::TYPE_MYVIDOE, true),
+                'items' => UserCategory::getSameLevelCats($model->user_cat_id, true, true),
                 'values' => $model->user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($model->user_cat_id)->path))),
                 'itemOptions' => [
                     'style' => 'width: 180px; display: inline-block;',
+                    'disabled' => true
                 ],
             ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')])) ?>
 

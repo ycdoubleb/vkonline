@@ -120,7 +120,7 @@ foreach ($watermarksFiles as $watermark) {
                     'attribute' => 'user_cat_id',
                     'label' => Yii::t('app', 'Catalog'),
                     'format' => 'raw',
-                    'value' => !empty($model->user_cat_id) ? $path : null,
+                    'value' => $model->user_cat_id > 0 ? str_replace(' > ', ' / ', $model->userCategory->getFullPath()) : '根目录',
                 ],
                 [
                     'attribute' => 'level',

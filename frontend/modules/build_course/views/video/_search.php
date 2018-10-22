@@ -75,12 +75,12 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-11 col-md-11">
                 <div class="breadcrumb">
                     <?php 
-                        $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                        $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
                         $setRoute = '<span class="set-route">›</span>';
-                        if(isset($pathMap[$userCatId]) && count($pathMap[$userCatId]) > 0){
-                            $endPath = end($pathMap[$userCatId]);
+                        if(isset($locationPathMap[$user_cat_id]) && count($locationPathMap[$user_cat_id]) > 0){
+                            $endPath = end($locationPathMap[$user_cat_id]);
                             echo Html::a('根目录' . $setRoute, ['index', 'user_cat_id' => null]);
-                            foreach ($pathMap[$userCatId] as $path) {
+                            foreach ($locationPathMap[$user_cat_id] as $path) {
                                 if($path['id'] == $endPath['id']){
                                     $setRoute = '';
                                 }
@@ -168,7 +168,7 @@ $this->registerJs($format, View::POS_HEAD);
         <!--按钮组-->
         <div class="btngroup material-operation">
             <?php
-                echo Html::a(Yii::t('app', 'Create'), ['create'], ['class' => 'btn btn-success btn-flat']);
+                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id', null)], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', 'Arrange'), 'javascript:;', [
                     'id' => 'arrange', 'class' => 'btn btn-success btn-flat',
                 ]);

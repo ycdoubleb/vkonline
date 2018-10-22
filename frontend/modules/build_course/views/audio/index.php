@@ -43,7 +43,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
     <?= $this->render('_search', [
         'searchModel' => $searchModel,
         'filters' => $filters,
-        'pathMap' => $pathMap,
+        'locationPathMap' => $locationPathMap,
     ]) ?>
     
     <!-- 显示结果 -->
@@ -81,23 +81,21 @@ $this->title = Yii::t('app', '{My}{Audio}', [
         <!--目录-->
         <div class="folder">
             <ul class="list-unstyled">
-                 <?php 
-                    $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
-                    if($userCatId != null){ 
-                        echo '<li>';
-                            $parent_id = UserCategory::getCatById($userCatId)->parent_id;
-                            echo Html::a('<i class="ifolder upper-level"></i><p class="folder-name">上一级</p>', 
-                                    array_merge(['index'], array_merge($filters, ['user_cat_id' => $parent_id > 0 ? $parent_id : null ])), ['title' => '上一级']);
-                        echo '</li>';
-                    } 
-                ?>
                 <?php 
-                    foreach ($catalogMap as $catalog){
-                        $iconFolder = $catalog['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                    $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                    if($user_cat_id != null){ 
+                        $parent_id = UserCategory::getCatById($user_cat_id)->parent_id;  //父级id
                         echo '<li>';
-                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $catalog['name'] .'</p>',
-                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $catalog['id']])),
-                            ['title' => $catalog['name'],]);
+                            echo Html::a('<i class="ifolder upper-level"></i><p class="folder-name">上一级</p>', 
+                                    array_merge(['index'], array_merge($filters, ['user_cat_id' => $parent_id > 0 ? $parent_id : null])), ['title' => '上一级']);
+                        echo '</li>';
+                    }
+                    foreach ($userCategoryMap as $category){
+                        $iconFolder = $category['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                        echo '<li>';
+                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $category['name'] .'</p>',
+                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $category['id']])),
+                            ['title' => $category['name'],]);
                         echo '</li>';
                     } 
                 ?>

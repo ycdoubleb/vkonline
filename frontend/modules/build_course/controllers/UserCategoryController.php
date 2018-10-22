@@ -2,13 +2,13 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\models\vk\Log;
 use common\models\vk\searchs\UserCategorySearch;
 use common\models\vk\UserCategory;
 use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -99,6 +99,11 @@ class UserCategoryController extends GridViewChangeSelfController
                     $is_submit = true;
                     $model->updateParentPath();
                     UserCategory::invalidateCache();
+                    //保存日志
+                    Log::savaLog('素材目录', '____material_category_add', [
+                        'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
+                        'category_name' => $model->name
+                    ]);
                 }else{
                     Yii::$app->getSession()->setFlash('error', '保存失败::' . implode('；', $model->getErrorSummary(true)));
                 }
@@ -147,6 +152,8 @@ class UserCategoryController extends GridViewChangeSelfController
             try
             {  
                 $is_submit = false;
+                $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+                $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
                 //目标目录的类型如果是“共享”，则type为目标目录的类型
                 if($targetModel->type == UserCategory::TYPE_SHARING){
                     $model->type = $targetModel->type;
@@ -165,6 +172,15 @@ class UserCategoryController extends GridViewChangeSelfController
                         $childrenModel->update(false, ['level', 'type']);
                     }
                     UserCategory::invalidateCache();    //清除缓存
+                    //如果设置了新属性的name，则保存日志
+                    if(isset($newAttributes['name'])){
+                        //保存日志
+                        Log::savaLog('素材目录', '____material_category_update', [
+                            'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
+                            'category_old_name' => $oldAttributes['name'],
+                            'category_new_name' => $newAttributes['name'],
+                        ]);
+                    }
                 }else{
                     Yii::$app->getSession()->setFlash('success','保存失败::' . implode('；', $model->getErrorSummary(true)));
                 }
@@ -216,6 +232,11 @@ class UserCategoryController extends GridViewChangeSelfController
                 }else{
                     $model->delete();
                     UserCategory::invalidateCache();    //清除缓存
+                    //保存日志
+                    Log::savaLog('素材目录', '____material_category_delete', [
+                        'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
+                        'category_name' => $model->name,
+                    ]);
                     Yii::$app->getSession()->setFlash('success','操作成功！');
                 }
             }
@@ -262,6 +283,8 @@ class UserCategoryController extends GridViewChangeSelfController
                         $is_submit = false;
                         break;
                     }
+                    //旧的父级目录路径
+                    $old_parent_path = str_replace(' > '. $moveModel->name, '', $moveModel->getFullPath());
                     //如果移动的分类父级id不在所要移动的id数组里，则设置所要移动的父级id为目标id
                     if(!in_array($moveModel->parent_id, $move_ids)){
                         $moveModel->parent_id = $target_id;
@@ -275,10 +298,16 @@ class UserCategoryController extends GridViewChangeSelfController
                     $moveModel->update(false, ['parent_id', 'level', 'type']);
                     $moveModel->updateParentPath(); //修改子集路径
                     UserCategory::invalidateCache();    //清除缓存
+                    $datas[] = [
+                        'category_name' => $moveModel->name,
+                        'old_parent_path' => $old_parent_path,
+                        'new_parent_path' => $moveModel->parent_id > 0 ? UserCategory::getCatById($moveModel->parent_id)->getFullPath() : '根目录',
+                    ];
                 }
                 if(!$is_public){
                     if($is_submit){
                         $trans->commit();  //提交事务
+                        Log::savaLog('素材目录', '____material_category_move', ['dataProvider' => $datas]);  //保存日志
                         Yii::$app->getSession()->setFlash('success','操作成功！');
                     }else{
                         Yii::$app->getSession()->setFlash('error', '操作失败:：移动目录结构里存在“共享目录”，“共享目录”不能被移动到非共享目录下。');
@@ -308,7 +337,7 @@ class UserCategoryController extends GridViewChangeSelfController
         Yii::$app->getResponse()->format = 'json';
         return [
             'result' => 1,
-            'data' => $this->getSameLevelCats($id),
+            'data' => UserCategory::getCatChildren($id),
         ];
     }
     
@@ -340,26 +369,5 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
-    }
-    
-    /**
-     * 返回用户当前分类同级的所有分类
-     * @param integer $categoryId  
-     * @return array
-     */
-    protected function getSameLevelCats($categoryId)
-    {
-        $categoryMap = UserCategory::getCatChildren($categoryId, false, false, false, true);
-        $categorys = [];
-        ArrayHelper::multisort($categoryMap, 'is_public', SORT_DESC);
-        foreach ($categoryMap as $category) {
-            //如果目录类型是私人并且是非公开目录，跳过本次循环
-            if($category['type'] == UserCategory::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != \Yii::$app->user->id) continue;
-            }
-            $categorys[] = $category;
-        }
-        
-        return $categorys;
     }
 }

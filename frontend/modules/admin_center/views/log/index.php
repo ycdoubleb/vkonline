@@ -42,10 +42,6 @@ $this->title = Yii::t('app', '{Log}{List}', [
             'dataProvider' => $dataProvider,
             'tableOptions' => ['class' => 'table table-bordered detail-view vk-table'],
             'layout' => "{items}\n{summary}\n{pager}",
-            'summaryOptions' => ['class' => 'hidden'],
-            'pager' => [
-                'options' => ['class' => 'hidden']
-            ],
             'columns' => [
                 ['class' => 'yii\grid\SerialColumn'],
                 [

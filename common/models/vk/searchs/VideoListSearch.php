@@ -71,10 +71,10 @@ class VideoListSearch extends Video
         //目录
         if($sign){
             //获取分类的子级ID    
-            $userCatIds = UserCategory::getCatChildrenIds($this->user_cat_id, true);     
+            $user_cat_ids = UserCategory::getCatChildrenIds($this->user_cat_id, true);
             self::$query->andFilterWhere([
-                'Video.user_cat_id' => !empty($userCatIds) ? 
-                    ArrayHelper::merge([$this->user_cat_id], $userCatIds) : $this->user_cat_id,
+                'Video.user_cat_id' => !empty($user_cat_ids) ? 
+                    ArrayHelper::merge([$this->user_cat_id], $user_cat_ids) : $this->user_cat_id,
             ]);
         }else{
             if($this->user_cat_id != null && !$sign){

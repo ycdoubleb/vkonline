@@ -53,6 +53,8 @@ class Log extends ActiveRecord
         'update' => '修改',
         'delete' => '删除',
         'move' => '移动',
+        'create-catalog' => '新增',
+        'update-catalog' => '修改',
     ];
 
     /**

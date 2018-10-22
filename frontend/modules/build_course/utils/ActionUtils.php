@@ -922,7 +922,7 @@ class ActionUtils
                 $this->saveObjectTags($model->id, $tagIds, 2);  //保存视频标签
                 //保存日志
                 Log::savaLog('素材', '____material_add', [
-                    'parent_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -996,7 +996,7 @@ class ActionUtils
                 if(isset($newAttributes['name'])){
                     //保存日志
                     Log::savaLog('素材', '____material_update', [
-                        'material_old_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                         'material_old_name' => $oldAttributes['name'],
                         'material_new_name' => $newAttributes['name'],
                     ]);
@@ -1033,7 +1033,7 @@ class ActionUtils
             if($model->update(true, ['is_del']) && !in_array($model->id, $videoIds)){
                 //保存日志
                 Log::savaLog('素材', '____material_delete', [
-                    'material_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1100,7 +1100,7 @@ class ActionUtils
                 $this->saveObjectTags($model->id, $tagIds, 3);  //保存音频的标签
                 //保存日志
                 Log::savaLog('素材', '____material_add', [
-                    'parent_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1144,7 +1144,7 @@ class ActionUtils
                 if(isset($newAttributes['name'])){
                     //保存日志
                     Log::savaLog('素材', '____material_update', [
-                        'material_old_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                         'material_old_name' => $oldAttributes['name'],
                         'material_new_name' => $newAttributes['name'],
                     ]);
@@ -1179,7 +1179,7 @@ class ActionUtils
             if($model->update(true, ['is_del'])){
                 //保存日志
                 Log::savaLog('素材', '____material_delete', [
-                    'material_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1220,7 +1220,7 @@ class ActionUtils
                 $this->saveObjectTags($model->id, $tagIds, 4);  //保存文档的标签
                 //保存日志
                 Log::savaLog('素材', '____material_add', [
-                    'parent_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1264,7 +1264,7 @@ class ActionUtils
                 if(isset($newAttributes['name'])){
                     //保存日志
                     Log::savaLog('素材', '____material_update', [
-                        'material_old_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                         'material_old_name' => $oldAttributes['name'],
                         'material_new_name' => $newAttributes['name'],
                     ]);
@@ -1299,7 +1299,7 @@ class ActionUtils
             if($model->update(true, ['is_del'])){
                 //保存日志
                 Log::savaLog('素材', '____material_delete', [
-                    'material_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1340,7 +1340,7 @@ class ActionUtils
                 $this->saveObjectTags($model->id, $tagIds, 5);  //保存图像的标签
                 //保存日志
                 Log::savaLog('素材', '____material_add', [
-                    'parent_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{
@@ -1384,7 +1384,7 @@ class ActionUtils
                 if(isset($newAttributes['name'])){
                     //保存日志
                     Log::savaLog('素材', '____material_update', [
-                        'material_old_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                         'material_old_name' => $oldAttributes['name'],
                         'material_new_name' => $newAttributes['name'],
                     ]);
@@ -1419,7 +1419,7 @@ class ActionUtils
             if($model->update(true, ['is_del'])){
                 //保存日志
                 Log::savaLog('素材', '____material_delete', [
-                    'material_path' => UserCategory::getCatById($model->user_cat_id)->getFullPath(),
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
                     'material_name' => $model->name,
                 ]);
             }else{

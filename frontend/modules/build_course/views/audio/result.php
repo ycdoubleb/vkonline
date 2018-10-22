@@ -43,7 +43,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
     <?= $this->render('_search', [
         'searchModel' => $searchModel,
         'filters' => $filters,
-        'pathMap' => $pathMap,
+        'locationPathMap' => $locationPathMap,
     ]) ?>
     
     <!-- 显示结果 -->
@@ -152,20 +152,21 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                     ]),
                     'format' => 'raw',
                     'filter' => false,
-                    'value' => function ($model) use($pathMap){
-                        $videoPath = '';
-                        if(isset($pathMap[$model['user_cat_id']]) && count($pathMap[$model['user_cat_id']]) > 0){
-                            $endPath = end($pathMap[$model['user_cat_id']]);
-                            foreach ($pathMap[$model['user_cat_id']] as $path) {
+                    'value' => function ($model){
+                        $pathMap = '';
+                        $locationPathMap = UserCategory::getUserCatLocationPath($model['user_cat_id']);
+                        if(isset($locationPathMap[$model['user_cat_id']]) && count($locationPathMap[$model['user_cat_id']]) > 0){
+                            $endPath = end($locationPathMap[$model['user_cat_id']]);
+                            foreach ($locationPathMap[$model['user_cat_id']] as $path) {
                                 if($path['id'] != $endPath['id']){
-                                    $videoPath .= $path['name']. '<span class="set-route">›</span>';
+                                    $pathMap .= $path['name']. '<span class="set-route">›</span>';
                                 }else{
-                                    $videoPath .= $path['name'];
+                                    $pathMap .= $path['name'];
                                 }
                             }
-                            return $videoPath;
+                            return $pathMap;
                         }else{
-                            return null;
+                            return '根目录';
                         }
                     },
                     'headerOptions' => ['style' => 'width:365px'],

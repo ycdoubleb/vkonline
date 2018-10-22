@@ -96,8 +96,7 @@ class ArrangeController extends Controller
                 if($is_success){
                     Yii::$app->db->createCommand()->update("{{%$table_name}}", ['user_cat_id' => $target_id], ['id' => $move_ids])->execute();
                     $trans->commit();  //提交事务
-                    //保存日志
-                    Log::savaLog('素材', '____material_move', ['dataProvider' => $datas]);
+                    Log::savaLog('素材', '____material_move', ['dataProvider' => $datas]);  //保存日志
                     
                     Yii::$app->getSession()->setFlash('success','操作成功。');
                 }else{
@@ -146,6 +145,11 @@ class ArrangeController extends Controller
                 if($model->save()){
                     $is_success = true;
                     $model->updateParentPath();
+                    //保存日志
+                    Log::savaLog('素材目录', '____material_category_add', [
+                        'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
+                        'category_name' => $model->name
+                    ]);
                 }
                 
                 if($is_success){
@@ -183,8 +187,21 @@ class ArrangeController extends Controller
             {  
                 $model = UserCategory::findOne($id);
                 $model->name = ArrayHelper::getValue(Yii::$app->request->post(), 'name');
+                
+                $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+                $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+                
                 if($model->save(false, ['name'])){
                     $is_success = true;
+                    //如果设置了新属性的name，则保存日志
+                    if(isset($newAttributes['name'])){
+                        //保存日志
+                        Log::savaLog('素材目录', '____material_category_update', [
+                            'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
+                            'category_old_name' => $oldAttributes['name'],
+                            'category_new_name' => $newAttributes['name'],
+                        ]);
+                    }
                 }
                 
                 if($is_success){
