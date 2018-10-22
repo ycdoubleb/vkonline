@@ -165,7 +165,7 @@ use yii\web\View;
                                 'title' => Yii::t('yii', 'View'),
                                 'aria-label' => Yii::t('yii', 'View'),
                                 'data-pjax' => '0',
-                                'onclick' => 'showModal($(this));return false;'
+                                'onclick' => 'showModal($(this).attr("href"));return false;'
                             ];
                             $buttonHtml = [
                                 'name' => '<span class="fa fa-eye"></span>',
