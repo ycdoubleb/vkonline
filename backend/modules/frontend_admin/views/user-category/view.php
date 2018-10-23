@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
              * 1、分类下所有视频数量为 0
              * 2、分类下的所有子级分类数量为 0
              */
-            $catChildrens  = UserCategory::getBackendCatChildren($model->id);
+            $catChildrens  = UserCategory::getCatChildren($model->id);
             if(count($model->videos) <= 0 && count($catChildrens) <= 0){
                 echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
                     'class' => 'btn btn-danger',

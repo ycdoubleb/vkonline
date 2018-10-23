@@ -205,7 +205,7 @@ class UserCategoryController extends GridViewChangeSelfController
         $model = $this->findModel($id);
         
         if($model->created_by == \Yii::$app->user->id){
-            $catChildrens  = UserCategory::getCatChildren($model->id, false, false, false, true);
+            $catChildrens  = UserCategory::getCatChildren($model->id);
             if(count($catChildrens) > 0 || count($model->videos) > 0){
                 Yii::$app->getSession()->setFlash('error', '操作失败::该目录存在子目录或存在视频。');
             }else{
