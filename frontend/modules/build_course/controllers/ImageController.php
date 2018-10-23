@@ -58,7 +58,7 @@ class ImageController extends Controller
         $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($images as &$item) {
-            $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
+            $item['img'] = Aliyun::absolutePath(!empty($item['thumb_path']) ? $item['thumb_path'] : 'static/imgs/notfound.png');
         }
         
         //如果是ajax请求，返回json

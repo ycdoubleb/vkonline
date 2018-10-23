@@ -292,8 +292,12 @@
     background-image: url('../imgs/upper-level.png');
 }
 
-.knowledge-reference .vk-list .ifolder.folder-public{
-    background-image: url('../imgs/folder-public.png');
+.knowledge-reference .vk-list .ifolder.folder-share{
+    background-image: url('../imgs/share_folder_icon.png');
+}
+
+.knowledge-reference .vk-list .ifolder.folder-system{
+    background-image: url('../imgs/system_folder_icon.png');
 }
 
 .knowledge-reference .vk-list .folder-name {
@@ -548,8 +552,12 @@
     background-image: url('../imgs/upper-level.png');
 }
 
-.vk-material .vk-list .ifolder.folder-public{
-    background-image: url('../imgs/folder-public.png');
+.vk-material .vk-list .ifolder.folder-share{
+    background-image: url('../imgs/share_folder_icon.png');
+}
+
+.vk-material .vk-list .ifolder.folder-system{
+    background-image: url('../imgs/system_folder_icon.png');
 }
 
 .vk-material .vk-list .folder-name {

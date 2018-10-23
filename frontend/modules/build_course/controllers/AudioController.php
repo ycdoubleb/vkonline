@@ -2,13 +2,13 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\components\aliyuncs\Aliyun;
 use common\models\vk\Audio;
 use common\models\vk\searchs\AudioSearch;
 use common\models\vk\TagRef;
 use common\models\vk\UserCategory;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -59,7 +59,7 @@ class AudioController extends Controller
         $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($audios as &$item) {
-            $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
+            $item['img'] = StringUtil::completeFilePath('/imgs/build_course/images/audio.png');
             $item['duration'] = DateUtil::intToTime($item['duration']);
         }
         

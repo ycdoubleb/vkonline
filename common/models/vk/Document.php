@@ -2,6 +2,7 @@
 
 namespace common\models\vk;
 
+use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
@@ -181,5 +182,31 @@ class Document extends ActiveRecord
     public function getTagRefs() {
         return $this->hasMany(TagRef::class, ['object_id' => 'id'])
             ->where(['is_del' => 0])->with('tags');
+    }
+    
+    /**
+     * 获取文件的后缀名
+     * @param string $file
+     * @return string
+     */
+    public static function getFileExtensionName($file) {
+        $extName = '';
+        //获取文件的后缀名
+        $ext = pathinfo(Aliyun::absolutePath($file), PATHINFO_EXTENSION);
+       //判断文件后缀名的最后一个字符是否是大写
+        if(preg_match('/^[A-Z]+$/', substr($ext, -1))){
+            //判断后缀名最后一个字符是否为大写X
+            if(substr($ext, -1) == 'X'){
+                //在后缀名最后一个字符是大写X的情况下替换为小写
+                $extName = str_replace(substr($extName, -1), 'x', $extName);
+            }
+        //判断后缀名最后一个字符是否为小写x
+        }else if(substr($ext, -1) == 'x'){
+            $extName = $ext;
+        }else{
+            $extName = $ext . 'x';
+        }
+        
+        return $extName;
     }
 }

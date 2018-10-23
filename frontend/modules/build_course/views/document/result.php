@@ -1,7 +1,8 @@
 <?php
 
-use common\components\aliyuncs\Aliyun;
+use common\models\vk\Document;
 use common\models\vk\UserCategory;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\data\Pagination;
@@ -109,7 +110,7 @@ $this->title = Yii::t('app', '{My}{Document}', [
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
+                        return Html::img(StringUtil::completeFilePath('/imgs/build_course/images/' . Document::getFileExtensionName($model['oss_key']) . '.png'), ['width' => 121, 'height' => 68]);
                     },
                 ],
                 [

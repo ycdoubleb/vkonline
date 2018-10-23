@@ -91,7 +91,17 @@ $this->title = Yii::t('app', '{My}{Image}', [
                         echo '</li>';
                     }
                     foreach ($userCategoryMap as $category){
-                        $iconFolder = $category['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                        switch ($category['type']){
+                            case UserCategory::TYPE_SYSTEM: 
+                                $iconFolder = '<i class="ifolder folder-system"></i>';
+                                break;
+                            case UserCategory::TYPE_SHARING:
+                                $iconFolder = '<i class="ifolder folder-share"></i>';
+                                break;
+                            default:
+                                $iconFolder = '<i class="ifolder"></i>';
+                                break;
+                        }
                         echo '<li>';
                             echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $category['name'] .'</p>',
                                 array_merge(['index'], array_merge($filters, ['user_cat_id' => $category['id']])),

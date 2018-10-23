@@ -5,6 +5,7 @@ namespace common\models\vk\searchs;
 use common\models\User;
 use common\models\vk\Document;
 use common\models\vk\UserCategory;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -79,6 +80,7 @@ class DocumentSearch extends Document
         //关联查询
         $query->leftJoin(['UserCategory' => UserCategory::tableName()], 'UserCategory.id = Document.user_cat_id');
         $query->leftJoin(['User' => User::tableName()], 'User.id = Document.created_by');
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Document.file_id');
         
         //如果目录类型是共享类型则显示共享文件
         $query->andFilterWhere(['OR', 
@@ -95,7 +97,7 @@ class DocumentSearch extends Document
         //添加字段
         $query->select([
             'Document.id', 'Document.user_cat_id', 'Document.name', 'Document.duration', 'Document.created_at', 
-            'Document.is_publish', 'Document.level', 'UserCategory.type', 'User.nickname'
+            'Document.is_publish', 'Document.level', 'UserCategory.type', 'User.nickname', 'Uploadfile.oss_key'
         ]);
         //显示数量
         $query->offset(($page - 1) * $limit)->limit($limit);

@@ -1,8 +1,7 @@
 <?php
 
-use common\components\aliyuncs\Aliyun;
 use common\models\vk\UserCategory;
-use common\models\vk\Video;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\data\Pagination;
@@ -11,6 +10,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\LinkPager;
+
 
 /* @var $this View */
 
@@ -110,7 +110,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
+                        return Html::img(StringUtil::completeFilePath('/imgs/build_course/images/audio.png'), ['width' => 121, 'height' => 68]);
                     },
                 ],
                 [

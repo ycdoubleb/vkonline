@@ -2,13 +2,12 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\components\aliyuncs\Aliyun;
 use common\models\vk\Document;
 use common\models\vk\searchs\DocumentSearch;
 use common\models\vk\TagRef;
 use common\models\vk\UserCategory;
 use common\modules\webuploader\models\Uploadfile;
-use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -59,7 +58,7 @@ class DocumentController extends Controller
         $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
         foreach ($documents as &$item) {
-            $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
+            $item['img'] = StringUtil::completeFilePath('/imgs/build_course/images/' . Document::getFileExtensionName($item['oss_key']) . '.png');
         }
         
         //如果是ajax请求，返回json
