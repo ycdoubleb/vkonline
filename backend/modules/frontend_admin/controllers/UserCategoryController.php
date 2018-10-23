@@ -132,12 +132,6 @@ class UserCategoryController extends GridViewChangeSelfController
     {
         $model = $this->findModel($id);
 
-        //如果为顶级目录不可移动
-        if($model->parent_id <= 0){
-            Yii::$app->getSession()->setFlash('error','操作失败::' . Yii::t('app', 'You have no permissions to perform this operation.'));
-            return $this->redirect(['index']);
-        }
-        
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $targetModel = UserCategory::getCatById($model->parent_id); //目标模型
             //如果移动的目录类型为系统目录则不能移动
@@ -204,17 +198,13 @@ class UserCategoryController extends GridViewChangeSelfController
     {
         $model = $this->findModel($id);
         
-        if($model->created_by == \Yii::$app->user->id){
-            $catChildrens  = UserCategory::getCatChildren($model->id);
-            if(count($catChildrens) > 0 || count($model->videos) > 0){
-                Yii::$app->getSession()->setFlash('error', '操作失败::该目录存在子目录或存在视频。');
-            }else{
-                $model->delete();
-                UserCategory::invalidateCache();    //清除缓存
-                Yii::$app->getSession()->setFlash('success','操作成功！');
-            }
+        $catChildrens  = UserCategory::getCatChildren($model->id);
+        if(count($catChildrens) > 0 || count($model->videos) > 0){
+            Yii::$app->getSession()->setFlash('error', '操作失败::该目录存在子目录或存在视频。');
         }else{
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+            $model->delete();
+            UserCategory::invalidateCache();    //清除缓存
+            Yii::$app->getSession()->setFlash('success','操作成功！');
         }
         
         return $this->redirect(['index']);

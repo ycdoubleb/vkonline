@@ -73,10 +73,10 @@ use yii\widgets\ActiveForm;
             <div class="col-lg-4 col-md-4">
                 <div class="btn-group" role="group">
                     <?php
-                        echo Html::a(Yii::t('app', 'Video'), ['video/index'], ['class' => 'btn btn-default material-btn']);
-                        echo Html::a(Yii::t('app', 'Audio'), ['audio/index'], ['class' => 'btn btn-default material-btn active']);
-                        echo Html::a(Yii::t('app', 'Document'), ['document/index'], ['class' => 'btn btn-default material-btn']);
-                        echo Html::a(Yii::t('app', 'Image'), ['image/index'], ['class' => 'btn btn-default material-btn']);
+                        echo Html::a(Yii::t('app', 'Video'), ['video/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                        echo Html::a(Yii::t('app', 'Audio'), ['audio/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn active']);
+                        echo Html::a(Yii::t('app', 'Document'), ['document/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                        echo Html::a(Yii::t('app', 'Image'), ['image/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
                     ?>
                 </div>
             </div>

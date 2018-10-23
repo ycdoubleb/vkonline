@@ -64,11 +64,11 @@ class UserCategorySearch extends UserCategory
             'type' => $this->type,
             'sort_order' => $this->sort_order,
             'is_show' => $this->is_show,
-//            'is_public' => 1,
+            'is_public' => 1,
         ]);
         
         $query->andFilterWhere(['like', 'name', $this->name]);
-            
+        
         $query->orderBy(['path' => SORT_ASC]);
                 
         $query->with('videos');

@@ -98,11 +98,7 @@ $this->title = Yii::t('app', '{My}{Audio}', [
                     'headerOptions' => ['style' => 'width: 20px'],
                     'format' => 'raw',
                     'value' => function($model){
-                        if($model['type'] == UserCategory::TYPE_SHARING){
-                            return '';
-                        }else{
-                            return Html::checkbox('Audio[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
-                        }
+                        return Html::checkbox('Audio[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
                     }
                 ],
                 [
