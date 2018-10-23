@@ -86,6 +86,7 @@ class UserCategorySearch extends UserCategory
     public function search($params)
     {        
         $this->id = ArrayHelper::getValue($params, 'id');
+        $move_ids = ArrayHelper::getValue($params, 'move_ids');
                 
         $query = UserCategory::find();
 
@@ -102,7 +103,10 @@ class UserCategorySearch extends UserCategory
         // grid filtering conditions
         $query->andFilterWhere(['NOT IN', 'id', $this->id]);
          
-        $query->andFilterWhere(['created_by' => Yii::$app->user->id]);
+        $query->andFilterWhere([
+            'created_by' => Yii::$app->user->id,
+            'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null
+        ]);
         
         $query->orFilterWhere(['is_public' => 1]);
         

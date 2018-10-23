@@ -10,7 +10,7 @@
             <a href="/study_center/default/view?id={%id%}" target="_blank">
                 <i class="fa fa-eye"></i>
             </a>
-            <a href="../knowledge/update?id={%id%}" onclick="showModal($(this));return false;">
+            <a href="../knowledge/update?id={%id%}" onclick="showModals($(this));return false;">
                 <i class="fa fa-pencil"></i>
             </a>
             <?=Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
@@ -30,3 +30,11 @@
         </div>
     </div>
 </li>
+
+<script type="text/javascript">
+    
+    function showModals(_this){
+        showModal(_this.attr("href"));
+    }
+    
+</script>
