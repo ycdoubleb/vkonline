@@ -233,16 +233,16 @@ class UserCategoryController extends GridViewChangeSelfController
                     $results['message'] = '该目录存在子目录，不能删除。';
                     return $results;
                 }else if($catMaterial['video_count'] > 0){
-                    $results['message'] = '该目录存在视频，不能删除。';
+                    $results['message'] = '该目录存在视频素材，不能删除。';
                     return $results;
                 }else if($catMaterial['audio_count'] > 0){
-                    $results['message'] = '该目录存在音频，不能删除。';
+                    $results['message'] = '该目录存在音频素材，不能删除。';
                     return $results;
                 }else if($catMaterial['doc_count'] > 0){
-                    $results['message'] = '该目录存在文档，不能删除。';
+                    $results['message'] = '该目录存在文档素材，不能删除。';
                     return $results;
                 }else if($catMaterial['image_count'] > 0){
-                    $results['message'] = '该目录存在图像，不能删除。';
+                    $results['message'] = '该目录存在图像素材，不能删除。';
                     return $results;
                 }else{
                     $model->delete();
