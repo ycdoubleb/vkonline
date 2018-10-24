@@ -2,11 +2,16 @@
 
 namespace frontend\modules\build_course\controllers;
 
+use common\models\vk\Audio;
+use common\models\vk\Document;
+use common\models\vk\Image;
 use common\models\vk\Log;
 use common\models\vk\searchs\UserCategorySearch;
 use common\models\vk\UserCategory;
+use common\models\vk\Video;
 use common\widgets\grid\GridViewChangeSelfController;
 use Yii;
+use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\web\NotFoundHttpException;
@@ -222,12 +227,22 @@ class UserCategoryController extends GridViewChangeSelfController
             if($model->is_public){
                 return $results;
             }else{
-                $catChildrens  = UserCategory::getCatChildren($model->id);
+                $catChildrens  = UserCategory::findAll(['parent_id' => $model->id]);
+                $catMaterial  = $this->getUserCategoryMaterialCount($model->id);;
                 if(count($catChildrens) > 0){
                     $results['message'] = '该目录存在子目录，不能删除。';
                     return $results;
-                }else if(count($model->videos) > 0){
+                }else if($catMaterial['video_count'] > 0){
                     $results['message'] = '该目录存在视频，不能删除。';
+                    return $results;
+                }else if($catMaterial['audio_count'] > 0){
+                    $results['message'] = '该目录存在音频，不能删除。';
+                    return $results;
+                }else if($catMaterial['doc_count'] > 0){
+                    $results['message'] = '该目录存在文档，不能删除。';
+                    return $results;
+                }else if($catMaterial['image_count'] > 0){
+                    $results['message'] = '该目录存在图像，不能删除。';
                     return $results;
                 }else{
                     $model->delete();
@@ -367,5 +382,31 @@ class UserCategoryController extends GridViewChangeSelfController
         }
 
         throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+    }
+    
+    /**
+     * 获取分类下素材的数量
+     * @param string $id
+     * @return array
+     */
+    protected function getUserCategoryMaterialCount($id){
+        //查询目录数据
+        $query = (new Query())->from(['UserCategory' => UserCategory::tableName()]);
+        //关联查询
+        $query->leftJoin(['Video' => Video::tableName()], '(Video.user_cat_id = UserCategory.id AND Video.is_del = 0)');
+        $query->leftJoin(['Audio' => Audio::tableName()], '(Audio.user_cat_id = UserCategory.id AND Audio.is_del = 0)');
+        $query->leftJoin(['Document' => Document::tableName()], '(Document.user_cat_id = UserCategory.id AND Document.is_del = 0)');
+        $query->leftJoin(['Image' => Image::tableName()], '(Image.user_cat_id = UserCategory.id AND Image.is_del = 0)');
+        
+        $query->select([
+            'COUNT(DISTINCT Video.id) AS video_count',
+            'COUNT(DISTINCT Audio.id) AS audio_count',
+            'COUNT(DISTINCT Document.id) AS doc_count',
+            'COUNT(DISTINCT Image.id) AS image_count'
+        ]);
+        //查询该目录下关联的所有素材
+        $query->where(['UserCategory.id' => $id]);
+        
+        return $query->one();
     }
 }
