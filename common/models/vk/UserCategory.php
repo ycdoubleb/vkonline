@@ -315,6 +315,8 @@ class UserCategory extends ActiveRecord
         if(!isset($sort_order) || empty($sort_order)){
             $sort_order = 'is_public';
         }
+        //默认使用当前客户id
+        $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
         
         $leveCategorys = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
@@ -323,6 +325,11 @@ class UserCategory extends ActiveRecord
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
                 if($category['created_by'] != $created_by) continue;
             }
+            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
+                if($category['customer_id'] != $customer_id) continue;
+            }
+            
             if($category['level'] == $level && ($include_unshow || $category['is_show'] == 1)){
                 $leveCategorys[] = $category;
             }
@@ -363,7 +370,12 @@ class UserCategory extends ActiveRecord
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
                 if($category['created_by'] != $created_by) continue;
             }
-            if($category['parent_id'] == $id && $category['customer_id'] == $customer_id && ($include_unshow || $category['is_show'] == 1)){
+            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
+                if($category['customer_id'] != $customer_id) continue;
+            }
+            
+            if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
                 $childrens[] = $category;
                 if ($recursion) {
                     $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, false, $recursion, $include_unshow, $sort_order));
@@ -411,7 +423,12 @@ class UserCategory extends ActiveRecord
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
                 if($category['created_by'] != $created_by) continue;
             }
-            if($category['parent_id'] == $id && $category['customer_id'] == $customer_id && ($include_unshow || $category['is_show'] == 1)){
+            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
+                if($category['customer_id'] != $customer_id) continue;
+            }
+            
+            if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
                 $childrens[] = $c_id;
                 if ($recursion) {
                     $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $recursion, $include_unshow));

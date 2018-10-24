@@ -93,7 +93,7 @@ class ImageSearch extends Image
         $totalCount = $query->count('id');
         //添加字段
         $query->select([
-            'Image.id', 'Image.user_cat_id', 'Image.name', 'Image.created_at', 
+            'Image.id', 'Image.user_cat_id', 'Image.name', 'Image.thumb_path', 'Image.created_at', 
             'Image.is_publish', 'Image.level', 'UserCategory.type', 'User.nickname'
         ]);
         //显示数量

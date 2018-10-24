@@ -125,7 +125,7 @@ $this->title = Yii::t('app', "{Image}{Detail}：{$model->name}", [
         </div>
         
         <div class="set-padding">
-            <img src="<?= Aliyun::absolutePath($model->file->oss_key) ?>" width="100%" height="500" />
+            <img src="<?= Aliyun::absolutePath($model->file->oss_key) ?>" width="100%" />
         </div>
         
     </div>
