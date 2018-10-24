@@ -218,7 +218,7 @@ class UserCategoryController extends GridViewChangeSelfController
             'data' => ['id' => $model->id, 'name' => $model->name],
             'message' => Yii::t('app', 'You have no permissions to perform this operation.'),
         ];
-        if($model->created_by == \Yii::$app->user->id){
+        if($model->created_by == \Yii::$app->user->id || $model->type == UserCategory::TYPE_SHARING){
             if($model->is_public){
                 return $results;
             }else{
