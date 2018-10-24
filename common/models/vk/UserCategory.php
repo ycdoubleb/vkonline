@@ -316,7 +316,12 @@ class UserCategory extends ActiveRecord
             $sort_order = 'is_public';
         }
         //默认使用当前客户id
-        $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        if(!empty(\Yii::$app->user->identity->customer_id)){
+            $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        }else{
+            $customer_id = null;
+        }
+        
         
         $leveCategorys = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
@@ -361,7 +366,11 @@ class UserCategory extends ActiveRecord
             $sort_order = 'is_public';
         }
         //默认使用当前客户id
-        $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        if(!empty(\Yii::$app->user->identity->customer_id)){
+            $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        }else{
+            $customer_id = null;
+        }
         
         $childrens = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
@@ -415,7 +424,11 @@ class UserCategory extends ActiveRecord
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
         //默认使用当前客户id
-        $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        if(!empty(\Yii::$app->user->identity->customer_id)){
+            $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
+        }else{
+            $customer_id = null;
+        }
         
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
