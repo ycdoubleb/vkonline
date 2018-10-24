@@ -66,10 +66,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     var node = data.node;
                     //生成span标签
                     var $span =  tabColumn.init({
+                        url: "/frontend_admin/user-category/change-value",
                         data:{key: node.key,fieldName:"is_show",value:node.data.is_show,dome:"this"}
                     });
                     //生成input框
                     var $input = tabColumn.init({
+                        url: "/frontend_admin/user-category/change-value",
                         type:"input",data:{key:node.key,fieldName:"sort_order",value:node.data.sort_order,dome:"this"}
                     });
                     $(node.tr).find("> td.name span.fancytree-checkbox").each(function(){

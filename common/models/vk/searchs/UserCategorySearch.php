@@ -108,7 +108,10 @@ class UserCategorySearch extends UserCategory
             'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null
         ]);
         
-        $query->orFilterWhere(['is_public' => 1]);
+        $query->orFilterWhere([
+            'is_public' => 1,
+            'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null
+        ]);
         
         $query->orWhere(new Expression("IF(type=:type, customer_id=:customer_id, null)", [
             'type' => self::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id

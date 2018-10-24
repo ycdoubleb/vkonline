@@ -223,6 +223,20 @@ class UserCategoryController extends GridViewChangeSelfController
     }
     
     /**
+     * 更新表值
+     * @param integer $id
+     * @param string $fieldName
+     * @param integer $value
+     */
+    public function actionChangeValue($id, $fieldName, $value)
+    {
+        
+        UserCategory::invalidateCache();    //清除缓存
+        
+        parent::actionChangeValue($id, $fieldName, $value);
+    }
+    
+    /**
      * Finds the UserCategory model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
