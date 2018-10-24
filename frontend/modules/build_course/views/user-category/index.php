@@ -106,7 +106,11 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                                 _this.click(function(){
                                     if(confirm("您确定要删除此项吗？") == true){
                                         $.post(\'../user-category/delete?id=\' + node.key, function(rel){
-                                            alert(rel.message);
+                                            if(rel.code == "200"){
+                                                node.remove();
+                                            }else{
+                                                alert(rel.message);
+                                            }
                                         });
                                     }
                                     return false;

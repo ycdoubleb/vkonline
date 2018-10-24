@@ -252,14 +252,14 @@ class UserCategoryController extends GridViewChangeSelfController
                         'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
                         'category_name' => $model->name,
                     ]);
-                    Yii::$app->getSession()->setFlash('success','操作成功！');
+                    $results['code'] = 200;
+                    $results['message'] = '操作成功！';
+                    return $results;
                 }
             }
         }else{
             return $results;
         }
-        
-        return $this->redirect(['index']);
     }
 
     /**
