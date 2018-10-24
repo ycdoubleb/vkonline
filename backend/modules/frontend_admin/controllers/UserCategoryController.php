@@ -230,10 +230,8 @@ class UserCategoryController extends GridViewChangeSelfController
      */
     public function actionChangeValue($id, $fieldName, $value)
     {
-        
-        UserCategory::invalidateCache();    //清除缓存
-        
         parent::actionChangeValue($id, $fieldName, $value);
+        UserCategory::invalidateCache();    //清除缓存
     }
     
     /**
