@@ -50,7 +50,7 @@ $this->title = Yii::t('app', '{My}{Image}', [
         <ul class="list-unstyled pull-left">
             <li>
                 <span class="summary">
-                    搜索结果： 共搜索到 <b><?= $totalCount ?></b> 个视频 
+                    搜索结果： 共搜索到 <b><?= $totalCount ?></b> 个图像素材
                     <i class="fa fa-times-circle times-close" aria-hidden="true"></i>
                 </span>
             </li>
