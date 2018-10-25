@@ -138,6 +138,7 @@ class Uploadfile extends ActiveRecord {
      * @return array [success,msg]
      */
     public function uploadOSS($key = null) {
+        $thumb_key = '';
         if($key == null){
              /* @var $user User */
             $user = User::findOne(['id' => $this->created_by]);
@@ -151,17 +152,26 @@ class Uploadfile extends ActiveRecord {
 
             //设置文件名
             $object_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
+            $thumb_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}_thumb.jpg";
         }else{
             $object_key = $key;
+            $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME).'_thumb.jpg';
         }
        
         try {
-            $result = Aliyun::getOss()->multiuploadFile($object_key, $this->path);
+            //上传文件
+            Aliyun::getOss()->multiuploadFile($object_key, $this->path);
+            //上传缩略图
+            if($this->thumb_path !=''){
+                Aliyun::getOss()->multiuploadFile($thumb_key, $this->thumb_path);
+                @unlink($this->thumb_path);
+                $this->thumb_path = $thumb_key."?rand=". rand(0, 999);
+            }
             //更新数据
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
             $this->oss_key = $object_key;
 
-            $this->save(false, ['oss_upload_status', 'oss_key']);
+            $this->save(false, ['oss_upload_status', 'oss_key' ,'thumb_path']);
             //删除本地文件
             @unlink($this->path);
             return ['success' => true];

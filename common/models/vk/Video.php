@@ -150,14 +150,15 @@ class Video extends ActiveRecord {
      */
     public function rules() {
         return [
+            [['user_cat_id'], 'checkUserCategoryType'],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
-                    'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
-                    "Can't be empty" => Yii::t('app', "Can't be empty.")
-                ]), 'on' => [self::SCENARIO_DEFAULT]],
+                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ]), 'on' => [self::SCENARIO_DEFAULT]],
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
-                    'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
-                    "Can't be empty" => Yii::t('app', "Can't be empty.")
-                ])],
+                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ])],
             [['duration'], 'number'],
             [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
@@ -167,6 +168,26 @@ class Video extends ActiveRecord {
             [['img'], 'string', 'max' => 255],
             [['id'], 'unique'],
         ];
+    }
+    
+    /**
+     * 检验素材文件是否为共享目录
+     * @param string $attribute     user_cat_id
+     * @param string $params
+     */
+    public function checkUserCategoryType($attribute)
+    {
+        $oldAttribute = $this->getOldAttribute($attribute); 
+        $newAttribute = $this->getAttribute($attribute); 
+        $oldCategoryModel = UserCategory::getCatById($oldAttribute);
+        $newCategoryModel = UserCategory::getCatById($newAttribute);
+        if($oldAttribute != null && $newAttribute > 0){
+            if($oldCategoryModel->type == UserCategory::TYPE_SHARING && $newCategoryModel->type != UserCategory::TYPE_SHARING){
+                $this->addError($attribute, '“共享文件”不能移动到非共享目录下。');  
+                return false; 
+            }
+        }
+        return true; 
     }
 
     /**

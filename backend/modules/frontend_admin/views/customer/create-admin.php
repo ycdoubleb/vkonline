@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'options' => [
                         'placeholder' => '请选择...',
                     ],
-                ])->label(Yii::t('app', '{Add}{People}',['Add'=>Yii::t('app', 'Add'),'People'=> Yii::t('app', 'People')])) ?>
+                ])->label(Yii::t('app', '{Add}{Personnel}',['Add'=>Yii::t('app', 'Add'),'Personnel'=> Yii::t('app', 'Personnel')])) ?>
 
                 <?= $form->field($model, 'level', [
                     'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n<div class=\"col-lg-4 col-md-4\">{error}</div>",

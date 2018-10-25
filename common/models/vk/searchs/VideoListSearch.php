@@ -3,19 +3,14 @@
 namespace common\models\vk\searchs;
 
 use common\models\User;
-use common\models\vk\Course;
-use common\models\vk\CourseNode;
 use common\models\vk\Customer;
-use common\models\vk\Knowledge;
-use common\models\vk\KnowledgeVideo;
-use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
+use yii\db\Expression;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
@@ -76,10 +71,10 @@ class VideoListSearch extends Video
         //目录
         if($sign){
             //获取分类的子级ID    
-            $userCatIds = UserCategory::getCatChildrenIds($this->user_cat_id, 1, true);     
+            $user_cat_ids = UserCategory::getCatChildrenIds($this->user_cat_id, true);
             self::$query->andFilterWhere([
-                'Video.user_cat_id' => !empty($userCatIds) ? 
-                    ArrayHelper::merge([$this->user_cat_id], $userCatIds) : $this->user_cat_id,
+                'Video.user_cat_id' => !empty($user_cat_ids) ? 
+                    ArrayHelper::merge([$this->user_cat_id], $user_cat_ids) : $this->user_cat_id,
             ]);
         }else{
             if($this->user_cat_id != null && !$sign){
@@ -92,8 +87,6 @@ class VideoListSearch extends Video
         //条件查询
         self::$query->andFilterWhere([
             'Video.teacher_id' => $this->teacher_id,
-            'Video.level' => $this->level,
-            'Video.created_by' => \Yii::$app->user->id,
             'Video.mts_status' => $this->mts_status
         ]);
         
@@ -103,7 +96,7 @@ class VideoListSearch extends Video
         //添加字段
         $addArrays = [
             'Video.user_cat_id', 'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 
-            'Video.is_publish', 'Video.level', 'Video.mts_status', 
+            'Video.is_publish', 'Video.level', 'Video.mts_status',  'UserCategory.type',
             'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
         ];
         //排序
@@ -125,8 +118,23 @@ class VideoListSearch extends Video
     {
         $page = ArrayHelper::getValue($params, 'page', 1); //分页
         $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
+        
+        //关联查询
+        self::$query->leftJoin(['UserCategory' => UserCategory::tableName()], 'UserCategory.id = Video.user_cat_id');
+        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
+        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
+        self::$query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        
         //必要条件
         self::$query->andFilterWhere(['Video.is_del' => 0,]);
+        
+        //如果目录类型是共享类型则显示共享文件
+        self::$query->andFilterWhere(['OR', 
+            ['Video.created_by' => \Yii::$app->user->id], 
+            new Expression("IF(UserCategory.type=:type, Video.customer_id=:customer_id AND Video.is_del = 0, null)", [
+                'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
+            ])
+        ]);
         
         //以视频id为分组
         self::$query->groupBy(['Video.id']);
@@ -136,10 +144,7 @@ class VideoListSearch extends Video
         self::$query->addSelect($addArrays);
         //显示数量
         self::$query->offset(($page - 1) * $limit)->limit($limit);
-        //关联查询
-        self::$query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
-        self::$query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
-        self::$query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
+        
         //查询的视频结果
         $viedoResult = self::$query->asArray()->all();      
         //以video_id为索引

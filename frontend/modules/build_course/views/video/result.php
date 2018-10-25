@@ -1,6 +1,7 @@
 <?php
 
 use common\components\aliyuncs\Aliyun;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
@@ -22,7 +23,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
 
 ?>
 
-<div class="video-index main">
+<div class="video-index vk-material main">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">
@@ -31,15 +32,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </span>
         <div class="btngroup pull-right">
             <?php
-                echo Html::a(Yii::t('app', '{Create}{Video}', [
-                        'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
-                    ]), ['create'], ['class' => 'btn btn-success btn-flat']) . '&nbsp;';
                 echo Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
-                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']) . '&nbsp;';
-                echo Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
-                    'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
-                ]);
+                    ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']);
             ?>
         </div>
     </div>
@@ -48,7 +43,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
     <?= $this->render('_search', [
         'searchModel' => $searchModel,
         'filters' => $filters,
-        'pathMap' => $pathMap,
+        'locationPathMap' => $locationPathMap,
         'teacherMap' => $teacherMap,
     ]) ?>
     
@@ -57,7 +52,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
         <ul class="list-unstyled pull-left">
             <li>
                 <span class="summary">
-                    搜索结果： 共搜索到 <b><?= $totalCount ?></b> 个视频 
+                    搜索结果： 共搜索到 <b><?= $totalCount ?></b> 个视频素材
                     <i class="fa fa-times-circle times-close" aria-hidden="true"></i>
                 </span>
             </li>
@@ -71,9 +66,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['move-video'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move', 'table_name' => 'video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
-                        'onclick' => 'showModal($(this)); return false;'
+                        'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>
                 </span>
             </li>
@@ -163,20 +158,21 @@ $this->title = Yii::t('app', '{My}{Video}', [
                     ]),
                     'format' => 'raw',
                     'filter' => false,
-                    'value' => function ($model) use($pathMap){
-                        $videoPath = '';
-                        if(isset($pathMap[$model['user_cat_id']]) && count($pathMap[$model['user_cat_id']]) > 0){
-                            $endPath = end($pathMap[$model['user_cat_id']]);
-                            foreach ($pathMap[$model['user_cat_id']] as $path) {
+                    'value' => function ($model){
+                        $pathMap = '';
+                        $locationPathMap = UserCategory::getUserCatLocationPath($model['user_cat_id']);
+                        if(isset($locationPathMap[$model['user_cat_id']]) && count($locationPathMap[$model['user_cat_id']]) > 0){
+                            $endPath = end($locationPathMap[$model['user_cat_id']]);
+                            foreach ($locationPathMap[$model['user_cat_id']] as $path) {
                                 if($path['id'] != $endPath['id']){
-                                    $videoPath .= $path['name']. '<span class="set-route">›</span>';
+                                    $pathMap .= $path['name']. '<span class="set-route">›</span>';
                                 }else{
-                                    $videoPath .= $path['name'];
+                                    $pathMap .= $path['name'];
                                 }
                             }
-                            return $videoPath;
+                            return $pathMap;
                         }else{
-                            return null;
+                            return '根目录';
                         }
                     },
                     'headerOptions' => ['style' => 'width:365px'],
@@ -231,10 +227,10 @@ $js =
     });
         
     /**
-     * 显示模态框  
+     * 显示目录模态框  
      * @param {Object} _this
      */
-    window.showModal = function(_this){
+    window.showCatalogModal = function(_this){
         var checkObject = $("input[name='Video[id]']");  
         var val = [];
         for(i in checkObject){
@@ -243,8 +239,7 @@ $js =
             }
         }
         if(val.length > 0){
-            $(".myModal").html("");
-            $('.myModal').modal("show").load(_this.attr("href") + "?move_ids=" + val);
+            showModal(_this.attr("href") + "&move_ids=" + val);
         }else{
             alert("请选择移动的视频");
         }

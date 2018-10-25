@@ -109,6 +109,13 @@
     height: 200px;
     object-fit: fill;
 }
+/*
+ * 音频样式
+ */
+.vk-audio {
+    width: 500px;
+    object-fit: fill;
+}
 /**
  * 加阴影部分
  */
@@ -147,7 +154,6 @@ textarea {
     display: inline-block;
     width: 100%;
     padding-top: 15px;
-    padding-bottom: 25px;
     border-bottom: 1px solid #f2f2f2;
 }
 .vk-form .form-horizontal .form-group {
@@ -426,9 +432,9 @@ textarea {
     white-space: inherit !important;
 }
 .vk-table .detail-des {
-    min-height: 63px;
-    display:table-cell;
-    vertical-align:middle; 
+    min-height: 80px;
+    display: flex;
+    align-items: center;
 }
 .vk-table > thead > tr > th,
 .vk-table > thead > tr > td,
@@ -458,9 +464,12 @@ textarea {
 /**
  * 重置fancytree组件激活样式 和 鼠标经过tr样式
  */
-.vk-table > tbody > tr.fancytree-active,
+.vk-table > tbody > tr.fancytree-active{
+    background-color: #eee !important;
+    cursor: pointer;
+}
 .vk-table.table-hover > tbody > tr:hover{
-    background-color: #f9f9f9 !important;
+    background-color: #f9f9f9;
     cursor: pointer;
 }
 /*******************************************************************************

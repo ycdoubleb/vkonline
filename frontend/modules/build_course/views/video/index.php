@@ -20,7 +20,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
 
 ?>
 
-<div class="video-index main">
+<div class="video-index vk-material main">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">
@@ -29,18 +29,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </span>
         <div class="btngroup pull-right">
             <?php
-                echo Html::a(Yii::t('app', '{Create}{Video}', [
-                        'Create' => Yii::t('app', 'Create'), 'Video' => Yii::t('app', 'Video')
-                    ]), ['create'], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Catalog}{Admin}', [
                         'Catalog' => Yii::t('app', 'Catalog'), 'Admin' => Yii::t('app', 'Admin')
                     ]), ['user-category/index'], ['class' => 'btn btn-unimportant btn-flat']);
-                echo '&nbsp;' . Html::a(Yii::t('app', '视频整理'), 'javascript:;', [
-                    'id' => 'arrange', 'class' => 'btn btn-unimportant btn-flat',
-                ]);
-                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
-                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-primary btn-flat', 'target' => '_blank']);
             ?>
         </div>
     </div>
@@ -49,7 +40,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
     <?= $this->render('_search', [
         'searchModel' => $searchModel,
         'filters' => $filters,
-        'pathMap' => $pathMap,
+        'locationPathMap' => $locationPathMap,
         'teacherMap' => $teacherMap,
     ]) ?>
     
@@ -57,7 +48,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
     <div class="vk-tabs">
         <ul class="list-unstyled pull-left">
             <li>
-                <span class="summary">共 <b><?= $totalCount ?></b> 个视频</span>
+                <span class="summary">共 <b><?= $totalCount ?></b> 个视频素材</span>
             </li>
         </ul>
         <ul class="list-unstyled pull-right hidden">
@@ -69,9 +60,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
             </li>
             <li>
                 <span style="padding: 0px 5px; line-height: 54px;">
-                    <?= Html::a(Yii::t('app', 'Confirm'), ['move-video'], [
+                    <?= Html::a(Yii::t('app', 'Confirm'), ['arrange/move', 'table_name' => 'video'], [
                         'id' => 'move', 'class' => 'btn btn-primary btn-flat',
-                        'onclick' => 'showModal($(this)); return false;'
+                        'onclick' => 'showCatalogModal($(this)); return false;'
                     ]) ?>
                 </span>
             </li>
@@ -88,23 +79,31 @@ $this->title = Yii::t('app', '{My}{Video}', [
         <!--目录-->
         <div class="folder">
             <ul class="list-unstyled">
-                 <?php 
-                    $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
-                    if($userCatId != null){ 
-                        echo '<li>';
-                            $parent_id = UserCategory::getCatById($userCatId)->parent_id;
-                            echo Html::a('<i class="ifolder upper-level"></i><p class="folder-name">上一级</p>', 
-                                    array_merge(['index'], array_merge($filters, ['user_cat_id' => $parent_id > 0 ? $parent_id : null ])), ['title' => '上一级']);
-                        echo '</li>';
-                    } 
-                ?>
                 <?php 
-                    foreach ($catalogMap as $catalog){
-                        $iconFolder = $catalog['is_public'] ? '<i class="ifolder folder-public"></i>' : '<i class="ifolder"></i>';
+                    $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                    if($user_cat_id != null){ 
+                        $parent_id = UserCategory::getCatById($user_cat_id)->parent_id;  //父级id
                         echo '<li>';
-                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $catalog['name'] .'</p>',
-                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $catalog['id']])),
-                            ['title' => $catalog['name'],]);
+                            echo Html::a('<i class="ifolder upper-level"></i><p class="folder-name">上一级</p>', 
+                                    array_merge(['index'], array_merge($filters, ['user_cat_id' => $parent_id > 0 ? $parent_id : null])), ['title' => '上一级']);
+                        echo '</li>';
+                    }
+                    foreach ($userCategoryMap as $category){
+                        switch ($category['type']){
+                            case UserCategory::TYPE_SYSTEM: 
+                                $iconFolder = '<i class="ifolder folder-system"></i>';
+                                break;
+                            case UserCategory::TYPE_SHARING:
+                                $iconFolder = '<i class="ifolder folder-share"></i>';
+                                break;
+                            default:
+                                $iconFolder = '<i class="ifolder"></i>';
+                                break;
+                        }
+                        echo '<li>';
+                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $category['name'] .'</p>',
+                                array_merge(['index'], array_merge($filters, ['user_cat_id' => $category['id']])),
+                            ['title' => $category['name'],]);
                         echo '</li>';
                     } 
                 ?>
@@ -112,7 +111,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
         </div>
         
         <!--视频-->
-        <div class="video set-padding">
+        <div class="material set-padding">
             <ul class="list-unstyled">
 
             </ul>
@@ -134,7 +133,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
 $list_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/video/_list.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/____list_dom.php')));
 $js = <<<JS
     
     var is_arrange = false;   //是否在整理状态
@@ -166,10 +165,10 @@ $js = <<<JS
     });
         
     /**
-     * 显示模态框  
+     * 显示目录模态框  
      * @param {Object} _this
      */
-    window.showModal = function(_this){
+    window.showCatalogModal = function(_this){
         var checkObject = $("input[name='Video[id]']");  
         var val = [];
         for(i in checkObject){
@@ -178,8 +177,7 @@ $js = <<<JS
             }
         }
         if(val.length > 0){
-            $(".myModal").html("");
-            $('.myModal').modal("show").load(_this.attr("href") + "?move_ids=" + val);
+            showModal(_this.attr("href") + "&move_ids=" + val);
         }else{
             alert("请选择移动的视频");
         }
@@ -224,7 +222,7 @@ $js = <<<JS
                 //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '200'){
                     for(var i in data.result){
-                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > div.video > ul"));
+                        var item = $(Wskeee.StringUtil.renderDOM($list_dom, data.result[i])).appendTo($(".vk-list > div.material > ul"));
                         //是否在整理状态，如果是，则换页时显示input
                         if(is_arrange){
                             var checkboxItem = item.find($('input[name="Video[id]"]'));

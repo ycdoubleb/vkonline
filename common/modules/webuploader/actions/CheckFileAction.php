@@ -23,6 +23,9 @@ class CheckFileAction extends Action {
         $fileMd5 = $_REQUEST['fileMd5'];
         $dbFile = Uploadfile::findOne(['id' => $fileMd5, 'is_del' => 0]);
         if ($dbFile) {
+            if($dbFile->oss_upload_status != Uploadfile::OSS_UPLOAD_STATUS_YES){
+                $dbFile->uploadOSS();
+            }
             return new UploadResponse(UploadResponse::CODE_FILE_EXIT, null, $dbFile->toArray());
         } else {
             $fileChunks = ArrayHelper::map(UploadfileChunk::find()

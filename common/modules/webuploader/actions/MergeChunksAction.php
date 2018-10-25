@@ -8,6 +8,7 @@
 
 namespace common\modules\webuploader\actions;
 
+use common\components\getid3\MediaInfo;
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
 use common\modules\webuploader\models\UploadResponse;
@@ -92,10 +93,29 @@ class MergeChunksAction extends Action {
                 }
                 @fclose($out);
                 /**
-                 * 创建缩略图
+                 * 创建缩略图、获取时长
                  */
-                $makeThumb = isset($_REQUEST["makeThumb"]) ? (integer) $_REQUEST["makeThumb"] : 1;
                 $thumbPath = '';
+                $duration = 0;
+                $ext = strtolower(pathinfo($uploadPath, PATHINFO_EXTENSION));
+                
+                switch ($ext){
+                    case 'mp3':
+                        /* mp3文件需要获取时长 */
+                        $info = MediaInfo::getMediaInfo($uploadPath);
+                        $duration = $info['playtime_seconds'];
+                        break;
+                    case 'jpg':
+                    case 'jpeg':
+                    case 'gif':
+                    case 'png':
+                    case 'bmp':
+                        /* 图片截图 */
+                        $thumbPath = $this->createThumb($uploadPath);
+                        break;
+                        
+                }
+                
                 /**
                  * 记录视频 width,height,duration,level,bitrate
                  */
@@ -113,6 +133,7 @@ class MergeChunksAction extends Action {
                 $dbFile->is_fixed = isset($_REQUEST['is_fixed']) ? $_REQUEST['is_fixed'] : 1;          //设置永久标志
                 $dbFile->created_by = Yii::$app->user->id;
                 $dbFile->thumb_path = $thumbPath;
+                $dbFile->duration = $duration;
                 $dbFile->size = $fileSize;
                 $dbFile->app_id = $app_id;
                 $dbFile->is_del = 0;
@@ -152,7 +173,7 @@ class MergeChunksAction extends Action {
     private function createThumb($filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND) {
         //需要生成缩略图的文件
         $filter = [
-            'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
+            //'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
             'image' => ['jpg', 'jpeg', 'png', 'gif'],
         ];
 
@@ -166,9 +187,9 @@ class MergeChunksAction extends Action {
         }
         if ($type == '') {
             //其它文件不创建缩略图，返回''
-            return "imgs/upload_filetype_icons/" . $this->getExt($fileinfo['extension']) . '.png';
+            return "";
         }
-        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg?rand=' . rand(0, 1000);
+        $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg';
         $this->mkdir($fileinfo['dirname'] . '/thumbs/');
         Image::$thumbnailBackgroundColor = '000';
         switch ($type) {

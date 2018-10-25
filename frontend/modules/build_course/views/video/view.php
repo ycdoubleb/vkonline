@@ -2,6 +2,7 @@
 
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\Course;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use frontend\assets\ClipboardAssets;
 use frontend\modules\build_course\assets\ModuleAssets;
@@ -39,21 +40,22 @@ foreach ($watermarksFiles as $watermark) {
         </span>
         <div class="btngroup pull-right">
             <?php 
-                if($model->created_by == Yii::$app->user->id && $model->mts_status !== Video::MTS_STATUS_YES){
-                    switch($model->mts_status){
-                        case Video::MTS_STATUS_NO :
-                            $statusName = Yii::t('app', 'Transcoding');
-                            $btnClass = 'btn-success';
-                            break;
-                        case Video::MTS_STATUS_DOING :
-                            $statusName = Yii::t('app', '转码中');
-                            $btnClass = 'btn-info disabled';
-                            break;
-                        case Video::MTS_STATUS_FAIL :
-                            $statusName = Yii::t('app', 'Retry');
-                            $btnClass = 'btn-danger';
-                            break;
-                    }
+                if(($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) 
+                    && $model->mts_status !== Video::MTS_STATUS_YES){
+                        switch($model->mts_status){
+                            case Video::MTS_STATUS_NO :
+                                $statusName = Yii::t('app', 'Transcoding');
+                                $btnClass = 'btn-success';
+                                break;
+                            case Video::MTS_STATUS_DOING :
+                                $statusName = Yii::t('app', '转码中');
+                                $btnClass = 'btn-info disabled';
+                                break;
+                            case Video::MTS_STATUS_FAIL :
+                                $statusName = Yii::t('app', 'Retry');
+                                $btnClass = 'btn-danger';
+                                break;
+                        }
                     echo Html::a($statusName, ['transcoding', 'id' => $model->id], [
                         'class' => 'btn btn-flat ' . $btnClass, 
                         'data' => [
@@ -79,7 +81,8 @@ foreach ($watermarksFiles as $watermark) {
                 ]) ?>
             </span>
             <div class="btngroup pull-right">
-                <?php if($model->created_by == Yii::$app->user->id){
+                <?php 
+                if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
                     echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], 
                         ['class' => 'btn btn-primary btn-flat']) . '&nbsp;';
                     echo Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
@@ -117,7 +120,7 @@ foreach ($watermarksFiles as $watermark) {
                     'attribute' => 'user_cat_id',
                     'label' => Yii::t('app', 'Catalog'),
                     'format' => 'raw',
-                    'value' => !empty($model->user_cat_id) ? $path : null,
+                    'value' => $model->user_cat_id > 0 ? str_replace(' > ', ' / ', $model->userCategory->getFullPath()) : '根目录',
                 ],
                 [
                     'attribute' => 'level',
@@ -176,7 +179,7 @@ foreach ($watermarksFiles as $watermark) {
                     'value' => date('Y-m-d H:i', $model->updated_at),
                 ],
                 [
-                    'label' => Yii::t('app', 'Video'),
+                    'label' => Yii::t('app', 'Preview'),
                     'format' => 'raw',
                     'value' => !empty($model->videoFile) ? 
                         '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . $model->img . '"></video>' : null,

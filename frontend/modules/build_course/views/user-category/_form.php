@@ -42,7 +42,7 @@ use yii\widgets\ActiveForm;
         //如果有传参id，则拿传参id的UserCategory模型
         if($id != null){
             $userCategory = UserCategory::getCatById($id);
-            $sameLevelCats = UserCategory::getSameLevelCats($userCategory->id);
+            $sameLevelCats = UserCategory::getSameLevelCats($userCategory->id, true, true);
             //max_level = 传参id的UserCategory模型的level
             $max_level = $userCategory->level;
             //如果传参id的UserCategory模型的parent_id非0，则执行
