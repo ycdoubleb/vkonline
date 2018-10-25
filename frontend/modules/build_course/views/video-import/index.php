@@ -69,7 +69,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                                     'max_level' => 10,
                                     'onChangeEvent' => new JsExpression('function(value){  }')
                                 ],
-                                'items' => UserCategory::getSameLevelCats($model->user_cat_id, true, true),
+                                'items' => UserCategory::getSameLevelCats($user_cat_id, true, true),
                                 'values' => $user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($user_cat_id)->path))),
                                 'itemOptions' => [
                                     'style' => 'width: 150px; display: inline-block;',
