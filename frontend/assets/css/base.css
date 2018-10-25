@@ -469,7 +469,7 @@ textarea {
     cursor: pointer;
 }
 .vk-table.table-hover > tbody > tr:hover{
-    background-color: #f9f9f9 !important;
+    background-color: #f9f9f9;
     cursor: pointer;
 }
 /*******************************************************************************
