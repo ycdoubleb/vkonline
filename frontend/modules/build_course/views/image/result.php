@@ -109,7 +109,7 @@ $this->title = Yii::t('app', '{My}{Image}', [
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::img(Aliyun::absolutePath(!empty($item['thumb_path']) ? $item['thumb_path'] : 'static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
+                        return Html::img(Aliyun::absolutePath(!empty($model['thumb_path']) ? $model['thumb_path'] : 'static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
                     },
                 ],
                 [

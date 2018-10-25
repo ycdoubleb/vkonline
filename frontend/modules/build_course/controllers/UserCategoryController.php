@@ -233,16 +233,16 @@ class UserCategoryController extends GridViewChangeSelfController
                     $results['message'] = '该目录存在子目录，不能删除。';
                     return $results;
                 }else if($catMaterial['video_count'] > 0){
-                    $results['message'] = '该目录存在视频，不能删除。';
+                    $results['message'] = '该目录存在视频素材，不能删除。';
                     return $results;
                 }else if($catMaterial['audio_count'] > 0){
-                    $results['message'] = '该目录存在音频，不能删除。';
+                    $results['message'] = '该目录存在音频素材，不能删除。';
                     return $results;
                 }else if($catMaterial['doc_count'] > 0){
-                    $results['message'] = '该目录存在文档，不能删除。';
+                    $results['message'] = '该目录存在文档素材，不能删除。';
                     return $results;
                 }else if($catMaterial['image_count'] > 0){
-                    $results['message'] = '该目录存在图像，不能删除。';
+                    $results['message'] = '该目录存在图像素材，不能删除。';
                     return $results;
                 }else{
                     $model->delete();
@@ -252,14 +252,14 @@ class UserCategoryController extends GridViewChangeSelfController
                         'category_path' => $model->parent_id > 0 ? UserCategory::getCatById($model->parent_id)->getFullPath() : '根目录',
                         'category_name' => $model->name,
                     ]);
-                    Yii::$app->getSession()->setFlash('success','操作成功！');
+                    $results['code'] = 200;
+                    $results['message'] = '操作成功！';
+                    return $results;
                 }
             }
         }else{
             return $results;
         }
-        
-        return $this->redirect(['index']);
     }
 
     /**
