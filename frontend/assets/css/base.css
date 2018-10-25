@@ -464,9 +464,12 @@ textarea {
 /**
  * 重置fancytree组件激活样式 和 鼠标经过tr样式
  */
-.vk-table > tbody > tr.fancytree-active,
+.vk-table > tbody > tr.fancytree-active{
+    background-color: #eee !important;
+    cursor: pointer;
+}
 .vk-table.table-hover > tbody > tr:hover{
-    background-color: #f9f9f9 !important;
+    background-color: #f9f9f9;
     cursor: pointer;
 }
 /*******************************************************************************
