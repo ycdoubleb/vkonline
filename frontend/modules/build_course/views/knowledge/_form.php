@@ -95,30 +95,31 @@ $js = <<<JS
      * 销毁百度编辑器
      */
     $('#knowledge-des').removeClass('form-control');
-    if(window.knowledge_ue){
-        /* 重新渲染 */
-        window.knowledge_ue.render('knowledge-des');
-    }else{
-        /** 
-         * 初始化百度编辑器
-         */
-        window.knowledge_ue = UE.getEditor('knowledge-des', {
-            initialFrameHeight: 400, 
-            maximumWords: 100000,
-            toolbars:[
-                [
-                    'fullscreen', 'source', '|', 
-                    'paragraph', 'fontfamily', 'fontsize', '|',
-                    'forecolor', 'backcolor', '|',
-                    'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
-                    'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
-                    'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
-                    'selectall', 'cleardoc', 
-                    'undo', 'redo',  
-                ]
+    /** 
+     * 初始化百度编辑器
+     */
+    var knowledge_ue = UE.getEditor('knowledge-des', {
+        initialFrameHeight: 400, 
+        maximumWords: 100000,
+        toolbars:[
+            [
+                'fullscreen', 'source', '|', 
+                'paragraph', 'fontfamily', 'fontsize', '|',
+                'forecolor', 'backcolor', '|',
+                'bold', 'italic', 'underline','fontborder', 'strikethrough', 'removeformat', 'formatmatch', '|', 
+                'justifyleft', 'justifyright' , 'justifycenter', 'justifyjustify', '|',
+                'insertorderedlist', 'insertunorderedlist', 'simpleupload', 'horizontal', '|',
+                'selectall', 'cleardoc', 
+                'undo', 'redo',  
             ]
-        });
-    }
+        ]
+    });
+        
+    $('.myModal').on('hidden.bs.modal', function (e) {
+        $('.myModal').off('hidden.bs.modal');
+        knowledge_ue.destroy();
+    })
+    
     
     /**
      * 引用视频事件

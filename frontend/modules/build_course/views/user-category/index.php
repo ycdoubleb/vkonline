@@ -33,13 +33,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
             </span>
             <div class="btngroup pull-right">
                 <?php
-                    echo Html::a(Yii::t('app', 'Add') . '顶级目录',  ['create'], [
-                        'class' => 'btn btn-success',
-                        'onclick' => 'showModal($(this)); return false;'
-                    ]) . '&nbsp;';
-                    echo Html::a(Yii::t('app', '{Move}{Catalog}', [
-                        'Move' => Yii::t('app', 'Move'), 'Catalog' => Yii::t('app', 'Catalog')
-                    ]), ['move'], [
+                    echo Html::a(Yii::t('app', 'Move'), ['move'], [
                         'class' => 'btn btn-unimportant btn-flat', 
                         'onclick' => 'moveCatalogModal($(this)); return false;'
                     ]);
@@ -73,7 +67,6 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                     //初始化组件
                     var tabColumn = new tabcolumn.TabSelfColumn();
                     var node = data.node;
-                    var $tdList = $(node.tr).find(">td");
                     var $span =  tabColumn.init({
                         disabled: node.data.is_public ? true : false,
                         data:{key: node.key,fieldName:"is_show",value:node.data.is_show,dome:"this"}
@@ -82,26 +75,19 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                         type:"input",disabled: node.data.is_public ? true : false,
                         data:{key:node.key,fieldName:"sort_order",value:node.data.sort_order,dome:"this"}
                     });
-                    $tdList.eq(0).find("span.fancytree-checkbox").each(function(){
+                    $(node.tr).find(">td.name span.fancytree-checkbox").each(function(){
                         if(node.data.is_public){
                             $(this).remove();
                         }
                     });
-                    $tdList.eq(1).html($span);
-                    $tdList.eq(2).html($input);
+                    $(node.tr).find(">td.is_show").html($span);
+                    $(node.tr).find(">td.sort_order").html($input);
                     //设置a标签的属性
-                    $tdList.eq(3).find("a").each(function(index){
+                    $(node.tr).find(">td.btn_groups a").each(function(index){
                         var _this = $(this);
                         switch(index){
                             case 0:
                                 _this.attr({href: \'../user-category/create?id=\' + node.key});
-                                if(node.data.level > 3){
-                                    _this.removeAttr("onclick");
-                                    _this.click(function(){
-                                        alert("目录结构不能超过4级。");
-                                        return false;
-                                    });
-                                }
                                 break;
                             case 1:
                                 _this.attr({href: \'../user-category/view?id=\' + node.key});
@@ -120,7 +106,11 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                                 _this.click(function(){
                                     if(confirm("您确定要删除此项吗？") == true){
                                         $.post(\'../user-category/delete?id=\' + node.key, function(rel){
-                                            alert(rel.message);
+                                            if(rel.code == "200"){
+                                                node.remove();
+                                            }else{
+                                                alert(rel.message);
+                                            }
                                         });
                                     }
                                     return false;
@@ -150,19 +140,19 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="text-align: left;"></td>
-                        <td style="text-align: center;"></td>
-                        <td style="text-align: center;"></td>
-                        <td style="text-align: center;">
+                        <td class="name" style="text-align: left;"></td>
+                        <td class="is_show" style="text-align: center;"></td>
+                        <td class="sort_order" style="text-align: center;"></td>
+                        <td class="btn_groups" style="text-align: center;">
                             <?php
                                 echo Html::a('<span class="glyphicon glyphicon-plus"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this).attr("href")); return false;'
                                 ]) . '&nbsp;';
                                 echo Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'View'),
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-pencil"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this).attr("href")); return false;'
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'Delete'), 
@@ -181,15 +171,7 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
 
 <?php
 $js = <<<JS
-    /**
-     * 显示模态框
-     * @param {Object} _this
-     */
-    window.showModal = function(_this){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(_this.attr("href"));
-    }    
-
+        
     /**
      * 显示移动目录模态框
      * @param {Object} _this
@@ -218,8 +200,7 @@ $js = <<<JS
             return false;
         }
         if(vals.length > 0){
-            $(".myModal").html("");
-            $('.myModal').modal('show').load(_this.attr('href') + '?move_ids=' + vals);
+            showModal(_this.attr('href') + '?move_ids=' + vals);
         }else{
             alert("请选择移动的目录。");
         }

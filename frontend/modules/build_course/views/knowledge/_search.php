@@ -13,12 +13,12 @@ use yii\widgets\ActiveForm;
 
 ?>
 
-<div class="vk-tabs">
+<div class="vk-tabs vk-material">
     <!-- 搜索 -->
     <div class="vk-form clear-border pull-left">
         
         <?php $form = ActiveForm::begin([
-            'action' => [$actionId],
+            'action' => [Yii::$app->controller->action->id],    //当前action
             'method' => 'get',
             'options' => [
                 'id' => 'knowledge-reference-form',
@@ -44,7 +44,7 @@ use yii\widgets\ActiveForm;
         <div class="col-lg-11 col-md-11 clear-padding">
             <div class="form-group field-knowledgereference-type">
                 <div class="col-lg-10 col-md-10">
-                    <?= Html::radioList('KnowledgeReference[type]', $actionId, [
+                    <?= Html::radioList('KnowledgeReference[type]', Yii::$app->controller->action->id, [
                         'my-video' => '我的视频', 'my-collect' => '我的收藏'
                     ], [
                         'itemOptions' => [
@@ -73,21 +73,20 @@ use yii\widgets\ActiveForm;
                 <div class="col-lg-11 col-md-11">
                     <ul class="breadcrumb">
                         <?php 
-                            $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
-                            if(isset($pathMap[$userCatId]) && count($pathMap[$userCatId]) > 0){
-                                $endPath = end($pathMap[$userCatId]);
-                                echo '<li>' . Html::a('根目录', [$actionId, 'user_cat_id' => null]) . '<span class="set-route">›</span></li>';
-                                foreach ($pathMap[$userCatId] as $path) {
-                                    echo '<li>';
-                                    echo Html::a($path['name'], array_merge([$actionId], array_merge($filters, ['user_cat_id' => $path['id']])));
-                                    if($path['id'] != $endPath['id']){
-                                        echo '<span class="set-route">›</span>';
+                            $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                            $setRoute = '<span class="set-route">›</span>';
+                            if(isset($locationPathMap[$user_cat_id]) && count($locationPathMap[$user_cat_id]) > 0){
+                                $endPath = end($locationPathMap[$user_cat_id]);
+                                echo Html::a('根目录' . $setRoute, ['my-video', 'user_cat_id' => null]);
+                                foreach ($locationPathMap[$user_cat_id] as $path) {
+                                    if($path['id'] == $endPath['id']){
+                                        $setRoute = '';
                                     }
-                                    echo '</li>';
+                                    echo Html::a($path['name'] . $setRoute, array_merge(['my-video'], array_merge($filters, ['user_cat_id' => $path['id']])));
                                 }
                                 echo Html::hiddenInput('user_cat_id', ArrayHelper::getValue($filters, 'user_cat_id'));
                             }else{
-                                echo '<li>目录位置...</li>';
+                                echo Html::a('目录位置...');
                             }
                         ?>
                     </ul>
@@ -130,11 +129,11 @@ $js =
         
     //单击选中radio提交表单
     $('input[name="KnowledgeReference[type]"]').click(function(){
-        $("#reference-video-list").load("../knowledge/" + $(this).val());
+        $("#reference-video-list").load("/build_course/knowledge/" + $(this).val());
     });
         
     //动态目录跳转
-    $('.breadcrumb > li > a').each(function(){
+    $('.breadcrumb > a').each(function(){
         $(this).click(function(e){
             e.preventDefault();
             $("#reference-video-list").load($(this).attr('href'));
@@ -144,9 +143,9 @@ $js =
     //更改提交表单
     window.submitForm = function(){
         if($type == 1){
-            $("#reference-video-list").load("../knowledge/result", $('#knowledge-reference-form').serialize());
+            $("#reference-video-list").load("/build_course/knowledge/result", $('#knowledge-reference-form').serialize());
         }else{
-            $("#reference-video-list").load("../knowledge/{$actionId}", $('#knowledge-reference-form').serialize());
+            $("#reference-video-list").load("/build_course/knowledge/my-collect", $('#knowledge-reference-form').serialize());
         }
     }  
 JS;

@@ -3,6 +3,7 @@
 namespace frontend\modules\build_course\utils;
 
 use common\models\User;
+use common\models\vk\Audio;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
@@ -10,13 +11,17 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
+use common\models\vk\Document;
+use common\models\vk\Image;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
+use common\models\vk\Log;
 use common\models\vk\RecentContacts;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
+use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
@@ -24,8 +29,8 @@ use Yii;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\web\NotFoundHttpException;
+
 
 
 
@@ -62,8 +67,9 @@ class ActionUtils
         try
         {  
             if($model->save()){
-                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
-                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
+                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));    //保存课程属性
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'))); //保存课程关联的标签
+                //保存课程操作日志
                 $this->saveCourseActLog(['action'=>'增加', 'title'=> '课程管理', 
                     'content' => '无', 'course_id' => $model->id]);
             }else{
@@ -87,26 +93,27 @@ class ActionUtils
      */
     public function updateCourse($model, $post)
     {
-        //获取所有新属性值
-        $newAttr = $model->getDirtyAttributes();
-        //获取所有旧属性值
-        $oldAttr = $model->getOldAttributes();
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();  //获取所有旧属性值
+            //保存Course属性
             if($model->save()){
-                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));
-                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id')));
-                if(!empty($newAttr) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
-                    $oldCategory = Category::findOne($oldAttr['category_id']);
-                    $oldTeacher = Teacher::findOne($oldAttr['teacher_id']);
+                $this->saveCourseAttribute($model->id, ArrayHelper::getValue($post, 'CourseAttribute'));    //保存课程属性
+                $this->saveObjectTags($model->id, explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'))); //保存课程关联的标签
+                /* 如果新属性值非空并且Course的cover_img非空，则执行 */
+                if(!empty($newAttributes) && !empty(ArrayHelper::getValue($post, 'Course.cover_img'))){
+                    $oldCategoryModel = Category::findOne($oldAttributes['category_id']);    //获取旧的分类model
+                    $oldTeacherModel = Teacher::findOne($oldAttributes['teacher_id']);  //获取旧的老师model
+                    //保存课程操作日志
                     $this->saveCourseActLog(['action' => '修改', 'title' => "课程管理", 'course_id' => $model->id,
                         'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r".
-                            ($oldAttr['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategory->name}>>【新】{$model->category->name},\n\r" : null).
-                            ($oldAttr['name'] !== $model->name ? "课程名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                            ($oldAttr['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacher->name} >> 【新】{$model->teacher->name}": null).
-                            ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
+                            ($oldAttributes['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategoryModel->name}>>【新】{$model->category->name},\n\r" : null).
+                            ($oldAttributes['name'] !== $model->name ? "课程名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null).
+                            ($oldAttributes['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacherModel->name} >> 【新】{$model->teacher->name}": null).
+                            ($oldAttributes['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
                     ]);
                 }
             }else{
@@ -134,7 +141,9 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
+            //修改Course的is_del属性
             if($model->update(true, ['is_del'])){
+                //保存课程操作日志
                 $this->saveCourseActLog(['action' => '删除', 'title' => "课程管理", 
                     'content' => "{$model->name}", 'course_id' => $model->id]);
             }else{
@@ -164,7 +173,9 @@ class ActionUtils
         {  
             $model->level = 0;
             $model->is_publish = 0;
+            //保存Course的level、is_publish属性
             if($model->save(true, ['level', 'is_publish'])){
+                //保存课程操作日志
                 $this->saveCourseActLog(['action' => '下架', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 return false;
@@ -196,8 +207,9 @@ class ActionUtils
 //            if(Yii::$app->user->identity->is_official){
 //                $model->level = Course::PUBLIC_LEVEL;
 //            }
-            
+            //保存Course的is_publish属性
             if($model->save(true, ['is_publish'])){
+                //保存课程操作日志
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{
                 return false;
@@ -225,17 +237,20 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            $results = $this->saveCourseUser($post);
+            $results = $this->saveCourseUser($post);    //保存协作人员
+            /* 如果协作人员非空，则执行 */
             if($results != null){
                 $is_null = false;
-                $this->saveRecentContacts($post);
+                $this->saveRecentContacts($post);   //保存最近联系人
+                //保存课程操作日志
                 $this->saveCourseActLog(['action'=>'增加', 'title'=>'协作人员',
                     'content'=>implode('、',$results), 'course_id' => $model->course_id
                 ]);
             }else{
                 $message = '未能保存协作人员。';
             }
-            if(!$is_null){  //协作人员非空的情况下提交事务
+            /* 协作人员非空的情况下提交事务 */
+            if(!$is_null){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
             }
@@ -263,10 +278,12 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            $newAttr = $model->getDirtyAttributes();    //获取新属性值
+            $newAttributes = $model->getDirtyAttributes();    //获取新属性值
             $oldPrivilege = $model->getOldAttribute('privilege');   //获取旧属性值
-            if($model->save(true, ['privilege']) && $newAttr != null){
+            /* 如果保存CourseUser的privilege属性成功，并且新属性值非空，则执行 */
+            if($model->save(true, ['privilege']) && $newAttributes != null){
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action' => '修改', 'title' => '协作人员',
                     'content'=>"调整【".$model->user->nickname."】以下属性：\n\r"
@@ -277,7 +294,8 @@ class ActionUtils
             }else{
                $message = implode("、", $model->getErrorSummary(true));
             }
-            if($is_success){    //保存成功的情况下提交事务
+            //保存成功的情况下提交事务
+            if($is_success){    
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
             }
@@ -310,8 +328,10 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
+            /* 修改CourseUser的is_del属性 */
             if($model->update(true, ['is_del'])){
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action'=>'删除','title'=>'协作人员', 
                     'content'=>'删除【'.$model->user->nickname.'】的协作',
@@ -320,7 +340,8 @@ class ActionUtils
             }else{
                $message = '未能删除成功。';
             }
-            if($is_success){    //保存成功的情况下提交事务
+            //保存成功的情况下提交事务
+            if($is_success){    
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
             }
@@ -352,7 +373,9 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //保存CourseNode属性
             if($model->save()){
+                //保存课程操作日志
                 $is_success = true;
                 $this->saveCourseActLog([
                     'action' => '增加', 'title' => "环节管理",
@@ -361,6 +384,7 @@ class ActionUtils
             }else{
                $message = '未能保存成功。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -393,21 +417,22 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            //获取所有新属性值
-            $newAttr = $model->getDirtyAttributes();
-            //获取所有旧属性值
-            $oldAttr = $model->getOldAttributes();
-            if($model->save() && !empty($newAttr)){
+            $newAttributes = $model->getDirtyAttributes();  //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+            /* 如果保存CourseNode属性成功，并且新属性值非空，则执行 */
+            if($model->save() && $newAttributes != null){
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
-                    'content'=>"调整 【{$oldAttr['name']}】 以下属性：\n\r"
-                                . ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null)
-                                . ($oldAttr['des'] !== $model->des ? "描述：【旧】{$oldAttr['des']} >> 【新】{$model->des}": null),
+                    'content'=>"调整 【{$oldAttributes['name']}】 以下属性：\n\r"
+                                . ($oldAttributes['name'] != $model->name ? "名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null)
+                                . ($oldAttributes['des'] !== $model->des ? "描述：【旧】{$oldAttributes['des']} >> 【新】{$model->des}": null),
                 ]);
             }else{
                 $message = '未能保存成功。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -437,10 +462,14 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
+            /* 修改CourseNode的is_del属性 */
             if($model->update(true, ['is_del'])){
                 $is_success = true;
-                Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);
-                $knowledges = Knowledge::findAll(['node_id' => $model->id, 'is_del' => $model->is_del]);
+                //修改该node下的所有Knowledge的is_del属性
+                Knowledge::updateAll(['is_del' => $model->is_del], ['node_id' => $model->id]);  
+                //查询所有该node下已经删除的知识点
+                $knowledges = Knowledge::findAll(['node_id' => $model->id, 'is_del' => $model->is_del]);    
+                /* 循环判断已经删除的知识点关联的资源，并删除关联关系 */
                 foreach ($knowledges as $knowledge) {
                     if($knowledge->has_resource){
                         switch($knowledge->type){
@@ -452,11 +481,13 @@ class ActionUtils
                         }
                     }
                 }
+                //保存课程操作日志
                 $this->saveCourseActLog(['action' => '删除', 'title' => "环节管理", 
                     'content' => "{$model->name}", 'course_id' => $model->course_id]);
             }else{
                 $message = '删除失败。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -485,27 +516,29 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            //资源id
-            $resId = ArrayHelper::getValue($post, 'Resource.res_id');
+            $newResourceId = ArrayHelper::getValue($post, 'Resource.res_id');   //资源id
             $model->type = Knowledge::TYPE_VIDEO_RESOURCE;
-            if(!empty($resId)){
+            //如果资源id非空，则执行
+            if($newResourceId != null){
                 $model->has_resource = 1;
                 $model->data = ArrayHelper::getValue($post, 'Resource.data');
             }
+            //保存knowledge的属性
             if($model->save()){
                 $is_success = true;
                 if($model->has_resource){
                     switch ($model->type){
-                        //如果为视频资源的是否执行
                         case Knowledge::TYPE_VIDEO_RESOURCE:
+                            //添加知识点和视频资源的关联关系
                             $resource = new KnowledgeVideo([
-                                'knowledge_id' => $model->id, 'video_id' => $resId
+                                'knowledge_id' => $model->id, 'video_id' => $newResourceId
                             ]);
                         case Knowledge::TYPE_HTML_RESOURCE:
                             break;
                     }
                     $resource->save();
                 }
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action' => '增加', 'title' => "知识点管理",
                     'content' => "{$model->node->name}>> {$model->name}",  
@@ -546,54 +579,58 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            //资源id
-            $resId = ArrayHelper::getValue($post, 'Resource.res_id');
-            //获取所有新属性值
-            $newAttr = $model->getDirtyAttributes();
-            //获取所有旧属性值
-            $oldAttr = $model->getOldAttributes();
-            if(!empty($resId)){
+            $newResourceId = ArrayHelper::getValue($post, 'Resource.res_id');   //资源id
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();  //获取所有旧属性值
+            //如果资源id非空，则执行
+            if($newResourceId != null){
                 $model->has_resource = 1;
                 $model->data = ArrayHelper::getValue($post, 'Resource.data');
             }
+            //保存Knowledge的属性
             if($model->save()){
                 $is_success = true;
                 $content = '';
                 if($model->has_resource){
                     switch ($model->type){
-                        //如果为视频资源的是否执行
                         case Knowledge::TYPE_VIDEO_RESOURCE:
+                            //获取关联的视频资源
                             $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id, 'is_del' => 0]);
-                            if($resource !== null){
-                                $oldRes = clone $resource;
-                                $oldResId = $oldRes->video_id;
-                                $resource->video_id = $resId;
-                                $resource->save(false, ['video_id']);
-                                $content .= $oldResId != $resId ? 
-                                    "视频：【旧】{$oldRes->video->name} >>【新】{$resource->video->name}" : null;
+                            /* 如果关联的视频资源非空，则替换video_id属性值，否则保存新的视频资源关联 */
+                            if($resource != null){
+                                $oldResource = clone $resource;  //旧资源
+                                $oldResourceId = $oldResource->video_id;    //旧视频资源id
+                                $resource->video_id = $newResourceId;   //新的视频资源id
+                                $resource->save(false, ['video_id']);   //保存新的视频资源id
+                                $content .= $oldResourceId != $resource->video_id ? 
+                                    "视频：【旧】{$oldResource->video->name} >>【新】{$resource->video->name}" : null;
                             }else{
-                                $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $resId]);
+                                //保存新的视频资源关联关系
+                                $resource = new KnowledgeVideo(['knowledge_id' => $model->id, 'video_id' => $newResourceId]);
                                 $resource->save();
                             }
                         case Knowledge::TYPE_HTML_RESOURCE:
                             break;
                     }
                 }
-                //新属性值非空时执行
-                if(!empty($newAttr)){
-                    $content .= ($oldAttr['name'] != $model->name ? "名称：【旧】{$oldAttr['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttr['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null);
+                //新属性值非空,执行 
+                if($newAttributes != null){
+                    $content .= ($oldAttributes['name'] != $model->name ? "名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null).
+                        ($oldAttributes['des'] != $model->des ? "描述：【旧】{$oldAttributes['des']} >>【新】{$model->des}\n\r" : null);
                 }
-                if(!empty($newAttr) || (isset($oldResId) && $oldResId != $resId)){
+                //新属性值非空或者（设置旧资源id，并且旧资源id不等于新资源id），保存课程操作日志
+                if($newAttributes != null || (isset($oldResourceId) && $oldResourceId != $newResourceId)){
+                    //保存课程操作日志
                     $this->saveCourseActLog([
                         'action' => '修改', 'title' => "知识点管理", 
                         'course_id' => $model->node->course_id, 
-                        'content' => "调整 【{$model->node->name} >> {$oldAttr['name']}】 以下属性：\n\r" . $content,
+                        'content' => "调整 【{$model->node->name} >> {$oldAttributes['name']}】 以下属性：\n\r" . $content,
                     ]);
                 }
             }else{
                 $message = '未能保存成功。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -626,19 +663,21 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
+            //修改knowledge的is_del属性值
             if($model->update(true, ['is_del'])){
                 $is_success = true;
                 if($model->has_resource){
                     switch ($model->type){
-                        //如果为视频资源的是否执行
                         case Knowledge::TYPE_VIDEO_RESOURCE:
+                            //获取知识点的视频资源关联
                             $resource = KnowledgeVideo::findOne(['knowledge_id' => $model->id]);
                         case Knowledge::TYPE_HTML_RESOURCE:
                             break;
                     }
                     $resource->is_del = $model->is_del;
-                    $resource->update(false, ['is_del']);
+                    $resource->update(false, ['is_del']);   //修改资源的is_del属性
                 }
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action' => '删除', 'title' => "知识点管理",
                     'content' => "{$model->node->name} >> {$model->name}",
@@ -646,6 +685,7 @@ class ActionUtils
             }else{
                 $message = '删除失败。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -677,20 +717,22 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
-            $table = ArrayHelper::getValue($post, 'tableName');
-            $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs');
-            $newIndexs = ArrayHelper::getValue($post, 'newIndexs');
-            $oldItems = json_decode(json_encode($oldIndexs), true);
+            $table = ArrayHelper::getValue($post, 'tableName');     //表名
+            $oldIndexs = ArrayHelper::getValue($post, 'oldIndexs'); //旧的排序
+            $newIndexs = ArrayHelper::getValue($post, 'newIndexs'); //新的排序
+            $oldItems = json_decode(json_encode($oldIndexs), true); 
             $newItems = json_decode(json_encode($newIndexs), true);
             foreach ($newItems as $id => $sortOrder){
-                $number += $this->updateTableAttribute($id, $table, $sortOrder);
+                $number += $this->updateTableAttribute($id, $table, $sortOrder);    //修改表属性值
             }
             if($number > 0){
                 $is_success = true;
+                //保存顺序调整记录
                 $this->saveSortOrderLog($table, $course_id, $oldItems, $newItems, array_keys($newItems));
             }else{
                 $message = '未能移动成功，请重新尝试。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -720,9 +762,12 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //保存课程附件
             $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
+            //如果课程附件数量大于0，则执行
             if(count($results) > 0) {
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action'=>'增加', 'title'=>'课程资源', 'course_id' => $model->course_id,
                     'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 
@@ -730,6 +775,7 @@ class ActionUtils
             }else{
                 $message = '添加课程附件失败。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -759,9 +805,12 @@ class ActionUtils
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            //保存课程附件
             $results = $this->saveCourseAttachment($model->course_id, ArrayHelper::getValue($post, 'files', []));
+            //如果课程附件数量大于0，则执行
             if(count($results) > 0) {
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog([
                     'action'=>'增加', 'title'=>'课程资源', 'course_id' => $model->course_id,
                     'content'=>implode('、', ArrayHelper::getColumn($results, 'name')), 
@@ -769,6 +818,7 @@ class ActionUtils
             }else{
                 $message = '修改课程附件失败。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -798,13 +848,16 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
+            //修改课程附件的is_del属性
             if($model->update(false, ['is_del'])){
                 $is_success = true;
+                //保存课程操作日志
                 $this->saveCourseActLog(['action'=>'删除','title'=>'课程资源', 
                     'content'=>"删除【{$model->uploadfile->name}】", 'course_id'=>$model->course_id]);
             }else{
                 $message = '删除课程附件失败。';
             }
+            //保存成功的情况下提交事务
             if($is_success){
                 $trans->commit();  //提交事务
                 $message = '操作成功。';
@@ -828,44 +881,50 @@ class ActionUtils
      */
     public function createVideo($model, $post)
     {
-        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-        $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
-        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks',[]));    //水印id
-        $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
-        //如果上传的视频文件已经被使用过, 则返回使用者的信息
-        $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-        if($userInfo['results']){
-            throw new NotFoundHttpException(
-                "{$userInfo['message']}\n\r"
-                . "以下是该视频文件著作者的信息：\n\r"
-                . "著作者：{$userInfo['data']['nickname']}\n\r"
-                . "手机号：{$userInfo['data']['phone']}\n\r"
-                . "视频id：{$userInfo['data']['video_id']}\n\r"
-                . "视频名：{$userInfo['data']['video_name']}\n\r"
-                . "文件名：{$userInfo['data']['file_name']}"
-            );
-        }
-        //查询实体文件
-        $uploadFile = $this->findUploadfileModel($fileId);
-        //需保存的Video属性
-        $model->duration = $uploadFile->duration;
-        $model->img = $uploadFile->thumb_path;
-        $model->is_link = $uploadFile->is_link;
-        $model->mts_watermark_ids = $watermarkIds;
-        $model->is_publish = 1;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+            $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks',[]));    //水印id
+            $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
+            
+            //如果上传的视频文件已经被使用过, 则返回使用者的信息
+            $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+            if($userInfo['results']){
+                throw new NotFoundHttpException(
+                    "{$userInfo['message']}\n\r"
+                    . "以下是该视频文件著作者的信息：\n\r"
+                    . "著作者：{$userInfo['data']['nickname']}\n\r"
+                    . "手机号：{$userInfo['data']['phone']}\n\r"
+                    . "视频id：{$userInfo['data']['video_id']}\n\r"
+                    . "视频名：{$userInfo['data']['video_name']}\n\r"
+                    . "文件名：{$userInfo['data']['file_name']}"
+                );
+            }
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($fileId);
+            //需保存的Video属性
+            $model->duration = $uploadFile->duration;
+            $model->img = $uploadFile->thumb_path;
+            $model->is_link = $uploadFile->is_link;
+            $model->mts_watermark_ids = $watermarkIds;
+            $model->is_publish = 1;
+            //保存video属性
             if($model->save()){
-                $videoFile = new VideoFile([
-                    'video_id' => $model->id, 'is_source' => 1, 'file_id' => $fileId,
-                ]);
+                $videoFile = new VideoFile(['video_id' => $model->id, 'is_source' => 1, 'file_id' => $fileId]);
+                //如果视频实体文件关联表属性保存成功，并且是自动转码，则执行转码需求
                 if($videoFile->save() && $mts_need){
                     VideoAliyunAction::addVideoTranscode($model->id);
                     VideoAliyunAction::addVideoSnapshot($model->id);
                 }
-                $this->saveObjectTags($model->id, $tagIds, 2);
+                $this->saveObjectTags($model->id, $tagIds, 2);  //保存视频标签
+                //保存日志
+                Log::savaLog('素材', '____material_add', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
             }else{
                 return false;
             }
@@ -887,23 +946,29 @@ class ActionUtils
      */
     public function updateVideo($model, $post)
     {
-        $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-        $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
-        $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks', []));    //水印id
-        $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
-        //查询实体文件
-        $uploadFile = $this->findUploadfileModel($fileId);
-        //需保存的Video属性
-        $model->duration = $uploadFile->duration;
-        $model->img = $uploadFile->thumb_path;
-        $model->is_link = $uploadFile->is_link;
-        $model->mts_watermark_ids = $watermarkIds;
         /** 开启事务 */
         $trans = Yii::$app->db->beginTransaction();
         try
         {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+            $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks', []));    //水印id
+            $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+            
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($fileId);
+            //需保存的Video属性
+            $model->duration = $uploadFile->duration;
+            $model->img = $uploadFile->thumb_path;
+            $model->is_link = $uploadFile->is_link;
+            $model->mts_watermark_ids = $watermarkIds;
+            //保存video属性
             if($model->save()){
+                //查询视频实体文件关联数据
                 $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
+                /* 如果旧的视频实体文件id不等于新的视频实体文件id，则执行 */
                 if($videoFile->file_id != $fileId){
                     //如果上传的视频文件已经被使用过, 则返回使用者的信息
                     $userInfo = $this->getUploadVideoFileUserInfo($fileId);
@@ -920,12 +985,22 @@ class ActionUtils
                     }
                     $model->mts_status = Video::MTS_STATUS_NO;
                     $videoFile->file_id = $fileId;
+                    //如果视频实体文件id保存成功，并且转码状态是自动转码，则执行转码需求
                     if($videoFile->save(false, ['file_id']) && $mts_need){
                         VideoAliyunAction::addVideoTranscode($model->id);
                         VideoAliyunAction::addVideoSnapshot($model->id);
                     }
                 }
                 $this->saveObjectTags($model->id, $tagIds, 2);
+                //如果设置了新属性的name，则保存日志
+                if(isset($newAttributes['name'])){
+                    //保存日志
+                    Log::savaLog('素材', '____material_update', [
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                        'material_old_name' => $oldAttributes['name'],
+                        'material_new_name' => $newAttributes['name'],
+                    ]);
+                }
             }else{
                 return false;
             }
@@ -952,10 +1027,15 @@ class ActionUtils
         try
         {  
             $model->is_del = 1;
-            $knowledgeVideo = KnowledgeVideo::findAll(['is_del' => 0]);
-            $videoIds = ArrayHelper::getColumn($knowledgeVideo, 'video_id'); 
+            $knowledgeVideo = KnowledgeVideo::findAll(['is_del' => 0]); //获取所有知识点关联的视频
+            $videoIds = ArrayHelper::getColumn($knowledgeVideo, 'video_id');    //获取所有知识点视频id
+            //修改vide的is_del不成功，并且视频id在知识点视频数组里，则返回false
             if($model->update(true, ['is_del']) && !in_array($model->id, $videoIds)){
-                
+                //保存日志
+                Log::savaLog('素材', '____material_delete', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
             }else{
                 return false;
             }
@@ -994,6 +1074,366 @@ class ActionUtils
             $trans ->rollBack(); //回滚事务
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
+    }
+    
+    /**
+     * 添加音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function createAudio($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
+
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Audio属性
+            $model->duration = $uploadFile->duration;
+            $model->is_publish = 1;
+            //保存Audio属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 3);  //保存音频的标签
+                //保存日志
+                Log::savaLog('素材', '____material_add', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function updateAudio($model, $post)
+    {        
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+            
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Video属性
+            $model->duration = $uploadFile->duration;
+            //保存Audio的属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 3);  //保存音频的标签
+                //如果设置了新属性的name，则保存日志
+                if(isset($newAttributes['name'])){
+                    //保存日志
+                    Log::savaLog('素材', '____material_update', [
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                        'material_old_name' => $oldAttributes['name'],
+                        'material_new_name' => $newAttributes['name'],
+                    ]);
+                }
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除音频操作
+     * @param Audio $model
+     * @throws Exception
+     */
+    public function deleteAudio($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            //修改Audio的is_del属性
+            if($model->update(true, ['is_del'])){
+                //保存日志
+                Log::savaLog('素材', '____material_delete', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 添加文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function createDocument($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
+
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Document属性
+            $model->duration = $uploadFile->duration;
+            $model->is_publish = 1;
+            //保存Document的属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 4);  //保存文档的标签
+                //保存日志
+                Log::savaLog('素材', '____material_add', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function updateDocument($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+            
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Document属性
+            $model->duration = $uploadFile->duration;
+            //保存Document的属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 4);  //保存文档标签
+                //如果设置了新属性的name，则保存日志
+                if(isset($newAttributes['name'])){
+                    //保存日志
+                    Log::savaLog('素材', '____material_update', [
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                        'material_old_name' => $oldAttributes['name'],
+                        'material_new_name' => $newAttributes['name'],
+                    ]);
+                }
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除文档操作
+     * @param Document $model
+     * @throws Exception
+     */
+    public function deleteDocument($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            //修改Document的is_del属性
+            if($model->update(true, ['is_del'])){
+                //保存日志
+                Log::savaLog('素材', '____material_delete', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 添加图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function createImage($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
+
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Image属性
+            $model->thumb_path = $uploadFile->thumb_path;
+            $model->is_publish = 1;
+            //保存Image的属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 5);  //保存图像的标签
+                //保存日志
+                Log::savaLog('素材', '____material_add', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 编辑图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function updateImage($model, $post)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
+            $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
+            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
+            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
+
+            //查询实体文件
+            $uploadFile = $this->findUploadfileModel($model->file_id);
+            //需保存的Image属性
+            $model->thumb_path = $uploadFile->thumb_path;
+            //保存Image的属性
+            if($model->save()){
+                $this->saveObjectTags($model->id, $tagIds, 5);  //保存图像的标签
+                //如果设置了新属性的name，则保存日志
+                if(isset($newAttributes['name'])){
+                    //保存日志
+                    Log::savaLog('素材', '____material_update', [
+                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                        'material_old_name' => $oldAttributes['name'],
+                        'material_new_name' => $newAttributes['name'],
+                    ]);
+                }
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
+    }
+    
+    /**
+     * 删除图像操作
+     * @param Image $model
+     * @throws Exception
+     */
+    public function deleteImage($model)
+    {
+        /** 开启事务 */
+        $trans = Yii::$app->db->beginTransaction();
+        try
+        {  
+            $model->is_del = 1;
+            //修改Image的is_del属性
+            if($model->update(true, ['is_del'])){
+                //保存日志
+                Log::savaLog('素材', '____material_delete', [
+                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
+                    'material_name' => $model->name,
+                ]);
+            }else{
+                return false;
+            }
+            
+            $trans->commit();  //提交事务
+            Yii::$app->getSession()->setFlash('success','操作成功！');
+        }catch (Exception $ex) {
+            $trans ->rollBack(); //回滚事务
+            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
+        }
+        
+        return true;
     }
     
     /**
@@ -1268,7 +1708,7 @@ class ActionUtils
      * 保存对象标签
      * @param string $objectId  对象id
      * @param array $tagArrays  标签
-     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 老师]）
+     * @param integer $type     类型（[1 => 课程, 2 => 视频, 3 => 音频]）
      */
     protected function saveObjectTags($objectId, $tagArrays, $type = 1)
     {

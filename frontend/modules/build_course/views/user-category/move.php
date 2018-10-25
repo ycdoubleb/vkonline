@@ -26,10 +26,6 @@ $this->title = '选择移动到哪个目录';
             
             <div class="modal-body clear-padding" style="max-height: 500px; overflow-y: auto;">
                 
-                <div class="top-level">
-                    <?= Html::a('&nbsp;移动到根目录下', ['move', 'move_ids' => $move_ids], ['data-method' => 'post']) ?>
-                </div>
-                
                 <?php echo FancytreeWidget::widget([
                     'options' =>[
                         'id' => 'table-fancytree_2', // 设置整体id

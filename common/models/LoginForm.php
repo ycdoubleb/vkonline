@@ -118,6 +118,14 @@ class LoginForm extends Model
     {
         if (!empty($phone)) {
             $user = User::findOne(['phone' => $phone, 'status' => User::STATUS_ACTIVE]);
+            //检查客户是否到期停用 停用则不能登录
+            if($user->type == User::TYPE_GROUP){
+                $customer = Customer::findOne($user->customer_id);
+                if($customer->status == Customer::STATUS_STOP){
+                    Yii::$app->getSession()->setFlash('error', '客户套餐已到期！待管理员续费后可继续使用');
+                    return false;
+                }
+            }
             $hasLogin = Yii::$app->user->login($user, $this->rememberMe ? 3600 * 24 * 30 : 0);
             if($hasLogin && $this->userClass == User::class){
                 $user->generateAccessToken();

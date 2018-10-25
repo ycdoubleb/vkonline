@@ -76,7 +76,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 'name' => Yii::t('app', 'Publish'),
                 'url' => ['publish', 'id' => $model->id],
                 'icon' => null,
-                'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => 'showModal($(this));return false;'],
+                'options' => ['class' => 'btn btn-info btn-flat', 'onclick' => 'showModal($(this).attr("href")); return false;'],
                 'symbol' => '&nbsp;',
                 'conditions' => !$model->is_publish && !$model->is_del && $haveAllPrivilege,
                 'adminOptions' => true,
@@ -191,7 +191,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
                 <?php 
                     if($haveAllPrivilege && !$model->is_publish && !$model->is_del){
                         echo Html::a(Yii::t('app', 'Add'), ['course-user/create', 'course_id' => $model->id], [
-                            'class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));'
+                            'class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this).attr("href"));'
                         ]);
                     }
                 ?>
@@ -224,7 +224,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             <div class="btngroup pull-right">
                 <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
                         echo Html::a(Yii::t('app', 'Add'), ['course-node/create', 'course_id' => $model->id],[
-                            'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this));return false;'
+                            'class' => 'btn btn-success btn-flat', 'onclick' => 'showModal($(this).attr("href"));return false;'
                         ]);
                         $form = ActiveForm::begin([
                             'action' => ['import', 'id' => $model->id],
@@ -268,7 +268,7 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
             <div class="btngroup pull-right">
                 <?php if($haveEditPrivilege && !$model->is_publish && !$model->is_del){
                     echo Html::a(Yii::t('app', 'Add'), ['course-attachment/create', 'course_id' => $model->id], 
-                        ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this));']);
+                        ['class' => 'btn btn-success btn-flat', 'onclick'=>'return showModal($(this).attr("href"));']);
                 }?>
             </div>
         </div>
@@ -317,16 +317,6 @@ $js = <<<JS
     //加载课程操作日志列表
     $('#act_log').load("../course-actlog/index?course_id={$model->id}");
         
-    /**
-     * 显示模态框
-     * @param {Object} _this   
-     */
-    window.showModal = function(_this){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(_this.attr("href"));
-        return false;
-    }    
-    
     window.submitForm = function(){
         $('#import-frame-form').submit();
     }

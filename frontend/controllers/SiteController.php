@@ -252,16 +252,18 @@ class SiteController extends Controller
         //保存在sesson中的电话号码/验证码
         $sessonPhone = Yii::$app->session->get('code_phone', '');
         $sessonCode = Yii::$app->session->get('code_code', '');
-        if($sessonPhone != $phone || $sessonCode != $code){
-            Yii::$app->getSession()->setFlash('error','号码或验证码错误！');
-        } elseif ($model->load($post)) {
-            if ($user = $this->signup($post)) {
-                if (Yii::$app->getUser()->login($user)) {
-                    return $this->goHome();
+        if(!empty($phone)){
+            if($sessonPhone != $phone || $sessonCode != $code){
+                Yii::$app->getSession()->setFlash('error','号码或验证码错误！');
+            } elseif ($model->load($post)) {
+                if ($user = $this->signup($post)) {
+                    if (Yii::$app->getUser()->login($user)) {
+                        return $this->goHome();
+                    }
                 }
             }
         }
-
+        
         return $this->render('signup', [
             'model' => $model,
             'code' => ArrayHelper::getValue($params, 'code'),

@@ -16,7 +16,7 @@ $this->title = Yii::t('app', "{Add}{Knowledge}",[
 
 <div class="knowledge-create main vk-modal">
 
-    <div class="modal-dialog modal-lg modal-width" role="document">
+    <div class="modal-dialog" style="width: 1200px" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -24,7 +24,7 @@ $this->title = Yii::t('app', "{Add}{Knowledge}",[
                 </button>
                 <h4 class="modal-title" id="myModalLabel"><?= Html::encode($this->title) ?></h4>
             </div>
-            <div class="modal-body modal-height">
+            <div class="modal-body" style="height: 720px; overflow: auto;">
                 
                 <?= $this->render('_form', [
                     'model' => $model,

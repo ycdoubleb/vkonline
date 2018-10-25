@@ -31,9 +31,9 @@ use yii\web\View;
                 <div class="icongroup">
                     <?php if($haveEditPrivilege && !$nodes->course->is_publish){
                         echo Html::a('<i class="fa fa-plus"></i>', ['knowledge/create', 'node_id' => $nodes->id], [
-                            'onclick'=>'showModal($(this)); return false;']) . '&nbsp;';
+                            'onclick'=>'showModal($(this).attr("href")); return false;']) . '&nbsp;';
                         echo Html::a('<i class="fa fa-pencil"></i>', ['course-node/update','id' => $nodes->id], [
-                            'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
+                            'onclick'=>'showModal($(this).attr("href"));return false;']) . '&nbsp;';
                         echo Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
                                 'data' => [
                                     'pjax' => 0, 
@@ -63,7 +63,7 @@ use yii\web\View;
                                     echo Html::a('<i class="fa fa-eye"></i>', ['/study_center/default/view', 'id'=> $knowledge->id], ['target' => '_blank']) . '&nbsp;';
                                     if($haveEditPrivilege && !$nodes->course->is_publish){
                                         echo Html::a('<i class="fa fa-pencil"></i>', ['knowledge/update','id' => $knowledge->id], [
-                                            'onclick'=>'showModal($(this));return false;']) . '&nbsp;';
+                                            'onclick'=>'showModal($(this).attr("href"));return false;']) . '&nbsp;';
                                         echo Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
                                             'data' => [
                                                 'pjax' => 0, 

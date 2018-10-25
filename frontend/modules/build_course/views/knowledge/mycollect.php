@@ -14,8 +14,6 @@ $this->title = Yii::t('app', "{Add}{Video}",[
     'Add' => Yii::t('app', 'Add'), 'Video' => Yii::t('app', 'Video')
 ]);
 
-//当前action
-$actionId = Yii::$app->controller->action->id;
 
 ?>
 
@@ -26,7 +24,6 @@ $actionId = Yii::$app->controller->action->id;
         'searchModel' => $searchModel,
         'filters' => $filters,
         'type' => $type,
-        'actionId' => $actionId,
     ]) ?>
     
     <!--列表-->
@@ -48,6 +45,7 @@ $actionId = Yii::$app->controller->action->id;
     
     <!--加载-->
     <div class="loading-box">
+        <span id="mycollect" class="loadmore" style="display: none; cursor:pointer">加载更多</span>
         <span class="loading" style="display: none"></span>
         <span class="no_more" style="display: none">没有更多了</span>
     </div>
@@ -60,7 +58,7 @@ $tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
 $params_js = json_encode($filters); //js参数
 //加载 REF_DOM 模板
 $ref_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/knowledge/_list.php')));
+    $this->renderFile('@frontend/modules/build_course/views/knowledge/_list_dom.php')));
 $js = 
 <<<JS
    
@@ -69,17 +67,12 @@ $js =
      */
     var page = 0; //页数
     var isPageLoading = false;
-    $(".myModal .modal-body").scroll(function(){
-        var contentHeight = $(this).innerHeight();   //内容高度  
-        var scrollHeight  = $(this).get(0).scrollHeight;   //真实的宽高  
-        var scrollTop  = $(this).get(0).scrollTop ;  //滚动的最顶端部分
-        if(scrollHeight - scrollTop <= contentHeight) { 
-            loaddata(page, "/build_course/knowledge/$actionId");
-        }  
+    $('.loadmore').click(function(){
+        loaddata(page, "/build_course/knowledge/my-collect");
     });
         
     //加载第一页的课程数据
-    loaddata(page, "/build_course/knowledge/$actionId");
+    loaddata(page, "/build_course/knowledge/my-collect");
     /**
      * 加载数据
      * @param int target_page 指定页
@@ -89,6 +82,7 @@ $js =
         var maxPageNum =  $totalCount / 15;
         // 当前页数是否大于最大页数
         if(target_page > Math.ceil(maxPageNum)){
+            $('.loadmore').hide();
             $('.loading').hide();
             $('.no_more').show();
             return;
@@ -116,10 +110,6 @@ $js =
                             $(this).find(".list-body a.choice").hide();
                         });
                     }
-                    //如果当前页大于最大页数显示“没有更多了”
-                    if(page > Math.ceil(maxPageNum)){
-                        $('.no_more').show();
-                    }
                 }else{
                     $.notify({
                         message: rel['message'],    //提示消息
@@ -127,8 +117,15 @@ $js =
                         type: "danger", //错误类型
                     });
                 }
+                $('.loadmore').show();
                 $('.loading').hide();   //隐藏loading
+                //如果当前页大于最大页数显示“没有更多了”
+                if(page > Math.ceil(maxPageNum)){
+                    $('.loadmore').hide();
+                    $('.no_more').show();
+                }
             });
+            $('.loadmore').hide();
             $('.loading').show();
             $('.no_more').hide();
         }
