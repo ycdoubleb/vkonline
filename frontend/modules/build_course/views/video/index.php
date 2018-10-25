@@ -48,7 +48,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
     <div class="vk-tabs">
         <ul class="list-unstyled pull-left">
             <li>
-                <span class="summary">共 <b><?= $totalCount ?></b> 个视频</span>
+                <span class="summary">共 <b><?= $totalCount ?></b> 个视频素材</span>
             </li>
         </ul>
         <ul class="list-unstyled pull-right hidden">
