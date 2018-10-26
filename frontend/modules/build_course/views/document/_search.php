@@ -100,7 +100,7 @@ use yii\widgets\ActiveForm;
                 ]);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat disabled', 'target' => '_blank']);
+                ]), ['/build_course/document-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
             ?>
         </div>
         

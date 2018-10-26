@@ -7,7 +7,7 @@ use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use frontend\assets\ClipboardAssets;
-use frontend\modules\build_course\assets\AudioImportAssets;
+use frontend\modules\build_course\assets\DocumentImportAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -16,14 +16,14 @@ use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
-$this->title = Yii::t('app', '{Batch}{Import}{Audio}', [
-    'Batch' => Yii::t('app', 'Batch'),  'Import' => Yii::t('app', 'Import'),  'Audio' => Yii::t('app', 'Audio')
+$this->title = Yii::t('app', '{Batch}{Import}{Document}', [
+    'Batch' => Yii::t('app', 'Batch'),  'Import' => Yii::t('app', 'Import'),  'Document' => Yii::t('app', 'Document')
 ]);
 
 GrowlAsset::register($this);
 WatermarkAsset::register($this);
 ClipboardAssets::register($this);
-AudioImportAssets::register($this);
+DocumentImportAssets::register($this);
 TagsInputAsset::register($this);
 
 //获取flash上传组件路径
@@ -31,11 +31,11 @@ $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this
 $csrfToken = Yii::$app->request->csrfToken;
 //加载 DOM 模板
 $file_select_dom = str_replace("\n", ' ', $this->render('____file_select_dom'));
-$audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom'));
+$document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_tr_dom'));
 
 ?>
 
-<div class="audio-import container">
+<div class="document-import container">
     
     <div class="panel">
         <div class="panel-head"><?= $this->title ?></div>
@@ -45,8 +45,8 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <p>1、批量导入<?= Html::a('（表格模板下载）', Aliyun::absolutePath('static/doc/template/audio_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
-                <p>2、导入步骤：（1）选择存放目录 > （2）上传音频信息 > （3）导入音频文件 > （4）提交</p>
+                <p>1、批量导入<?= Html::a('（表格模板下载）', Aliyun::absolutePath('static/doc/template/document_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
+                <p>2、导入步骤：（1）选择存放目录 > （2）上传文档信息 > （3）导入文档文件 > （4）提交</p>
             </div>
             
             <!-- 公共设置 -->
@@ -56,7 +56,7 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                 <div class="setting-box">
                     <div class="setting-item">
                         <div class="title">存放目录：</div>
-                        <div class="audio-dir-box"><?=
+                        <div class="document-dir-box"><?=
                             DepDropdown::widget([
                                 'name' => 'user_cat_id',
                                 'value' => $user_cat_id,
@@ -76,15 +76,15 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                 </div>
             </div>
             
-            <!-- 视频信息 -->
+            <!-- 文档信息 -->
             <hr/>
-            <div class="audio-info">
+            <div class="document-info">
                 <div class="title">上传音频信息
                     <!--文件上传-->
                     <div class="pull-right">
                         <?php $form = ActiveForm::begin([
                             'options'=>[
-                                'id' => 'audioinfo-upload-form',
+                                'id' => 'documentinfo-upload-form',
                                 'class'=>'form-horizontal',
                                 'enctype' => 'multipart/form-data',
                                 'method' => 'post',
@@ -94,7 +94,7 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                         <div class="vk-uploader">
                             <div class="btn btn-pick">选择文件</div>
                             <div class="file-box">
-                                <input type="file" id="importfile" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="uploadAudioInfo()">
+                                <input type="file" id="importfile" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="uploadDocumentInfo()">
                             </div>
                         </div>
 
@@ -107,9 +107,9 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                     <thead>
                         <tr>
                             <th style="width: 30px;">#</th>
-                            <th style="width: 200px;">音频名称</th>
-                            <th style="width: 320px;">音频标签</th>
-                            <th style="width: 300px;">音频文件</th>
+                            <th style="width: 200px;">文档名称</th>
+                            <th style="width: 320px;">文档标签</th>
+                            <th style="width: 300px;">文档文件</th>
                             <th style="width: 100px;">&nbsp;</th>
                         </tr>
                     </thead>
@@ -119,9 +119,9 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                 </table>
             </div>
             
-            <!-- 音频文件 -->
+            <!-- 文档文件 -->
             <div class="aduio-file">
-                <div class="title">上传音频文件</div>
+                <div class="title">上传文档文件</div>
                 <div class="uploader-box">
                     <div id="uploader-container" class="clear-padding"></div>
                 </div>
@@ -129,21 +129,21 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
         </div>
         <!-- 提交 -->
         <div class="panel-foot submit-box">
-            <a id="audio-submit" class="btn btn-highlight btn-flat">提交</a>
+            <a id="document-submit" class="btn btn-highlight btn-flat">提交</a>
             <span id="submit-result"></span>
         </div>
     </div>
     
     <!-- 模态框 -->
     <div id="pop-modal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog" style="width: 1200px;" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">预览音频</h4>
+                    <h4 class="modal-title">预览文档</h4>
                 </div>
                 <div class="modal-body">
-                    <audio id="media-player" style="width: 100%;" autoplay="true" controls="controls"></audio>
+                    <iframe id="media-player" width="100%" height="600" style="border: none"></iframe>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -157,29 +157,29 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
     //是否为导入中
     var php_isImport = <?= $isImport ? 1 : 0 ?>;
     //音频数据
-    var php_audiodatas = <?= json_encode($audios) ?>;
+    var php_documentdatas = <?= json_encode($documents) ?>;
     //音频文件下拉dom
     var php_file_select_dom = '<?= $file_select_dom ?>';
     //音频 tr dom
-    var php_audio_data_tr_dom = '<?= $audio_data_tr_dom ?>';
+    var php_document_data_tr_dom = '<?= $document_data_tr_dom ?>';
     //csrf key
     var php_csrf_param = "<?= Yii::$app->getRequest()->csrfParam ?>";
     //csrf value
     var php_csrf_value = "<?= Yii::$app->getRequest()->csrfToken ?>";
 
     //批量上传控制器
-    var audioBatchUpload;
+    var documentBatchUpload;
     //音频文件上传组件
     var uploader;
     //上传工具的音频
-    var uploaderAudios = [];
+    var uploaderDouments = [];
     
     /**
      * html 加载完成后初始化所有组件
      * @returns {void}
      */
     window.onload = function(){
-        initAudioInfo();        //初始音频信息
+        initDocumentInfo();        //初始文档信息
         initEuploader();        //初始音频文件上传
         initSubmit();           //初始提交
     }
@@ -189,54 +189,54 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
     * 音频信息上传
     *
     ************************************************************************************/
-    function initAudioInfo(){
+    function initDocumentInfo(){
         // 初始并且初始化指量上传控制器
-        audioBatchUpload = new youxueba.AudioBatchUpload({
+        documentBatchUpload = new youxueba.DocumentBatchUpload({
             file_select_dom : php_file_select_dom,
-            audio_data_tr_dom : php_audio_data_tr_dom,
+            document_data_tr_dom : php_document_data_tr_dom,
         });
-        audioBatchUpload.init(php_audiodatas);
+        documentBatchUpload.init(php_documentdatas);
         /**
          * 上传完成
          */
-        $(audioBatchUpload).on('submitFinished',function(){
-            var max_num = this.audios.length;
+        $(documentBatchUpload).on('submitFinished',function(){
+            var max_num = this.documents.length;
             var completed_num = 0;
-            $.each(this.audios,function(){
+            $.each(this.documents,function(){
                 if(this.submit_result){
                     completed_num++;
                 }
             });
-            $('#submit-result').html("共有 "+max_num+" 个音频需要上传，其中 "+completed_num+" 个成功， "+(max_num - completed_num)+" 个失败！");
+            $('#submit-result').html("共有 "+max_num+" 个文档需要上传，其中 "+completed_num+" 个成功， "+(max_num - completed_num)+" 个失败！");
             $.notify({message: '提交完成'}, {type: "success"});
         });
         
         
         /* 弹出视频模态框 */
         $('#pop-modal').on('shown.bs.modal',function(){
-            $('#media-player').get(0).play();
+            
         });
         $('#pop-modal').on('hide.bs.modal',function(){
-            $('#media-player').get(0).pause();
+            $('#media-player').get(0).src = '';
         });
     }
     /* 提交表数据 */
-    function uploadAudioInfo(){
+    function uploadDocumentInfo(){
         var cps = getSubmitCommonParams();
         var cps_str = "user_cat_id="+cps['user_cat_id'];
         //添加传参数
-        $('#audioinfo-upload-form').attr("action", "/build_course/audio-import?"+cps_str);
-        $('#audioinfo-upload-form').submit();
+        $('#documentinfo-upload-form').attr("action", "/build_course/document-import?"+cps_str);
+        $('#documentinfo-upload-form').submit();
         return false;
     }
     
     /**
-     * 弹出音频
+     * 弹出文档
      * @param {JQueryDom} $dom
      * @returns {void}
      */
-    function popAudio($dom){
-        $('#media-player').get(0).src = $dom.attr('data-path');
+    function popDocument($dom){
+        $('#media-player').get(0).src = 'http://eezxyl.gzedu.com/?furl=' + $dom.attr('data-path');
         $('#pop-modal').modal('show');
     }
         
@@ -265,9 +265,9 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
                 container: '#uploader-container',
                 //指定接受哪些类型的文件
                 accept: {
-                    title: 'Mp3',
-                    extensions: 'mp3',
-                    mimeTypes: 'audio/mp3',
+                    title: 'Text',
+                    extensions: 'doc,docx,txt,xls,xlsx,ppt,pptx',
+                    mimeTypes: '.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx',
                 },
                 formData: {
                     _csrf: "$csrfToken",
@@ -281,12 +281,12 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
             uploader = new euploader.Uploader(config, euploader.FilelistView);
             /* 上传完成、文件移除 */
             $(uploader).on('uploadFinished',function(event){
-                updateFiles();  //同步到 audioBatchUpload
+                updateFiles();  //同步到 documentBatchUpload
             });
             
             $(uploader).on('fileDequeued',function(event,data){
                 var file_id = data.dbFile.id;
-                updateFiles();  //同步到 audioBatchUpload
+                updateFiles();  //同步到 documentBatchUpload
             });
         });
     }
@@ -297,12 +297,12 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
      */
     function updateFiles(){
         //所有上传完成的文件
-        uploaderAudios = [];
+        uploaderDocuments = [];
         $.each(uploader.uploader.getFiles('complete'),function(){
-            uploaderAudios.push(covertFileData(this.dbFile,this.name));
+            uploaderDocuments.push(covertFileData(this.dbFile,this.name));
         });
-        //设置新的音频文件
-        audioBatchUpload.setFiles(uploaderAudios);
+        //设置新的文档文件
+        documentBatchUpload.setFiles(uploaderDocuments);
     }
     
     /**
@@ -317,7 +317,7 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
             name : name || db_file.name,
             text : name || db_file.nam,     //为seelct2组件设置 text 属性，可用于显示名称、过滤功能
             oss_key : absolutePath(db_file.oss_key),        //转换成阿里路径
-            thumb_path : Wskeee.StringUtil.completeFilePath('/imgs/build_course/images/audio.png'),
+            thumb_path : Wskeee.StringUtil.completeFilePath('/imgs/build_course/images/' + Wskeee.StringUtil.getFileSuffixName(absolutePath(db_file.oss_key))  + '.png'),
             size : Wskeee.StringUtil.formatBytes(db_file.size)
         };
         return data;
@@ -345,8 +345,8 @@ $audio_data_tr_dom = str_replace("\n", ' ', $this->render('____audio_data_tr_dom
      * @returns {void}
      */
     function initSubmit(){
-        $('#audio-submit').on('click',function(){
-            audioBatchUpload.submit(getSubmitCommonParams());
+        $('#document-submit').on('click',function(){
+            documentBatchUpload.submit(getSubmitCommonParams());
         });
     }
     
