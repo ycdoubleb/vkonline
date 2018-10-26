@@ -1,5 +1,5 @@
 /**
- * 视频批量上传
+ * 音频批量上传
  * @param {Window} win
  * @param {jQuery} $
  * @returns {undefined}
@@ -7,7 +7,7 @@
 (function (win, $) {
     //================================================================================================
     //
-    // VideoData class
+    // AudioData class
     //
     //================================================================================================
     /**
@@ -26,7 +26,7 @@
         this.audio_filename = data['audio.filename'];       //音频文件名
 
         this.audio_id = null;                               //音频ID,上传成功后设置
-        this.file_id = null;                                //视频文件ID,校检后设置
+        this.file_id = null;                                //音频文件ID,校检后设置
 
         this.submit_status = 0;                             //提交状态 0/1/2 未提交/提交中/已提交
         this.submit_result = false;                         //提交结果 false/true 失败/成功
@@ -154,13 +154,13 @@
 
     //================================================================================================
     //
-    // VideoBatchUpload class
+    // AudioBatchUpload class
     //
     //================================================================================================
     /**
-     * 视频批量导入控制器
+     * 音频批量导入控制器
      * @param {type} config
-     * @returns {video-batch-uploadL#7.VideoBatchUpload}
+     * @returns {audio-batch-uploadL#7.AudioBatchUpload}
      */
     function AudioBatchUpload(config) {
         this.config = $.extend({
@@ -199,7 +199,7 @@
 
     /**
      * 校检音频数据
-     * @param {VideoData} item
+     * @param {AudioData} item
      * @returns {void}
      */
     AudioBatchUpload.prototype.__verificationAudio = function (audioData) {
@@ -235,7 +235,7 @@
         this.audioinfo.find('input[data-role=tagsinput]').tagsinput();  //创建标签组件
         this.audioinfo.find('input[data-role=tagsinput]').on('change',function(){
             var $tr = $(this).parents('tr');                            //找到父级 tr 
-            var vd = _self.__getAudiodataById($tr.attr('data-vid'));    //通过data-vid 找到videodata
+            var vd = _self.__getAudiodataById($tr.attr('data-vid'));    //通过data-vid 找到audiodata
             vd.setTags($(this).val());                                  //手动更新
         });
     };
@@ -253,7 +253,7 @@
         //已经成功的不用刷新
         this.audioinfo.find('.file-select:not([disabled])').html('<option></option>');
         var select2 = this.audioinfo.find('.file-select:not([disabled])').select2({
-            placeholder: "请选择对应视频",
+            placeholder: "请选择对应音频",
             data:_self.files,
             width:'100%',
             dropdownParent:_self.audioinfo,
@@ -265,7 +265,7 @@
         /* 侦听更改事件，更新选择的文件 */
         select2.on('select2:select', function (e) {
             var $tr = $(this).parents('tr');                            //找到父级 tr 
-            var vd = _self.__getAudiodataById($tr.attr('data-vid'));    //通过data-vid 找到videodata
+            var vd = _self.__getAudiodataById($tr.attr('data-vid'));    //通过data-vid 找到audiodata
             vd.setFile([{id: $(this).val()}], true);                    //手动更新
         });
     }
@@ -382,7 +382,7 @@
     }
 
     /**
-     * 上传视频数据，创建视频
+     * 上传音频数据，创建音频
      * 
      * @param {int} index       需要上传的索引
      * @param {bool} force      已完成的是否需要强制提交 默认false
@@ -416,7 +416,7 @@
                         vd.setSubmitResult(2, false,  '未知错误');
                     }
 
-                    $(_self).trigger('submitCompleted', vd);         //发送单个视频上传完成
+                    $(_self).trigger('submitCompleted', vd);         //发送单个音频上传完成
                     _self.__submitNext();
                 });
             } else {
@@ -505,7 +505,7 @@
     //--------------------------------------------------------------------------
     
     /**
-     * 查找同名视频文件
+     * 查找同名音频文件
      * @param {string} name
      * @returns {array}
      */
@@ -523,7 +523,7 @@
     /**
      * 通过ID查找AudioDdata
      * @param {string} id
-     * @returns {VideoData}
+     * @returns {AudioData}
      */
     AudioBatchUpload.prototype.__getAudiodataById = function (id) {
         var target = null;

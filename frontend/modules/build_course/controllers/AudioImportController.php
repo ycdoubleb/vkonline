@@ -17,7 +17,7 @@ use yii\web\Controller;
 use yii\web\UploadedFile;
 
 /**
- * 批量导入视频
+ * 批量导入音频
  *
  * @author Administrator
  */
@@ -68,7 +68,7 @@ class AudioImportController extends Controller{
      * 添加音频
      * post = 
      * [
-     *  Video:[name,des,],
+     *  Audio:[name,des,],
      *  user_cat_id : "xx",
      *  audio_tags:"1,2,3,4,5",
      *  aduio_file:"xxxx"
@@ -132,9 +132,9 @@ class AudioImportController extends Controller{
         }
     }
     /**
-     * 更新视频
+     * 更新音频
      */
-    public function actionUpdateVideo(){
+    public function actionUpdateAudio(){
         
     }
     
