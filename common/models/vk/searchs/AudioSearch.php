@@ -4,6 +4,8 @@ namespace common\models\vk\searchs;
 
 use common\models\User;
 use common\models\vk\Audio;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\UserCategory;
 use Yii;
 use yii\base\Model;
@@ -17,12 +19,18 @@ use yii\helpers\ArrayHelper;
 class AudioSearch extends Audio
 {
     /**
+     * 关键字
+     * @var string 
+     */
+    public $keyword;
+    
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'file_id', 'customer_id', 'name', 'des', 'created_by'], 'safe'],
+            [['id', 'file_id', 'customer_id', 'name', 'des', 'created_by', 'keyword'], 'safe'],
             [['user_cat_id', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
         ];
@@ -73,12 +81,12 @@ class AudioSearch extends Audio
         
         //过滤条件
         $query->andFilterWhere(['Audio.is_del' => 0,]);
-        //模糊查询
-        $query->andFilterWhere(['like', 'Audio.name', $this->name]);
         
         //关联查询
         $query->leftJoin(['UserCategory' => UserCategory::tableName()], 'UserCategory.id = Audio.user_cat_id');
         $query->leftJoin(['User' => User::tableName()], 'User.id = Audio.created_by');
+        $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Audio.id');
+        $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
         //如果目录类型是共享类型则显示共享文件
         $query->andFilterWhere(['OR', 
@@ -86,6 +94,12 @@ class AudioSearch extends Audio
             new Expression("IF(UserCategory.type=:type, Audio.customer_id=:customer_id AND Audio.is_del = 0, null)", [
                 'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
             ])
+        ]);
+        
+        //模糊查询
+        $query->andFilterWhere(['OR', 
+            ['like', 'Audio.name', $this->keyword],
+            ['like', 'Tags.name', $this->keyword],
         ]);
         
         //以音频id为分组

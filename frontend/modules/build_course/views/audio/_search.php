@@ -83,12 +83,10 @@ use yii\widgets\ActiveForm;
         </div>
         
         <!--素材名称-->
-        <?= $form->field($searchModel, 'name')->textInput([
+        <?= $form->field($searchModel, 'keyword')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true,
             'onchange' => 'submitForm();',
-        ])->label(Yii::t('app', '{Material}{Name}：', [
-            'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
-        ]))
+        ])->label(Yii::t('app', 'Keyword') . '：')
         ?>
         
         <!--按钮组-->

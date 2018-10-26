@@ -97,7 +97,7 @@ use yii\widgets\ActiveForm;
         
         <!--关键字搜索-->
         <div class="col-lg-12 col-md-12 clear-padding">
-            <?= $form->field($searchModel, 'name')->textInput([
+            <?= $form->field($searchModel, $type == 1 ?  'keyword' : 'name')->textInput([
                 'placeholder' => '请输入...', 'maxlength' => true, 'onchange' => 'submitForm();'
             ])->label(Yii::t('app', 'Keyword') . '：') ?>
         </div>

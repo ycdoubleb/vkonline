@@ -114,8 +114,8 @@ $this->registerJs($format, View::POS_HEAD);
             </div>
         </div>
         
-        <!--素材名称-->
-        <?= $form->field($searchModel, 'name', [
+        <!--关键字-->
+        <?= $form->field($searchModel, 'keyword', [
             'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>" .
                 "<div class=\"operate\">" .
                     "<a id=\"op_search\" data-toggle=\"collapse\" data-target=\"#collapse\" aria-expanded=\"false\" aria-controls=\"collapse\">" .
@@ -125,9 +125,7 @@ $this->registerJs($format, View::POS_HEAD);
         ])->textInput([
             'placeholder' => '请输入...', 'maxlength' => true,
             'onchange' => 'submitForm();',
-        ])->label(Yii::t('app', '{Material}{Name}：', [
-            'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
-        ]))
+        ])->label(Yii::t('app', 'Keyword') . '：')
         ?>
         
         <div id="collapse" class="collapse">
