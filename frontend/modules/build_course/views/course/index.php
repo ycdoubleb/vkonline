@@ -92,7 +92,7 @@ $js = <<<JS
     var page = 0; //页数
     var isPageLoading = false;
     $(window).scroll(function(){
-        if($(document).scrollTop() >= $(document).height() - $(window).height()){
+        if($(document).scrollTop() >= $(document).height() - $(window).height() - 300){
             loaddata(page, '/build_course/course/index');
         }
     });
@@ -107,7 +107,8 @@ $js = <<<JS
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 6;
         // 当前页数是否大于最大页数
-        if(target_page > Math.ceil(maxPageNum)){
+        console.log(target_page, Math.ceil(maxPageNum));
+        if(target_page >= Math.ceil(maxPageNum)){
             $('.loading-box .loading').hide();
             $('.loading-box .no_more').show();
             return;
@@ -138,7 +139,7 @@ $js = <<<JS
                         });
                     }
                     //如果当前页大于最大页数显示“没有更多了”
-                    if(page > Math.ceil(maxPageNum)){
+                    if(page >= Math.ceil(maxPageNum)){
                         $('.loading-box .no_more').show();
                     }
                 }else{
