@@ -2,22 +2,14 @@
 
 namespace frontend\modules\build_course\controllers;
 
-use common\components\aliyuncs\Aliyun;
 use common\models\api\ApiResponse;
-use common\models\User;
 use common\models\vk\Audio;
-use common\models\vk\CustomerWatermark;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
-use common\models\vk\Teacher;
-use common\models\vk\Video;
-use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use Exception;
-use frontend\modules\build_course\utils\VideoAliyunAction;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yii;
-use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
@@ -40,7 +32,7 @@ class AudioImportController extends Controller{
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'add-video' => ['POST'],
+                    'add-audio' => ['POST'],
                 ],
             ],
             'access' => [
