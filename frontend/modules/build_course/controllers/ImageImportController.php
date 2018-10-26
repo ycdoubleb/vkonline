@@ -3,7 +3,7 @@
 namespace frontend\modules\build_course\controllers;
 
 use common\models\api\ApiResponse;
-use common\models\vk\Document;
+use common\models\vk\Image;
 use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\modules\webuploader\models\Uploadfile;
@@ -17,11 +17,11 @@ use yii\web\Controller;
 use yii\web\UploadedFile;
 
 /**
- * 批量导入文档
+ * 批量导入视频
  *
  * @author Administrator
  */
-class DocumentImportController extends Controller{
+class ImageImportController extends Controller{
     public $layout = '@frontend/views/layouts/main_no_nav';
     /**
      * @inheritdoc
@@ -32,7 +32,7 @@ class DocumentImportController extends Controller{
             'verbs' => [
                 'class' => VerbFilter::class,
                 'actions' => [
-                    'add-document' => ['POST'],
+                    'add-image' => ['POST'],
                 ],
             ],
             'access' => [
@@ -55,72 +55,72 @@ class DocumentImportController extends Controller{
         $params = \Yii::$app->request->queryParams;
         $isImport = Yii::$app->request->isPost;
         
-        $documents = $isImport ? $this->getSpreadsheet('importfile') : [];
+        $images = $isImport ? $this->getSpreadsheet('importfile') : [];
         
         return $this->render('index',[
             'isImport' => $isImport,                                                //导入中，选择文件表上传后
             'user_cat_id' => ArrayHelper::getValue($params, 'user_cat_id', 0),      //存放目录
-            'documents' => $documents,                                                    //excel表的文档信息
+            'images' => $images,                                                    //excel表的图像信息
         ]);
     }
     
     /**
-     * 添加文档
+     * 添加图像
      * post = 
      * [
-     *  Document:[name,des,],
+     *  Video:[name,des,],
      *  user_cat_id : "xx",
-     *  document_tags:"1,2,3,4,5",
+     *  image_tags:"1,2,3,4,5",
      *  aduio_file:"xxxx"
      * ]
      */
-    public function actionAddDocument(){
+    public function actionAddImage(){
         \Yii::$app->response->format = 'json';
         $post = Yii::$app->request->post();
-        $file_id = ArrayHelper::getValue($post, 'document_file');
+        $file_id = ArrayHelper::getValue($post, 'image_file');
         
         $uploadfile = Uploadfile::findOne($file_id);
         if(!$uploadfile){
             return [
                 'success' => true,
-                'data' => new ApiResponse('FILE_NOT_FOUND', '文档文件不能为空！'),
+                'data' => new ApiResponse('FILE_NOT_FOUND', '图像文件不能为空！'),
             ];
         }
         /* 配置特定属性 */
-        $document = new Document([
+        $image = new Image([
             'id'            => md5(time() . rand(1, 99999999)),
             'customer_id'   => Yii::$app->user->identity->customer_id, 
             'user_cat_id'   => (integer)ArrayHelper::getValue($post, 'user_cat_id' , 0), 
             'file_id'       => $uploadfile->id,
-            'duration'      => $uploadfile->duration,
+            'thumb_path'      => $uploadfile->thumb_path,
             'created_by'    => Yii::$app->user->id,
             'is_publish'    => 1,
         ]);
         try{
-            $document->loadDefaultValues();
-            if($document->load($post) && $document->validate()){
+            $image->loadDefaultValues();
+            if($image->load($post) && $image->validate()){
                 $trans = Yii::$app->db->beginTransaction();
-                //保存Document
-                if($document->save()){
+                //保存Image
+                if($image->save()){
                     //新建关键字
-                    $tags = Tags::saveTags(ArrayHelper::getValue($post, 'document_tags' , []));
+                    $tags = Tags::saveTags(ArrayHelper::getValue($post, 'image_tags' , []));
                     //关联关键字
-                    $this->saveDocumentTags($document->id, $tags);
+                    $this->saveImageTags($image->id, $tags);
                     $trans->commit();
                     return [
                         'success' => true,
-                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_OK, null , $document->toArray()),
+                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_OK, null , $image->toArray()),
                     ];
                 }else{
                     return [
                         'success' => true,
-                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $document->getErrorSummary(true)),
+                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $image->getErrorSummary(true)),
                     ];
                 }
             }else{
                 return [
                     'success' => true,
-                    'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $document->getErrorSummary(true)),
+                    'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $image->getErrorSummary(true)),
                 ];
             }
         } catch (Exception $ex) {
@@ -132,14 +132,14 @@ class DocumentImportController extends Controller{
         }
     }
     /**
-     * 更新文档
+     * 更新视频
      */
-    public function actionUpdateDocument(){
+    public function actionUpdateVideo(){
         
     }
     
     /**
-     * 获取文档信息
+     * 获取图像信息
      * @param type $name    filename
      */
     private function getSpreadsheet($name){
@@ -169,15 +169,15 @@ class DocumentImportController extends Controller{
     
     /**
      * 保存标签
-     * @param string        $document_id      文档ID
+     * @param string        $image_id      图像ID
      * @param array<Tags>   $tags         标签
      */
-    private function saveDocumentTags($document_id,$tags){
+    private function saveImageTags($image_id,$tags){
         //准备数据
         $rows = [];
         /* @var $tag Tags */
         foreach ($tags as $tag) {
-            $rows[] = [$document_id, $tag->id, 4];
+            $rows[] = [$image_id, $tag->id, 5];
         }
         //保存关联
         \Yii::$app->db->createCommand()->batchInsert(TagRef::tableName(), ['object_id', 'tag_id', 'type'], $rows)->execute();

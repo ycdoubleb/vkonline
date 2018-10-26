@@ -81,9 +81,9 @@
         //手动或者未设置情况
         if (manual || !_self.file_id) {
             if (files.length > 0) {
-                //存在多个同名老师
+                //存在多个同名视频
                 if (files.length > 1 && !_self.file_id) {
-                    _self.errors['file_id'] = '存在多个同名视频文件！【' + _self.video_filename + ' 】';
+                    _self.errors['file_id'] = '存在多个同名视频文件！【' + _self.video_filename + ' 】, 请手动选择';
                 } else {
                     _self.file_id = files[0].id;
                     delete _self.errors['file_id'];
@@ -556,11 +556,19 @@
     VideoBatchUpload.prototype.setFiles = function (files) {
         var _self = this;
         var fileIds = [];
+        var fileNameMap = {};
         this.files = files;
         this.__createFileDom();
         
         $.each(this.files,function(){
             fileIds.push(this.id);
+        });
+        $.each(this.videos, function(){
+            if(!fileNameMap[this.video_filename]){
+                fileNameMap[this.video_filename] = 1;
+            }else{
+                fileNameMap[this.video_filename]++;
+            }
         });
         $.each(this.videos,function(){
             /* 不在文件列表里将设置为null */
@@ -568,7 +576,7 @@
                 this.file_id = null;
             }
             /* VideoData */
-            this.setFile(_self.__getFileByName(this.video_filename));
+            this.setFile(fileNameMap[this.video_filename] > 1 ? [0, 0] : _self.__getFileByName(this.video_filename));
         });
     };
    

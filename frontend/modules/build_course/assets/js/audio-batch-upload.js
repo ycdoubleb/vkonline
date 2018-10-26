@@ -468,11 +468,19 @@
     AudioBatchUpload.prototype.setFiles = function (files) {
         var _self = this;
         var fileIds = [];
+        var fileNameMap = {};
         this.files = files;
         this.__createFileDom();
         
         $.each(this.files,function(){
             fileIds.push(this.id);
+        });
+        $.each(this.audios, function(){
+            if(!fileNameMap[this.audio_filename]){
+                fileNameMap[this.audio_filename] = 1;
+            }else{
+                fileNameMap[this.audio_filename]++;
+            }
         });
         $.each(this.audios,function(){
             /* 不在文件列表里将设置为null */
@@ -480,7 +488,7 @@
                 this.file_id = null;
             }
             /* AudioData */
-            this.setFile(_self.__getFileByName(this.audio_filename));
+            this.setFile(fileNameMap[this.audio_filename] > 1 ? [0, 0] : _self.__getFileByName(this.audio_filename));
         });
     };
    

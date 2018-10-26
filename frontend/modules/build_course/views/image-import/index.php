@@ -7,7 +7,7 @@ use common\widgets\tagsinput\TagsInputAsset;
 use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use frontend\assets\ClipboardAssets;
-use frontend\modules\build_course\assets\DocumentImportAssets;
+use frontend\modules\build_course\assets\ImageImportAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -16,14 +16,14 @@ use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /* @var $this View */
-$this->title = Yii::t('app', '{Batch}{Import}{Document}', [
-    'Batch' => Yii::t('app', 'Batch'),  'Import' => Yii::t('app', 'Import'),  'Document' => Yii::t('app', 'Document')
+$this->title = Yii::t('app', '{Batch}{Import}{Image}', [
+    'Batch' => Yii::t('app', 'Batch'),  'Import' => Yii::t('app', 'Import'),  'Image' => Yii::t('app', 'Image')
 ]);
 
 GrowlAsset::register($this);
 WatermarkAsset::register($this);
 ClipboardAssets::register($this);
-DocumentImportAssets::register($this);
+ImageImportAssets::register($this);
 TagsInputAsset::register($this);
 
 //获取flash上传组件路径
@@ -31,11 +31,11 @@ $swfpath = $this->assetManager->getPublishedUrl(WebUploaderAsset::register($this
 $csrfToken = Yii::$app->request->csrfToken;
 //加载 DOM 模板
 $file_select_dom = str_replace("\n", ' ', $this->render('____file_select_dom'));
-$document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_tr_dom'));
+$image_data_tr_dom = str_replace("\n", ' ', $this->render('____image_data_tr_dom'));
 
 ?>
 
-<div class="document-import container">
+<div class="image-import container">
     
     <div class="panel">
         <div class="panel-head"><?= $this->title ?></div>
@@ -45,8 +45,8 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <p>1、批量导入<?= Html::a('（表格模板下载）', Aliyun::absolutePath('static/doc/template/document_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
-                <p>2、导入步骤：（1）选择存放目录 > （2）上传文档信息 > （3）导入文档文件 > （4）提交</p>
+                <p>1、批量导入<?= Html::a('（表格模板下载）', Aliyun::absolutePath('static/doc/template/image_import_template.xlsx?rand='. rand(0, 9999)), ['class' => 'alert-link']) ?></p>
+                <p>2、导入步骤：（1）选择存放目录 > （2）上传图像信息 > （3）导入图像文件 > （4）提交</p>
             </div>
             
             <!-- 公共设置 -->
@@ -56,7 +56,7 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                 <div class="setting-box">
                     <div class="setting-item">
                         <div class="title">存放目录：</div>
-                        <div class="document-dir-box"><?=
+                        <div class="image-dir-box"><?=
                             DepDropdown::widget([
                                 'name' => 'user_cat_id',
                                 'value' => $user_cat_id,
@@ -76,15 +76,15 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                 </div>
             </div>
             
-            <!-- 文档信息 -->
+            <!-- 图像信息 -->
             <hr/>
-            <div class="document-info">
-                <div class="title">上传文档信息
+            <div class="image-info">
+                <div class="title">上传图像信息
                     <!--文件上传-->
                     <div class="pull-right">
                         <?php $form = ActiveForm::begin([
                             'options'=>[
-                                'id' => 'documentinfo-upload-form',
+                                'id' => 'imageinfo-upload-form',
                                 'class'=>'form-horizontal',
                                 'enctype' => 'multipart/form-data',
                                 'method' => 'post',
@@ -94,7 +94,7 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                         <div class="vk-uploader">
                             <div class="btn btn-pick">选择文件</div>
                             <div class="file-box">
-                                <input type="file" id="importfile" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="uploadDocumentInfo()">
+                                <input type="file" id="importfile" name="importfile" class="file-input" accept=".xlsx,.xls,.xlm,.xlt,.xlc,.xml" onchange="uploadImageInfo()">
                             </div>
                         </div>
 
@@ -107,9 +107,9 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                     <thead>
                         <tr>
                             <th style="width: 30px;">#</th>
-                            <th style="width: 200px;">文档名称</th>
-                            <th style="width: 320px;">文档标签</th>
-                            <th style="width: 300px;">文档文件</th>
+                            <th style="width: 200px;">图像名称</th>
+                            <th style="width: 320px;">图像标签</th>
+                            <th style="width: 300px;">图像文件</th>
                             <th style="width: 100px;">&nbsp;</th>
                         </tr>
                     </thead>
@@ -119,9 +119,9 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                 </table>
             </div>
             
-            <!-- 文档文件 -->
+            <!-- 图像文件 -->
             <div class="aduio-file">
-                <div class="title">上传文档文件</div>
+                <div class="title">上传图像文件</div>
                 <div class="uploader-box">
                     <div id="uploader-container" class="clear-padding"></div>
                 </div>
@@ -129,21 +129,21 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
         </div>
         <!-- 提交 -->
         <div class="panel-foot submit-box">
-            <a id="document-submit" class="btn btn-highlight btn-flat">提交</a>
+            <a id="image-submit" class="btn btn-highlight btn-flat">提交</a>
             <span id="submit-result"></span>
         </div>
     </div>
     
     <!-- 模态框 -->
     <div id="pop-modal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" style="width: 1200px;" role="document">
+        <div class="modal-dialog" style="width: 1000px;" role="image">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">预览文档</h4>
+                    <h4 class="modal-title">预览图像</h4>
                 </div>
                 <div class="modal-body">
-                    <iframe id="media-player" width="100%" height="600" style="border: none"></iframe>
+                    <img id="media-player" width="100%" height="100%" />
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -156,22 +156,22 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
     var php_aliyun_host = '<?= Aliyun::getOssHost() ?>';
     //是否为导入中
     var php_isImport = <?= $isImport ? 1 : 0 ?>;
-    //文档数据
-    var php_documentdatas = <?= json_encode($documents) ?>;
-    //文档文件下拉dom
+    //图像数据
+    var php_imagedatas = <?= json_encode($images) ?>;
+    //图像文件下拉dom
     var php_file_select_dom = '<?= $file_select_dom ?>';
-    //文档 tr dom
-    var php_document_data_tr_dom = '<?= $document_data_tr_dom ?>';
+    //图像 tr dom
+    var php_image_data_tr_dom = '<?= $image_data_tr_dom ?>';
     //csrf key
     var php_csrf_param = "<?= Yii::$app->getRequest()->csrfParam ?>";
     //csrf value
     var php_csrf_value = "<?= Yii::$app->getRequest()->csrfToken ?>";
 
     //批量上传控制器
-    var documentBatchUpload;
-    //文档文件上传组件
+    var imageBatchUpload;
+    //图像文件上传组件
     var uploader;
-    //上传工具的文档
+    //上传工具的图像
     var uploaderDouments = [];
     
     /**
@@ -179,35 +179,35 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
      * @returns {void}
      */
     window.onload = function(){
-        initDocumentInfo();        //初始文档信息
-        initEuploader();        //初始文档文件上传
+        initImageInfo();        //初始图像信息
+        initEuploader();        //初始图像文件上传
         initSubmit();           //初始提交
     }
     
     /************************************************************************************
     *
-    * 文档信息上传
+    * 图像信息上传
     *
     ************************************************************************************/
-    function initDocumentInfo(){
+    function initImageInfo(){
         // 初始并且初始化指量上传控制器
-        documentBatchUpload = new youxueba.DocumentBatchUpload({
+        imageBatchUpload = new youxueba.ImageBatchUpload({
             file_select_dom : php_file_select_dom,
-            document_data_tr_dom : php_document_data_tr_dom,
+            image_data_tr_dom : php_image_data_tr_dom,
         });
-        documentBatchUpload.init(php_documentdatas);
+        imageBatchUpload.init(php_imagedatas);
         /**
          * 上传完成
          */
-        $(documentBatchUpload).on('submitFinished',function(){
-            var max_num = this.documents.length;
+        $(imageBatchUpload).on('submitFinished',function(){
+            var max_num = this.images.length;
             var completed_num = 0;
-            $.each(this.documents,function(){
+            $.each(this.images,function(){
                 if(this.submit_result){
                     completed_num++;
                 }
             });
-            $('#submit-result').html("共有 "+max_num+" 个文档需要上传，其中 "+completed_num+" 个成功， "+(max_num - completed_num)+" 个失败！");
+            $('#submit-result').html("共有 "+max_num+" 个图像需要上传，其中 "+completed_num+" 个成功， "+(max_num - completed_num)+" 个失败！");
             $.notify({message: '提交完成'}, {type: "success"});
         });
         
@@ -221,22 +221,22 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
         });
     }
     /* 提交表数据 */
-    function uploadDocumentInfo(){
+    function uploadImageInfo(){
         var cps = getSubmitCommonParams();
         var cps_str = "user_cat_id="+cps['user_cat_id'];
         //添加传参数
-        $('#documentinfo-upload-form').attr("action", "/build_course/document-import?"+cps_str);
-        $('#documentinfo-upload-form').submit();
+        $('#imageinfo-upload-form').attr("action", "/build_course/image-import?"+cps_str);
+        $('#imageinfo-upload-form').submit();
         return false;
     }
     
     /**
-     * 弹出文档
+     * 弹出图像
      * @param {JQueryDom} $dom
      * @returns {void}
      */
-    function popDocument($dom){
-        $('#media-player').get(0).src = 'http://eezxyl.gzedu.com/?furl=' + $dom.attr('data-path');
+    function popImage($dom){
+        $('#media-player').get(0).src = absolutePath($dom.attr('data-path'));
         $('#pop-modal').modal('show');
     }
         
@@ -265,9 +265,9 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
                 container: '#uploader-container',
                 //指定接受哪些类型的文件
                 accept: {
-                    title: 'Text',
-                    extensions: 'doc,docx,txt,xls,xlsx,ppt,pptx',
-                    mimeTypes: '.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx',
+                    title: 'Image',
+                    extensions: 'gif,jpg,jpeg,bmp,png',
+                    mimeTypes: 'image/*',
                 },
                 formData: {
                     _csrf: "$csrfToken",
@@ -281,12 +281,12 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
             uploader = new euploader.Uploader(config, euploader.FilelistView);
             /* 上传完成、文件移除 */
             $(uploader).on('uploadFinished',function(event){
-                updateFiles();  //同步到 documentBatchUpload
+                updateFiles();  //同步到 imageBatchUpload
             });
             
             $(uploader).on('fileDequeued',function(event,data){
                 var file_id = data.dbFile.id;
-                updateFiles();  //同步到 documentBatchUpload
+                updateFiles();  //同步到 imageBatchUpload
             });
         });
     }
@@ -297,12 +297,12 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
      */
     function updateFiles(){
         //所有上传完成的文件
-        uploaderDocuments = [];
+        uploaderImages = [];
         $.each(uploader.uploader.getFiles('complete'),function(){
-            uploaderDocuments.push(covertFileData(this.dbFile,this.name));
+            uploaderImages.push(covertFileData(this.dbFile,this.name));
         });
-        //设置新的文档文件
-        documentBatchUpload.setFiles(uploaderDocuments);
+        //设置新的图像文件
+        imageBatchUpload.setFiles(uploaderImages);
     }
     
     /**
@@ -317,7 +317,7 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
             name : name || db_file.name,
             text : name || db_file.nam,     //为seelct2组件设置 text 属性，可用于显示名称、过滤功能
             oss_key : absolutePath(db_file.oss_key),        //转换成阿里路径
-            thumb_path : Wskeee.StringUtil.completeFilePath('/imgs/build_course/images/' + Wskeee.StringUtil.getFileSuffixName(absolutePath(db_file.oss_key))  + '.png'),
+            thumb_path : absolutePath(db_file.thumb_path),
             size : Wskeee.StringUtil.formatBytes(db_file.size)
         };
         return data;
@@ -345,8 +345,8 @@ $document_data_tr_dom = str_replace("\n", ' ', $this->render('____document_data_
      * @returns {void}
      */
     function initSubmit(){
-        $('#document-submit').on('click',function(){
-            documentBatchUpload.submit(getSubmitCommonParams());
+        $('#image-submit').on('click',function(){
+            imageBatchUpload.submit(getSubmitCommonParams());
         });
     }
     
