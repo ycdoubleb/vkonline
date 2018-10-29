@@ -63,7 +63,7 @@ class VideoController extends Controller
     public function actionIndex()
     {
         $searchModel = new VideoListSearch();
-        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
         $videos = array_values($results['data']['video']);    //视频数据
         $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         //重修课程数据里面的元素值
@@ -115,7 +115,7 @@ class VideoController extends Controller
     public function actionResult()
     {
         $searchModel = new VideoListSearch();
-        $results = $searchModel->buildCourseSearch(array_merge(Yii::$app->request->queryParams));
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams));
         $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($results['data']['video']),

@@ -77,12 +77,10 @@ use yii\widgets\ActiveForm;
         </div>
         
         <!--素材名称-->
-        <?= $form->field($searchModel, 'name')->textInput([
+        <?= $form->field($searchModel, 'keyword')->textInput([
             'placeholder' => '请输入...', 'maxlength' => true,
             'onchange' => 'submitForm();',
-        ])->label(Yii::t('app', '{Material}{Name}：', [
-            'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
-        ]))
+        ])->label(Yii::t('app', 'Keyword') . '：')
         ?>
         
         <!--按钮组-->
@@ -94,7 +92,7 @@ use yii\widgets\ActiveForm;
                 ]);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat disabled', 'target' => '_blank']);
+                ]), ['/build_course/image-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
             ?>
         </div>
         

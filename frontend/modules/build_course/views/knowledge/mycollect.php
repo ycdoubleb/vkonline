@@ -81,7 +81,7 @@ $js =
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 15;
         // 当前页数是否大于最大页数
-        if(target_page > Math.ceil(maxPageNum)){
+        if(target_page >= Math.ceil(maxPageNum)){
             $('.loadmore').hide();
             $('.loading').hide();
             $('.no_more').show();
@@ -120,7 +120,7 @@ $js =
                 $('.loadmore').show();
                 $('.loading').hide();   //隐藏loading
                 //如果当前页大于最大页数显示“没有更多了”
-                if(page > Math.ceil(maxPageNum)){
+                if(page >= Math.ceil(maxPageNum)){
                     $('.loadmore').hide();
                     $('.no_more').show();
                 }

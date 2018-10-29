@@ -4,6 +4,8 @@ namespace common\models\vk\searchs;
 
 use common\models\User;
 use common\models\vk\Image;
+use common\models\vk\TagRef;
+use common\models\vk\Tags;
 use common\models\vk\UserCategory;
 use Yii;
 use yii\base\Model;
@@ -17,12 +19,18 @@ use yii\helpers\ArrayHelper;
 class ImageSearch extends Image
 {
     /**
+     * 关键字
+     * @var string 
+     */
+    public $keyword;
+    
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['id', 'file_id', 'customer_id', 'name', 'thumb_path', 'des', 'created_by'], 'safe'],
+            [['id', 'file_id', 'customer_id', 'name', 'thumb_path', 'des', 'created_by', 'keyword'], 'safe'],
             [['user_cat_id', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at'], 'integer'],
         ];
     }
@@ -72,12 +80,11 @@ class ImageSearch extends Image
         //过滤条件
         $query->andFilterWhere(['Image.is_del' => 0,]);
 
-        //模糊查询
-        $query->andFilterWhere(['like', 'Image.name', $this->name]);
-
         //关联查询
         $query->leftJoin(['UserCategory' => UserCategory::tableName()], 'UserCategory.id = Image.user_cat_id');
         $query->leftJoin(['User' => User::tableName()], 'User.id = Image.created_by');
+        $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Image.id');
+        $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
         //如果目录类型是共享类型则显示共享文件
         $query->andFilterWhere(['OR', 
@@ -85,6 +92,12 @@ class ImageSearch extends Image
             new Expression("IF(UserCategory.type=:type, Image.customer_id=:customer_id AND Image.is_del = 0, null)", [
                 'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
             ])
+        ]);
+        
+        //模糊查询
+        $query->andFilterWhere(['OR', 
+            ['like', 'Image.name', $this->keyword],
+            ['like', 'Tags.name', $this->keyword],
         ]);
         
         //以文档id为分组
