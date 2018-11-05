@@ -49,4 +49,17 @@ class StringUtil {
         }
         return $isAppendStr ? $appendStr . $path : $path;
     }
+    
+    /**
+     * 检查手机有效性，
+     * 手机必须满足以下规定：
+     * 1、必须为11位数字
+     * 2、第一位数字必须为1
+     * 3、第二位数字必须在345678中的其中一个
+     * @param type $phone
+     */
+    public static function checkPhoneValid($phone) {
+        return preg_match('/^[1][34578][0-9]{9}$/', $phone);
+    }
+
 }

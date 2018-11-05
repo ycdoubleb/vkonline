@@ -36,6 +36,18 @@ class ApiResponse {
      */
     const CODE_COMMON_SAVE_DB_FAIL = '10002';
     
+    /** 
+     * 数据格式不对
+     * eg: 手机格式无效 或者 指定数据格式无效 
+     **/
+    const CODE_COMMON_DATA_INVALID = '10003';
+    
+    /** 
+     * 找不到资源
+     * eg: 找不到用户
+     **/
+    const CODE_COMMON_NOT_FOUND = '10004';
+    
     /**
      * 未知错误
      */
@@ -60,21 +72,21 @@ class ApiResponse {
      * @param array $params     自定义信息中动态传参
      * @return array [code,msg,data]
      */
-    public function __construct($code = self::CODE_OK, $msg = null, $data = null , $params = null) {
+    public function __construct($code = self::CODE_OK, $msg = null, $data = null, $params = null) {
         $codeMap = $this->getCodeMap();
         //不自定将使用预定义格式 
         $msg = $msg == null ? (isset($codeMap[$code]) ? $codeMap[$code] : '') : $msg;
         //如果params不为空，将替换消息里的动态参数
-        if($params != null){
-            foreach($params as $key => $value){
-                $msg = preg_replace("/\{$key\}/",$value,$msg);
+        if ($params != null) {
+            foreach ($params as $key => $value) {
+                $msg = preg_replace("/\{$key\}/", $value, $msg);
             }
         }
         $this->code = $code;
         $this->msg = $msg;
         $this->data = $data;
     }
-    
+
     /**
      * 返回 code 与 反馈修改的对应关系
      * 使用时由子类合并使用，注意：请使用  + 号合并数组，保留原来键值
@@ -85,6 +97,8 @@ class ApiResponse {
             self::CODE_COMMON_OK => 'OK',
             self::CODE_COMMON_MISS_PARAM => '缺少参数：{param}',
             self::CODE_COMMON_SAVE_DB_FAIL => '保存DB出错！',
+            self::CODE_COMMON_DATA_INVALID => '{param}无效',
+            self::CODE_COMMON_NOT_FOUND => '找不到对应{param}',
             self::CODE_COMMON_UNKNOWN => '未知错误！',
         ];
     }
