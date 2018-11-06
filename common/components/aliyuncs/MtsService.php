@@ -88,6 +88,7 @@ class MtsService extends Component {
     /**
      * 添加转码任务
      * @param string $oss_input_object          转码对象，OSS文件名称
+     * @param stirng $oss_output_object         输出路径默认：brand/transcode/{video_id}.mp4
      * @param array $water_mark_options         水印对象配置[[water_mark_object,width,height,dx,dy,refer_pos],[]]
      * @param array $skipLevels                 跳过等级1~4
      * @param array $user_data                  用户自定义数据
@@ -98,9 +99,9 @@ class MtsService extends Component {
      *      msg,         //失败原因<br/>
      *      response,    //反馈详情<br/>
      */
-    public function addTranscode($oss_input_object, $water_mark_options = null, $skipLevels = null, $user_data = []) {
+    public function addTranscode($oss_input_object, $oss_output_object = null, $water_mark_options = null, $skipLevels = null, $user_data = []) {
         //对象输入名、输入出名
-        $pathinfo = pathinfo($oss_input_object);
+        $pathinfo = pathinfo($oss_output_object == null ? $oss_input_object : $oss_output_object);
         $oss_output_object_prefix = $pathinfo['dirname'] . '/' . $pathinfo['filename'];
         $oss_output_object_extension = $pathinfo['extension'];
 
@@ -263,17 +264,18 @@ class MtsService extends Component {
      * 提交截图任务
      * 
      * @param string $oss_input_object      输入名称（输入Bucket下），输出名称（输出Bucket下），默认与输入文件同名，连接截图名称格式：input_00001.jpg
+     * @param stirng $oss_output_object     输出路径默认：brand/transcode/{video_id}.mp4
      * @param int $start_time               开始时间
      * @param int $snapshot_count           截图数量
      * @param int $snapshot_interval        截图间隔
      */
-    public function submitSnapshotJob($oss_input_object, $start_time = 3000, $snapshot_count = 1, $snapshot_interval = 0) {
+    public function submitSnapshotJob($oss_input_object, $oss_output_object = null, $start_time = 3000, $snapshot_count = 1, $snapshot_interval = 0) {
 
         $snapshot_count = $snapshot_count > 1 ? $snapshot_count : 1;
         $snapshot_interval = $snapshot_interval < 0 ? 0 : $snapshot_interval;
 
         //对象输入名、输入出名
-        $pathinfo = pathinfo($oss_input_object);
+        $pathinfo = pathinfo($oss_output_object == null ? $oss_input_object : $oss_output_object);
         $oss_output_object_prefix = $pathinfo['dirname'] . '/' . $pathinfo['filename'];
 
         $client = $this->client;

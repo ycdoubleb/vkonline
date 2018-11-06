@@ -72,7 +72,7 @@ class VideoAliyunAction {
              * 执行转码操作
              * 提交后等待转码完成回调 AliyunMtsController::actionTaskComplete()
              */
-            $result = Aliyun::getMts()->addTranscode($source_file->oss_key, $water_mark_options, $hasDoneLevels, $user_data);
+            $result = Aliyun::getMts()->addTranscode($source_file->oss_key, "brand/transcode/{$video->id}.mp4",$water_mark_options, $hasDoneLevels, $user_data);
             if ($result['success']) {
                 //修改视频为转码中状态
                 $video->mts_status = Video::MTS_STATUS_DOING;
@@ -365,7 +365,7 @@ class VideoAliyunAction {
             throw new NotFoundHttpException('视频未上传！');
         }
         //提交截图任务(异步)
-        $result = Aliyun::getMts()->submitSnapshotJob($file->oss_key);
+        $result = Aliyun::getMts()->submitSnapshotJob($file->oss_key,"brand/thumb/{$video->id}.jpg");
         if ($result['success']) {
             try{
                 //获取截图路径
