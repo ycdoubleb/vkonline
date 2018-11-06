@@ -67,6 +67,8 @@ class LogSearch extends Log
         //模糊查询
         $query->andFilterWhere(['like', 'content', $this->content]);
         
+        $query->orderBy(['created_at' => SORT_DESC]);
+        
         return $dataProvider;
     }
 }

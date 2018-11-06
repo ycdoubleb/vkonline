@@ -983,10 +983,15 @@ class ActionUtils
                             . "文件名：{$userInfo['data']['file_name']}"
                         );
                     }
-                    $model->mts_status = Video::MTS_STATUS_NO;
+                    $model->mts_status = Video::MTS_STATUS_NO;  //更改原来的转码状态为“未转码”
                     $videoFile->file_id = $fileId;
-                    //如果视频实体文件id保存成功，并且转码状态是自动转码，则执行转码需求
-                    if($videoFile->save(false, ['file_id']) && $mts_need){
+                    /**
+                     * 转码条件：
+                     * 1、转码状态是保存成功
+                     * 2、视频实体文件id是保存成功
+                     * 3、提交的表单数据转码需求是自动转码
+                     */
+                    if($model->save(false, ['mts_status']) && $videoFile->save(false, ['file_id']) && $mts_need){
                         VideoAliyunAction::addVideoTranscode($model->id);
                         VideoAliyunAction::addVideoSnapshot($model->id);
                     }
