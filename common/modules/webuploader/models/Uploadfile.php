@@ -17,6 +17,7 @@ use yii\db\Query;
  * This is the model class for table "{{%uploadfile}}".
  *
  * @property string $id 文件ID
+ * @property string $custome_id 品牌ID
  * @property string $name 文件名
  * @property string $path 文件路径
  * @property string $thumb_path 缩略图路径
@@ -82,9 +83,9 @@ class Uploadfile extends ActiveRecord {
         return [
             [['id'], 'required'],
             [['download_count', 'del_mark', 'size', 'is_del', 'is_fixed', 'is_link', 'width', 'height', 'level', 'bitrate',
-            'oss_upload_status',  'deleted_at', 'created_at', 'updated_at'], 'integer'],
+            'oss_upload_status', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
-            [['id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
+            [['id', 'custome_id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
             [['name', 'path', 'thumb_path', 'oss_key'], 'string', 'max' => 255],
             [['app_id'], 'string', 'max' => 50],
             [['id'], 'unique'],
@@ -121,7 +122,7 @@ class Uploadfile extends ActiveRecord {
             'updated_at' => Yii::t('app', 'Updated At'),
         ];
     }
-    
+
     /**
      * 获取文件后缀
      * @return string 后缀名
@@ -139,39 +140,39 @@ class Uploadfile extends ActiveRecord {
      */
     public function uploadOSS($key = null) {
         $thumb_key = '';
-        if($key == null){
-             /* @var $user User */
+        if ($key == null) {
+            /* @var $user User */
             $user = User::findOne(['id' => $this->created_by]);
-            if(!$user){
+            if (!$user) {
                 return ['success' => false, 'msg' => '文件缺少创建人数据！'];
-            }else if($user->customer_id == null){
+            } else if ($user->customer_id == null) {
                 return ['success' => false, 'msg' => '用户未加入任何品牌！'];
-            }else if(!file_exists($this->path)){
+            } else if (!file_exists($this->path)) {
                 return ['success' => false, 'msg' => '找不到文件！'];
             }
 
             //设置文件名
             $object_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
             $thumb_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}_thumb.jpg";
-        }else{
+        } else {
             $object_key = $key;
-            $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME).'_thumb.jpg';
+            $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME) . '_thumb.jpg';
         }
-       
+
         try {
             //上传文件
             Aliyun::getOss()->multiuploadFile($object_key, $this->path);
             //上传缩略图
-            if($this->thumb_path !=''){
+            if ($this->thumb_path != '') {
                 Aliyun::getOss()->multiuploadFile($thumb_key, $this->thumb_path);
                 @unlink($this->thumb_path);
-                $this->thumb_path = $thumb_key."?rand=". rand(0, 999);
+                $this->thumb_path = $thumb_key . "?rand=" . rand(0, 999);
             }
             //更新数据
             $this->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_YES;
             $this->oss_key = $object_key;
 
-            $this->save(false, ['oss_upload_status', 'oss_key' ,'thumb_path']);
+            $this->save(false, ['oss_upload_status', 'oss_key', 'thumb_path']);
             //删除本地文件
             @unlink($this->path);
             return ['success' => true];
@@ -181,30 +182,30 @@ class Uploadfile extends ActiveRecord {
             return ['success' => false, 'msg' => $ex->getMessage()];
         }
     }
-    
+
     /**
      * 获取已上传的实体文件信息
      * @param string $fileId    文件id
      * @return ActiveQuery  ['id', 'name', 'path', 'thumb_path', 'size']
      */
-    public static function getUploadfileByFileId($fileId)
-    {
+    public static function getUploadfileByFileId($fileId) {
         //查询实体文件
         $uploadFile = (new Query())->select([
-            'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.oss_key', 'Uploadfile.size'
-        ])->from(['Uploadfile' => self::tableName()]);
+                    'Uploadfile.id', 'Uploadfile.name', 'Uploadfile.oss_key', 'Uploadfile.size'
+                ])->from(['Uploadfile' => self::tableName()]);
         //条件查询
         $uploadFile->where([
             'Uploadfile.id' => $fileId,
             'Uploadfile.is_del' => 0
         ]);
         $file = $uploadFile->one();
-        if(!empty($file)){
+        if (!empty($file)) {
             //重置path、thumb_path
             $file['path'] = $file['thumb_path'] = Aliyun::absolutePath($file['oss_key']);
             return [$file];
-        }else{
+        } else {
             return [];
         }
     }
+
 }
