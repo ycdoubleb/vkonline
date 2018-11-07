@@ -412,11 +412,11 @@ a.desc:after {
 }
 /** 设置多行显示省略号 */
 .multi-line-clamp {
-    line-height: 20px;
+    display:-webkit-box;
+    line-height: 1.42857143;
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
-    display:-webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }

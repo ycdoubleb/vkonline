@@ -45,22 +45,21 @@ $this->registerJs($format, View::POS_HEAD);
 
 ?>
 
-<div class="video-search vk-form clear-shadow"> 
+<div class="video-search vk-form clear-shadow vk-material"> 
 
-    <?php
-    $form = ActiveForm::begin([
-                'action' => ['result'],
-                'method' => 'get',
-                'options' => [
-                    'id' => 'build-course-form',
-                    'class' => 'form-horizontal',
-                ],
-                'fieldConfig' => [
-                    'template' => "{label}\n<div class=\"col-lg-5 col-md-5\">{input}</div>\n",
-                    'labelOptions' => [
-                        'class' => 'col-lg-1 col-md-1 control-label form-label',
-                    ],
-                ],
+    <?php $form = ActiveForm::begin([
+        'action' => ['result'],
+        'method' => 'get',
+        'options' => [
+            'id' => 'build-course-form',
+            'class' => 'form-horizontal',
+        ],
+        'fieldConfig' => [
+            'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>\n",
+            'labelOptions' => [
+                'class' => 'col-lg-1 col-md-1 control-label form-label',
+            ],
+        ],
     ]);
     ?>
 
@@ -74,33 +73,50 @@ $this->registerJs($format, View::POS_HEAD);
                     'class' => 'col-lg-1 col-md-1 control-label form-label'
             ]) ?>
             <div class="col-lg-11 col-md-11">
-                <ul class="breadcrumb">
+                <div class="breadcrumb">
                     <?php 
-                        $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
-                        if(isset($pathMap[$userCatId]) && count($pathMap[$userCatId]) > 0){
-                            $endPath = end($pathMap[$userCatId]);
-                            echo '<li>' . Html::a('根目录', ['index', 'user_cat_id' => null]) . '<span class="set-route">›</span></li>';
-                            foreach ($pathMap[$userCatId] as $path) {
-                                echo '<li>';
-                                echo Html::a($path['name'], array_merge(['index'], array_merge($filters, ['user_cat_id' => $path['id']])));
-                                if($path['id'] != $endPath['id']){
-                                    echo '<span class="set-route">›</span>';
+                        $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                        $setRoute = '<span class="set-route">›</span>';
+                        if(isset($locationPathMap[$user_cat_id]) && count($locationPathMap[$user_cat_id]) > 0){
+                            $endPath = end($locationPathMap[$user_cat_id]);
+                            echo Html::a('根目录' . $setRoute, ['index', 'user_cat_id' => null]);
+                            foreach ($locationPathMap[$user_cat_id] as $path) {
+                                if($path['id'] == $endPath['id']){
+                                    $setRoute = '';
                                 }
-                                echo '</li>';
+                                echo Html::a($path['name'] . $setRoute, array_merge(['index'], array_merge($filters, ['user_cat_id' => $path['id']])));
                             }
                             echo Html::hiddenInput('user_cat_id', ArrayHelper::getValue($filters, 'user_cat_id'));
                         }else{
-                            echo '<li>目录位置...</li>';
+                            echo Html::a('目录位置...');
                         }
                     ?>
-                </ul>
+                </div>
             </div>
         </div>
        
-        <!--视频名称-->
-        <?=
-        $form->field($searchModel, 'name', [
-            'template' => "{label}\n<div class=\"col-lg-5 col-md-5\">{input}</div>" .
+        <!--素材类型-->
+        <div class="form-group field-material-type">
+            <?= Html::label(Yii::t('app', '{Material}{Type}', [
+                'Material' => Yii::t('app', 'Material'), 
+                'Type' => Yii::t('app', 'Type')]) . '：', 'material-type', [
+                    'class' => 'col-lg-1 col-md-1 control-label form-label'
+            ]) ?>
+            <div class="col-lg-4 col-md-4">
+                <div class="btn-group" role="group">
+                    <?php
+                        echo Html::a(Yii::t('app', 'Video'), ['video/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn active']);
+                        echo Html::a(Yii::t('app', 'Audio'), ['audio/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                        echo Html::a(Yii::t('app', 'Document'), ['document/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                        echo Html::a(Yii::t('app', 'Image'), ['image/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                    ?>
+                </div>
+            </div>
+        </div>
+        
+        <!--关键字-->
+        <?= $form->field($searchModel, 'keyword', [
+            'template' => "{label}\n<div class=\"col-lg-4 col-md-4\">{input}</div>" .
                 "<div class=\"operate\">" .
                     "<a id=\"op_search\" data-toggle=\"collapse\" data-target=\"#collapse\" aria-expanded=\"false\" aria-controls=\"collapse\">" .
                        "高级搜索<span class=\"arrow\">↓</span>" .
@@ -109,15 +125,12 @@ $this->registerJs($format, View::POS_HEAD);
         ])->textInput([
             'placeholder' => '请输入...', 'maxlength' => true,
             'onchange' => 'submitForm();',
-        ])->label(Yii::t('app', '{Video}{Name}：', [
-                    'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-        ]))
+        ])->label(Yii::t('app', 'Keyword') . '：')
         ?>
         
         <div id="collapse" class="collapse">
             <!--主讲老师-->
-            <?=
-            $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
+            <?= $form->field($searchModel, 'teacher_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map($teacherMap, 'id', 'name'),
                 'options' => ['placeholder' => '请选择...',],
                 'pluginOptions' => [
@@ -129,32 +142,12 @@ $this->registerJs($format, View::POS_HEAD);
                     'change' => 'function(){ submitForm(); }'
                 ]
             ])->label(Yii::t('app', '{mainSpeak}{Teacher}：', [
-                        'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
+                'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
             ]))
             ?>
 
-            <!--查看权限-->
-            <?=
-            $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
-                'value' => ArrayHelper::getValue($filters, 'VideoListSearch.level', ''),
-                'itemOptions' => [
-                    'onclick' => 'submitForm();',
-                    'labelOptions' => [
-                        'style' => [
-                            'margin' => '5px 29px 10px 0px',
-                            'color' => '#666666',
-                            'font-weight' => 'normal',
-                        ]
-                    ]
-                ],
-            ])->label(Yii::t('app', '{View}{Privilege}：', [
-                        'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-            ]))
-            ?>
-            
             <!--转码状态-->
-            <?=
-            $form->field($searchModel, 'mts_status')->radioList(['' => '全部', 2 => '已转码', '[0, 1, 5]' => '未转码'], [
+            <?= $form->field($searchModel, 'mts_status')->radioList(['' => '全部', 2 => '已转码', '[0, 1, 5]' => '未转码'], [
                 'value' => ArrayHelper::getValue($filters, 'VideoListSearch.mts_status', ''),
                 'itemOptions' => [
                     'onclick' => 'submitForm();',
@@ -169,6 +162,20 @@ $this->registerJs($format, View::POS_HEAD);
             ])->label(Yii::t('app', 'Mts Status') . '：')
             ?>
         </div>
+        
+        <!--按钮组-->
+        <div class="btngroup material-operation">
+            <?php
+                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id', null)], ['class' => 'btn btn-success btn-flat']);
+                echo '&nbsp;' . Html::a(Yii::t('app', 'Arrange'), 'javascript:;', [
+                    'id' => 'arrange', 'class' => 'btn btn-success btn-flat',
+                ]);
+                echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
+                    'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
+                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
+            ?>
+        </div>
+        
     </div>
 
     <!--标记搜索方式-->
@@ -181,6 +188,7 @@ $this->registerJs($format, View::POS_HEAD);
 <?php
 $sign = ArrayHelper::getValue($filters, 'sign', 0);
 $js = <<<JS
+        
     //标记是否为高级搜索
     if($sign){
         $('#collapse').addClass('in');

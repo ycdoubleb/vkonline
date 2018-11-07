@@ -67,7 +67,7 @@ use yii\web\View;
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
-                            'onclick' => 'showModal($(this)); return false;'
+                            'onclick' => 'showModal($(this).attr("href")); return false;'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-pencil"></span>',

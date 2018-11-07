@@ -66,10 +66,10 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                                 'value' => $user_cat_id,
                                 'pluginOptions' => [
                                     'url' => Url::to('/build_course/user-category/search-children', false),
-                                    'max_level' => 4,
+                                    'max_level' => 10,
                                     'onChangeEvent' => new JsExpression('function(value){  }')
                                 ],
-                                'items' => UserCategory::getSameLevelCats($user_cat_id, UserCategory::TYPE_MYVIDOE, true),
+                                'items' => UserCategory::getSameLevelCats($user_cat_id, true, true),
                                 'values' => $user_cat_id == 0 ? [] : array_values(array_filter(explode(',', UserCategory::getCatById($user_cat_id)->path))),
                                 'itemOptions' => [
                                     'style' => 'width: 150px; display: inline-block;',

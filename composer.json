@@ -38,7 +38,8 @@
         "linslin/yii2-curl": "*",
         "aliyuncs/oss-sdk-php": "^2.3",
         "kartik-v/yii2-grid": "^3.1",
-        "wbraganca/yii2-fancytree-widget": "*"
+        "wbraganca/yii2-fancytree-widget": "*",
+        "yiisoft/yii2-redis": "~2.0.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

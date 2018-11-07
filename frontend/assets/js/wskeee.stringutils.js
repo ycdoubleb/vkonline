@@ -163,6 +163,36 @@
     }
 
     /**
+     * 获取文件的后缀名
+     * 如果存在指定的文件后缀名类型，则直接返回获取到的文件后缀名
+     * @param {String} filePath 文件路径
+     * @param {Object|Array} suffixNameMap  指定的文件后缀名
+     * @returns {String}    如：docx、xlsx、pptx
+     */
+    StringUtil.getFileSuffixName = function (filePath, suffixNameMap) {
+        suffixNameMap = $.extend(['docx', 'xlsx', 'pptx'], suffixNameMap);   //特定的文件后缀名
+        var suffixName = '',
+            regLastStr = /^[A-Z]+$/,   //大写字符串字母正则表达式
+            suffix = filePath.substring(filePath.lastIndexOf(".") + 1),     //获取后缀名
+            lastStr = suffix.substr(suffix.length -1, 1);   //获取最后一个后缀名的字符串
+        /* 不在suffixNameMap（特定的后缀名数组）里，则执行 */
+        if($.inArray(suffix, suffixNameMap) == -1){
+            //如果后缀名最后一个字符是大写
+            if(regLastStr.test(lastStr) && lastStr == 'X'){
+                suffixName = suffix.replace(/X/, 'x');  //大写的X替换为小写
+            }else if(lastStr == 'x'){
+                suffixName = suffix;
+            }else{
+                suffixName = suffix + 'x';
+            }
+        }else{
+            suffixName = suffix;
+        }
+        
+        return suffixName;
+    }
+
+    /**
      * 判断字符串对象是否是Integer类型
      * @param {string} value
      * @return {Boolean}

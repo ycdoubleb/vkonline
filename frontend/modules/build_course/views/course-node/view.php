@@ -9,10 +9,10 @@
             <span class="name">{%name%}</span>
         </a>
         <div class="icongroup">
-            <a href="../knowledge/create?node_id={%id%}" onclick="showModal($(this));return false;">
+            <a href="../knowledge/create?node_id={%id%}" onclick="showModals($(this));return false;">
                 <i class="fa fa-plus"></i>
             </a>
-            <a href="../course-node/update?id={%id%}" onclick="showModal($(this));return false;">
+            <a href="../course-node/update?id={%id%}" onclick="showModals($(this));return false;">
                 <i class="fa fa-pencil"></i>
             </a>
             <?=Html::a('<i class="fa fa-times"></i>', 'javascript:;', [
@@ -35,3 +35,11 @@
         <ul id="knowledge" class="sortable list list-unstyled"></ul>
     </div>
 </li>
+
+<script type="text/javascript">
+    
+    function showModals(_this){
+        showModal(_this.attr("href"));
+    }
+    
+</script>

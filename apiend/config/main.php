@@ -7,24 +7,24 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-backend',
+    'id' => 'app-api',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'apiend\controllers',
     'bootstrap' => ['log'],
     'params' => $params,
     'components' => [
         'request' => [
-            'csrfParam' => '_csrf-backend',
-            'baseUrl' => '/api',
+            'csrfParam' => '_csrf-api',
+            'baseUrl' => '',
         ],
         'user' => [
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
+            'enableSession' => false,
         ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'name' => 'advanced-api',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -41,18 +41,11 @@ return [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
         ],
     ],
     'modules' => [
         'v1' => [
             'class' => 'apiend\modules\v1\Module',
         ],
-    ],
-    'as access' => [
-        'allowActions' => [
-            'v1/*',
-        ]
     ],
 ];

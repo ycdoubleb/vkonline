@@ -34,34 +34,6 @@ $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
                     'Basic' => Yii::t('app', 'Basic'), 'Info' => Yii::t('app', 'Info'),
                 ]) ?>
             </span>
-            <div class="btngroup pull-right">
-                <?php 
-                    if($model->is_public == 0){
-                        echo Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->id], [
-                            'class' => 'btn btn-primary btn-flat',
-                            'onclick' => 'showModal($(this)); return false;'
-                        ]);
-                        /**
-                         * 删除 按钮显示的条件：
-                         * 1、分类下所有视频数量为 0
-                         * 2、分类下的所有子级分类数量为 0
-                         */
-                        $catChildrens  = UserCategory::getCatChildren($model->id);
-                        if(count($model->videos) <= 0 && count($catChildrens) <= 0){
-                            echo '&nbsp;' . Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->id], [
-                                'class' => 'btn btn-danger btn-flat',
-                                'data' => [
-                                    'confirm' =>  Yii::t('app', "{Are you sure}{Delete}【{$model->name}】{Catalog}", [
-                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Delete' => Yii::t('app', 'Delete'), 
-                                        'Catalog' => Yii::t('app', 'Catalog')
-                                    ]),
-                                    'method' => 'post',
-                                ],
-                            ]);
-                        }
-                    }
-                ?>
-            </div>
         </div>
         
         <?= DetailView::widget([

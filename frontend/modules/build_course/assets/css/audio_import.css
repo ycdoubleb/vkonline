@@ -1,0 +1,208 @@
+/* 
+ *指量导入音频样式
+ */
+
+/*******************************************************************************
+ * 公共样式
+ *******************************************************************************/
+.audio-import{
+    color: #666666;
+}
+/* 取消边框 */
+.audio-import .border-none{
+    border: none;
+}
+.audio-import hr{
+    margin: 0px;
+}
+/* 标题 */
+.audio-import .title{
+    height: 50px;
+    line-height: 50px;
+    color: #ccc;
+    font-size: 16px;
+}
+/* select2 样式 */
+.select2-container .select2-selection--single{
+    height: 100% !important;
+}
+
+/* 上传按钮样式 */
+.vk-uploader .file-box{
+    height: 100% !important;
+}
+
+
+/*******************************************************************************
+ * panel
+ *******************************************************************************/
+
+/* 面板 */
+.audio-import .panel{
+    border: none;
+    border-radius: 0px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+/* 头部 */
+.audio-import .panel .panel-head{
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #333333;
+    border-bottom: 1px solid #f2f2f2;
+}
+/* 头部 */
+.audio-import .panel .panel-foot{
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #333333;
+    border-top: 1px solid #f2f2f2;
+}
+.audio-import .panel .panel-body{
+    padding: 20px;
+}
+
+/*******************************************************************************
+ * 公共设置
+ *******************************************************************************/
+.audio-import .setting .setting-box {
+    
+}
+.audio-import .setting .setting-item {
+   clear: both;
+   margin: 20px 0;
+}
+.audio-import .setting .setting-item .title{
+    display: inline-block;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    color: #ccc;
+    font-size: 14px;
+}
+.audio-import .setting .setting-item .audio-dir-box{
+    display: inline-block;
+}
+
+/*******************************************************************************
+ * 音频信息上传
+ *******************************************************************************/
+.audio-import .audio-info{
+    margin-bottom: 20px;
+}
+.audio-import .audio-info .title span{
+    font-size: 14px;
+}
+.audio-import .audio-info .table td{
+    position: relative;
+    height: 80px;
+    font-size: 12px;
+}
+.audio-import .audio-info .table .popover{
+    width: 276px;
+    overflow: hidden;
+    word-break: break-all;
+}
+.audio-import .audio-info .table .c-box{
+    width: 100%;
+    height: 100%;
+}
+
+.audio-import .audio-info .table .c-box .btn{
+    display: block;
+}
+/* 错误，成功样式 */
+.audio-import .audio-info .error{
+    color: #a94442;;
+}
+.audio-import .audio-info .success{
+    color: #28B28B;
+}
+/* td错误显示 */
+.audio-import .audio-info .table .border-error{
+    border: solid 2px #e04f4f;
+	border-radius: 6px;
+}
+
+/* 标签 */
+.audio-import .audio-info .audio-tags{
+    white-space: normal;
+    text-align: left;
+    height: 100%;
+}
+.audio-import .audio-info .bootstrap-tagsinput{
+    height: 100%;
+}
+
+/* 音频 */
+.audio-import .audio-info .file-item-box{
+    position: relative;
+    display: list-item;
+    text-align: left;
+    height: 64px;
+}
+.audio-import .audio-info .file-item-box .thumb-box{
+    position: relative;
+    display: inline-block;
+    text-align: center;
+    float: left;
+    margin-right: 5px;
+}
+.audio-import .audio-info .file-item-box .thumb-box .play-btn{
+    position: absolute;
+    width: 32px;
+    left: 44px;
+    top: 13px;
+    border-radius: 50%;
+    -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+.audio-import .audio-info .file-item-box .thumb-box .thumb_path{
+    width: 114px;
+    height: 64px;
+}
+.audio-import .audio-info .file-item-box .info-box{
+    position: relative;
+    display: inline-block;
+    line-height: 20px;
+    width: 130px;
+    margin-right: -20px;
+}
+.audio-import .audio-info .file-item-box .info-box p{
+    margin: 0px;
+    width: 100%;
+    overflow: hidden;
+    word-break: break-all;
+    white-space: initial;
+    font-size: 12px;
+}
+.audio-import .audio-info .file-item-box .info-box .audio-size{
+    color: #ccc;
+}
+
+/* 状态栏 */
+
+
+/*******************************************************************************
+ * 音频文件上传
+ *******************************************************************************/
+.audio-import .audio-file .title{
+    position: absolute;
+}
+.audio-import .auido-file .uploader-box{
+    padding-top: 10px;
+}
+
+
+/*******************************************************************************
+ * 提交按钮
+ *******************************************************************************/
+.audio-import .submit-box #submit-result{
+    margin-left: 10px;
+    color: #d43f3a;
+}
