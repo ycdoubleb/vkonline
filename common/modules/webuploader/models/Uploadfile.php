@@ -17,7 +17,7 @@ use yii\db\Query;
  * This is the model class for table "{{%uploadfile}}".
  *
  * @property string $id 文件ID
- * @property string $custome_id 品牌ID
+ * @property string $customer_id 品牌ID
  * @property string $name 文件名
  * @property string $path 文件路径
  * @property string $thumb_path 缩略图路径
@@ -85,7 +85,7 @@ class Uploadfile extends ActiveRecord {
             [['download_count', 'del_mark', 'size', 'is_del', 'is_fixed', 'is_link', 'width', 'height', 'level', 'bitrate',
             'oss_upload_status', 'deleted_at', 'created_at', 'updated_at'], 'integer'],
             [['duration'], 'number'],
-            [['id', 'custome_id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
+            [['id', 'customer_id', 'created_by', 'deleted_by'], 'string', 'max' => 32],
             [['name', 'path', 'thumb_path', 'oss_key'], 'string', 'max' => 255],
             [['app_id'], 'string', 'max' => 50],
             [['id'], 'unique'],
