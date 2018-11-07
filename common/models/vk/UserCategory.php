@@ -15,6 +15,7 @@ use yii\web\UploadedFile;
  * This is the model class for table "{{%user_category}}".
  *
  * @property string $id
+ * @property string $customer_id
  * @property string $name 分类名称
  * @property string $mobile_name 手机端名称
  * @property int $type 类型：1我的视频 2收藏的视频
@@ -113,7 +114,7 @@ class UserCategory extends ActiveRecord
             [['type', 'level', 'parent_id', 'sort_order', 'is_show', 'is_public', 'created_at', 'updated_at'], 'integer'],
             [['name', 'mobile_name'], 'string', 'max' => 50],
             [['path', 'image', 'des'], 'string', 'max' => 255],
-            [['created_by'], 'string', 'max' => 32],
+            [['customer_id','created_by'], 'string', 'max' => 32],
         ];
     }
     
