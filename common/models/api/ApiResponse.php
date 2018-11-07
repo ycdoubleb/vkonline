@@ -49,6 +49,12 @@ class ApiResponse {
     const CODE_COMMON_NOT_FOUND = '10004';
     
     /**
+     * 禁止访问
+     * eg: 访问不属于自己的资源
+     */
+    const CODE_COMMON_FORBIDDEN = '10005';
+    
+    /**
      * 未知错误
      */
     const CODE_COMMON_UNKNOWN = '10099';
@@ -99,6 +105,7 @@ class ApiResponse {
             self::CODE_COMMON_SAVE_DB_FAIL => '保存DB出错！',
             self::CODE_COMMON_DATA_INVALID => '{param}无效',
             self::CODE_COMMON_NOT_FOUND => '找不到对应{param}',
+            self::CODE_COMMON_FORBIDDEN => '禁止访问',
             self::CODE_COMMON_UNKNOWN => '未知错误！',
         ];
     }
