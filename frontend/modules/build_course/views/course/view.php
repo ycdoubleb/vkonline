@@ -304,10 +304,9 @@ $this->title = Yii::t('app', "{Course}{Detail}：{$model->name}", [
     
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $js = <<<JS
+    
     //加载协作人员列表
     $('#help_man').load("../course-user/index?course_id={$model->id}");
     //加载课程框架列表

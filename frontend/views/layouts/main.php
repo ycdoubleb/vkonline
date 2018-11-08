@@ -44,6 +44,7 @@ AppAsset::register($this);
         ]);?>
         <?= Alert::widget() ?>
         <?= $content ?>
+        <?= $this->render('model') ?>
     </div>
 </div>
 

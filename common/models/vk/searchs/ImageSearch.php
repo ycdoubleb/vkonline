@@ -86,11 +86,12 @@ class ImageSearch extends Image
         $query->leftJoin(['TagRef' => TagRef::tableName()], 'TagRef.object_id = Image.id');
         $query->leftJoin(['Tags' => Tags::tableName()], 'Tags.id = TagRef.tag_id');
         
-        //如果目录类型是共享类型则显示共享文件
-        $query->andFilterWhere(['OR', 
-            ['Image.created_by' => Yii::$app->user->id], 
-            new Expression("IF(UserCategory.type=:type, Image.customer_id=:customer_id AND Image.is_del = 0, null)", [
-                'type' => UserCategory::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id
+        //如果目录类型是共享类型则显示品牌下所有共享文件
+        $query->andFilterWhere(['AND', 
+            new Expression("IF(UserCategory.type=:type, (Image.customer_id=:customer_id AND UserCategory.type=:type), (Image.created_by=:created_by AND Image.customer_id=:customer_id))", [
+                'type' => UserCategory::TYPE_SHARING, 
+                'created_by' => \Yii::$app->user->id,
+                'customer_id' => \Yii::$app->user->identity->customer_id
             ])
         ]);
         

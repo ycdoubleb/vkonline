@@ -81,6 +81,14 @@ $menuItems = [
                 'encode' => false,
             ],
             [
+                'label' => '<i class="glyphicon glyphicon-transfer"></i>' . Yii::t('app', '{Switch}{Customer}', [
+                    'Switch' => Yii::t('app', 'Switch'), 'Customer' => Yii::t('app', 'Customer')
+                ]),
+                'url' => ['/site/switch-customer'],
+                'linkOptions' => ['class' => 'switch-customer', 'onclick' => 'showModal($(this).attr("href")); return false;'],
+                'encode' => false,
+            ],
+            [
                 'label' => '<i class="fa fa-sign-out"></i>' . Yii::t('app', 'Logout'),
                 'url' => ['/site/logout'],
                 'linkOptions' => ['data-method' => 'post', 'class' => 'logout'],

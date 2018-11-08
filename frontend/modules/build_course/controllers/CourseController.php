@@ -63,14 +63,14 @@ class CourseController extends Controller
         //重修课程数据里面的元素值
         foreach ($courses as &$item) {
             $item['cover_img'] = Aliyun::absolutePath(!empty($item['cover_img']) ? $item['cover_img'] : 'static/imgs/notfound.png');
-            $item['level'] = Course::$levelMap[$item['level']];
             $item['is_hidden'] = $item['level'] != Course::INTRANET_LEVEL ? 'hidden' : '';
+            $item['level'] = Course::$levelMap[$item['level']];
             $item['color_name'] = $item['is_publish'] ? 'success' : 'danger';
             $item['is_publish'] = Course::$publishStatus[$item['is_publish']];
             $item['teacher_avatar'] = Aliyun::absolutePath(!empty($item['teacher_avatar']) ? $item['teacher_avatar'] : 'upload/avatars/default.jpg');
             $item['tags'] = isset($item['tags']) ? $item['tags'] : 'null';
         }
-       
+        
         //如果是ajax请求，返回json
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';

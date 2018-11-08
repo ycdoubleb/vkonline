@@ -22,7 +22,7 @@ $this->title = Yii::t('app', '{Batch}{Import}{Teachers}', [
 
 ?>
 
-<div class="teacher-import main">
+<div class="teacher-import container">
     
     <!--页面标题-->
     <div class="vk-title clear-margin">

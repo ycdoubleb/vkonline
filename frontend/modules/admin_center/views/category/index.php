@@ -169,8 +169,6 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
     </div>
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $js = <<<JS
     /**

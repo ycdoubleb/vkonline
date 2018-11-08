@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\SearchLog;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
@@ -23,7 +24,6 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
@@ -486,6 +486,51 @@ class SiteController extends Controller
         }
     }
     
+    /**
+     * 切换客户
+     */
+    public function actionSwitchCustomer()
+    {
+        /* 用户关联的所有品牌 */
+        $customers = (new Query())->select(['Customer.id','Customer.name','Customer.logo'])
+            ->from(['UserBrand' => UserBrand::tableName()])
+            ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = UserBrand.brand_id')
+            ->where(['user_id' => Yii::$app->user->id, 'Customer.status' => Customer::STATUS_ACTIVE])
+            ->orderBy('Customer.sort_order')
+            ->all();
+        
+        if(Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            $message = '';
+            $is_success = false;
+            try
+            { 
+                $userModel = User::findOne(Yii::$app->user->id);
+                $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
+                
+                if($userModel->update(false, ['customer_id'])) {
+                    $is_success = true;
+                    $message = '修改成功！';
+                }
+            }catch (Exception $ex) {
+                $message = '修改失败::' . $ex->getMessage();
+            }
+            
+            return [
+                'code' => $is_success ? 200 : 401,
+                'data' => [
+                    'id' => $userModel->id,
+                    'nickname' => $userModel->nickname
+                ],
+                'message' => $message
+            ];
+        }
+        
+        return $this->renderAjax('switch-customer', [
+            'customers' => $customers
+        ]);
+    }
+
     /**
      * 检查号码是否已被注册
      * @return array
