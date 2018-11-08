@@ -127,6 +127,7 @@ class MergeChunksAction extends Action {
                 if($dbFile == null){
                     $dbFile = new Uploadfile(['id' => $fileMd5]);
                 }
+                $dbFile->customer_id = Yii::$app->user->identity->customer_id;
                 $dbFile->name = $fileName;
                 $dbFile->path = $uploadPath;
                 $dbFile->del_mark = 0;          //重置删除标志
