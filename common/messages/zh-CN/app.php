@@ -231,7 +231,7 @@ return [
     'Config Value' => '配置值',
     'Upload' => '上传',
     'Storage' => '存储',
-    'Customer' => '客户',
+    'Customer' => '品牌',
     'Province' => '省',
     'City' => '市',
     'District' => '区',

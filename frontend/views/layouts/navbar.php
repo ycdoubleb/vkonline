@@ -62,7 +62,7 @@ echo Nav::widget([
     'options' => ['class' => 'navbar-nav navbar-left'],
     //'encodeLabels' => false,
     'items' => $menuItems,
-    'activateParents' => true, //启用选择【子级】【父级】显示高亮
+    'activateParents' => false, //启用选择【子级】【父级】显示高亮
     'route' => $route,
 ]);
 
@@ -85,7 +85,7 @@ $menuItems = [
                     'Switch' => Yii::t('app', 'Switch'), 'Customer' => Yii::t('app', 'Customer')
                 ]),
                 'url' => ['/site/switch-customer'],
-                'linkOptions' => ['class' => 'switch-customer', 'onclick' => 'showModal($(this).attr("href")); return false;'],
+                'linkOptions' => ['class' => 'logout', 'onclick' => 'showModal($(this).attr("href")); return false;'],
                 'encode' => false,
             ],
             [
@@ -104,6 +104,7 @@ $menuItems = [
 ];
 echo Nav::widget([
     'options' => ['class' => 'navbar-nav navbar-right'],
+    'activateItems' => false, 
     'items' => $menuItems,
 ]);
         
@@ -111,8 +112,6 @@ NavBar::end();
 ?>
 
 <?php
-
-
 $js = <<<JS
    
     $(".navbar-nav .dropdown > a, .navbar-nav .dropdown > .dropdown-menu").hover(function(){
