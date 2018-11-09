@@ -26,14 +26,16 @@ use yii\widgets\ActiveForm;
         ],
     ]); ?>
     <?php
-//        $form->field($model, 'customer_id')->widget(Select2::class,[
-//            'data' => $customer,
-//            'hideSearch' => true,
-//            'options' => ['placeholder' => '请选择...',],
-//            'pluginOptions' => [
-//                'allowClear' => true,
-//            ],
-//        ])
+        if($model->isNewRecord){
+            echo $form->field($model, 'customer_id')->widget(Select2::class,[
+                'data' => $customer,
+                'hideSearch' => true,
+                'options' => ['placeholder' => '请选择...',],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                ],
+            ]);
+        }
     ?>
     
     <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称']) ?>

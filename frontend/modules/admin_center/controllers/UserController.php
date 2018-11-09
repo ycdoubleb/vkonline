@@ -107,12 +107,10 @@ class UserController extends GridViewChangeSelfController
         $model = new User(['customer_id' => $customer_id]);
         $model->loadDefaultValues();
         $model->scenario = User::SCENARIO_CREATE;
-        
-        $post = Yii::$app->request->post();
-        $user_id = ArrayHelper::getValue($post, 'user_id');        
-        if ($model->load($post) && $model->save()) {
+             
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //绑定品牌
-            UserBrand::userBingding($user_id, $customer_id, true);
+            UserBrand::userBingding($model->id, $customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
