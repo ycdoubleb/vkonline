@@ -586,6 +586,16 @@ class UserCategory extends ActiveRecord
         self::initCache();
         if (isset(self::$userCategorys[$id])) {
             return new UserCategory(self::$userCategorys[$id]);
+        }else if($id == 0){
+            return new UserCategory([
+                'id' => 0,
+                'name' => '根目录',
+                'type' => UserCategory::TYPE_SYSTEM,
+                'level' => 0,
+                'path' => '0',
+                'is_public' => 1,
+                'is_show' => 1,
+            ]);
         }
         return null;
     }

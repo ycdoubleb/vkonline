@@ -1,8 +1,9 @@
 <?php
 
-use apiend\controllers\ApiController;
-
 namespace apiend\modules\v1\controllers;
+
+use apiend\controllers\ApiController;
+use apiend\modules\v1\actions\user_category\GetCategoryDetailAction;
 
 /**
  * 用户目录 API
@@ -17,8 +18,7 @@ class UserCategoryController extends ApiController{
             //'check-phone-registered',
         ];
         $behaviors['verbs']['actions'] = [
-            'login' =>                      ['post'],
-            'logout' =>                     ['post'],
+            'get-category-detail' =>                      ['get'],
         ];
         return $behaviors;
     }
@@ -28,7 +28,7 @@ class UserCategoryController extends ApiController{
      */
     public function actions() {
         return [
-            'login' =>                      ['class' => LoginAction::class],
+            'get-category-detail' =>                      ['class' => GetCategoryDetailAction::class],
         ];
     }
 }
