@@ -77,3 +77,26 @@
 .subnav ul > li.active > a.links {
    color: #fc583d;
 }
+
+/**邀请码正确或错误图标**/
+.customer-add-bingding .vk-form .icon-y{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #5cb85c;
+}
+
+.customer-add-bingding .vk-form .icon-n{
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #d9534f;
+}
+
+.customer-add-bingding .vk-form .name-info {
+    height: 15px;
+    bottom: 20px;
+    left: 35px;
+    color: #666666;
+    position: absolute;
+}

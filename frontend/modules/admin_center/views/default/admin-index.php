@@ -36,7 +36,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                 },
                 'headerOptions' => [
                     'style' => [
-                        'width' => '125px',
+                        'width' => '195px',
                         'text-align' => 'center',
                         'color' => '#999999',
                     ],

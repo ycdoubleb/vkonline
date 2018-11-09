@@ -3,12 +3,9 @@
 namespace common\models\searchs;
 
 use common\models\User;
-use common\models\vk\Course;
-use common\models\vk\CourseAttachment;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\searchs\CourseSearch;
-use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
+use common\models\vk\UserBrand;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
@@ -58,8 +55,6 @@ class UserSearch extends User
     public function search($params)
     {
         $this->getInstance();
-        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
-        $customerId = !empty(Yii::$app->user->identity->customer_id) ? Yii::$app->user->identity->customer_id : null;  //当前客户id
 //        $dataProvider = new ActiveDataProvider([
 //            'query' => $query,
 //            'key' => 'id'
@@ -73,26 +68,15 @@ class UserSearch extends User
 //            return $dataProvider;
 //        }
         
-        //模块id为管理中心的情况下
-        if($moduleId == 'admin_center'){
-            self::$query->andFilterWhere(['User.customer_id' => $customerId]);
-        }
-        
         //条件查询
         self::$query->andFilterWhere([
             'User.customer_id' => $this->customer_id,
-            'User.type' => $this->type,
             'User.status' => $this->status,
-            'max_store' => $this->max_store,
-            'created_at' => $this->created_at,
+            'User.sex' => $this->sex,
         ]);
         //模糊查询
         self::$query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'nickname', $this->nickname])
-            ->andFilterWhere(['like', 'sex', $this->sex])
-            ->andFilterWhere(['like', 'phone', $this->phone])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'des', $this->des]);
+            ->andFilterWhere(['like', 'nickname', $this->nickname]);
         //用户创建的课程数量
         $courses = $this->getUserCourseNumber();
         //用户创建的视频数量
@@ -122,6 +106,56 @@ class UserSearch extends User
     }
     
     /**
+     * 前台管理中心 品牌用户
+     * @param array $params
+     * @return ActiveDataProvider
+     */
+    public function searchUser($params)
+    {
+        $this->getInstance();
+        $query = UserBrand::find()
+                ->from(['UserBrand' => UserBrand::tableName()]);
+        
+        $this->load($params);
+        
+        $query->leftJoin(['User' => User::tableName()], '(User.id = UserBrand.user_id AND UserBrand.is_del = 0)');
+        $query->andFilterWhere(['UserBrand.brand_id' => Yii::$app->user->identity->customer_id]);
+        
+        //条件查询
+        $query->andFilterWhere(['User.status' => $this->status]);
+        //模糊查询
+        $query->andFilterWhere(['like', 'username', $this->username])
+            ->andFilterWhere(['like', 'nickname', $this->nickname])
+            ->andFilterWhere(['like', 'sex', $this->sex]);
+        //用户创建的课程数量
+        $courses = $this->getUserCourseNumber();
+        //用户创建的视频数量
+        $videos = $this->getUserVideoNodeNumber();
+        //用户使用的空间大小
+        $userSize = $this->findUsedSizeByUser()->asArray()->all();
+        //添加字段and 关联查询
+        $query->addSelect(['User.*', 'CustomerAdmin.level']);
+        $query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.user_id = UserBrand.user_id');
+        //以user_id为索引
+        $users = ArrayHelper::index($query->asArray()->all(), 'id');
+        $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
+                ArrayHelper::index($videos, 'created_by'), ArrayHelper::index($userSize, 'created_by'));
+        //合并查询后的结果
+        foreach ($users as $id => $item) {
+            if(isset($results[$id])){
+                $users[$id] += $results[$id];
+            }
+        }
+
+        return [
+            'filter' => $params,
+            'data' => [
+                'user' => $users
+            ],
+        ];
+    }
+
+    /**
      * 
      * @return Query
      */
@@ -138,8 +172,14 @@ class UserSearch extends User
      */
     protected function getUserVideoNodeNumber()
     {
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        
         $query = CourseSearch::findVideoByCourseNode();
         $query->andWhere(['Video.created_by' => self::$query]);
+        
+        if($moduleId != 'frontend_admin'){    //后台不需过滤
+            $query->andFilterWhere(['Video.customer_id' => Yii::$app->user->identity->customer_id]);
+        }
         
         $query->addSelect(['Video.created_by']);
         
@@ -154,8 +194,14 @@ class UserSearch extends User
      */
     protected function getUserCourseNumber()
     {
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        
         $query = CourseSearch::findCourse();
         $query->where(['Course.created_by' => self::$query]);
+        
+        if($moduleId != 'frontend_admin'){    //后台不需过滤
+            $query->andFilterWhere(['Course.customer_id' => Yii::$app->user->identity->customer_id]);
+        }
         
         $query->addSelect(['Course.created_by', 'COUNT(Course.id) AS cour_num']);
         

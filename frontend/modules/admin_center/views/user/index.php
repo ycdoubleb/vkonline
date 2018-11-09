@@ -143,21 +143,21 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                         return (isset($data['node_num']) ? $data['node_num'] : 0)  . ' 个';
                     },
                 ],
-                [
-                    'attribute' => 'max_store',
-                    'filter' => false,
-                    'format' => 'raw',
-                    'value' => function($data) {
-                        return Yii::$app->formatter->asShortSize($data['max_store'], 1) . ' / ' .
-                                '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
-                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
-                    },
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '155px',
-                        ],
-                    ],
-                ],
+//                [
+//                    'attribute' => 'max_store',
+//                    'filter' => false,
+//                    'format' => 'raw',
+//                    'value' => function($data) {
+//                        return Yii::$app->formatter->asShortSize($data['max_store'], 1) . ' / ' .
+//                                '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
+//                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
+//                    },
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'width' => '155px',
+//                        ],
+//                    ],
+//                ],
                 [
                     'attribute' => 'created_at',
                     'filter' => false,

@@ -3,6 +3,7 @@
 use common\models\User;
 use common\models\vk\CustomerAdmin;
 use frontend\modules\admin_center\assets\ModuleAssets;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -92,8 +93,14 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
             'attributes' => [
                 [
                     'attribute' => 'customer_id',
+                    'label' => '当前所在品牌',
                     'format' => 'raw',
                     'value' => !empty($model->customer_id) ? $model->customer->name : null,
+                ],
+                [
+                    'attribute' => 'customer_id',
+                    'label' => '绑定的品牌',
+                    'value' => implode('，', ArrayHelper::getColumn(User::getUserBrand($model->id), 'name')),
                 ],
                 'nickname',
                 'username',
@@ -103,15 +110,15 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
                     'value' => Html::img($model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']),
                 ],
                 'email:email',
-                [
-                    'attribute' => 'max_store',
-                    'format' => 'raw',
-                    'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
-                        '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
-                            (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
-                                '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
-                    ,
-                ],
+//                [
+//                    'attribute' => 'max_store',
+//                    'format' => 'raw',
+//                    'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
+//                        '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
+//                            (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
+//                                '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
+//                    ,
+//                ],
                 'des:ntext',
                 [
                     'attribute' => 'created_at',

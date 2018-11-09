@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\SearchLog;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
@@ -23,7 +24,6 @@ use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Url;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
@@ -623,7 +623,13 @@ class SiteController extends Controller
         $user->setPassword($password_hash);
         $user->generateAuthKey();
         
-        return $user->save() ? $user : null;
+        $isTrue = $user->save();
+        //customerId不为空并且创建用户成功时绑定品牌
+        if($customerId != null && $isTrue){
+            UserBrand::userBingding($user->id, $customerId, true);
+        }
+        
+        return $isTrue ? $user : null;
     }
     
     /**

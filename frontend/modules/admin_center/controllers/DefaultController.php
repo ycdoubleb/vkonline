@@ -376,14 +376,11 @@ class DefaultController extends Controller
      */
     public function getUsedSpace($id)
     {
-        $users = $this->findCustomerUser($id)->all();      //查找客户下拥有的用户
-        $userIds = array_filter(ArrayHelper::getColumn($users, 'id'));
-        
         $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
             ->from(['Uploadfile' => Uploadfile::tableName()]);
         
         $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.created_by' => $userIds]);
+        $query->andFilterWhere(['Uploadfile.customer_id' => Yii::$app->user->identity->customer_id]);
         
         return $query->one();
     }
