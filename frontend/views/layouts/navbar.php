@@ -1,6 +1,7 @@
 <?php
 
 use common\models\User;
+use common\models\vk\UserBrand;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\ArrayHelper;
@@ -14,6 +15,12 @@ use yii\web\View;
 $is_group_user = (!Yii::$app->user->isGuest && Yii::$app->user->identity->type == User::TYPE_GROUP);
 //团体名称
 $group_name = $is_group_user ? Yii::$app->user->identity->customer->short_name : '';
+
+if(!Yii::$app->user->isGuest){
+    $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id])->count('id');
+} else {
+    $brandCount = 1;
+}
 
 NavBar::begin([
     'brandImage' => '/imgs/site/logo.png?rand='. rand(1, 10),
@@ -87,6 +94,7 @@ $menuItems = [
                 'url' => ['/site/switch-customer'],
                 'linkOptions' => ['class' => 'logout', 'onclick' => 'showModal($(this).attr("href")); return false;'],
                 'encode' => false,
+                'visible' => $brandCount > 1 ? true : false
             ],
             [
                 'label' => '<i class="fa fa-sign-out"></i>' . Yii::t('app', 'Logout'),
