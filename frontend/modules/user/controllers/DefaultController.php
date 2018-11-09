@@ -8,6 +8,9 @@ use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
+use common\models\vk\Customer;
+use common\models\vk\CustomerAdmin;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\modules\webuploader\models\Uploadfile;
@@ -16,6 +19,7 @@ use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
@@ -63,9 +67,10 @@ class DefaultController extends Controller
         if($model->id != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
         }
-        
+
         return $this->render('index', [
             'model' => $model,
+            'userBrand' => User::getUserBrand($model->id),         //用户绑定的品牌
             'usedSpace' => $this->getUsedSpace($id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($id),     //已学课程数
@@ -120,6 +125,123 @@ class DefaultController extends Controller
             ]);
         }
     }
+    
+    /**
+     * 增加绑定品牌
+     * @param string $user_id   用户ID
+     * @return type
+     */
+    public function actionAddBingding($user_id)
+    {
+        $model = new UserBrand(['user_id' => $user_id]);
+        $model->loadDefaultValues();
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            $result = $this->addBingding(Yii::$app->request->post());
+            return [
+                'code' => $result ? 200 : 404,
+                'message' => ''
+            ];
+
+        } else {
+            return $this->renderAjax('add-bingding', [
+                'model' => $model,
+            ]);
+        }
+    }
+    
+    /**
+     * 删除绑定品牌
+     * @param integer $id
+     * @return type
+     */
+    public function actionDelBingding($id)
+    {
+        $model = UserBrand::findOne($id);
+        
+        if ($model->load(Yii::$app->request->post())) {
+            Yii::$app->getResponse()->format = 'json';
+            if($model->brand_id == Yii::$app->user->identity->customer_id){
+                $result = false;
+                Yii::$app->getSession()->setFlash('error','删除失败！');
+            } else {
+                $model->is_del = 1;
+                $result = $model->save(false, ['is_del']);
+                Yii::$app->getSession()->setFlash('success','删除成功！');
+            }
+            return [
+                'code'=> $result ? 200 : 404,
+                'message' => ''
+            ];
+        } else {
+            return $this->renderAjax('del-bingding',[
+                'model' => $model
+            ]);
+        }
+    }
+
+    /**
+     * 获取客户名
+     * @return array
+     */
+    public function actionCustomer()
+    {
+        \Yii::$app->getResponse()->format = 'json';
+        $post = \Yii::$app->request->post();
+        $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
+        $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
+        
+        if($customer != null){
+            return [
+                'code' => 200,
+                'data' => [
+                    'name' => ArrayHelper::getValue($customer, 'name'),
+                ],
+                'message' => ''
+            ];
+        } else {
+            return [
+                'code' => 404,
+                'data' => [],
+                'message' => '无效的邀请码'
+            ];
+        }
+    }
+    
+    /**
+     * 保存绑定品牌数据
+     * @param type $post
+     * @return boolean
+     */
+    public function addBingding($post)
+    {
+        $inviteCode = ArrayHelper::getValue($post, 'UserBrand.brand_id');   //客户邀请码
+        $user_id = ArrayHelper::getValue($post, 'UserBrand.user_id');       //用户id
+        $customer_id = Yii::$app->user->identity->customer_id;              //当前客户ID
+        
+        $brand_id = Customer::find()->select(['id'])
+                ->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户id
+
+        if($brand_id == null || $customer_id == $brand_id['id']){
+            Yii::$app->getSession()->setFlash('error','操作失败！');
+            return false;
+        } else {
+            $userBrand = UserBrand::findOne(['user_id' => $user_id, 'brand_id' => $brand_id['id']]);
+            $num = 0;
+            if($userBrand == null || $userBrand->is_del == 1){
+                //绑定品牌
+                $num = UserBrand::userBingding($user_id, $brand_id['id'], true);
+            } 
+            if($num > 0){
+                Yii::$app->getSession()->setFlash('success','操作成功！');
+                return ['code' => 200];
+            } else {
+                return ['code' => 400];
+            }
+        }
+    }
+    
     
     /**
      * 根据其主键值查找 User 模型。

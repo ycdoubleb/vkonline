@@ -7,6 +7,8 @@ use yii\web\View;
 /* @var $this View */
 /* @var $model User */
 
+ModuleAssets::register($this);
+
 ?>
 
 <div class="user-update main">
@@ -25,11 +27,3 @@ use yii\web\View;
         </div>
     </div>
 </div>
-
-<?php
-    $js = <<<JS
-        
-JS;
-    $this->registerJs($js, View::POS_READY);
-    ModuleAssets::register($this);
-?>

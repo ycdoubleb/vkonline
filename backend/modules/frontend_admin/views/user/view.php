@@ -2,6 +2,7 @@
 
 use backend\modules\frontend_admin\assets\FrontendAssets;
 use common\models\User;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
@@ -52,8 +53,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'attributes' => [
                 [
                     'attribute' => 'customer_id',
+                    'label' => '所在品牌',
                     'format' => 'raw',
                     'value' => !empty($model->customer_id) ? $model->customer->name : null,
+                ],
+                [
+                    'attribute' => 'customer_id',
+                    'label' => '绑定的品牌',
+                    'value' => implode('，', ArrayHelper::getColumn(User::getUserBrand($model->id), 'name')),
                 ],
                 'nickname',
                 'username',

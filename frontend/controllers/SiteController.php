@@ -673,7 +673,13 @@ class SiteController extends Controller
         $user->setPassword($password_hash);
         $user->generateAuthKey();
         
-        return $user->save() ? $user : null;
+        $isTrue = $user->save();
+        //customerId不为空并且创建用户成功时绑定品牌
+        if($customerId != null && $isTrue){
+            UserBrand::userBingding($user->id, $customerId, true);
+        }
+        
+        return $isTrue ? $user : null;
     }
     
     /**
