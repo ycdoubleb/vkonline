@@ -487,6 +487,56 @@ class SiteController extends Controller
     }
     
     /**
+     * 切换客户
+     */
+    public function actionSwitchCustomer()
+    {
+        /* 用户关联的所有品牌 */
+        $customers = (new Query())->select(['Customer.id','Customer.name','Customer.logo'])
+            ->from(['UserBrand' => UserBrand::tableName()])
+            ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = UserBrand.brand_id')
+            ->where(['user_id' => Yii::$app->user->id, 'Customer.status' => Customer::STATUS_ACTIVE])
+            ->orderBy('Customer.sort_order')
+            ->all();
+        
+        if(Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            $message = '';
+            $is_success = false;
+            try
+            { 
+                $relBrands = ArrayHelper::getColumn($customers, 'id');  //用户关联的所有品牌
+                $userModel = User::findOne(Yii::$app->user->id);
+                $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
+                
+                if(in_array($userModel->customer_id, $relBrands)){
+                    if($userModel->save(false, ['customer_id'])) {
+                        $is_success = true;
+                        $message = '切换成功！';
+                    }
+                }else{
+                   $message = '切换失败::请正确选择和自己相关的品牌。'; 
+                }
+            }catch (Exception $ex) {
+                $message = '切换失败::' . $ex->getMessage();
+            }
+            
+            return [
+                'code' => $is_success ? 200 : 401,
+                'data' => [
+                    'id' => $userModel->id,
+                    'nickname' => $userModel->nickname
+                ],
+                'message' => $message
+            ];
+        }
+        
+        return $this->renderAjax('switch-customer', [
+            'customers' => $customers
+        ]);
+    }
+
+    /**
      * 检查号码是否已被注册
      * @return array
      */

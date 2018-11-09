@@ -122,5 +122,3 @@ $this->title = Yii::t('app', '{Log}{List}', [
     </div>
     
 </div>
-
-<?= $this->render('/layouts/model') ?>

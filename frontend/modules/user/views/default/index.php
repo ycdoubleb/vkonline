@@ -46,14 +46,14 @@ ModuleAssets::register($this);
                                 .'">' . $value['name'] . 
                                     Html::a(' <span>x</span>', ['del-bingding', 'id' => $value['id']], [
                                         'title' => "删除绑定",
-                                        'onclick' => 'return showElemModal($(this));return false;'
+                                        'onclick' => 'showModal($(this).attr("href"));return false;'
                                     ])
                                 . '</div>';
                             }
                             return $brand . Html::a('<i class="fa fa-plus-circle"></i>', 
                                     ['add-bingding', 'user_id' => $model->id], [
                                         'title' => "添加绑定",
-                                        'onclick' => 'return showElemModal($(this));return false;'
+                                        'onclick' => 'showModal($(this).attr("href"));return false;'
                                     ]);
                         },
                     ],
@@ -173,21 +173,3 @@ ModuleAssets::register($this);
     </div>
 
 </div>
-
-<?= $this->render('/layouts/model') ?>
-
-<?php
-
-$js = <<<JS
-    /**
-     * 显示模态框
-     * @param {Object} _this
-     */
-    window.showElemModal = function(_this){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(_this.attr("href"));
-        return false;
-    };
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>

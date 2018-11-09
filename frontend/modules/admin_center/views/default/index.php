@@ -88,7 +88,7 @@ $this->title = Yii::t('app', 'Survey');
             <div class="btngroup pull-right">
                 <?= Html::a(Yii::t('app', 'Add'), ['create-admin', 'id' => $model->id], [
                     'id' => 'add_admin','class' => 'btn btn-success btn-flat', 
-                    'onclick' => 'return showElemModal($(this));return false;'
+                    'onclick' => 'showModal($(this).attr("href"));return false;'
                 ])?>
             </div>
         </div>
@@ -271,8 +271,6 @@ $this->title = Yii::t('app', 'Survey');
         
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $adminCount = count($customerAdmin);    //管理员人数
 $WEB_ROOT = WEB_ROOT;   //web域名
@@ -281,16 +279,6 @@ $js = <<<JS
     $("#admin_info").load("../default/admin-index?id={$model->id}"); 
     //加载邀请码列表
     $("#signup_user").load("../default/invite-code-index?id={$model->id}"); 
-    
-    /**
-     * 显示模态框
-     * @param {Object} _this
-     */
-    window.showElemModal = function(_this){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(_this.attr("href"));
-        return false;
-    };
     
     /**
      * 生成邀请码

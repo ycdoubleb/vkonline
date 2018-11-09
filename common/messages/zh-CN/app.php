@@ -71,6 +71,7 @@ return [
     'Signup' => '注册',
     'Login' => '登录',
     'Login Out' => '登出',
+    'Switch' => '切换',
     'Course' => '课程',
     'Material' => '素材',
     'Video' => '视频',

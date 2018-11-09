@@ -39,5 +39,15 @@ UeditorAsset::register($this);
         $('.myModal').modal("show").load(url);
         return false;
     }
+    
+    /**
+     * 隐藏模态框
+     * @returns {Boolean}
+     */
+    function hideModal(){
+        $(".myModal").html("");
+        $('.myModal').modal("hide");
+        return false;
+    }
   
 </script>

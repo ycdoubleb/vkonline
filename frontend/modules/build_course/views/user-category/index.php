@@ -167,8 +167,6 @@ $this->title = Yii::t('app', '{My}{Video} / {Catalog}{Admin}',[
     </div>
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $js = <<<JS
         

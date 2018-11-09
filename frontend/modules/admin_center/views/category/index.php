@@ -32,9 +32,7 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
             </span>
             <div class="btngroup pull-right">
                 
-                <?= Html::a(Yii::t('app', '{Move}{Category}', [
-                    'Move' => Yii::t('app', 'Move'), 'Category' => Yii::t('app', 'Category'),
-                ]), ['move'], [
+                <?= Html::a(Yii::t('app', 'Move'), ['move'], [
                     'class' => 'btn btn-unimportant btn-flat',
                     'onclick' => 'moveCategoryModal($(this)); return false;',
                 ]) ?>
@@ -169,19 +167,9 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
     </div>
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $js = <<<JS
-    /**
-     * 显示模态框
-     * @param {Object} _this
-     */
-    window.showModal = function(elem){
-       $(".myModal").html("");
-       $('.myModal').modal("show").load(elem.attr("href"));
-    }
-
+    
     /**
      * 显示移动目录模态框
      * @param {Object} _this
@@ -210,8 +198,7 @@ $js = <<<JS
             return false;
         }
         if(vals.length > 0){
-            $(".myModal").html("");
-            $(".myModal").modal("show").load(_this.attr('href') + '?move_ids=' + vals);
+            showModal(_this.attr('href') + '?move_ids=' + vals);
         }else{
             alert("请选择移动的分类。");
         }

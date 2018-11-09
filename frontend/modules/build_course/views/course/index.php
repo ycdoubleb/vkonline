@@ -107,7 +107,6 @@ $js = <<<JS
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 6;
         // 当前页数是否大于最大页数
-        console.log(target_page, Math.ceil(maxPageNum));
         if(target_page >= Math.ceil(maxPageNum)){
             $('.loading-box .loading').hide();
             $('.loading-box .no_more').show();

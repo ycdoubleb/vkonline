@@ -425,6 +425,7 @@
     margin-right: -35px;
 }
 .site-index .partner .list .customer-item {
+    position: relative;
     display: inline-block;
     width: 212px;
     height: 146px;
@@ -445,6 +446,27 @@
     font-size: 12px;
     color: #AAAAAA;
 }
+.site-index .partner .list .customer-item .active {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    z-index: 1022;
+}
+.site-index .partner .list .customer-item .icon {
+    font-size: 16px;
+    color: #fff;
+    border-color: #ff3300;
+    border-width: 20px 20px;
+    border-left-color: transparent;
+    border-bottom-color: transparent;
+    border-style: solid;
+}
+.site-index .partner .list .customer-item .icon > i {
+    position: absolute;
+    top: -18px;
+    left: -1px;
+}
+
 
 /***************************************************************
 * 课程列表项

@@ -86,6 +86,7 @@ class TeacherSearch extends Teacher
         //条件查询
         self::$query->andFilterWhere([
             'Teacher.created_by' => Yii::$app->user->id,
+            'Teacher.customer_id' => Yii::$app->user->identity->customer_id,
             'is_certificate' => $this->is_certificate,
         ]);
         //模糊查询
