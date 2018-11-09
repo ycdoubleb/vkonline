@@ -59,7 +59,7 @@ $this->title = Yii::t('app', '{Switch}{Customer}', [
         $.post('/site/switch-customer', {customer_id: _dataID}, function(res){
             hideModal();
             if(res.code == 200){
-                location.reload();
+                location.replace(location.pathname);
             }
             $.notify({
                 message: res.message,
