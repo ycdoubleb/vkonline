@@ -31,11 +31,11 @@ $this->title = Yii::t('app', '{Switch}{Customer}', [
                 <!--入驻伙伴-->
                 <div class="partner">
                     <div class="list" style="margin-right: -5px;">
-                        <?php foreach ($customers as $customer): ?>
-                        <a data-id="<?= $customer['id'] ?>" onclick="switchCustomer($(this).attr('data-id'));" style="text-decoration: none; cursor: pointer">
+                        <?php foreach ($customers as $customer): $condition = $customer['id'] == Yii::$app->user->identity->customer_id; ?>
+                        <a data-id="<?= $customer['id'] ?>" class="<?= $condition ? 'disabled' : '' ?>" onclick="switchCustomer($(this).attr('data-id'));" style="text-decoration: none; cursor: pointer">
                             <div class="customer-item" style="border:1px #999999 solid; margin-right: 3px; background-image:url(<?= Aliyun::absolutePath($customer['logo']) ?>)">
                                 <span class="name single-clamp"><?= $customer['name'] ?></span>
-                                <?php if($customer['id'] == Yii::$app->user->identity->customer_id): ?>
+                                <?php if($condition): ?>
                                 <div class="active icon"><i class="glyphicon glyphicon-ok"></i></div>
                                 <?php endif; ?>
                             </div>

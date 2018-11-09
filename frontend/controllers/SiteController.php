@@ -510,7 +510,7 @@ class SiteController extends Controller
                 $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
                 
                 if(in_array($userModel->customer_id, $relBrands)){
-                    if($userModel->update(false, ['customer_id'])) {
+                    if($userModel->save(false, ['customer_id'])) {
                         $is_success = true;
                         $message = '切换成功！';
                     }
