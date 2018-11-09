@@ -2,13 +2,14 @@
 
 use common\components\aliyuncs\Aliyun;
 use frontend\assets\SiteAssets;
+use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\View;
 
 /* @var $this View */
 
 SiteAssets::register($this);
+GrowlAsset::register($this);
 
 $this->title = Yii::t('app', '{Switch}{Customer}', [
     'Switch' => Yii::t('app', 'Switch'), 'Customer' => Yii::t('app', 'Customer')
@@ -49,13 +50,22 @@ $this->title = Yii::t('app', '{Switch}{Customer}', [
 </div>
 
 <script type="text/javascript">
+    /**
+     * 切换品牌
+     * @param {string} _dataID
+     * @returns {undefined}
+     */
     function switchCustomer(_dataID){
         $.post('/site/switch-customer', {customer_id: _dataID}, function(res){
+            hideModal();
             if(res.code == 200){
                 location.reload();
-            }else{
-                showModal('/site/switch-customer');
             }
+            $.notify({
+                message: res.message,
+            },{
+                type: res.code == 200 ? "success " : "danger",
+            });
         });
     }
 </script>

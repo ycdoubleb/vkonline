@@ -505,15 +505,20 @@ class SiteController extends Controller
             $is_success = false;
             try
             { 
+                $relBrands = ArrayHelper::getColumn($customers, 'id');  //用户关联的所有品牌
                 $userModel = User::findOne(Yii::$app->user->id);
                 $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
                 
-                if($userModel->update(false, ['customer_id'])) {
-                    $is_success = true;
-                    $message = '修改成功！';
+                if(in_array($userModel->customer_id, $relBrands)){
+                    if($userModel->update(false, ['customer_id'])) {
+                        $is_success = true;
+                        $message = '切换成功！';
+                    }
+                }else{
+                   $message = '切换失败::请正确选择和自己相关的品牌。'; 
                 }
             }catch (Exception $ex) {
-                $message = '修改失败::' . $ex->getMessage();
+                $message = '切换失败::' . $ex->getMessage();
             }
             
             return [
