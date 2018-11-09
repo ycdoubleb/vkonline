@@ -181,8 +181,6 @@ $this->title = Yii::t('app', '{My}{Document}', [
         
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 //用户分类id
 $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  

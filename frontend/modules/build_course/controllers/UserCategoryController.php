@@ -82,7 +82,6 @@ class UserCategoryController extends GridViewChangeSelfController
     {
         $model = new UserCategory([
             'customer_id' => Yii::$app->user->identity->customer_id,
-            'type' => UserCategory::TYPE_MYVIDOE, 
             'created_by' => \Yii::$app->user->id,
         ]);
         $model->loadDefaultValues();

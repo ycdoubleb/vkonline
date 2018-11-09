@@ -69,7 +69,7 @@ use yii\widgets\ActiveForm;
         ])->label(Yii::t('app', '{Status}：', ['Status' => Yii::t('app', 'Status')])) ?>
 
         <!--查看权限-->
-        <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅集团用户'], [
+        <?= $form->field($searchModel, 'level')->radioList(['' => '全部', 0 => '私有', 2 => '公开', 1 => '仅品牌用户'], [
             'value' => ArrayHelper::getValue($filters, 'CourseSearch.level', ''),
             'itemOptions'=>[
                 'onclick' => 'submitForm();',

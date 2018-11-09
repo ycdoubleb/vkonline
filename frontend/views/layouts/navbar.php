@@ -62,7 +62,7 @@ echo Nav::widget([
     'options' => ['class' => 'navbar-nav navbar-left'],
     //'encodeLabels' => false,
     'items' => $menuItems,
-    'activateParents' => true, //启用选择【子级】【父级】显示高亮
+    'activateParents' => false, //启用选择【子级】【父级】显示高亮
     'route' => $route,
 ]);
 
@@ -72,12 +72,20 @@ $menuItems = [
     '<li><div class="search-box"><input id="search-input" class="search-input"/><i class="glyphicon glyphicon-search search-icon"></i></div></li>',
     [
         'label' => !Yii::$app->user->isGuest ? Html::img(Yii::$app->user->identity->avatar, ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']) : null,
-        'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
+        'url' => ['/user/default/index'],
         'options' => ['class' => 'logout'],
         'linkOptions' => ['class' => 'logout', 'style' => 'line-height: 50px;'],
         'items' => [
             [
                 'label' => '<span class="nickname">'.(Yii::$app->user->isGuest ? "游客" :Yii::$app->user->identity->nickname ).'</span>',
+                'encode' => false,
+            ],
+            [
+                'label' => '<i class="glyphicon glyphicon-transfer"></i>' . Yii::t('app', '{Switch}{Customer}', [
+                    'Switch' => Yii::t('app', 'Switch'), 'Customer' => Yii::t('app', 'Customer')
+                ]),
+                'url' => ['/site/switch-customer'],
+                'linkOptions' => ['class' => 'logout', 'onclick' => 'showModal($(this).attr("href")); return false;'],
                 'encode' => false,
             ],
             [
@@ -96,6 +104,7 @@ $menuItems = [
 ];
 echo Nav::widget([
     'options' => ['class' => 'navbar-nav navbar-right'],
+    'activateItems' => false, 
     'items' => $menuItems,
 ]);
         
@@ -103,8 +112,6 @@ NavBar::end();
 ?>
 
 <?php
-
-
 $js = <<<JS
    
     $(".navbar-nav .dropdown > a, .navbar-nav .dropdown > .dropdown-menu").hover(function(){

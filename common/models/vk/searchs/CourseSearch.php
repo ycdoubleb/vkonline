@@ -104,12 +104,41 @@ class CourseSearch extends Course
             'Course.category_id' => !empty($categoryId) ? 
                 ArrayHelper::merge([$this->category_id], $categoryId) : $this->category_id,
             'Course.is_publish' => $this->is_publish,
-            'Course.level' => $this->level,
         ]);
-        self::$query->andFilterWhere(['OR', 
-            ['Course.created_by' => \Yii::$app->user->id],
-            ['CourseUser.user_id' => \Yii::$app->user->id, 'CourseUser.is_del' => 0]
-        ]);
+        
+        switch ($this->level){
+            case null:
+                self::$query->andFilterWhere(['Course.customer_id' => \Yii::$app->user->identity->customer_id]);
+                self::$query->andFilterWhere(['OR', 
+                    ['Course.created_by' => \Yii::$app->user->id],
+                    ['CourseUser.user_id' => \Yii::$app->user->id, 'CourseUser.is_del' => 0],
+                    ['Course.level' => Course::INTRANET_LEVEL]
+                ]);
+                break;
+            case Course::PRIVATE_LEVEL:
+                self::$query->andFilterWhere(['OR', 
+                    ['Course.created_by' => \Yii::$app->user->id],
+                    ['CourseUser.user_id' => \Yii::$app->user->id, 'CourseUser.is_del' => 0],
+                ]);
+                self::$query->andFilterWhere([
+                    'Course.customer_id' => \Yii::$app->user->identity->customer_id,
+                    'Course.level' => Course::PRIVATE_LEVEL
+                ]);
+                break;
+            case Course::INTRANET_LEVEL:
+                    self::$query->andFilterWhere([
+                    'Course.customer_id' => \Yii::$app->user->identity->customer_id,
+                    'Course.level' => Course::INTRANET_LEVEL
+                ]);
+                break;
+            case Course::PUBLIC_LEVEL:
+                self::$query->andFilterWhere([
+                    'Course.customer_id' => \Yii::$app->user->identity->customer_id,
+                    'Course.level' => Course::PUBLIC_LEVEL
+                ]);
+                break;
+        }
+        
         //模糊查询
         self::$query->andFilterWhere(['like', 'Course.name', $this->name]);
         //添加字段

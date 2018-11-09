@@ -25,14 +25,16 @@ use yii\widgets\ActiveForm;
             'labelOptions' => ['class' => 'col-lg-2 col-md-2 control-label', 'style' => ['color' => '#999999', 'font-weight' => 'normal', 'padding-left' => '0']],
         ],
     ]); ?>
-    <?= $form->field($model, 'customer_id')->widget(Select2::class,[
-        'data' => $customer,
-        'hideSearch' => true,
-        'options' => ['placeholder' => '请选择...',],
-        'pluginOptions' => [
-            'allowClear' => true,
-        ],
-    ])?>
+    <?php
+//        $form->field($model, 'customer_id')->widget(Select2::class,[
+//            'data' => $customer,
+//            'hideSearch' => true,
+//            'options' => ['placeholder' => '请选择...',],
+//            'pluginOptions' => [
+//                'allowClear' => true,
+//            ],
+//        ])
+    ?>
     
     <?= $form->field($model, 'nickname')->textInput(['maxlength' => true, 'placeholder' => '真实名称']) ?>
     
@@ -71,12 +73,13 @@ use yii\widgets\ActiveForm;
         ]); ?>
     
     <?php
-        $prompt = '1TB=1024GB，默认为不限制';
-        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 75%;']);
-        echo $form->field($model, 'max_store',[
-        'template' => "{label}\n<div class=\"col-lg-1 col-md-1\" style=\"padding-right:3px\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding:0\">{$downList}</div>"
-            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999;padding:7px 0px\">{$prompt}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
-    ])->textInput(['type' => 'number', 'maxlength' => true]); ?>
+//        $prompt = '1TB=1024GB，默认为不限制';
+//        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 75%;']);
+//        echo $form->field($model, 'max_store',[
+//        'template' => "{label}\n<div class=\"col-lg-1 col-md-1\" style=\"padding-right:3px\">{input}</div><div class=\"col-lg-1 col-md-1\" style=\"padding:0\">{$downList}</div>"
+//            . "<div class=\"col-lg-6 col-md-6 control-label\" style=\"text-align:left;color:#999999;padding:7px 0px\">{$prompt}</div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+//        ])->textInput(['type' => 'number', 'maxlength' => true]); 
+    ?>
     
     <?= $form->field($model, 'des')->textarea(['rows' => 5, 'placeholder' => '描述']) ?>
 

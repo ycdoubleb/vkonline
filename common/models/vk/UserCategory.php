@@ -326,11 +326,19 @@ class UserCategory extends ActiveRecord
         $leveCategorys = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
         foreach ($userCategorys as $id => $category) {
-            //如果目录类型是私人并且是非公开目录，跳过本次循环
+            /**
+             * 在目录是私人类型情况下显示对应目录的条件
+             * 1、目录类型是私人类型并且是公开的目录
+             * 2、创建人是当前用户和品牌是当前用户所属品牌
+             */
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != $created_by) continue;
+                if($category['created_by'] != $created_by || $category['customer_id'] != $customer_id) continue;
             }
-            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            /**
+             * 在目录是共享类型情况下显示对应目录的条件
+             * 1、目录类型是共享类型并且等级要大于1
+             * 2、品牌是当前用户所属品牌并且目录类型要是共享类型
+             */
             if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
                 if($category['customer_id'] != $customer_id) continue;
             }
@@ -375,11 +383,19 @@ class UserCategory extends ActiveRecord
         $childrens = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
         foreach ($userCategorys as $c_id => $category) {
-            //如果目录类型是私人并且是非公开目录，跳过本次循环
+            /**
+             * 在目录是私人类型情况下显示对应目录的条件
+             * 1、目录类型是私人类型并且是公开的目录
+             * 2、创建人是当前用户和品牌是当前用户所属品牌
+             */
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != $created_by) continue;
+                if($category['created_by'] != $created_by || $category['customer_id'] != $customer_id) continue;
             }
-            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            /**
+             * 在目录是共享类型情况下显示对应目录的条件
+             * 1、目录类型是共享类型并且等级要大于1
+             * 2、品牌是当前用户所属品牌并且目录类型要是共享类型
+             */
             if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
                 if($category['customer_id'] != $customer_id) continue;
             }
@@ -432,11 +448,19 @@ class UserCategory extends ActiveRecord
         
         $childrens = [];
         foreach (self::$userCategorys as $c_id => $category) {
-            //如果目录类型是私人并且是非公开目录，跳过本次循环
+            /**
+             * 在目录是私人类型情况下显示对应目录的条件
+             * 1、目录类型是私人类型并且是公开的目录
+             * 2、创建人是当前用户和品牌是当前用户所属品牌
+             */
             if($category['type'] == self::TYPE_PRIVATE && !$category['is_public']){
-                if($category['created_by'] != $created_by) continue;
+                if($category['created_by'] != $created_by || $category['customer_id'] != $customer_id) continue;
             }
-            //如果目录类型是共享类型并且等级大于1，跳过本次循环
+            /**
+             * 在目录是共享类型情况下显示对应目录的条件
+             * 1、目录类型是共享类型并且等级要大于1
+             * 2、品牌是当前用户所属品牌并且目录类型要是共享类型
+             */
             if($category['type'] == self::TYPE_SHARING && $category['level'] > 1){
                 if($category['customer_id'] != $customer_id) continue;
             }

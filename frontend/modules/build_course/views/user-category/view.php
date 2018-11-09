@@ -2,8 +2,6 @@
 
 use common\models\vk\UserCategory;
 use frontend\modules\build_course\assets\ModuleAssets;
-use kartik\switchinput\SwitchInputAsset;
-use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\DetailView;
 
@@ -11,7 +9,6 @@ use yii\widgets\DetailView;
 /* @var $model UserCategory */
 
 ModuleAssets::register($this);
-SwitchInputAsset::register($this);
 
 $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
     'Catalog' => Yii::t('app', 'Catalog'), 'Detail' => Yii::t('app', 'Detail'),
@@ -66,26 +63,3 @@ $this->title = Yii::t('app', "{Catalog}{Detail}：{$model->name}",[
         
     </div>
 </div>
-
-<?= $this->render('/layouts/model') ?>
-
-<?php
-$js = 
-<<<JS
-
-    /**
-     * 显示模态框
-     */
-    window.showModal = function(elem){
-        $(".myModal").html("");
-        $('.myModal').modal("show").load(elem.attr("href"));
-    }    
-        
-    // 提交表单
-    $("#submitsave").click(function(){
-        $('#user-category-form').submit();
-    });   
-        
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>

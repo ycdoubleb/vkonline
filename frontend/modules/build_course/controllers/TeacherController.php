@@ -319,6 +319,8 @@ class TeacherController extends Controller
      */
     public function actionImport()
     {
+        $this->layout = '@frontend/views/layouts/main_no_nav';
+        
         $results = [
             'repeat_total' => 0,
             'exist_total' => 0,

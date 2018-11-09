@@ -129,8 +129,6 @@ $this->title = Yii::t('app', '{My}{Image}', [
     
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
