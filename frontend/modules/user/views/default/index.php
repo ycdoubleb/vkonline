@@ -41,9 +41,9 @@ ModuleAssets::register($this);
                         'value' => function ($model) use($userBrand){
                             $brand = '';
                             foreach ($userBrand as $value) {
-                                $brand .= '<div class="brand '. 
-                                        ($value['brand_id'] == Yii::$app->user->identity->customer_id ? 'bingo' : '' )
-                                .'">' . $value['name'] . 
+                                $brand .= $value['brand_id'] == Yii::$app->user->identity->customer_id ? 
+                                    '<div class="brand bingo">' . $value['name'] . '</div>' : 
+                                '<div class="brand">' . $value['name'] .
                                     Html::a(' <span>x</span>', ['del-bingding', 'id' => $value['id']], [
                                         'title' => "删除绑定",
                                         'onclick' => 'showModal($(this).attr("href"));return false;'

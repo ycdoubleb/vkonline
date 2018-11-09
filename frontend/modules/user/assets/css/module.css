@@ -97,17 +97,13 @@
     display: inline-block;
     border: 1px solid #999999;
     padding: 4px 8px;
-    margin-right: 8px;
+    margin: 5px;
 }
 
 .user-default-index .frame .frame-content .brand.bingo {
     background-color: #2aabb6;
     color: #fff;
     border: 1px solid #2aabb6;
-}
-
-.user-default-index .frame .frame-content .brand.bingo span {
-    color: #fff;
 }
 
 .user-default-index .frame .frame-content .brand span{
