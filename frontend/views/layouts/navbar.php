@@ -17,7 +17,7 @@ $is_group_user = (!Yii::$app->user->isGuest && Yii::$app->user->identity->type =
 $group_name = $is_group_user ? Yii::$app->user->identity->customer->short_name : '';
 
 if(!Yii::$app->user->isGuest){
-    $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id])->count('id');
+    $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])->count('id');
 } else {
     $brandCount = 1;
 }
