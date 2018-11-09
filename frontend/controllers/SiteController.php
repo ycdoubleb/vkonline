@@ -495,7 +495,7 @@ class SiteController extends Controller
         $customers = (new Query())->select(['Customer.id','Customer.name','Customer.logo'])
             ->from(['UserBrand' => UserBrand::tableName()])
             ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = UserBrand.brand_id')
-            ->where(['user_id' => Yii::$app->user->id, 'is_del' => 0, 'Customer.status' => Customer::STATUS_ACTIVE])
+            ->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])
             ->orderBy('Customer.sort_order')
             ->all();
         
