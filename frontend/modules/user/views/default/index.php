@@ -36,18 +36,14 @@ ModuleAssets::register($this);
                 'attributes' => [
                     [
                         'attribute' => 'customer_id',
-                        'label' => '当前所在品牌',
-                        'format' => 'raw',
-                        'value' => !empty($model->customer_id) ? $model->customer->name : null,
-                    ],
-                    [
-                        'attribute' => 'customer_id',
-                        'label' => '绑定的品牌',
+                        'label' => '我的品牌',
                         'format' => 'raw',
                         'value' => function ($model) use($userBrand){
                             $brand = '';
                             foreach ($userBrand as $value) {
-                                $brand .= '<div class="brand">' . $value['name'] . 
+                                $brand .= $value['brand_id'] == Yii::$app->user->identity->customer_id ? 
+                                    '<div class="brand bingo">' . $value['name'] . '</div>' : 
+                                '<div class="brand">' . $value['name'] .
                                     Html::a(' <span>x</span>', ['del-bingding', 'id' => $value['id']], [
                                         'title' => "删除绑定",
                                         'onclick' => 'showModal($(this).attr("href"));return false;'

@@ -93,13 +93,7 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
             'attributes' => [
                 [
                     'attribute' => 'customer_id',
-                    'label' => '当前所在品牌',
-                    'format' => 'raw',
-                    'value' => !empty($model->customer_id) ? $model->customer->name : null,
-                ],
-                [
-                    'attribute' => 'customer_id',
-                    'label' => '绑定的品牌',
+                    'label' => '我的品牌',
                     'value' => implode('，', ArrayHelper::getColumn(User::getUserBrand($model->id), 'name')),
                 ],
                 'nickname',
