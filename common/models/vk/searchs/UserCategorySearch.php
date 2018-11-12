@@ -103,15 +103,19 @@ class UserCategorySearch extends UserCategory
         // grid filtering conditions
         $query->andFilterWhere(['NOT IN', 'id', $this->id]);
          
-        //如果目录类型是共享类型则显示共享文件
-        $query->andFilterWhere(['OR', 
-            ['created_by' => \Yii::$app->user->id, 'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null], 
-            ['is_public' => 1, 'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null],
-            new Expression("IF(type=:type, customer_id=:customer_id AND is_show IN(". (!empty($this->id) || !empty($move_ids) ? 1 : implode(',', [0, 1])) ."), null)", [
-                'type' => self::TYPE_SHARING, 'customer_id' => Yii::$app->user->identity->customer_id,
+        //如果目录类型是共享类型则显示所有品牌下的共享目录
+        $query->andFilterWhere(['OR', ['is_public' => 1],
+            new Expression("IF(type=:type, (customer_id=:customer_id AND type=:type), (created_by=:created_by AND customer_id=:customer_id))", [
+                'type' => self::TYPE_SHARING, 
+                'created_by' => \Yii::$app->user->id,
+                'customer_id' => Yii::$app->user->identity->customer_id,
             ]),
-        ]); 
-                
+        ]);
+        
+        $query->andFilterWhere([
+            'is_show' => !empty($this->id) || !empty($move_ids) ? 1 : null
+        ]);
+        
         $query->andFilterWhere(['like', 'name', $this->name]);
             
         $query->orderBy(['path' => SORT_ASC]);

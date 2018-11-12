@@ -191,13 +191,10 @@ $this->title = Yii::t('app', '{My}{Video}', [
         
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 //用户分类id
 $userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  
-$js = 
-<<<JS
+$js = <<<JS
     
     //删除搜索条件
     $('.times-close').click(function(){

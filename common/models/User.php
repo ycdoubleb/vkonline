@@ -3,11 +3,13 @@
 namespace common\models;
 
 use common\models\vk\Customer;
+use common\models\vk\UserBrand;
 use common\utils\SecurityUtil;
 use linslin\yii2\curl\Curl;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveQuery;
+use yii\db\Query;
 use yii\web\IdentityInterface;
 
 /**
@@ -221,4 +223,36 @@ class User extends BaseUser implements IdentityInterface {
         
         parent::afterSave($insert, $changedAttributes);
     }
+    
+    /**
+     * 查询用户绑定的品牌
+     * @param string $user_id
+     * @return type
+     */
+    public static function getUserBrand($user_id)
+    {
+        $userBrand = (new Query())
+                ->select([
+                    'UserBrand.id', 'UserBrand.user_id', 'UserBrand.brand_id',
+                    'Customer.logo', 'Customer.name'
+                ])
+                ->from(['UserBrand' => UserBrand::tableName()])
+                ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = UserBrand.brand_id')
+                ->where(['UserBrand.user_id' => $user_id, 'UserBrand.is_del' => 0])
+                ->all();
+        
+        $moduleId = Yii::$app->controller->module->id;   //当前模块ID
+        if($moduleId != 'frontend_admin'){    //后台不需排序
+            //当前品牌排在最前面
+            uasort($userBrand, function ($x, $y) {
+                if ($x['brand_id'] === Yii::$app->user->identity->customer_id) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            });
+        }
+        return $userBrand;
+    }
+    
 }

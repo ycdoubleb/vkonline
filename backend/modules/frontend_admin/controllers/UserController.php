@@ -9,6 +9,7 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\modules\webuploader\models\Uploadfile;
@@ -106,8 +107,10 @@ class UserController extends GridViewChangeSelfController
         $model = new User();
         $model->loadDefaultValues();
         $model->scenario = User::SCENARIO_CREATE;
-        
+       
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //绑定品牌
+            UserBrand::userBingding($model->id, $model->customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -131,6 +134,8 @@ class UserController extends GridViewChangeSelfController
         $model->scenario = User::SCENARIO_UPDATE;
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //绑定品牌
+            UserBrand::userBingding($model->id, $model->customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         }else{
             $model->max_store = ($model->max_store / User::MBYTE);
@@ -154,6 +159,9 @@ class UserController extends GridViewChangeSelfController
         
         $model->status = User::STATUS_STOP;
         $model->save(false,['status']);
+        
+        //绑定品牌(标记为删除)
+        UserBrand::userBingding($model->id, $model->customer_id, false);
         
         return $this->redirect(['index']);
     }

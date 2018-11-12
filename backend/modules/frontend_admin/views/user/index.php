@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 [
                     'attribute' => 'customer.name',
                     'label' => Yii::t('app', '{The}{Customer}',[
-                        'The' => Yii::t('app', 'The'),
+                        'The' => '所在',
                         'Customer' => Yii::t('app', 'Customer'),
                     ]),
                     'filter' => Select2::widget([
@@ -177,22 +177,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
-                [
-                    'attribute' => 'max_store',
-                    'filter' => false,
-                    'format' => 'raw',
-                    'value' => function($data) {
-                        return Yii::$app->formatter->asShortSize($data['max_store'], 1) . ' / ' .
-                                '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
-                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
-                    },
-                    'contentOptions' => [
-                        'style' => [
-                            'min-width' => '90px',
-                            'text-align' => 'center',
-                        ],
-                    ],
-                ],
+//                [
+//                    'attribute' => 'max_store',
+//                    'filter' => false,
+//                    'format' => 'raw',
+//                    'value' => function($data) {
+//                        return Yii::$app->formatter->asShortSize($data['max_store'], 1) . ' / ' .
+//                                '<span style="color:' . (isset($data['user_size']) ? (($data['max_store'] - $data['user_size'] > $data['user_size']) ? 'green' : 'red') : 'green') . '">' . 
+//                                    Yii::$app->formatter->asShortSize((isset($data['user_size']) ? $data['user_size'] : '0'), 1) . '</span>';
+//                    },
+//                    'contentOptions' => [
+//                        'style' => [
+//                            'min-width' => '90px',
+//                            'text-align' => 'center',
+//                        ],
+//                    ],
+//                ],
                 [
                     'attribute' => 'created_at',
                     'headerOptions' => [

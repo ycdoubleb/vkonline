@@ -145,7 +145,7 @@ class Log extends ActiveRecord
                 'category' => $category,
                 'title' => self::$titleMap[\Yii::$app->controller->action->id],
                 'from' => $from == null ? '系统' : $from,
-                'content' => \Yii::$app->controller->renderAjax("@frontend/modules/admin_center/views/log/{$load_dom}_dom", $data),
+                'content' => \Yii::$app->controller->renderPartial("@frontend/modules/admin_center/views/log/{$load_dom}_dom", $data),
                 'created_by' => \Yii::$app->user->id,
             ]);
              

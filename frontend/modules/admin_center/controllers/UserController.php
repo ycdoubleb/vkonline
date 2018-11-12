@@ -9,6 +9,7 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\CustomerAdmin;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
@@ -60,7 +61,7 @@ class UserController extends GridViewChangeSelfController
     public function actionIndex()
     {
         $searchModel = new UserSearch();
-        $result = $searchModel->search(Yii::$app->request->queryParams);
+        $result = $searchModel->searchUser(Yii::$app->request->queryParams);
 
         $dataProvider = new ArrayDataProvider([
             'allModels' => array_values($result['data']['user']),
@@ -101,11 +102,15 @@ class UserController extends GridViewChangeSelfController
      */
     public function actionCreate()
     {
-        $model = new User(['customer_id' => Yii::$app->user->identity->customer_id]);
+        $customer_id = Yii::$app->user->identity->customer_id;
+        
+        $model = new User(['customer_id' => $customer_id]);
         $model->loadDefaultValues();
         $model->scenario = User::SCENARIO_CREATE;
-        
+             
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //绑定品牌
+            UserBrand::userBingding($model->id, $customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -124,13 +129,15 @@ class UserController extends GridViewChangeSelfController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = User::SCENARIO_UPDATE;
+        $model->scenario = User::SCENARIO_UPDATE;   
         
         if(!$this->getIsCustomerAdmin($id)){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            //绑定品牌
+            UserBrand::userBingding($model->id, $model->customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         }else{
             $model->max_store = ($model->max_store / User::MBYTE);
@@ -161,7 +168,9 @@ class UserController extends GridViewChangeSelfController
         
         $model->status = User::STATUS_STOP;
         $model->save(false,['status']);
-
+        //绑定品牌(标记为删除)
+        UserBrand::userBingding($model->id, $model->customer_id, false);
+        
         return $this->redirect(['index']);
     }
     
@@ -222,10 +231,17 @@ class UserController extends GridViewChangeSelfController
     {
         $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.id) AS course_num'])
                 ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
-                ->where(['User.id' => $user_id])->one();
+                ->where([
+                    'User.id' => $user_id,
+                    'Course.customer_id' => Yii::$app->user->identity->customer_id,
+                ])->one();
         $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.id) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
-                ->where(['User.id' => $user_id, 'Video.is_del' => 0])->one();
+                ->where([
+                    'User.id' => $user_id,
+                    'Video.is_del' => 0,
+                    'Video.customer_id' => Yii::$app->user->identity->customer_id,
+                ])->one();
         
         return array_merge($userCou, $userVid);
     }

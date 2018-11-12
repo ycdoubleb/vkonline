@@ -96,12 +96,12 @@ use yii\widgets\ActiveForm;
     
     <!--存储空间-->
     <?php
-        $prompt = '1TB=1024GB，默认为不限制';
-        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 88%;']);
-        echo $form->field($model, 'max_store',[
-            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\"><div class=\"col-lg-1 col-md-1 clear-padding\">{input}</div><div class=\"col-lg-1 col-md-1 clear-padding\">{$downList}</div>"
-                . "<div class=\"col-lg-3 col-md-3 clear-padding control-label\" style=\"color: #999;text-align: left;line-height:40px;\">{$prompt}</div></div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
-        ])->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0]); 
+//        $prompt = '1TB=1024GB，默认为不限制';
+//        $downList = Html::dropDownList('User[byte]', null, User::$byteName, ['class' => 'form-control', 'style' => 'width: 88%;']);
+//        echo $form->field($model, 'max_store',[
+//            'template' => "{label}\n<div class=\"col-lg-11 col-md-11\"><div class=\"col-lg-1 col-md-1 clear-padding\">{input}</div><div class=\"col-lg-1 col-md-1 clear-padding\">{$downList}</div>"
+//                . "<div class=\"col-lg-3 col-md-3 clear-padding control-label\" style=\"color: #999;text-align: left;line-height:40px;\">{$prompt}</div></div>\n<div class=\"col-lg-7 col-md-7\">{error}</div>",
+//        ])->textInput(['type' => 'number', 'maxlength' => true, 'min' => 0]); 
     ?>
     
     <!--描述-->

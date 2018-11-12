@@ -129,8 +129,6 @@ $this->title = Yii::t('app', '{My}{Audio}', [
     
 </div>
 
-<?= $this->render('/layouts/model') ?>
-
 <?php
 $params_js = json_encode($filters); //js参数
 //加载 LIST_DOM 模板
@@ -206,7 +204,7 @@ $js = <<<JS
     function loaddata (target_page, url) {
         var maxPageNum =  $totalCount / 8;
         // 当前页数是否大于最大页数
-        if(target_page > Math.ceil(maxPageNum)){
+        if(target_page >= Math.ceil(maxPageNum)){
             $('.loading-box .loading').hide();
             $('.loading-box .loading-box .no_more').show();
             return;
@@ -241,7 +239,7 @@ $js = <<<JS
                         });
                     }
                     //如果当前页大于最大页数显示“没有更多了”
-                    if(page > Math.ceil(maxPageNum)){
+                    if(page >= Math.ceil(maxPageNum)){
                         $('.loading-box  .no_more').show();
                     }
                 }else{
