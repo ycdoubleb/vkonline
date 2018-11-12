@@ -89,6 +89,7 @@ $this->title = '集团内部水印';
                 ],
                 [
                     'attribute' => 'width',
+                    'label' => Yii::t('app', 'Width'),
                     'headerOptions' => [
                         'style' => [
                             'width' => '65px',
@@ -97,6 +98,7 @@ $this->title = '集团内部水印';
                 ],
                 [
                     'attribute' => 'height',
+                    'label' => Yii::t('app', 'Height'),
                     'headerOptions' => [
                         'style' => [
                             'width' => '65px',
@@ -172,6 +174,7 @@ $this->title = '集团内部水印';
                 ],
                 [
                     'attribute' => 'created_at',
+                    'label' => Yii::t('app', 'Created At'),
                     'value' => function($model){
                         return date('Y-m-d H:i', $model->created_at);
                     },
