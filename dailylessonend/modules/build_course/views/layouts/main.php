@@ -22,7 +22,7 @@ $moduleId = Yii::$app->controller->module->id;
 $controllerId = Yii::$app->controller->id;
 $actionId = Yii::$app->controller->action->id;
 //是否为管理员用户
-$isAdminUser = true;//CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id);
+$isAdminUser = CustomerAdmin::getIsAdminUser(Yii::$app->user->identity->customer_id, Yii::$app->user->id);
 /**
  * 子菜单导航
  * $menuItems = [

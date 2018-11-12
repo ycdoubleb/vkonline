@@ -24,7 +24,7 @@ class ActionVerbFilter extends VerbFilter
      */
     public function beforeAction($event)
     {
-        $is_admin = true;//CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]);
+        $is_admin = CustomerAdmin::findOne(['user_id' => Yii::$app->user->id]);
        
         if($is_admin == null){
             throw new NotAcceptableHttpException('没有权限查看该页面！');
