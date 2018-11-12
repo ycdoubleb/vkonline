@@ -60,6 +60,7 @@ class VideoAliyunAction {
                 'video_id' => $video->id,
                 'source_file_id' => $source_file->id,
                 'created_by' => $source_file->created_by,
+                'customer_id' => $source_file->customer_id,
             ];
             //获取已完成转码文件等级
             $hasDoneLevels = [];//AliyunMtsService::getFinishLevel($video->id);
@@ -160,7 +161,7 @@ class VideoAliyunAction {
             if ($mtsResult['success']) {
                 $jobs = $mtsResult['response']->JobList->Job;
                 //批量字段名
-                $uploadfileRowKeys = ['id','name', 'size', 'width', 'height', 'level', 'duration', 'bitrate', 'oss_upload_status', 'oss_key', 'created_by', 'created_at', 'updated_at'];
+                $uploadfileRowKeys = ['id','customer_id','name', 'size', 'width', 'height', 'level', 'duration', 'bitrate', 'oss_upload_status', 'oss_key', 'created_by', 'created_at', 'updated_at'];
                 //批量添加的 Uploadfile 数据
                 $uploadfileRows = [];
                 //字段名
@@ -184,6 +185,7 @@ class VideoAliyunAction {
                     //添加对应 Uploadfile 数据
                     $uploadfileRows [] = [
                         $jobId,                                         //id
+                        $userData->customer_id,                         //品牌ID
                         $userData->source_file_id,                      //源始文件ID
                         $format->Size,                                  //视频总大小 单位：B
                         $videoStream->Width,                            //宽

@@ -1,0 +1,603 @@
+/**发送手机验证码按钮**/
+.site-login .time_button,
+.site-signup .time_button, 
+.get-password .time_button {
+    display: inline-block;
+    width: 140px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    background-color: #337ab7;
+    border: 1px solid #ccc;
+    box-sizing: border-box;	
+    vertical-align: middle;
+    cursor: pointer;
+    color: #fff;
+}
+
+.site-login .time_button.unabled,
+.site-signup .time_button.unabled, 
+.get-password .time_button.unabled {
+    background-color: lightblue;
+    color: #eee;
+    cursor: default;
+}
+
+/************************************登录页样式*********************************/
+.site-login .vkonline {
+    width: 100%;
+    min-height: 940px;
+    background-size: cover;
+    background-position: center 0;
+    background-repeat: no-repeat;
+    background-color: #ebebeb;
+}
+
+.site-login .vkonline .platform {
+    width: 400px;
+    height: 500px;
+    padding: 10px;
+    background-color: #ffffff;
+    position: relative;
+    top: 170px;
+    font-size: 0px;
+}
+
+.site-login .vkonline .platform .tab-title img {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.site-login .vkonline .platform .tab-list {
+    width: 370px;
+    height: 60px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.site-login .vkonline .platform .tab-list .pas-login.active,
+.site-login .vkonline .platform .tab-list .phone-login.active {
+    color: #333;
+    border-bottom: 2px solid #333;
+}
+
+.site-login .vkonline .platform .tab-list .pas-login,
+.site-login .vkonline .platform .tab-list .phone-login{
+    width: 60px;
+    height: 59px;
+    line-height: 65px;
+    cursor: pointer;
+    font-size: 15px;
+    float: left;
+    text-align: left;
+    margin-right: 25px;
+    display: inline-block;
+    color: #999;
+}
+
+.site-login .vkonline .platform .name {
+    height: auto;
+    text-align: left;
+    margin-left: 15px;
+    float: left;
+    display: inline-block;
+    position: relative;
+    top: 10px;
+}
+
+.site-login .vkonline .platform .frame {
+    width: 100%;
+    position: relative;
+    font-size: 14px;
+}
+
+.site-login .vkonline .platform .frame .attr-name{
+    height: 69px;
+    margin-top: 41px;
+    padding-right: 20px !important;
+}
+
+.site-login .vkonline .platform .frame .attr-phone{
+    height: 69px;
+    margin-top: 41px;
+    padding-left: 15px;
+    padding-right: 20px !important;
+}
+
+.site-login .vkonline .platform .frame .attr-pass{
+    height: 69px;
+    padding-right: 20px !important;
+}
+
+.site-login .vkonline .platform .frame .btn-primary,
+.form-control{
+    height: 40px  !important;
+    border-radius: 0px  !important;
+}
+
+.site-login .vkonline .field-user-code {
+    height: 69px;
+    margin-bottom: 0px;
+}
+
+/*验证码*/
+.site-login .field-user-code .icon-y {
+    position: absolute;
+    top: 14px;
+    left: 170px;
+    color: #5cb85c;
+}
+.site-login .field-user-code .icon-n {
+    position: absolute;
+    top: 14px;
+    left: 170px;
+    color: #d9534f;
+}
+.site-login #code-info.name-info {
+    padding-left: 15px;
+}
+
+.site-login .vkonline .platform .frame .checkbox,
+.platform .frame .forget a{
+    color: #999999;
+    text-decoration: none;
+}
+
+.site-login .vkonline .platform .frame .forget {
+    margin-top: 9px;
+    text-align: right;
+    right: 6px;
+}
+
+.site-login .vkonline .platform .frame .forget span{
+    color: #999999;
+    vertical-align: text-bottom;
+}
+
+.site-login .vkonline .platform .frame .button{
+    margin-top: 5px;
+    padding-right: 20px !important;
+}
+
+.site-login .vkonline .platform .frame .btn-signup{
+    color: #999999;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-login {
+    margin-bottom: 10px;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content {
+    text-align: center;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content a {
+    display: inline-block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat,
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo,
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq {
+    width: 42px;
+    height: 42px;
+    background-color: #dddddd;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat {
+    background-image: url("/imgs/site/wechat.png");
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .wechat:hover {
+    background-color: #58bc46;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo {
+    background-image: url("/imgs/site/weibo.png");
+    margin: 0 20px;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .weibo:hover {
+    background-color: #e90e24;
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq {
+    background-image: url("/imgs/site/qq.png");
+}
+
+.site-login .vkonline .platform .frame .btn-signup .third-content .qq:hover {
+    background-color: #3caae3;
+}
+
+/** 短信找回密码页面 **/
+.site-password .input-content {
+    height: 69px;
+}
+
+/*验证码*/
+.site-password .field-user-code .icon-y {
+    position: absolute;
+    bottom: 127px;
+    left: 257px;
+    color: #5cb85c;
+}
+
+.site-password .field-user-code .icon-n {
+    position: absolute;
+    bottom: 127px;
+    left: 257px;
+    color: #d9534f;
+}
+
+.site-password .name-info {
+    padding-left: 5px;
+    text-align: left;
+    padding-top: 5px;
+}
+
+/************************************平台首页************************************/
+.site-index {
+    
+}
+
+.site-index .banner {
+    position: relative;
+    height:400px;
+    overflow: hidden;
+    -webkit-transition: all 0.3s ease-out;
+    -o-transition: all 0.3s ease-out;
+    -moz-transition: all 0.3s ease-out;
+    transition: all 0.3s ease-out;
+}
+
+/* 视频容器 */
+.site-index .banner .video-box{
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 562px;
+    background: #333333;
+    text-align: center;
+}
+.site-index .banner .video-box video{
+    width: 960px;
+    height: 542px;
+    margin: 10px;
+}
+.site-index .banner .video-box .close-btn{
+    position: absolute;
+    display: none;
+    top: 10px;
+    cursor: pointer;  
+}
+
+.site-index .banner .carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+/* 模糊滤镜 */
+.site-index .banner .carousel .blur {	
+    filter: url(blur.svg#blur); /* FireFox, Chrome, Opera */
+    
+    -webkit-filter: blur(10px); /* Chrome, Opera */
+       -moz-filter: blur(10px);
+        -ms-filter: blur(10px);    
+            filter: blur(10px);
+    
+    filter: progid:DXImageTransform.Microsoft.Blur(PixelRadius=10, MakeShadow=false); /* IE6~IE9 */
+}
+
+.site-index .carousel .item {
+    /*height: calc(75vh - 130px);*/
+    height: 400px;
+}
+.site-index .carousel .item .img-box{
+    position: relative;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+/* 播放视频按钮 */
+.site-index .carousel .item .play-btn-box{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    line-height: 400px;
+    text-align: center;
+}
+.site-index .carousel .item .play-btn-box .play-btn{
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+.site-index .carousel .item .play-btn-box .play-btn:hover{
+    transform: translate3d(0, -2px, 0);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+
+/***********************轮播*****************************/
+.site-index .carousel .item >  img,
+.site-index .carousel .item >  div,
+.site-index .carousel .item > video {
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+.site-index .carousel a {
+    display: none;
+}
+.site-index .carousel:hover a {
+    display: block;
+}
+
+/***************************************************************
+* 页面公共
+***************************************************************/
+.site-index .title{
+    margin: 20px 0;
+    font-size: 16px;
+}
+.site-index .container{
+    padding: 0 0;
+}
+.site-index hr {
+    border-top: 1px solid #dedede;
+}
+
+/***************************************************************
+* 热搜
+***************************************************************/
+.site-index .hot-search{
+    display: inline-block;
+    margin: 20px 0;
+}
+.site-index .hot-search .list{
+}
+.site-index .hot-search a{
+    font-size: 12px;
+    color: #888888;
+}
+.site-index .hot-search .list span{
+    color: #cccccc;
+}
+.site-index .hot-search .list .tag{
+    display: inline-block;
+    margin: 0 3px 6px 0;
+    padding: 7px 9px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/***************************************************************
+* 为你推荐
+***************************************************************/
+.site-index .recommend {
+    margin: 40px 0 60px 0;
+}
+.site-index .recommend .list {
+    margin-right: -30px;
+}
+.site-index .recommend .next{
+    font-size: 14px;
+    color: #999;
+    float: right;
+}
+
+/***************************************************************
+* 排行榜
+***************************************************************/
+.site-index .rank {
+    margin: 40px 0 60px 0;
+}
+.site-index .rank .list{
+    margin-right: -30px;
+}
+
+
+/***************************************************************
+* 入驻伙伴
+***************************************************************/
+.site-index .partner {
+    margin: 40px 0 60px 0;
+}
+.site-index .partner .list{
+    margin-right: -35px;
+}
+.site-index .partner .list .customer-item {
+    display: inline-block;
+    width: 212px;
+    height: 146px;
+    margin: 0 31px 30px 0;
+    padding: 112px 20px 20px;
+    text-align: center;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.site-index .partner .list .customer-item img{
+    width: 180px;
+    height: 68px;
+    margin-bottom: 20px;
+}
+.site-index .partner .list .customer-item .name{
+    font-size: 12px;
+    color: #AAAAAA;
+}
+
+/***************************************************************
+* 课程列表项
+***************************************************************/
+.course-tile {
+    display: inline-block;
+    width: 280px;
+    margin: 0 26px 30px 0;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+
+.hover{
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+
+.right-course-tile{
+    margin: 0 0px 30px 0;
+}
+
+/* 图片 */
+.course-tile .pic-box {
+    width: 280px;
+    height: 210px;
+    border-bottom: solid 1px #f2f2f2;
+}
+.course-tile .pic-box img{
+    width: 100%;
+    height: 100%;
+}
+/* 名称 */
+.course-tile .name-box {
+    margin: 20px 10px;
+    color: #666666;
+    font-weight: bold;
+}
+.course-tile .name-box .name{
+    width: 200px;
+    display: inline-block;
+}
+.course-tile .name-box .nodes{
+    float: right;
+    color: #AAAAAA;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+/* 标签 */
+.course-tile .tag-box {
+    margin: 10px 10px;
+    color: #AAAAAA;
+    font-size: 12px;
+}
+.course-tile .tag-box .tag{
+    width: 100%;
+    display: block;
+}
+
+/* 标签 */
+.course-tile .customer-box {
+    margin: 10px 10px;
+    color: #339966;
+    font-size: 12px;
+}
+.course-tile .customer-box .leaning{
+    float: right;
+    font-size: 12px;
+}
+/* 底部 */
+.course-tile .foot-box {
+    padding: 12px 10px;
+    color: #999999;
+    font-size: 12px;
+    border-top: 1px dotted #DEDEDE;
+    line-height: 24px;
+}
+.course-tile .foot-box .teacher-avatar{
+    width: 24px;
+    height: 24px;
+    border-radius:12px
+}
+.course-tile .foot-box .star{
+    float: right;
+    color: #FC583D;
+}
+.course-tile .foot-box .play_count{
+    float: right;
+}
+
+/****************************重置密码页面**************************/
+.site-password {
+    width: 700px;
+    margin: 0px auto;
+    text-align: center;
+    position: relative;
+}
+
+.site-password .request-reset {
+    background: white;
+    border: 0 none;
+    box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.1);
+    padding: 10px 30px;
+    box-sizing: border-box;
+    width: 80%;
+    margin: 10%;
+    position: absolute;
+}
+
+.site-password .request-reset .fs-title{
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #2C3E50;
+    margin-bottom: 10px;
+}
+
+.site-password .request-reset .fs-subtitle{
+    font-weight: normal;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.site-password .form-horizontal .form-group {
+    margin-right: -15px;
+    margin-left: -15px;
+    height: 75px;
+    margin-bottom: 0px;
+}
+
+.site-password .request-reset input {
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    font-family: montserrat;
+    color: #2C3E50;
+    font-size: 13px;
+}
+
+.site-password .form-group .help-block {
+    float: left;
+}
+
+.site-password .request-reset .form-group button {
+    margin-top: 10px;
+}
