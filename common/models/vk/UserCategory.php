@@ -535,7 +535,7 @@ class UserCategory extends ActiveRecord
             
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
         
-        return $userCategorys;
+        return array_filter($userCategorys);
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 use common\models\User;
+use common\models\vk\UserBrand;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
 use yii\helpers\ArrayHelper;
@@ -10,10 +11,11 @@ use yii\web\View;
 
 <?php
 
-//是否为团体用户
-$is_group_user = (!Yii::$app->user->isGuest && Yii::$app->user->identity->type == User::TYPE_GROUP);
-//团体名称
-$group_name = $is_group_user ? Yii::$app->user->identity->customer->short_name : '';
+if(!Yii::$app->user->isGuest){
+    $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])->count('id');
+} else {
+    $brandCount = 1;
+}
 
 NavBar::begin([
     'brandImage' => '/imgs/site/logo.png?rand='. rand(1, 10),
@@ -24,12 +26,8 @@ NavBar::begin([
 ]);
 $menuItems = [
     //登录
-    ['label' => Yii::t('app', 'Home'), 'url' => ['/site/index']],
-    ['label' => Yii::t('app', 'Course'), 'url' => ['/course/default/list']],
-    ['label' => Yii::t('app', 'StudyCenter'), 'url' => ['/study_center/default']],
-    ['label' => "<div class='customer-box'><span class='short_name'>{$group_name}</span><span class='m_name'>课工坊</span></div>", 'url' => ['/build_course/default'], 'encode' => false,
-        /* 团体用户可见 */
-        'visible' => $is_group_user
+    [
+        'label' => "<div class='customer-box'><span class='short_name'>".Yii::$app->user->identity->nickname."</span><span class='m_name'>工作坊</span></div>", 'url' => ['/build_course/default'], 'encode' => false,
     ],
 ];
 
@@ -68,8 +66,7 @@ echo Nav::widget([
 
 //加上个人信息和搜索
 $menuItems = [
-    //搜索与个人信息
-    '<li><div class="search-box"><input id="search-input" class="search-input"/><i class="glyphicon glyphicon-search search-icon"></i></div></li>',
+    //个人信息
     [
         'label' => !Yii::$app->user->isGuest ? Html::img(Yii::$app->user->identity->avatar, ['width' => 40, 'height' => 40, 'class' => 'img-circle', 'style' => 'margin-right: 5px;']) : null,
         'url' => ['/user/default/index', 'id' => Yii::$app->user->id],
@@ -79,6 +76,15 @@ $menuItems = [
             [
                 'label' => '<span class="nickname">'.(Yii::$app->user->isGuest ? "游客" :Yii::$app->user->identity->nickname ).'</span>',
                 'encode' => false,
+            ],
+            [
+                'label' => '<i class="glyphicon glyphicon-transfer"></i>' . Yii::t('app', '{Switch}{Customer}', [
+                    'Switch' => Yii::t('app', 'Switch'), 'Customer' => Yii::t('app', 'Customer')
+                ]),
+                'url' => ['/site/switch-customer'],
+                'linkOptions' => ['class' => 'logout', 'onclick' => 'showModal($(this).attr("href")); return false;'],
+                'encode' => false,
+                'visible' => $brandCount > 1 ? true : false
             ],
             [
                 'label' => '<i class="fa fa-sign-out"></i>' . Yii::t('app', 'Logout'),
@@ -104,7 +110,6 @@ NavBar::end();
 
 <?php
 
-
 $js = <<<JS
    
     $(".navbar-nav .dropdown > a, .navbar-nav .dropdown > .dropdown-menu").hover(function(){
@@ -115,38 +120,6 @@ $js = <<<JS
         
     $(".navbar-nav .dropdown > a").click(function(){
         location.href = $(this).attr("href");
-    });
-    /**
-     * 添加搜索框回车按键事件
-     **/
-    $("input[id=search-input]").keypress(function(e){
-        var eCode = e.keyCode ? e.keyCode : e.which ? e.which : e.charCode;
-        var keyword = Wskeee.StringUtil.trim($(this).val());
-        if (eCode == 13 && keyword != ''){
-            window.location.href = "/course/default/search?keyword="+keyword;
-        }
-    });
-        
-    /**
-     * 搜索框控制
-     **/
-    var search_input_delay_id;
-    $(".search-box .search-input").blur(function(){
-        clearTimeout(search_input_delay_id);
-        search_input_delay_id = setTimeout(function(){
-            $(".search-box .search-input").removeClass('active');
-        },100);
-    });
-    $(".search-box .search-input").focus(function(){
-        clearTimeout(search_input_delay_id);
-        search_input_delay_id = setTimeout(function(){
-            $(".search-box .search-input").addClass('active');;
-        },100);
-    });
-         
-    //搜索图标事件
-    $('.search-box .search-icon').on('click',function(){
-        $(".search-box .search-input").focus();
     });
 
 JS;

@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
 use common\models\vk\SearchLog;
+use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
@@ -90,7 +91,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index', []);
+        return $this->redirect(['build_course/default']);
     }
 
     /**
@@ -441,6 +442,56 @@ class SiteController extends Controller
                 'message' => '无效的邀请码'
             ];
         }
+    }
+    
+    /**
+     * 切换客户
+     */
+    public function actionSwitchCustomer()
+    {
+        /* 用户关联的所有品牌 */
+        $customers = (new Query())->select(['Customer.id','Customer.name','Customer.logo'])
+            ->from(['UserBrand' => UserBrand::tableName()])
+            ->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = UserBrand.brand_id')
+            ->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])
+            ->orderBy('Customer.sort_order')
+            ->all();
+        
+        if(Yii::$app->request->isPost){
+            Yii::$app->getResponse()->format = 'json';
+            $message = '';
+            $is_success = false;
+            try
+            { 
+                $relBrands = ArrayHelper::getColumn($customers, 'id');  //用户关联的所有品牌
+                $userModel = User::findOne(Yii::$app->user->id);
+                $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
+                
+                if(in_array($userModel->customer_id, $relBrands)){
+                    if($userModel->save(false, ['customer_id'])) {
+                        $is_success = true;
+                        $message = '切换成功！';
+                    }
+                }else{
+                   $message = '切换失败::请正确选择和自己相关的品牌。'; 
+                }
+            }catch (Exception $ex) {
+                $message = '切换失败::' . $ex->getMessage();
+            }
+            
+            return [
+                'code' => $is_success ? 200 : 401,
+                'data' => [
+                    'id' => $userModel->id,
+                    'nickname' => $userModel->nickname
+                ],
+                'message' => $message
+            ];
+        }
+        
+        return $this->renderAjax('switch-customer', [
+            'customers' => $customers
+        ]);
     }
     
     /**

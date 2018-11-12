@@ -1,0 +1,167 @@
+/* 
+    用于布局页面样式
+    创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-15, 13:11:00;
+*/
+
+/*******************************************************************************
+ * 头部样式
+ *******************************************************************************/
+.header {
+    display: inline-block;
+    width: 100%;
+    height: 80px;
+    margin-bottom: 30px;
+    background-color: #333;
+}
+/*******************************************************************************
+ * 内容
+ *******************************************************************************/
+.content {
+    padding: 0 !important;
+}
+/*******************************************************************************
+ * 子导航
+ *******************************************************************************/
+.subnav {
+    float: left;
+    width: 160px;
+    height: auto;
+    margin-right: 40px;    
+    margin-bottom: 40px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.subnav .title {
+    width: 100%;
+    height: 60px;
+    padding: 0px 10px;
+    font-size: 16px;
+    color: #fff;
+    text-align: left;
+    line-height: 60px;
+    background-color: #28b28b;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.05);
+}
+
+.subnav .title > i {
+    margin-right: 5px;
+}
+
+.subnav ul {
+    padding: 0;
+    margin: 0;
+}
+
+.subnav ul > li {
+    border-bottom: 1px dotted #d2d2d2;
+}
+
+.subnav ul > li.remove {
+    border-bottom: none;
+}
+
+
+.subnav ul > li > a.links {
+    display: inline-block;
+    width: 100%;
+    height: 48px;
+    padding: 13px 35px;
+    color: #999;
+    font-style: normal;
+    text-align: left;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.subnav ul > li.active > a.links {
+   color: #fc583d;
+}
+
+.tool {
+    position: fixed;
+    right: -120px;
+    bottom: 245px;
+    z-index: 1022;
+    width: 156px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tool:hover {
+    right: 0;
+    cursor: pointer;
+}
+
+@media (min-width: 1920px){
+    .tool {
+        right: 160px;
+    }
+    .tool:hover {
+        right: 160px;
+        cursor: default;
+    }
+}
+
+.tool .title {
+    display: inline-block;
+    width: 100%;
+    height: 80px;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    line-height: 80px;
+    background-color: #de577b;
+}
+
+.tool ul {
+    padding: 0;
+    margin: 0;
+}
+
+.tool ul > li {
+    border-bottom: 1px solid #d2d2d2;
+}
+
+.tool ul > li.remove {
+    border-bottom: none;
+}
+
+.tool ul > li > a.links {
+    display: inline-block;
+    width: 100%;
+    height: 60px;
+    padding: 13px 35px;
+    color: #999;
+    font-style: normal;
+    text-align: center;
+    line-height: 20px;
+    text-decoration: none;
+}
+
+.tool ul > li:hover a.links {
+   background-color: #f9f9f9;
+}
+
+.tool ul > li > a.disabled,
+.tool ul > li:hover a.disabled {
+   cursor: not-allowed;
+   opacity: .4;
+   background-color: transparent;
+}
+
+.tool .icon {
+    display: inline-block;
+    width: 34px;
+    height: 30px;
+    background-repeat: no-repeat;
+}
+
+.tool .bs-icon {
+    background-image: url('../imgs/bs-tool.png');
+}
+
+.tool .qj-icon {
+    background-image: url('../imgs/qj-tool.png');
+}
