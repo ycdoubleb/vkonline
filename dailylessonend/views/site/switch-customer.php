@@ -1,7 +1,7 @@
 <?php
 
 use common\components\aliyuncs\Aliyun;
-use frontend\assets\SiteAssets;
+use dailylessonend\assets\SiteAssets;
 use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;

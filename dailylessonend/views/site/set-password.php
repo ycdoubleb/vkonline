@@ -1,7 +1,7 @@
 <?php
 
-use frontend\assets\SiteAssets;
-use frontend\models\ResetPasswordForm;
+use dailylessonend\assets\SiteAssets;
+use dailylessonend\models\ResetPasswordForm;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;

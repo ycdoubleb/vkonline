@@ -8,18 +8,7 @@ $config = [
         ],
     ],
     'modules' => [
-        'admin_center' => [
-            'class' => 'dailylessonend\modules\admin_center\Module',
-        ],
-        'build_course' => [
-            'class' => 'dailylessonend\modules\build_course\Module',
-        ],
-        'teacher' => [
-            'class' => 'dailylessonend\modules\teacher\Module',
-        ],
-        'user' => [
-            'class' => 'dailylessonend\modules\user\Module',
-        ],
+        
     ],
 ];
 

@@ -1,17 +1,17 @@
 <?php
 
-namespace frontend\assets;
+namespace dailylessonend\assets;
 
 use yii\web\AssetBundle;
 
 /**
- * Main frontend application asset bundle.
+ * Main dailylessonend application asset bundle.
  */
 class AppAsset extends AssetBundle
 {
     //public $basePath = '@webroot';
     //public $baseUrl = '@web';
-    public $sourcePath = '@frontend/assets';
+    public $sourcePath = '@dailylessonend/assets';
     
     public $css = [
         'css/base.css',

@@ -12,8 +12,10 @@ use yii\web\View;
 <?php
 
 if(!Yii::$app->user->isGuest){
+    $nickname = Yii::$app->user->identity->nickname;
     $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])->count('id');
 } else {
+    $nickname = '';
     $brandCount = 1;
 }
 
@@ -27,12 +29,14 @@ NavBar::begin([
 $menuItems = [
     //登录
     [
-        'label' => "<div class='customer-box'><span class='short_name'>".Yii::$app->user->identity->nickname."</span><span class='m_name'>工作坊</span></div>", 'url' => ['/build_course/default'], 'encode' => false,
+        'label' => "<div class='customer-box'><span class='short_name'>{$nickname}</span><span class='m_name'>工作坊</span></div>", 'url' => ['/build_course/default'], 
+        'encode' => false,
+        'visible' => $nickname != null
     ],
 ];
 
 $moduleId = Yii::$app->controller->module->id;   //模块ID
-if ($moduleId == 'app-frontend') {
+if ($moduleId == 'app-dailylessonend') {
     //站点经过首页或登录，直接获取当前路由
     $route = Yii::$app->controller->getRoute();
 } else {

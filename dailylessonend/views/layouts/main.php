@@ -1,8 +1,8 @@
 <?php
 
 use common\widgets\Alert;
-use frontend\assets\AppAsset;
-use frontend\assets\BaseAssets;
+use dailylessonend\assets\AppAsset;
+use dailylessonend\assets\BaseAssets;
 use kartik\widgets\AlertBlock;
 use yii\helpers\Html;
 use yii\web\View;

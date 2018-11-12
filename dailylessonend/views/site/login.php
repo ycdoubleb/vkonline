@@ -5,8 +5,8 @@
 /* @var $model LoginForm */
 
 use common\models\LoginForm;
-use frontend\assets\SiteAssets;
-use frontend\assets\TimerButtonAssets;
+use dailylessonend\assets\SiteAssets;
+use dailylessonend\assets\TimerButtonAssets;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;
