@@ -235,9 +235,10 @@ class DefaultController extends Controller
             } 
             if($num > 0){
                 Yii::$app->getSession()->setFlash('success','操作成功！');
-                return ['code' => 200];
+                return true;
             } else {
-                return ['code' => 400];
+                Yii::$app->getSession()->setFlash('error','操作失败！');
+                return false;
             }
         }
     }
