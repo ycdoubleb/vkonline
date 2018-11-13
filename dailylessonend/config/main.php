@@ -59,6 +59,10 @@ return [
         'user' => [
             'class' => 'dailylessonend\modules\user\Module',
         ],
+        //回调地址
+        'callback' => [
+            'class' => 'dailylessonend\modules\callback\Module',
+        ],
     ],
 
     'params' => $params,
