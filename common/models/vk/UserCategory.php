@@ -218,18 +218,23 @@ class UserCategory extends ActiveRecord
     /**
      * 获取所有父级
      * @param array $fields         只返回指定字段
+     * @param bool $contain_root    是否包括根目录
      * @return type
      */
-    public function getParents($fields = []) {
+    public function getParents($fields = [], $contain_root = false) {
         self::initCache();
-        $parentids = array_values(array_filter(explode(',', $this->path)));
+        $paths = explode(',', $this->path);
+        if(!$contain_root){
+            $paths = array_filter($paths);
+        }
+        $parentids = array_values($paths);
         $parents = [];
         foreach ($parentids as $index => $id) {
             /* @var $category UserCategory */
             $category = self::getCatById($id);
             $parents [] = count($fields) == 0 ? $category : $category->toArray($fields);
         }
-        
+
         return $parents;
     }
 
@@ -402,7 +407,7 @@ class UserCategory extends ActiveRecord
                 }
             }
         }
-        
+
         return $key_to_value ? ArrayHelper::map($childrens, 'id', 'name') : $childrens;
     }
 
