@@ -26,6 +26,7 @@ $this->title = '删除绑定';
                     'options'=>[
                         'id' => 'form-admin',
                         'class'=>'form-horizontal',
+                        'onkeydown' => "if(event.keyCode==13) return false;",
                     ],
                     'fieldConfig' => [  
                         'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">{input}</div>\n<div class=\"col-lg-12 col-md-12\">{error}</div>",  

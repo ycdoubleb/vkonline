@@ -6,6 +6,8 @@ use apiend\components\sms\SmsService;
 use apiend\models\LoginForm;
 use apiend\models\Response;
 use apiend\modules\v1\actions\BaseActioin;
+use common\models\vk\Customer;
+use common\models\vk\UserBrand;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -45,11 +47,20 @@ class LoginAction extends BaseActioin {
         $model->scenario = ($type == 1 ? LoginForm::SCENARIO_PASS : LoginForm::SCENARIO_SMS);
         $model->setAttributes($post);
         if ($model->validate() && $model->login()) {
-            return new Response(Response::CODE_COMMON_OK, null, [
-                'user' => Yii::$app->user->identity->toArray([
+            //用户数据
+            $user = Yii::$app->user->identity->toArray([
                     'id', 'customer_id', 'username', 'nickname',
                     'type', 'sex', 'phone', 'email', 'avatar',
-                    'status', 'des', 'is_official', 'created_at', 'updated_at']),
+                    'status', 'des', 'is_official', 'created_at', 'updated_at']);
+            //用户已关联的品牌
+            $user['user_brands'] = UserBrand::find()
+                    ->select(['Brand.id id','Brand.name name'])
+                    ->leftJoin(['Brand' => Customer::tableName()], 'Brand.id = brand_id')
+                    ->where(['user_id' => Yii::$app->user->id,'is_del' => 0])
+                    ->asArray()
+                    ->all();
+            return new Response(Response::CODE_COMMON_OK, null, [
+                'user' => $user,
                 'access-token' => Yii::$app->user->identity->access_token,
             ]);
         } else {

@@ -1,6 +1,7 @@
 <?php
 
-use frontend\OAuths\qqAPI\core\QC;
+use common\components\OAuths\qqAPI\core\QC;
+
 
 /* QQ登录授权页面 */
 
