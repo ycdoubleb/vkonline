@@ -382,7 +382,7 @@ class UserCategory extends ActiveRecord
         
         $childrens = [];
         ArrayHelper::multisort($userCategorys, $sort_order, SORT_DESC);
-        foreach ($userCategorys as $c_id => $category) {
+        foreach ($userCategorys as $category) {
             /**
              * 在目录是私人类型情况下显示对应目录的条件
              * 1、目录类型是私人类型并且是公开的目录
@@ -403,7 +403,7 @@ class UserCategory extends ActiveRecord
             if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
                 $childrens[] = $category;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, $customer_id, false, $recursion, $include_unshow, $sort_order));
+                    $childrens = array_merge($childrens, self::getUserCatChildren($category['id'], $created_by, $customer_id, false, $recursion, $include_unshow, $sort_order));
                 }
             }
         }
@@ -446,7 +446,7 @@ class UserCategory extends ActiveRecord
         }
         
         $childrens = [];
-        foreach (self::$userCategorys as $c_id => $category) {
+        foreach (self::$userCategorys as $category) {
             /**
              * 在目录是私人类型情况下显示对应目录的条件
              * 1、目录类型是私人类型并且是公开的目录
@@ -465,9 +465,9 @@ class UserCategory extends ActiveRecord
             }
             
             if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
-                $childrens[] = $c_id;
+                $childrens[] = $category['id'];
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $customer_id, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($category['id'], $created_by, $customer_id, $recursion, $include_unshow));
                 }
             }
         }
@@ -578,12 +578,12 @@ class UserCategory extends ActiveRecord
      * @param integer $parent_id    父级id
      * @return type
      */
-    public static function getUserCatListFramework($dataProvider, $parent_id = 0){
+    public static function getUserCatListFramework($dataProvider, $parent_id = '0'){
         $listFramework = [];
         //组装目录结构
         ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
         foreach($dataProvider as $_data){
-            if($_data->parent_id == (string)$parent_id){
+            if($_data->parent_id == $parent_id){
                 $item = [
                     'title'=> $_data->name,
                     'key' => $_data->id,
@@ -610,17 +610,8 @@ class UserCategory extends ActiveRecord
         self::initCache();
         if (isset(self::$userCategorys[$id])) {
             return new UserCategory(self::$userCategorys[$id]);
-        }else if($id == 0){
-            return new UserCategory([
-                'id' => 0,
-                'name' => '根目录',
-                'type' => UserCategory::TYPE_SYSTEM,
-                'level' => 0,
-                'path' => '0',
-                'is_public' => 1,
-                'is_show' => 1,
-            ]);
         }
+        
         return null;
     }
 

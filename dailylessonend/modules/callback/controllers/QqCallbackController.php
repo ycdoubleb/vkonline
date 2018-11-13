@@ -1,14 +1,14 @@
 <?php
 
-namespace frontend\modules\callback\controllers;
+namespace dailylessonend\modules\callback\controllers;
 
 use common\components\OAuths\qqAPI\core\QC;
 use common\models\User;
 use common\models\UserAuths;
-use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
+
 
 /**
  * QqCallback controller for the `callback` module
@@ -41,10 +41,10 @@ class QqCallbackController extends Controller
             $user_data = $qc->get_user_info(); //get_user_info()为获得该用户的信息，
             
             $userAuths = UserAuths::findOne(['identifier' => $open_id]);     //是否已绑定
-            if(!empty(\Yii::$app->user->id)){
-                $userModel = User::findOne(['id' => \Yii::$app->user->id]);
+            if(!empty(Yii::$app->user->id)){
+                $userModel = User::findOne(['id' => Yii::$app->user->id]);
                 if(!empty($userAuths)){
-                    \Yii::$app->getSession()->setFlash('error', '绑定失败！一个QQ账号只能绑定一个用户');
+                    Yii::$app->getSession()->setFlash('error', '绑定失败！一个QQ账号只能绑定一个用户');
                     return $this->goBack();
                 } else {
                     //保存Qq用户数据
@@ -54,7 +54,7 @@ class QqCallbackController extends Controller
                     } else {
                         $user = new User(['id' => $userModel->id]);
                         Yii::$app->getUser()->login($user);
-                        \Yii::$app->getSession()->setFlash('success', '绑定成功！');
+                        Yii::$app->getSession()->setFlash('success', '绑定成功！');
                         return $this->goHome();
                     }
                 }
@@ -84,7 +84,7 @@ class QqCallbackController extends Controller
      */
     public function actionBindingUser()
     {
-        \Yii::$app->getResponse()->format = 'json';
+        Yii::$app->getResponse()->format = 'json';
         $post = Yii::$app->request->post();
         $params = Yii::$app->request->queryParams;
         $username = ArrayHelper::getValue($post, 'User.username');      //需要绑定的用户名

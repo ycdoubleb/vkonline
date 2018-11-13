@@ -45,5 +45,14 @@ return [
         'key' => 'studying8_youxueba_content',
         //起时检测
         'timeout' => 60 * 10,
-    ]
+    ],
+  
+    /* WeiboAPI配置 */
+    'weiboLogin' => [
+        "WB_AKEY" => "3895484294",
+        "WB_SKEY" => "f8514c29dbbd04d6964480693a6878b3",
+        "WB_CALLBACK_URL" => WEB_ROOT."/callback/weibo-callback/index",
+    ],
+    
+    
 ];

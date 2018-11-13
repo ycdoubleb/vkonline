@@ -1,8 +1,10 @@
 <?php
 
-namespace frontend\modules\callback\controllers;
+namespace dailylessonend\modules\callback\controllers;
 
-use common\components\OAuths\qqAPI\core\QC;
+use common\components\OAuths\weiboAPI\OAuthException;
+use common\components\OAuths\weiboAPI\SaeTClientV2;
+use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\User;
 use common\models\UserAuths;
 use Yii;
@@ -11,44 +13,50 @@ use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;
 
 /**
- * QqCallback controller for the `callback` module
+ * WeiboCallback controller for the `callback` module
  */
-class QqCallbackController extends Controller
+class WeiboCallbackController extends Controller
 {
-    /**
-     * 授权页面
-     * Renders the index view for the module
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
+    public static $weiboConfig = 'weiboLogin';
     
     /**
      * 授权成功的回调地址
      * Renders the index view for the module
      * @return string
      */
-    public function actionCallback()
+    public function actionIndex()
     {
-        $qc = new QC();
-        $access_token = $qc->qq_callback(); //access_token
-        $open_id = $qc->get_openid();       //openid
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];   //获取配置信息
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
         
-        if($open_id){
-            $qc = new QC($access_token, $open_id);
-            $user_data = $qc->get_user_info(); //get_user_info()为获得该用户的信息，
+        if (isset($_REQUEST['code'])) {
+            $keys = array();
+            $keys['code'] = $_REQUEST['code'];
+            $keys['redirect_uri'] = $weiboConfig['WB_CALLBACK_URL'];
+            try {
+                $token = $weibo->getAccessToken( 'code', $keys ) ;
+            } catch (OAuthException $e) {
+                
+            }
+        }
+        
+        if(!isset($token)){
+            return $this->redirect('/site/login');
+        }
+        if ($token) {
+            $_SESSION['token'] = $token;
+            setcookie('weibojs_'.$weibo->client_id, http_build_query($token));
+            $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
             
-            $userAuths = UserAuths::findOne(['identifier' => $open_id]);     //是否已绑定
+            $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);     //是否已绑定
             if(!empty(\Yii::$app->user->id)){
                 $userModel = User::findOne(['id' => \Yii::$app->user->id]);
                 if(!empty($userAuths)){
-                    \Yii::$app->getSession()->setFlash('error', '绑定失败！一个QQ账号只能绑定一个用户');
+                    \Yii::$app->getSession()->setFlash('error', '绑定失败！一个微博账号只能绑定一个用户');
                     return $this->goBack();
                 } else {
-                    //保存Qq用户数据
-                    $results = $this->bindingQqUser($userModel, $open_id, $access_token);
+                    //保存微博用户数据
+                    $results = $this->bindingWeiboUser($userModel, $user_message, $_SESSION['token']['access_token']);
                     if($results['code'] == 400){
                         throw new NotAcceptableHttpException('绑定出错！请重新绑定');
                     } else {
@@ -61,22 +69,32 @@ class QqCallbackController extends Controller
             }
             if($userAuths == null){
                 $model = new User();
-                return $this->render('callback', [
-                    'model' => $model,
-                    'access_token' => $access_token,            //密钥
-                    'open_id' => $open_id,                      //open_id
-                    'nickname' => $user_data['nickname'],       //用户名
-                    'gender' => $user_data['gender'],           //性别
-                    'avatar' => $user_data['figureurl_qq_2'],   //头像
+                return $this->render('index', [
+                    'model' => $model
                 ]);
             }
             $user = new User(['id' => $userAuths->user_id]);
             Yii::$app->getUser()->login($user);
             return $this->goHome();
+        } else {
+            return $this->redirect('/site/login');
         }
-        return $this->redirect('/site/login');
     }
     
+    /**
+     * 授权失败的回调地址
+     * @return string
+     */
+    public function actionFail()
+    {
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];   //获取配置信息
+        $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
+        
+        return $this->render('fail', [
+            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+        ]);
+    }
+
     /**
      * 绑定用户
      * @return array
@@ -86,17 +104,19 @@ class QqCallbackController extends Controller
     {
         \Yii::$app->getResponse()->format = 'json';
         $post = Yii::$app->request->post();
-        $params = Yii::$app->request->queryParams;
-        $username = ArrayHelper::getValue($post, 'User.username');      //需要绑定的用户名
-        $password = ArrayHelper::getValue($post, 'User.password_hash'); //密码
-        $access_token = ArrayHelper::getValue($params, 'access_token'); //密钥
-        $open_id = ArrayHelper::getValue($params, 'open_id');           //open_id
+        $username = ArrayHelper::getValue($post, 'User.username');
+        $password = ArrayHelper::getValue($post, 'User.password_hash');
 
         $userModel = User::findOne(['username' => $username]);
         if($userModel != null){
-            if(Yii::$app->security->validatePassword($password, $userModel->password_hash)){
+            if(Yii::$app->security->validatePassword($password,$userModel->password_hash)){
+                $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
+                if($user_message['error_code'] == 10023){
+                    \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
+                    return $this->goHome();
+                }
                 //保存微博用户数据
-                $results = $this->bindingQqUser($userModel, $open_id, $access_token);
+                $results = $this->bindingWeiboUser($userModel, $user_message, $_SESSION['token']['access_token']);
                 if($results['code'] == 400){
                     throw new NotAcceptableHttpException('绑定出错！请重新登录');
                 }
@@ -124,19 +144,19 @@ class QqCallbackController extends Controller
      */
     public function actionSignup()
     {
+        $user_message = $this->getWeiboUserInfos();  //获取用户等基本信息
         $params = Yii::$app->request->queryParams;
         $type = ArrayHelper::getValue($params, 'type');
-        $access_token = ArrayHelper::getValue($params, 'access_token'); //密钥
-        $open_id = ArrayHelper::getValue($params, 'open_id');           //open_id
-        $nickname = ArrayHelper::getValue($params, 'nickname');         //QQ用户名
-        $gender = ArrayHelper::getValue($params, 'gender');             //性别
-        $avatar = ArrayHelper::getValue($params, 'avatar');             //头像
+        if($user_message['error_code'] == 10023){
+            \Yii::$app->getSession()->setFlash('error', '用户请求超过上限!');
+            return $this->goHome();
+        }
         
-        $userAuths = UserAuths::findOne(['identifier' => $open_id]);
+        $userAuths = UserAuths::findOne(['identifier' => $user_message['id']]);
         if($type == 2){
             if($userAuths == null){
-                //保存QQ用户数据
-                $results = $this->saveQqUser($open_id, $access_token, $nickname, $gender, $avatar);
+                //保存微博用户数据
+                $results = $this->saveWeiboUser($user_message, $_SESSION['token']['access_token']);
                 if($results['code'] == 400){
                     throw new NotAcceptableHttpException('数据保存出错！请重新登录');
                 }
@@ -144,7 +164,7 @@ class QqCallbackController extends Controller
                 $user = new User(['id' => $userId]);
                 Yii::$app->getUser()->login($user);
                 return $this->redirect("/user/default/index?id=$userId");
-            } 
+            }
             $user = new User(['id' => $userAuths->user_id]);
             Yii::$app->getUser()->login($user);
             return $this->goHome();
@@ -158,16 +178,16 @@ class QqCallbackController extends Controller
     /**
      * 绑定已有的用户
      * @param model $userModel          用户模型
-     * @param string $open_id           qq用户openid
-     * @param string $access_token      qq用户密钥
+     * @param array $user_message       微博用户信息
+     * @param string $access_token      微博用户密钥
      * @return array
      */
-    public function bindingQqUser($userModel, $open_id, $access_token)
+    public function bindingWeiboUser($userModel, $user_message, $access_token)
     {
         $authValues = [
             'user_id' => $userModel->id,
-            'identity_type' => 'qq',
-            'identifier' => $open_id,
+            'identity_type' => 'weibo',
+            'identifier' => $user_message['id'],
             'credential' => $access_token,
         ];
         /** 添加$authValues数组到表里 */
@@ -182,23 +202,20 @@ class QqCallbackController extends Controller
     
     /**
      * 保存第三方登录数据
-     * @param string $open_id       qq用户openid
-     * @param string $access_token  qq用户密钥
-     * @param type $nickname        qq用户名
-     * @param type $gender          性别
-     * @param type $avatar          头像
+     * @param array $user_message       微博用户信息
+     * @param string $access_token      微博用户密钥
      * @return array
      */
-    public function saveQqUser($open_id, $access_token, $nickname, $gender, $avatar)
+    public function saveWeiboUser($user_message, $access_token)
     {
         $userValues = [
             'id' => md5(time() . rand(1, 99999999)),
-            'username' => $nickname,
-            'nickname' => $nickname,
+            'username' => $user_message['screen_name'],
+            'nickname' => $user_message['name'],
             'password_hash' => Yii::$app->security->generatePasswordHash($access_token),
             'type' => User::TYPE_FREE,
-            'sex' => $gender == '男' ? '1' : '2',
-            'avatar' => $avatar,
+            'sex' => $user_message['gender'] == 'm' ? '1' : '2',
+            'avatar' => $user_message['avatar_large'],
             'is_official' => 0,
             'created_at' => time(),
             'updated_at' => time(),
@@ -208,11 +225,11 @@ class QqCallbackController extends Controller
         $userNum = Yii::$app->db->createCommand()->insert(User::tableName(), $userValues)->execute();
         
         if($userNum > 0){
-            $userModel = User::findOne(['username' => $nickname]);
+            $userModel = User::findOne(['username' => $user_message['screen_name']]);
             $authValues = [
                 'user_id' => $userModel->id,
-                'identity_type' => 'qq',
-                'identifier' => $open_id,
+                'identity_type' => 'weibo',
+                'identifier' => $user_message['id'],
                 'credential' => $access_token,
             ];
             /** 添加$authValues数组到表里 */
@@ -228,4 +245,20 @@ class QqCallbackController extends Controller
         }
     }
     
+    /**
+     * 获取微博用户等基本信息
+     * @return array
+     */
+    public function getWeiboUserInfos()
+    {
+        $weiboConfig = Yii::$app->params[self::$weiboConfig];   //获取配置信息
+        $userInfos = new SaeTClientV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY'], $_SESSION['token']['access_token']);
+        
+        $ms  = $userInfos->home_timeline(); // done
+        $uid_get = $userInfos->get_uid();
+        $uid = $uid_get['uid'];
+        $user_message = $userInfos->show_user_by_id($uid);  //根据ID获取用户等基本信息
+        
+        return $user_message;
+    }
 }
