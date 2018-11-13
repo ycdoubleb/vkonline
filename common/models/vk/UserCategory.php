@@ -217,15 +217,19 @@ class UserCategory extends ActiveRecord
 
     /**
      * 获取所有父级
+     * @param array $fields         只返回指定字段
      * @return type
      */
-    public function getParents() {
+    public function getParents($fields = []) {
         self::initCache();
         $parentids = array_values(array_filter(explode(',', $this->path)));
         $parents = [];
         foreach ($parentids as $index => $id) {
-            $parents [] = self::getCatById($id);
+            /* @var $category UserCategory */
+            $category = self::getCatById($id);
+            $parents [] = count($fields) == 0 ? $category : $category->toArray($fields);
         }
+        
         return $parents;
     }
 

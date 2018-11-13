@@ -33,8 +33,12 @@ phpunit.phar
 
 # vagrant runtime
 /.vagrant
-/frontend/web/assets/
-/backend/runtime/
 /frontend/runtime/
-/backend/web/assets/
+/frontend/web/assets/
 /frontend/web/upload/banner/
+/backend/runtime/
+/backend/web/assets/
+/api/runtime/
+/api/web/assets/
+/dailylessonend/runtime/
+/dailylessonend/web/assets/
