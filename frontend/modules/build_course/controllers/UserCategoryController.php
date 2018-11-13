@@ -53,7 +53,7 @@ class UserCategoryController extends GridViewChangeSelfController
     {
         $searchModel = new UserCategorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => UserCategory::getUserCatListFramework($dataProvider->models),

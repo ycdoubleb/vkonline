@@ -1,0 +1,208 @@
+.vk-form {
+    border-bottom: transparent !important;
+}
+
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    font-size: 14px;
+    color: #666;
+}
+
+.main .frame {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    display: inline-block;
+}
+
+.main .page-title {
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    margin-bottom: 45px;
+    font-size: 16px;
+    color: #666666;
+    background-color: #ffffff;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.main .frame-content .frame-title {    
+    height: 60px;
+    line-height: 60px;
+    padding-left: 20px;
+    font-size: 16px;
+    color: #878787;
+    background-color: #ffffff;
+}
+
+.user-update.main .frame-content .frame-title {
+    color: #666666;
+}
+
+.main .frame .frame-title .framebtn,
+.main .frame .page-title .framebtn {
+    position: relative;
+    padding-right: 15px;
+    float: right;
+}
+
+.main .frame .frame-content .wechat,
+.main .frame .frame-content .weibo,
+.main .frame .frame-content .qq {
+    width: 28px;
+    height: 28px;
+    vertical-align: bottom;
+    margin-right: 14px;
+    display: inline-block;
+    background-color: #ddd;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 14px;
+    border-radius: 50%;
+}
+
+.main .frame .frame-content .wechat {
+    background-image: url("/imgs/site/wechat.png");
+}
+
+.main .frame .frame-content .wechat:hover {
+    background-color: #58bc46;
+}
+
+.main .frame .frame-content .weibo {
+    background-image: url("/imgs/site/weibo.png");
+}
+
+.main .frame .frame-content .weibo:hover {
+    background-color: #e90e24;
+}
+
+.main .frame .frame-content .qq {
+    background-image: url("/imgs/site/qq.png");
+    margin-right: 0px;
+}
+
+.main .frame .frame-content .qq:hover {
+    background-color: #3caae3;
+}
+
+.user-default-index .frame .frame-content .brand {
+    color: #999;
+    font-size: 12px;
+    display: inline-block;
+    border: 1px solid #999999;
+    padding: 4px 8px;
+    margin: 5px;
+}
+
+.user-default-index .frame .frame-content .brand.bingo {
+    background-color: #2aabb6;
+    color: #fff;
+    border: 1px solid #2aabb6;
+}
+
+.user-default-index .frame .frame-content .brand span{
+    float: right;
+    color: #ccc;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    filter: alpha(opacity=40);
+    display: inline-block;
+    text-shadow: 0 1px 0 #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    margin-left: 10px;
+}
+
+.user-default-index .frame .frame-content .fa-plus-circle {
+    color: #ccc;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.main .frame-content {
+    margin-bottom: 45px;
+    -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.main .frame-content .table>tr {
+    background-color: #ffffff;
+    min-height: 48px !important;
+}
+
+.main .frame-content .content-content {
+    background-color: #ffffff;
+    border-top: 1px solid #f2f2f2;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: .65;
+}
+
+/** table表格th样式 */
+.main .viewdetail-th {
+    color: #999999;
+    background-color: #ffffff;
+    width: 13%;
+    font-weight: normal;
+    text-align: right;
+    min-width: 73px;
+    vertical-align: middle;
+    border: 1px solid #eee;
+}
+
+/** table表格th-head样式 */
+.main .viewdetail-th-head {
+    color: #000000;
+    background-color: #ffffff;
+    float: left;
+    font-weight: bold;
+}
+
+.frame-content .table {
+    table-layout: fixed;
+    color: #666;
+    border-right: 2px solid rgba(255, 255, 255, 0);
+    border-left: 2px solid rgba(255, 255, 255, 0);
+}
+
+.table > thead > tr > th, .table > tbody > tr > th,
+.table > tfoot > tr > th, .table > thead > tr > td, 
+.table > tbody > tr > td, .table > tfoot > tr > td {
+    padding: 4px;
+    vertical-align: middle !important;
+    background-color: #ffffff;
+    border: 1px solid #eee !important;
+}
+
+.table-striped > tbody > tr{
+    height: 48px;
+    font-size: 14px;
+}
+
+/***修改输入框样式***/
+.form-control,
+.select2-container--krajee .select2-selection{
+    height: 40px;
+    border-radius: 0px;
+}
+
+/***修改下拉框样式***/
+.select2-selection__rendered{
+    line-height: 28px;
+}
+
+.select2-container--krajee .select2-selection--single .select2-selection__arrow{
+    height: 38px;
+}

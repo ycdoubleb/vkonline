@@ -302,29 +302,24 @@ class UserCategory extends ActiveRecord
     /**
      * 获取分类
      * @param intger $level         默认返回所有分类
-     * @param string $created_by    当前用户ID
+     * @param string $created_by    用户ID
+     * @param string $customer_id   品牌ID
      * @param bool $key_to_value    返回键值对形式
      * @param bool $include_unshow  是否包括隐藏的分类
      * @param string $sort_order    排序
      * 
      * @return array(array|Array) 
      */
-    public static function getCatsByLevel($level = 1, $created_by = null, $key_to_value = false, $include_unshow = false, $sort_order = null) {
+    public static function getCatsByLevel($level = 1, $created_by = null, $customer_id = null, $key_to_value = false, $include_unshow = false, $sort_order = 'is_public') {
         self::initCache();
         $userCategorys = self::$userCategorys;   //所有用户分类
         //不传created_by，默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
-        //不传sort_order，默认使用is_public字段排序
-        if(!isset($sort_order) || empty($sort_order)){
-            $sort_order = 'is_public';
-        }
         //默认使用当前客户id
-        if(!empty(\Yii::$app->user->identity->customer_id)){
+        if(!isset($customer_id) || empty($customer_id)){
             $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
-        }else{
-            $customer_id = null;
         }
         
         
@@ -357,9 +352,10 @@ class UserCategory extends ActiveRecord
     }
 
     /**
-     * 获取用户分类的子级
+     * 获取分类的子级
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
+     * @param string $customer_id       品牌ID
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
@@ -367,22 +363,16 @@ class UserCategory extends ActiveRecord
      * 
      * @return array [array|key=value]
      */
-    public static function getUserCatChildren($id, $created_by = null, $key_to_value = false, $recursion = false, $include_unshow = false, $sort_order = null) {
+    public static function getUserCatChildren($id, $created_by = null, $customer_id = null, $key_to_value = false, $recursion = false, $include_unshow = false, $sort_order = 'is_public') {
         self::initCache();
         $userCategorys = self::$userCategorys; //所有用户分类
         //不传created_by，默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
-        //不传sort_order，默认使用is_public字段排序
-        if(!isset($sort_order) || empty($sort_order)){
-            $sort_order = 'is_public';
-        }
         //默认使用当前客户id
-        if(!empty(\Yii::$app->user->identity->customer_id)){
+        if(!isset($customer_id) || empty($customer_id)){
             $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
-        }else{
-            $customer_id = null;
         }
         
         $childrens = [];
@@ -408,7 +398,7 @@ class UserCategory extends ActiveRecord
             if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
                 $childrens[] = $category;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, false, $recursion, $include_unshow, $sort_order));
+                    $childrens = array_merge($childrens, self::getUserCatChildren($c_id, $created_by, $customer_id, false, $recursion, $include_unshow, $sort_order));
                 }
             }
         }
@@ -417,7 +407,7 @@ class UserCategory extends ActiveRecord
     }
 
     /**
-     * 获取分类的子级
+     * 获取当前用户分类的子级
      * @param integer $id               分类ID
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归
@@ -426,29 +416,28 @@ class UserCategory extends ActiveRecord
      * @return array [array|key=value]
      */
     public static function getCatChildren($id, $key_to_value = false, $recursion = false, $include_unshow = false) {
-        return self::getUserCatChildren($id, null, $key_to_value, $recursion, $include_unshow);
+        return self::getUserCatChildren($id, null, null, $key_to_value, $recursion, $include_unshow);
     }
-    
+        
     /**
-     * 获取用户分类的子级ID
+     * 获取分类的子级ID
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
+     * @param string $customer_id       品牌ID
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
      * 
      * @return array [id,id...]
      */
-    public static function getUserCatChildrenIds($id, $created_by = null, $recursion = false, $include_unshow = false) {
+    public static function getUserCatChildrenIds($id, $created_by = null, $customer_id = null, $recursion = false, $include_unshow = false) {
         self::initCache();
         //不传created_by，默认使用当前用户ID
         if (!isset($created_by) || empty($created_by)) {
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
         //默认使用当前客户id
-        if(!empty(\Yii::$app->user->identity->customer_id)){
+        if(!isset($customer_id) || empty($customer_id)){
             $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
-        }else{
-            $customer_id = null;
         }
         
         $childrens = [];
@@ -473,7 +462,7 @@ class UserCategory extends ActiveRecord
             if($category['parent_id'] == $id && ($include_unshow || $category['is_show'] == 1)){
                 $childrens[] = $c_id;
                 if ($recursion) {
-                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $recursion, $include_unshow));
+                    $childrens = array_merge($childrens, self::getUserCatChildrenIds($c_id, $created_by, $customer_id, $recursion, $include_unshow));
                 }
             }
         }
@@ -482,7 +471,7 @@ class UserCategory extends ActiveRecord
     }
 
     /**
-     * 获取分类的子级ID
+     * 获取当前用户分类的子级ID
      * @param integer $id               分类ID
      * @param bool $recursion           是否递归
      * @param bool $include_unshow      是否包括隐藏的分类
@@ -490,13 +479,14 @@ class UserCategory extends ActiveRecord
      * @return array [id,id...]
      */
     public static function getCatChildrenIds($id, $recursion = false, $include_unshow = false) {
-        return self::getUserCatChildrenIds($id, null, $recursion, $include_unshow);
+        return self::getUserCatChildrenIds($id, null, null, $recursion, $include_unshow);
     }
 
     /**
-     * 返回用户当前（包括父级）分类同级的所有分类
+     * 返回当前（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
      * @param string $created_by        用户ID
+     * @param string $customer_id       品牌ID
      * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归（向上级递归）
@@ -505,20 +495,21 @@ class UserCategory extends ActiveRecord
      * 
      * @return array [[level_1],[level_2],..]
      */
-    public static function getUserSameLevelCats($id, $created_by = null, $containerSelfLevel = false, $key_to_value = false, $recursion = true, $include_unshow = false, $sort_order = null) {
+    public static function getUserSameLevelCats($id, $created_by = null, $customer_id = null, $containerSelfLevel = false, $key_to_value = false, $recursion = true, $include_unshow = false, $sort_order = 'is_public') {
         //不created_by，默认使用当前用户的ID
         if (!isset($created_by) || empty($created_by)) {
             $created_by = Yii::$app->user->isGuest ? null : Yii::$app->user->id;
         }
-        //不传sort_order，默认使用is_public字段排序
-        if(!isset($sort_order) || empty($sort_order)){
-            $sort_order = 'is_public';
+        //默认使用当前客户id
+        if(!isset($customer_id) || empty($customer_id)){
+            $customer_id = Yii::$app->user->isGuest ? null : \Yii::$app->user->identity->customer_id;
         }
+        
         $catgegory = self::getCatById($id);
         $userCategorys = [];
         if (($containerSelfLevel && $catgegory != null)) {
             //加上当前目录的子层级
-            $childrens = self::getUserCatChildren($id, $created_by, $key_to_value, false, $include_unshow, $sort_order);
+            $childrens = self::getUserCatChildren($id, $created_by, $customer_id, $key_to_value, false, $include_unshow, $sort_order);
             if (count($childrens) > 0) {
                 $userCategorys [] = $childrens;
             }
@@ -527,10 +518,10 @@ class UserCategory extends ActiveRecord
         do {
             if ($catgegory == null) {
                 //当前分类为空时返回顶级分类
-                $userCategorys [] = self::getCatsByLevel(1, $created_by, $key_to_value);
+                $userCategorys [] = self::getCatsByLevel(1, $created_by, $customer_id, $key_to_value);
                 break;
             } else {
-                array_unshift($userCategorys, self::getUserCatChildren($catgegory->parent_id, $created_by, $key_to_value, false, $include_unshow, $sort_order));
+                array_unshift($userCategorys, self::getUserCatChildren($catgegory->parent_id, $created_by, $customer_id, $key_to_value, false, $include_unshow, $sort_order));
                 if (!$recursion) 
                     break;
             }
@@ -539,13 +530,12 @@ class UserCategory extends ActiveRecord
             
         }while (($catgegory = self::getCatById($catgegory->parent_id)) != null);
         
-        return $userCategorys;
+        return array_filter($userCategorys);
     }
 
     /**
-     * 返回当前（包括父级）分类同级的所有分类
+     * 返回当前用户（包括父级）分类同级的所有分类
      * @param integer $id               分类ID
-     * @param string $created_by        用户ID
      * @param bool $containerSelfLevel  是否包括该分类同级分类
      * @param bool $key_to_value        返回键值对形式
      * @param bool $recursion           是否递归（向上级递归）
@@ -554,7 +544,7 @@ class UserCategory extends ActiveRecord
      * @return array [[level_1],[level_2],..]
      */
     public static function getSameLevelCats($id, $containerSelfLevel = false, $key_to_value = false, $recursion = true, $include_unshow = false) {
-        return self::getUserSameLevelCats($id, null, $containerSelfLevel, $key_to_value, $recursion, $include_unshow);
+        return self::getUserSameLevelCats($id, null, null, $containerSelfLevel, $key_to_value, $recursion, $include_unshow);
     }
     
     /**
@@ -573,6 +563,7 @@ class UserCategory extends ActiveRecord
                 ];
             }
         }
+        
         return $locationPath;
     }
 
@@ -587,7 +578,7 @@ class UserCategory extends ActiveRecord
         //组装目录结构
         ArrayHelper::multisort($dataProvider, 'is_public', SORT_DESC);
         foreach($dataProvider as $_data){
-            if($_data->parent_id == $parent_id){
+            if($_data->parent_id == (string)$parent_id){
                 $item = [
                     'title'=> $_data->name,
                     'key' => $_data->id,

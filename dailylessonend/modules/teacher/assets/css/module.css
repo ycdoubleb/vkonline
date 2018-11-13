@@ -1,0 +1,118 @@
+/*
+    用于模块页面样式
+*/
+/* 
+    创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-15, 13:11:00;
+*/
+.content{
+    padding: 0 !important;
+}
+.main {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    margin-top: 40px;
+}
+
+/*******************************************************************************
+ * 列表
+ *******************************************************************************/
+.teacher-search .vk-list {
+    margin-top: 30px;
+    margin-right: -66px;
+}
+
+.teacher-search .vk-list .list-panel {
+    width: 200px;
+    height: 203px;
+    margin-right: 66px;
+    text-align: center;
+}
+
+.teacher-search .vk-list .list-body {
+    padding-bottom: 0px !important;
+    margin-top: 15px;
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    border: none !important;
+}
+
+.teacher-search .vk-list .list-body .tuip {
+    width: auto;
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/***************************
+ * 公共部分
+ ***************************/
+.teacher-search .vk-list .list-panel .avatars,
+.teacher-view .avatars {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    padding: 2px;
+    margin-top: 15px;
+    background-color: #f2f2f2;
+}
+
+.teacher-search .vk-list .list-panel .avatars > i,
+.teacher-view .avatars > i {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-size: 30px;
+    color: #ffcc01;
+}
+
+/*******************************************************************************
+ * 老师主页
+ *******************************************************************************/
+.teacher-view .basic {
+    width: 280px;
+}
+
+.teacher-view .basic .vk-list .list-panel {
+    height: 264px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-right: 35px;
+    text-align: center;
+}
+
+.teacher-view .basic .vk-list .avatars {
+    width: 128px !important;
+    height: 128px !important;
+    margin-bottom: 15px;
+}
+
+.teacher-view .details {
+    width: 885px;
+}
+
+.teacher-view .details .vk-list {
+    margin-right: -50px;
+    overflow: hidden;
+}
+
+.teacher-view .details .teacher-des {
+    height: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 30px;
+    font-size: 14px;
+    text-indent: 28px
+}
+
+.teacher-view .details .vk-list .list-panel {
+    margin-right: 23px;
+}
+
+.teacher-view .details 
+.vk-list .list-panel .list-header {
+    height: 210px;
+}

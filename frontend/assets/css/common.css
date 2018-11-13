@@ -130,35 +130,41 @@ a.desc:after {
 }
 /* 客户栏目 */
 .nav li .customer-box{
-    background-color: #ccc;
-    border-bottom: 2px solid #ccc;
     margin: -5px 0 0;
     -webkit-transition: all 0.2s linear;
     -o-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
     transition: all 0.2s linear;
-    width: 128px;
 }
-.nav li .customer-box:hover,
-.nav li.active .customer-box{
-    background-color: #2aabb6;
-    border-bottom: 2px solid #2aabb6;
-}
+
 /* 课工坊 */
 .nav li .m_name{
     background-color: #f8f8f8;
     padding: 3px 5px 1px;
     position: absolute;
     width: 58px;
+    border-bottom: 2px solid #ccc;
 }
-.nav li .m_name:hover,active{
-    
+
+.nav li .customer-box:hover .m_name,
+.nav li.active .customer-box .m_name{
+    color: #2aabb6;
+    border-bottom-color: #2aabb6;
 }
+
 /* 客户简称 */
 .nav li .short_name{
     color: #fff;
     display: inline-block;
     padding: 3px 3px 1px 3px;
+    background-color: #ccc;
+    border-bottom: 2px solid #ccc;
+}
+
+.nav li .customer-box:hover .short_name,
+.nav li.active .customer-box .short_name {
+    background-color: #2aabb6;
+    border-bottom-color: #2aabb6;
 }
 
 /* 搜索框 */

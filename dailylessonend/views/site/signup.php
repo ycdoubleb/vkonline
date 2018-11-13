@@ -1,8 +1,8 @@
 <?php
 
 use common\models\User;
-use frontend\assets\SiteAssets;
-use frontend\assets\TimerButtonAssets;
+use dailylessonend\assets\SiteAssets;
+use dailylessonend\assets\TimerButtonAssets;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;

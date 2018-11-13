@@ -4,8 +4,8 @@
 /* @var $form ActiveForm */
 /* @var $model PasswordResetRequestForm */
 
-use frontend\assets\SiteAssets;
-use frontend\models\PasswordResetRequestForm;
+use dailylessonend\assets\SiteAssets;
+use dailylessonend\models\PasswordResetRequestForm;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\web\View;

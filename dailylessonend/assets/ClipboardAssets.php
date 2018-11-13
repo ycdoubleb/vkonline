@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace frontend\assets;
+namespace dailylessonend\assets;
 
 use yii\web\AssetBundle;
 use const YII_DEBUG;
@@ -18,7 +18,7 @@ use const YII_DEBUG;
  */
 class ClipboardAssets extends AssetBundle{
     //put your code here
-    public $sourcePath = '@frontend/assets';
+    public $sourcePath = '@dailylessonend/assets';
     public $depends = [
         'yii\web\YiiAsset'
     ];
