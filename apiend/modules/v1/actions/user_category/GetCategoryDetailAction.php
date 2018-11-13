@@ -77,10 +77,9 @@ class GetCategoryDetailAction extends BaseActioin {
      * 
      */
     private function formatCategory($category) {
-        var_dump(UserCategory::getUserCatLocationPath($category->id));
-        var_dump(\yii\helpers\ArrayHelper::map(UserCategory::getUserCatLocationPath($category->id), 'id', 'name'));exit;
+        
         $category_arr = $category->toArray(['id', 'name', 'type', 'level', 'path']);
-        //$category_arr['path'] = array_merge(['id' => 0 , 'name'=>'根目录'],$category->);
+        $category_arr['path'] = $category->getParents(['id','name'],true);
         
         return $category_arr;
     }
