@@ -2,6 +2,7 @@
 
 namespace dailylessonend\modules\user\controllers;
 
+use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\User;
 use common\models\UserAuths;
 use common\models\vk\Course;
@@ -9,12 +10,10 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
-use common\models\vk\CustomerAdmin;
 use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\modules\webuploader\models\Uploadfile;
-use dailylessonend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -22,6 +21,7 @@ use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+
 
 /**
  * Default controller for the `user` module
@@ -187,8 +187,8 @@ class DefaultController extends Controller
      */
     public function actionCustomer()
     {
-        \Yii::$app->getResponse()->format = 'json';
-        $post = \Yii::$app->request->post();
+        Yii::$app->getResponse()->format = 'json';
+        $post = Yii::$app->request->post();
         $inviteCode = ArrayHelper::getValue($post, 'txtVal');   //获取输入的邀请码
         $customer = Customer::find()->select(['name'])->where(['invite_code' => $inviteCode])->asArray()->one(); //查找客户名
         
