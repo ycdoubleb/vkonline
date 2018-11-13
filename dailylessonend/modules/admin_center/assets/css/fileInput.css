@@ -1,0 +1,57 @@
+/*
+    用于FileInput插件样式替换
+*/
+/* 
+    创建时间 : 2018-5-10, 14:10:17
+*/
+
+.main .file-input {
+    display: inline-block;
+    font-size: 12px;
+}
+
+.main .file-preview {
+    border-radius: 0;
+}
+
+.main .file-preview .fileinput-remove {
+    z-index: 100;
+}
+
+.main .krajee-default.file-preview-frame {
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+    text-align: center;
+}
+
+.main .krajee-default.file-preview-frame .kv-file-content {
+    width: 100%;
+    height: 100%;
+}
+
+.main .krajee-default.file-preview-frame .file-thumbnail-footer {
+    height: auto;
+    padding: 2px;
+}
+
+.main .krajee-default .file-footer-caption {
+    padding-top: 0;
+    margin-bottom: 0;
+}
+
+.main .krajee-default .file-caption-info, 
+.main .krajee-default .file-size-info {
+    width: auto;
+    height: auto;
+}
+
+.main .file-actions {
+    font-size: 12px;
+}
+
+.main .btn-kv {
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+}

@@ -207,8 +207,8 @@ class ActionUtils
 //            if(Yii::$app->user->identity->is_official){
 //                $model->level = Course::PUBLIC_LEVEL;
 //            }
-            //保存Course的is_publish属性
-            if($model->save(true, ['is_publish'])){
+            //保存Course的level、 is_publish属性
+            if($model->save(true, ['level', 'is_publish'])){
                 //保存课程操作日志
                 $this->saveCourseActLog(['action' => '发布', 'title' => "课程管理", 'course_id' => $model->id]);
             }else{

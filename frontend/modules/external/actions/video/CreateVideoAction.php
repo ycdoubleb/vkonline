@@ -58,7 +58,7 @@ class CreateVideoAction extends Action {
                 'customer_id' => $user->customer_id,
                 'name' => $file->name,
                 'duration' => $file->duration,
-                'level' => Video::PRIVATE_LEVEL,
+                'level' => Video::PUBLIC_LEVEL,
                 'img' => $file->thumb_path,
                 'is_official' => $user->customer->is_official,
                 'user_cat_id' => $folder == null ? 0 : $folder->id,

@@ -1,0 +1,124 @@
+/* 
+    用于模块页面样式
+    创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-15, 13:11:00
+*/
+
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    overflow-x: hidden;
+}
+/**
+ * 概况  
+ */
+.admin_center-default-index .vk-panel .admin-num{
+    color: #878787;
+}
+/**
+ * 邀请码去边框 置底隐藏 加底色 
+ */
+.invite-code-index .inviteCode{
+    position: absolute;
+    z-index: -10;
+    border: 0;
+    opacity: 0;
+}
+.course-search .vk-title .btngroup .btn-flat,
+.video-search .vk-title .btngroup .btn-flat {
+    border-color: #28b28b;
+    padding: 3px 18px;
+    margin-right: -5px;
+    font-size: 16px;
+    color: #999999;
+    background-color: #f2f2f2;
+}
+.course-search .vk-title .btngroup .btn-flat.active,
+.video-search .vk-title .btngroup .btn-flat.active {
+    color: #ffffff;
+    background-color: #28b28b;
+}
+
+.course-statistics .vk-tabs,
+.video-statistics .vk-tabs {
+    margin-bottom: 0px;
+}
+.course-statistics .vk-panel,
+.video-statistics .vk-panel {
+    margin-top: 0px;
+    background-color: transparent;
+}
+.course-index .vk-panel .summary,
+.video-index .vk-panel .summary,
+.category-index .vk-panel .summary,
+.category-view .vk-panel .summary,
+.user-index .vk-panel .summary,
+.customer-watermark-index .vk-panel .summary,
+.course-index .vk-panel .pagination,
+.video-index .vk-panel .pagination,
+.category-index .vk-panel .pagination,
+.category-view .vk-panel .pagination,
+.video-index .vk-panel .pagination,
+.customer-watermark-index .vk-panel .pagination{
+    padding-left: 20px;
+}
+.course-statistics .vk-panel .chart,
+.video-statistics .vk-panel .chart {
+    min-height: 500px;
+}
+/*******************************************************************************
+ * 分类页面
+ *******************************************************************************/
+/*复选框的点击范围扩大到分类名*/
+.main.category-index .vk-panel .check-label {
+    margin-bottom: 0px;
+    font-weight: normal;
+}
+/*复选框出现时加入鼠标手指样式*/
+.main.category-index .vk-panel .cursor{
+    cursor: pointer;
+}
+
+/**
+ * 批量更新分类层级的模态框
+ */
+/*单选框点击范围扩大到分类名整正行*/
+.vk-modal .modal-body .vk-form .radio-label {
+    padding: 16px 775px 16px 0px;
+    display: inline;
+    margin-bottom: 0px;
+    font-weight: normal;
+    cursor: pointer;
+}
+/*.vk-modal .modal-body .vk-form tr:hover{
+    background-color: #f2f2f2;
+}*/
+.vk-modal .modal-content .modal-body.customer-activity {
+    padding: 0px 0px 15px;
+}
+
+.vk-modal .modal-content .modal-body .vk-form th.header-css {
+    width: 300px;
+    height: 0px;
+    padding: 0px;
+    border-bottom: 0px
+}
+
+.vk-modal .modal-content .modal-body .vk-form .content-value {
+    padding-right: 15px;
+    text-align: left;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.vk-modal .modal-content .modal-body .vk-form .radio-value {
+    float: right;
+    cursor: pointer;
+}
+
+.update-path .modal-body, 
+.update-path .modal-body .vk-form {
+    background-color: #ffffff !important;
+    padding-left: 10px;
+}
