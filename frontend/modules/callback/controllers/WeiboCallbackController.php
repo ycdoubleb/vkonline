@@ -2,11 +2,11 @@
 
 namespace frontend\modules\callback\controllers;
 
+use common\components\OAuths\weiboAPI\OAuthException;
+use common\components\OAuths\weiboAPI\SaeTClientV2;
+use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\User;
 use common\models\UserAuths;
-use frontend\OAuths\weiboAPI\OAuthException;
-use frontend\OAuths\weiboAPI\SaeTClientV2;
-use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;

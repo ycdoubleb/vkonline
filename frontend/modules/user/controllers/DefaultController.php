@@ -2,6 +2,7 @@
 
 namespace frontend\modules\user\controllers;
 
+use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\User;
 use common\models\UserAuths;
 use common\models\vk\Course;
@@ -9,12 +10,10 @@ use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
 use common\models\vk\CourseProgress;
 use common\models\vk\Customer;
-use common\models\vk\CustomerAdmin;
 use common\models\vk\UserBrand;
 use common\models\vk\Video;
 use common\models\vk\VideoFavorite;
 use common\modules\webuploader\models\Uploadfile;
-use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use Yii;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -235,9 +234,10 @@ class DefaultController extends Controller
             } 
             if($num > 0){
                 Yii::$app->getSession()->setFlash('success','操作成功！');
-                return ['code' => 200];
+                return true;
             } else {
-                return ['code' => 400];
+                Yii::$app->getSession()->setFlash('error','操作失败！');
+                return false;
             }
         }
     }

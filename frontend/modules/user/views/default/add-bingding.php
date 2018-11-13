@@ -30,6 +30,7 @@ $this->title = '绑定品牌';
                     'options'=>[
                         'id' => 'form-admin',
                         'class'=>'form-horizontal',
+                        'onkeydown' => "if(event.keyCode==13) return false;",
                     ],
                     'fieldConfig' => [
                         'template' => "{label}\n<div class=\"col-lg-12 col-md-12\">"
@@ -43,8 +44,7 @@ $this->title = '绑定品牌';
                     <!--用户id-->    
                     <?= Html::activeHiddenInput($model, 'user_id') ?>
                     
-                    <?= $form->field($model, 'brand_id')->textInput(['value' => '',
-                    'placeholder' => '邀请码...'])->label('')?>
+                    <?= $form->field($model, 'brand_id')->textInput(['placeholder' => '邀请码...'])->label('')?>
                     <!--客户名或注释信息-->
                     <div id="customer" class="name-info"><span></span></div>
                     
@@ -54,8 +54,8 @@ $this->title = '绑定品牌';
             
             <div class="modal-footer">
                 <?= Html::button(Yii::t('app', 'Confirm'), [
-                    'id'=>'submitsave','class'=>'btn btn-primary',
-                    'data-dismiss'=>'modal','aria-label'=>'Close'
+                    'id' => 'submitsave', 'class' => 'btn btn-primary', 'data-dismiss' => 'modal',
+                    'aria-label' => 'Close'
                 ]) ?>
             </div>
             

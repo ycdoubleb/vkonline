@@ -1,6 +1,7 @@
 <?php
 namespace frontend\controllers;
 
+use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\Banner;
 use common\models\LoginForm;
 use common\models\User;
@@ -16,7 +17,6 @@ use Detection\MobileDetect;
 use frontend\models\ContactForm;
 use frontend\models\PasswordResetRequestForm;
 use frontend\models\ResetPasswordForm;
-use frontend\OAuths\weiboAPI\SaeTOAuthV2;
 use linslin\yii2\curl\Curl;
 use Yii;
 use yii\base\InvalidParamException;

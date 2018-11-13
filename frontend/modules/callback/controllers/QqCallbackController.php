@@ -2,9 +2,9 @@
 
 namespace frontend\modules\callback\controllers;
 
+use common\components\OAuths\qqAPI\core\QC;
 use common\models\User;
 use common\models\UserAuths;
-use frontend\OAuths\qqAPI\core\QC;
 use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
