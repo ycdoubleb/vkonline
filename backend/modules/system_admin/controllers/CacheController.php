@@ -17,6 +17,7 @@ class CacheController extends Controller {
             Yii::getAlias('@frontend') . '/runtime/cache',
             Yii::getAlias('@frontend') . '/web/assets',
             Yii::getAlias('@console') . '/runtime/cache',
+            Yii::getAlias('@apiend') . '/runtime/cache',
         ];
         foreach ($dirs as $path) {
             $this->do_rmdir($path, false);

@@ -73,6 +73,7 @@ class UploadLinkAction extends Action {
             $dbFile = Uploadfile::findOne(['id' => (string) $response->VIDEO_ID]);
             if ($dbFile == null)
                 $dbFile = new Uploadfile(['id' => (string) $response->VIDEO_ID]);     //视频ID、md5_ID
+            $dbFile->customer_id = Yii::$app->user->identity->customer_id;
             $dbFile->name = $source_id == null ? (string) $response->VIDEO_NAME : $source_id; //视频名
             $dbFile->path = $video_path;                                              //视频路径
             $dbFile->is_link = 1;           //设置为外链

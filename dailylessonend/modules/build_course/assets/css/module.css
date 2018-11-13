@@ -1,0 +1,857 @@
+/* 
+    用于模块页面样式
+    创建时间 : 2018-5-10, 14:10:17
+    更新时间 : 2018-5-15, 13:11:00;
+*/
+.main {
+    display: inline-block;
+    float: right;  
+    width: 1000px;
+    height: auto;
+    overflow-x: hidden;
+}
+/**
+ * 公共部分
+ */
+.vk-modal .modal-width {
+    min-width: 1150px;
+}
+.vk-modal .modal-height {
+    min-height: 720px;
+    max-height: 720px;
+    overflow-y: auto;
+}
+/**
+ * 模块共用样式
+ */
+.course-index .vk-list,
+.video-index .vk-list {
+    margin-right: -80px;
+}
+
+.course-index .vk-list .list-panel,
+.video-index .vk-list .list-panel {
+    margin-right: 80px;
+}
+
+.coutse_actlog-view .modal-body,
+.video-move .modal-body,
+.user-category-move .modal-body {
+    background-color: #fff !important;
+}
+
+/*******************************************************************************
+ * 我的课程列表
+ *******************************************************************************/
+.course-index .vk-list .list-panel .list-header {
+    height: 210px;
+}
+.course-index .vk-list .list-panel .list-header .icon {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1022;
+    font-size: 18px;
+    border-color: #fff;
+    border-width: 24px 23px;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-style: solid;
+}
+.course-index .vk-list .list-panel .list-header .icon > i {
+    position: absolute;
+    top: -17px;
+    left: -17px;
+}
+/**
+ * 课程详细页
+ */
+.course-view .vk-panel.right-panel {
+    width: 366px;
+    margin-left: 15px;
+}
+.course-view .vk-panel.right-panel .right-panel-height {
+    min-height: 337px;
+    max-height: 337px;
+    overflow-y: auto;
+}
+.course-view .vk-panel.left-panel {
+    width: 604px;
+    margin-right: 15px;
+}
+.course-view .vk-uploader .file-box {
+    top: 13px;
+    width: 76px;
+}
+
+.course-view .vk-uploader .file-box .file-input {
+    width: 76px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 0;
+}
+/**
+ * 课程协作人员
+ */
+.course-user-index .vk-table > tbody > tr > th,
+.course-user-index .vk-table > tbody > tr > td {
+    border-right-width: 0px;
+}
+/**
+ * 课程目录
+ */
+.sortable {
+    margin-bottom: 0px;
+}
+
+.sortable > li {
+    border-top: 1px solid #f2f2f2;
+}
+
+.sortable > li:nth-of-type(1) {
+    margin-top: -1px;
+}
+
+.sortable .head {
+    position: relative;
+    height: 60px;
+    padding-right: 15px;
+    padding-left: 20px;
+    line-height: 60px;
+}
+
+.sortable .head  > a {
+    display: inline-block;
+    width: 100%;
+    color: #666;
+    text-align: left;
+    text-decoration: none;
+}
+
+.sortable .head > a > div {
+    display: inline-block;
+    width: 15px;
+}
+
+.sortable .head .icongroup {
+    position: absolute;
+    top: 0px;
+    right: 15px;
+    display: none;
+}
+
+.sortable .head .icongroup > a {
+    display: inline-block;
+    width: 50px;
+    color: #666;
+    text-decoration: none;
+    text-align: center;
+}
+
+.sortable .head .icongroup > a:hover {
+    background-color: #e4e4e4;
+}
+
+.sortable .head:hover .icongroup{
+    display: block;
+}
+
+.sortable .knowledges .head {
+    position: relative;
+    height: 50px;
+    padding-right: 20px;
+    padding-left: 35px;
+    line-height: 50px;
+}
+
+.sortable .knowledges .head > a {
+    color: #878787;
+}
+
+.sortable .knowledges .data{
+    position: absolute;
+    top: 0;
+    right: 25%;
+}
+
+.sortable .knowledges .head:hover {
+    background-color: #f9f9f9;
+}
+
+/***************************
+ * 引用视频
+ ***************************/
+.knowledge-reference {
+    overflow-x: hidden;
+}
+
+.knowledge-reference .vk-tabs {
+    height: auto;
+    margin-top: 0;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    line-height: 0px;
+}
+
+.knowledge-reference .vk-tabs .vk-form {
+    background-color: transparent;
+    box-shadow: none;
+}
+
+.knowledge-reference .vk-tabs 
+.vk-form .form-group {
+    margin-left: 0;
+}
+
+.knowledge-reference .vk-tabs 
+.vk-form .form-group .form-label {
+    margin: 10px 0px;
+    text-align: center;
+}
+
+/***************************
+ * 引用视频：搜索样式-面包屑
+ ***************************/
+.knowledge-reference .vk-tabs .breadcrumb {
+    display: inline-block;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 0px;
+    line-height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    background-color: transparent;
+}
+
+.knowledge-reference .vk-tabs ul > li > a {
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.knowledge-reference .vk-tabs ul > li .set-route,
+.knowledge-reference .vk-table .set-route {
+    margin: 0 15px;
+    font-size: 16px;
+    color: #9e9e9e;
+    font-weight: bold;
+}
+
+.knowledge-reference .vk-tabs ul > li + li:before {
+    padding: 0px;
+    color: transparent;
+    content: "";
+}
+
+/***************************
+ * 引用视频：列表样式
+ ***************************/
+.knowledge-reference .vk-list {
+    margin-right: -25px;
+}
+
+/***************************
+ * 引用视频：列表样式-目录
+ ***************************/
+.knowledge-reference .vk-list .folder > ul,
+.knowledge-reference .vk-list .video > ul {
+    width: auto;
+    margin-right: -25px;
+    margin-bottom: 0px;
+    overflow-x: hidden;
+}
+
+.knowledge-reference .vk-list .folder > ul > li {
+    float: left;
+    margin-bottom: 25px;
+}
+
+.knowledge-reference .vk-list .folder > ul > li > a {
+    display: inline-block;
+    width: 93px;
+    height: 100%;
+    padding: 5px 0px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.knowledge-reference .vk-list .folder > ul > li > a:hover {
+    background-color: #f9f9f9;
+}
+
+.knowledge-reference .vk-list .ifolder {
+    display: inline-block;
+    width: 100%;
+    height: 32px;
+    background-image: url('../imgs/folder.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 40px 32px; 
+}
+
+.knowledge-reference .vk-list .ifolder.upper-level{
+    background-image: url('../imgs/upper-level.png');
+}
+
+.knowledge-reference .vk-list .ifolder.folder-share{
+    background-image: url('../imgs/share_folder_icon.png');
+}
+
+.knowledge-reference .vk-list .ifolder.folder-system{
+    background-image: url('../imgs/system_folder_icon.png');
+}
+
+.knowledge-reference .vk-list .folder-name {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+/***************************
+ * 引用视频：列表样式-视频
+ ***************************/
+.knowledge-reference .vk-list .list-panel {
+    width: 200px;
+    margin-right: 25px;
+    margin-bottom: 20px;
+    border: solid 1px #e4e4e4;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-header {
+    height: 125px;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-header .level {
+    bottom: 2px;
+    left: 2px;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-header .status {
+    bottom: 2px;
+    left: 38px;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-header .duration {
+    bottom: 2px;
+    right: 2px;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-body {
+    padding: 9px 10px;
+    border-bottom: none;
+}
+
+.knowledge-reference 
+.vk-list .list-panel .tuip {
+    margin-top: 0px;
+}
+
+.knowledge-reference .vk-list 
+.list-panel .list-body .title {
+    text-align: center;
+}
+
+.knowledge-reference .summary .times-close {
+    font-size: 16px;
+    color: #999999;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+.knowledge-reference .vk-table tr:hover{
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/***************************
+ * 知识点：引用视频详情
+ ***************************/
+.knowledge-info .vk-list .list-panel {
+    border: solid 1px #e4e4e4;
+}
+
+.knowledge-info .vk-list 
+.list-panel .list-header {
+    height: 157px;
+}
+
+.knowledge-info .vk-list 
+.list-panel .list-header .duration {
+    bottom: 2px;
+    right: 2px;
+}
+
+/*******************************************************************************
+ * 我的素材
+ *******************************************************************************/
+.vk-material .vk-list 
+.list-panel {
+    border: 1px solid #e4e4e4;
+}
+
+.vk-material .vk-list 
+.list-panel .list-header {
+    height: 157px;
+}
+
+/***************************
+ * 搜索样式-面包屑
+ ***************************/
+.vk-material .breadcrumb {
+    display: inline-block;
+    width: 100%;
+    min-height: 40px;
+    max-height: 50px;
+    margin-bottom: 0px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    background-color: transparent;
+}
+
+.vk-material .breadcrumb > a {
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.vk-material .breadcrumb .set-route,
+.vk-material .vk-table .set-route {
+    margin: 0 15px;
+    font-size: 16px;
+    color: #9e9e9e;
+    font-weight: bold;
+}
+
+/***************************
+ * 搜索样式-按钮组
+ ***************************/
+.vk-material .btn-group .material-btn{
+    padding: 9px 22px;
+}
+
+.vk-material .material-operation{
+    position: absolute;
+    right: 15px;
+    bottom: 20px;
+}
+
+/***************************
+ * 搜索样式-高级搜索
+ ***************************/
+.vk-material .operate {
+    display: inline-block;
+    margin-left: -15px;
+}
+
+.vk-material .operate > a {
+    display: inline-block;
+    width: 100px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.vk-material .operate .arrow {
+    margin-left: 7px;
+    font-weight: bold;
+}
+
+/***************************
+ * 总结记录
+ ***************************/
+.vk-material .vk-tabs {
+    display: block;
+    padding-right: 15px;
+    padding-left: 20px;
+    margin-top: -5px;
+    margin-bottom: 0px;
+    border-bottom: none;
+    background-color: #fff;
+}
+
+.vk-material .vk-tabs ul {
+    margin: 0px;
+    padding: 0px;
+}
+
+.vk-material .vk-tabs .summary {
+    display: inline-block;
+    color: #ccc;
+    line-height: 54px;
+    padding: 0px;
+}
+
+.vk-material .vk-tabs .summary .times-close {
+    font-size: 16px;
+    color: #999999;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+/***************************
+ * 列表样式
+ ***************************/
+.vk-material .vk-list {
+    display: block;
+    width: 100%;
+    padding-top: 0px !important;
+    background-color: #fff;
+}
+
+/***************************
+ * 列表样式-目录
+ ***************************/
+.vk-material .vk-list .folder {
+    padding-right: 20px;
+    padding-left: 15px;
+}
+.vk-material .vk-list .folder > ul,
+.vk-material .vk-list .material > ul {
+    width: auto;
+    margin-right: -25px;
+    margin-bottom: 0px;
+    overflow-x: hidden;
+}
+
+.vk-material .vk-list .folder > ul > li {
+    float: left;
+    margin-bottom: 25px;
+}
+
+.vk-material .vk-list .folder > ul > li > a {
+    display: inline-block;
+    width: 88px;
+    height: 100%;
+    padding: 5px 0px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.vk-material .vk-list .folder > ul > li > a:hover {
+    background-color: #f9f9f9;
+}
+
+.vk-material .vk-list .ifolder {
+    display: inline-block;
+    width: 100%;
+    height: 32px;
+    background-image: url('../imgs/folder.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 40px 32px; 
+}
+
+.vk-material .vk-list .ifolder.upper-level{
+    background-image: url('../imgs/upper-level.png');
+}
+
+.vk-material .vk-list .ifolder.folder-share{
+    background-image: url('../imgs/share_folder_icon.png');
+}
+
+.vk-material .vk-list .ifolder.folder-system{
+    background-image: url('../imgs/system_folder_icon.png');
+}
+
+.vk-material .vk-list .folder-name {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
+.vk-material .vk-list .list-panel 
+.list-header .icheck {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    margin-top: 0px;
+}
+
+/***************************
+ * 列表样式-素材
+ ***************************/
+.vk-material .vk-list .list-panel {
+    width: 222px;
+    margin-right: 25px;
+    margin-bottom: 20px;
+}
+
+.vk-material .vk-list 
+.list-panel .list-header {
+    height: 125px;
+}
+
+.vk-material .vk-list 
+.list-panel .list-header .copy-video_id {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: none;
+}
+.vk-material .vk-list 
+.list-panel .list-header:hover .copy-video_id {
+    display: block;
+}
+
+.vk-material .vk-list 
+.list-panel .list-header .status {
+    bottom: 2px;
+    left: 2px;
+}
+
+.vk-material .vk-list 
+.list-panel .list-header .duration {
+    bottom: 2px;
+    right: 2px;
+}
+
+.vk-material .vk-list .list-panel .list-body {
+    padding: 9px 10px;
+    border-bottom: none;
+}
+
+.vk-material .vk-list .list-panel .tuip {
+    margin-top: 0px;
+}
+
+.vk-material .vk-list 
+.list-panel .list-body .title {
+    text-align: center;
+}
+
+/***************************
+ * 列表样式-搜索结果
+ ***************************/
+.vk-material .vk-table > thead > tr > th,
+.vk-material .vk-table > tbody > tr > td {
+    border-right: none;
+    border-left: none;
+}
+
+/***************************
+ * 表单样式-视频
+ ***************************/
+.video-form .nav li a:hover, 
+.video-form .nav li a:focus {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.video-form .nav-tabs > li.active > a, 
+.video-form .nav-tabs > li.active > a:hover, 
+.video-form .nav-tabs > li.active > a:focus {
+    color: #2aabb6 !important;
+}
+
+/***************************
+ * 表单样式-水印
+ ***************************/
+.video-form .video-watermark,
+.video-import .video-watermark {
+    position: relative;
+    display: inline-block;
+    width: 92px;
+    height: 70px;
+    margin-right: 10px;
+    font-size: 0px;
+    line-height: 70px;
+    text-align: center;
+    border: 1px solid #e4e4e4;
+}
+.video-form .video-watermark > input[type="checkbox"],
+.video-import .video-watermark > input[type="checkbox"] {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    margin-top: 0px;
+}
+.video-form .loading-box,
+.video-import .loading-box {
+    text-align: left;
+}
+
+/***************************
+ * 目录样式-用户目录
+ ***************************/
+.user-category-index .vk-panel .pointer{
+    cursor: pointer;
+}
+
+.user-category-index .summary {
+    padding-left: 20px;
+}
+
+.user-category-move .top-level{
+    display: inline-block;
+    width: 100%;
+    height: 48px;
+    padding: 0px 25px;
+    color: #666;
+    line-height: 48px;
+    border-bottom: 1px solid #e4e4e4;
+    
+}
+
+.user-category-move .top-level > a {
+    display: inline-block;
+    width: 100%;
+    text-decoration: none;
+}
+
+.user-category-move .top-level:hover {
+    background-color: #f2f2f2;
+}
+
+/***************************
+ * 批量导入样式-视频导入
+ ***************************/
+.video-import .select2-container--krajee 
+.select2-selection--single {
+    height: 80px;
+}
+
+.video-import .select2-container 
+.select2-selection--single .select2-selection__rendered {
+    white-space: normal;
+}
+
+.video-import .select2-container--krajee 
+.select2-selection--single .select2-selection__arrow{
+    height: 78px;
+    border-left: none;
+}
+
+.video-import .vk-table > tbody > tr > td {
+    position: relative;
+}
+
+.video-import .vk-table .bgerror {
+    background-color: #ffecec;
+}
+
+.video-import .warnicon {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    z-index: 10;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.video-import .warnicon.has-success {
+    background-image: url('../imgs/has-success.png');
+}
+
+.video-import .warnicon.has-error {
+    background-image: url('../imgs/has-error.png');
+}
+
+/*******************************************************************************
+ * 我的老师
+ *******************************************************************************/
+.teacher-index .vk-list {
+    margin-top: 30px;
+    margin-right: -66px;
+}
+
+.teacher-index .vk-list .list-panel {
+    width: 200px;
+    height: 203px;
+    margin-right: 66px;
+    text-align: center;
+}
+
+.teacher-index .vk-list .list-body {
+    padding-bottom: 0px !important;
+    margin-top: 15px;
+    font-size: 16px;
+    color: #666;
+    text-align: center;
+    border: none !important;
+}
+
+.teacher-index .vk-list .list-body .tuip {
+    width: auto;
+    margin: 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+/***************************
+ * 老师表单
+ ***************************/
+.teacher-form .result-show {
+    float: left;
+    width: 245px;
+    padding: 3px;
+    color: #ff3300;
+}
+
+/***************************
+ * 老师详情
+ ***************************/
+.teacher-view.main .frame .grid-view .pagination {
+    padding-left: 20px;
+    margin: 15px 0px 20px;
+}
+
+/***************************
+ * 公共部分
+ ***************************/
+.teacher-index .vk-list .list-panel .avatars,
+.teacher-view .avatars {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    padding: 2px;
+    margin-top: 15px;
+    background-color: #f2f2f2;
+}
+
+.teacher-index .vk-list .list-panel .avatars > i,
+.teacher-view .avatars > i {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    font-size: 30px;
+    color: #ffcc01;
+}
+
+/*******************************************************************************
+ * 板书工具打开中提示
+ *******************************************************************************/
+.tooltip-opening-box{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 50%;
+    top: 230px;
+    left: 0px;
+    text-align: center;
+}
+
+.tooltip-opening-box .content-box{
+    display: inline-block;
+    background: #f9f9f9;
+    
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+
+.tooltip-opening-box .content-box p{
+    padding: 20px;
+    margin: 0px;
+}
