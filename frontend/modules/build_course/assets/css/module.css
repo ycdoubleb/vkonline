@@ -521,6 +521,7 @@
 }
 
 .vk-material .vk-list .folder > ul > li {
+    max-height: 73px;
     float: left;
     margin-bottom: 25px;
 }

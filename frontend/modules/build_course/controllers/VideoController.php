@@ -241,7 +241,7 @@ class VideoController extends Controller
         if (Yii::$app->request->isPost) {
             $is_success = ActionUtils::getInstance()->deleteVideo($model);
             if($is_success){
-                return $this->redirect(['index']);
+                return $this->redirect(['index', 'user_cat_id' => $model->user_cat_id == 0 ? null : $model->user_cat_id]);
             }else{
                 Yii::$app->getSession()->setFlash('error','操作失败，该视频在其它地方被引用了。');
                 return $this->redirect(['view', 'id' => $model->id]);
