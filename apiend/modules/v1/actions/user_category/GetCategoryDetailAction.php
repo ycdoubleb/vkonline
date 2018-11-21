@@ -20,8 +20,8 @@ use Yii;
 class GetCategoryDetailAction extends BaseActioin {
 
     public function run() {
-        
-        $user_cat_id = Yii::$app->request->getQueryParam('user_cat_id', 0);
+
+        $user_cat_id = Yii::$app->request->getQueryParam('user_cat_id', '0');
         $customer_id = Yii::$app->request->getQueryParam('customer_id', null);
         /* @var $user User */
         $user = Yii::$app->user->identity;
@@ -33,12 +33,15 @@ class GetCategoryDetailAction extends BaseActioin {
         if (count($user_brands) > 1 && $customer_id == null) {
             return new Response(Response::CODE_COMMON_MISS_PARAM, '用户关联多个品牌，获取目录时 customer_id 参数不能为空');
         }
-
+        /* 目录为空时返回根目录 */
+        if($user_cat_id == ''){
+            $user_cat_id == 0;
+        }
+        /* 用户只关联一个品牌自己下 */
         if ($customer_id == null) {
-            /* 用户只关联一个品牌自己下 */
             $customer_id = $user->customer_id;
         }
-
+        
         /* @var $category UserCategory */
         $category = UserCategory::getCatById($user_cat_id);
 
@@ -58,7 +61,7 @@ class GetCategoryDetailAction extends BaseActioin {
             /* 先获取子级目录，再格式目录数据 */
             $children = [];
 
-            foreach (UserCategory::getCatChildren($user_cat_id) as $cat) {
+            foreach (UserCategory::getUserCatChildren($user_cat_id, $user->id, $customer_id) as $cat) {
                 $children[] = ['id' => $cat['id'], 'name' => $cat['name'], 'type' => $cat['type']];
             }
 
@@ -77,10 +80,10 @@ class GetCategoryDetailAction extends BaseActioin {
      * 
      */
     private function formatCategory($category) {
-        
+
         $category_arr = $category->toArray(['id', 'name', 'type', 'level', 'path']);
-        $category_arr['path'] = $category->getParents(['id','name'],true);
-        
+        $category_arr['path'] = $category->getParents(['id', 'name'], true);
+
         return $category_arr;
     }
 
