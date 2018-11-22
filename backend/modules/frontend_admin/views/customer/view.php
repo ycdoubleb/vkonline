@@ -91,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     [
                         'attribute' => 'created_by',
                         'format' => 'raw',
-                        'value' => $model->userName->nickname,
+                        'value' => empty($model->created_by) ? null : $model->userName->nickname,
                     ],
                     [
                         'attribute' => 'created_at',

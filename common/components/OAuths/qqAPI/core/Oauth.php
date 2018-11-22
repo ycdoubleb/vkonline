@@ -33,7 +33,7 @@ class Oauth{
 
     public function qq_login(){
         $appid = $this->recorder->readInc("appid");
-        $callback = $this->recorder->readInc("callback");
+        $callback = \Yii::$app->request->hostInfo . $this->recorder->readInc("callback");
         $scope = $this->recorder->readInc("scope");
         
         //-------生成唯一随机串防CSRF攻击
@@ -68,7 +68,7 @@ class Oauth{
         $keysArr = array(
             "grant_type" => "authorization_code",
             "client_id" => $this->recorder->readInc("appid"),
-            "redirect_uri" => urlencode($this->recorder->readInc("callback")),
+            "redirect_uri" => urlencode(\Yii::$app->request->hostInfo . $this->recorder->readInc("callback")),
             "client_secret" => $this->recorder->readInc("appkey"),
             "code" => $_GET['code']
         );

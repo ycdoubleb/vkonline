@@ -103,7 +103,7 @@ $this->title = Yii::t('app', '{My}{Image}', [
                                 break;
                         }
                         echo '<li>';
-                            echo Html::a($iconFolder . '<p class="folder-name single-clamp">'. $category['name'] .'</p>',
+                            echo Html::a($iconFolder . '<p class="folder-name multi-line-clamp">'. $category['name'] .'</p>',
                                 array_merge(['index'], array_merge($filters, ['user_cat_id' => $category['id']])),
                             ['title' => $category['name'],]);
                         echo '</li>';

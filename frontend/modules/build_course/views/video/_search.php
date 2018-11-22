@@ -166,13 +166,14 @@ $this->registerJs($format, View::POS_HEAD);
         <!--按钮组-->
         <div class="btngroup material-operation">
             <?php
-                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id', null)], ['class' => 'btn btn-success btn-flat']);
+                $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);
+                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => $user_cat_id], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', 'Arrange'), 'javascript:;', [
                     'id' => 'arrange', 'class' => 'btn btn-success btn-flat',
                 ]);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
+                ]), ['/build_course/video-import', 'user_cat_id' => $user_cat_id], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
             ?>
         </div>
         

@@ -218,7 +218,7 @@ class ImageController extends Controller
         if (Yii::$app->request->isPost) {
             $is_success = ActionUtils::getInstance()->deleteImage($model);
             if($is_success){
-                return $this->redirect(['index']);
+               return $this->redirect(['index', 'user_cat_id' => $model->user_cat_id == 0 ? null : $model->user_cat_id]);
             }
         }
     }
