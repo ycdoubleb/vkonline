@@ -8,7 +8,7 @@ use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
-use common\models\vk\VideoFile;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -49,10 +49,9 @@ use yii\web\UploadedFile;
  * @property Customer $customer 获取客户
  * @property User $createdBy 获取创建者
  * @property Teacher $teacher 获取老师
- * @property VideoFile $videoFile     获取视频与实体文件关联表
+ * @property Uploadfile $file   获取上传文件
  * @property TagRef[] $tagRefs 获取标签
  * @property Knowledge[] $knowledges    获取所有知识点
- * @property VideoFile[] $videoFiles     获取所有视频与实体文件关联表
  */
 class Video extends ActiveRecord {
 
@@ -151,7 +150,6 @@ class Video extends ActiveRecord {
      */
     public function rules() {
         return [
-            [['file_id'], 'required',],
             [['user_cat_id'], 'checkUserCategoryType'],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
@@ -165,7 +163,7 @@ class Video extends ActiveRecord {
             [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
             [['des'], 'string'],
-            [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'teacher_id', 'customer_id', 'file_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             [['img'], 'string', 'max' => 255],
             [['id'], 'unique'],
@@ -289,9 +287,9 @@ class Video extends ActiveRecord {
     /**
      * @return ActiveQuery
      */
-    public function getVideoFile() {
-        return $this->hasOne(VideoFile::className(), ['video_id' => 'id'])
-                        ->where(['is_source' => 1, 'is_del' => 0]);
+    public function getFile()
+    {
+        return $this->hasOne(Uploadfile::className(), ['id' => 'file_id']);
     }
 
     /**
@@ -307,13 +305,6 @@ class Video extends ActiveRecord {
      */
     public function getKnowledges() {
         return $this->hasMany(Knowledge::className(), ['video_id' => 'id']);
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getVideoFiles() {
-        return $this->hasMany(VideoFile::className(), ['video_id' => 'id']);
     }
 
     /**

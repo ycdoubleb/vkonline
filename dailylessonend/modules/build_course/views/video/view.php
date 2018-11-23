@@ -181,8 +181,8 @@ foreach ($watermarksFiles as $watermark) {
                 [
                     'label' => Yii::t('app', 'Preview'),
                     'format' => 'raw',
-                    'value' => !empty($model->videoFile) ? 
-                        '<video src="' . Aliyun::absolutePath($model->videoFile->uploadfile->oss_key) . '" class="vk-video" controls poster="' . $model->img . '"></video>' : null,
+                    'value' => !empty($model->file_id) ? 
+                        '<video src="' . Aliyun::absolutePath($model->file->oss_key) . '" class="vk-video" controls poster="' . $model->img . '"></video>' : null,
                 ],
             ],
         ]) ?>

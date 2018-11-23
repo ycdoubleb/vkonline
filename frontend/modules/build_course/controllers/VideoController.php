@@ -168,7 +168,7 @@ class VideoController extends Controller
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             if($is_success){
@@ -213,7 +213,7 @@ class VideoController extends Controller
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),    //已存在的视频文件
             'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
