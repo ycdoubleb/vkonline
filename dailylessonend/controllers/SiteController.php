@@ -13,6 +13,7 @@ use common\models\vk\Video;
 use common\models\vk\VisitLog;
 use common\utils\DateUtil;
 use dailylessonend\models\ContactForm;
+use dailylessonend\models\DailyLessonUser;
 use dailylessonend\models\PasswordResetRequestForm;
 use dailylessonend\models\ResetPasswordForm;
 use Detection\MobileDetect;
@@ -109,6 +110,7 @@ class SiteController extends Controller
         $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
 
         $model = new LoginForm();
+        $model->userClass = DailyLessonUser::class;
         $isPass = !empty($post) ? array_key_exists('username', $post['LoginForm']) : true;  //是否为密码登录true
         
         if($isPass){

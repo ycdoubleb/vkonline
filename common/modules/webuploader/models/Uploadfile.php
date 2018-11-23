@@ -150,14 +150,14 @@ class Uploadfile extends ActiveRecord {
             } else if (!file_exists($this->path)) {
                 return ['success' => false, 'msg' => '找不到文件！'];
             }
-
+            //生成文件名，当oss_key不为空时，将使用oss_key作为文件名
+            $filename = "brand/{$user->customer_id}/{$user->id}/". pathinfo($this->path,PATHINFO_BASENAME);
             //设置文件名
-            $object_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
-            $thumb_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}_thumb.jpg";
+            $object_key = $this->oss_key == '' ? $filename : $this->oss_key;
         } else {
             $object_key = $key;
-            $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME) . '_thumb.jpg';
         }
+        $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME) . '_thumb.jpg';
 
         try {
             //上传文件

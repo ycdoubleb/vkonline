@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace common\modules\webuploader\actions;
 
 use common\components\getid3\MediaInfo;
@@ -16,6 +10,7 @@ use common\utils\FfmpegUtil;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
 use yii\base\Action;
+use yii\helpers\ArrayHelper;
 use yii\imagine\Image;
 use yii\web\HttpException;
 
@@ -32,28 +27,31 @@ use yii\web\HttpException;
 class MergeChunksAction extends Action {
 
     public function run() {
+        $params = $_REQUEST;
         //应用
-        $app_id = isset($_REQUEST["app_id"]) ? $_REQUEST["app_id"] : '';
+        $app_id = isset($params["app_id"]) ? $params["app_id"] : '';
         //应用web路径，默认会放本应用的web下，通过设置root_path可改变目标路径
-        $root_path = isset($_REQUEST["root_path"]) ? $_REQUEST["root_path"] . '/' : '';
-        $dir_path = isset($_REQUEST["dir_path"]) ? '/' . $_REQUEST["dir_path"] : '';
-        $targetDir = $root_path . 'upload/webuploader/upload_tmp';
-        $uploadDir = $root_path . 'upload/webuploader/upload' . $dir_path;
+        $root_path = isset($params["root_path"]) ? $params["root_path"] . '/' : '';                             // 根目录
+        $dir_path = isset($params["dir_path"]) ? '/' . $params["dir_path"] : '';                                // 文件在要存放的目录
+        $targetDir = $root_path . 'upload/webuploader/upload_tmp';                                              // 临时文件夹
+        $uploadDir = $root_path . 'upload/webuploader/upload' . $dir_path;                                      // 文件在根目录下要存放的目录
+        $name = ArrayHelper::getValue($params, 'name', 'no_name.temp');                                         // 文件名
+        $customer_id = ArrayHelper::getValue($params, 'customer_id', Yii::$app->user->identity->customer_id);   // 的属品牌
+        //查询将要被替换的文件
+        $replace_id = ArrayHelper::getValue($params, 'replace_id', '');                                         // 被替换文件id
+        $replace_file = Uploadfile::findOne(['id' => $replace_id]);                                             
+
         // Create target dir
         $this->mkdir($targetDir);
         $this->mkdir($uploadDir);
-        // Get a file name
-        if (isset($_REQUEST["name"])) {
-            $fileName = $_REQUEST["name"];
-        }
 
         // Chunking might be enabled
         //文件md5
-        $fileMd5 = isset($_REQUEST["fileMd5"]) ? $_REQUEST["fileMd5"] : '';
+        $fileMd5 = isset($params["fileMd5"]) ? $params["fileMd5"] : '';
         //文件大小
-        $fileSize = isset($_REQUEST["size"]) ? (integer) $_REQUEST["size"] : 0;
+        $fileSize = isset($params["size"]) ? (integer) $params["size"] : 0;
         //文件路径
-        $uploadPath = $uploadDir . '/' . $fileMd5 . strrchr($fileName, '.');
+        $uploadPath = $uploadDir . '/' . $fileMd5 . strrchr($name, '.');
 
         if ($fileMd5 == '') {
             return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'fileMd5']);
@@ -98,8 +96,8 @@ class MergeChunksAction extends Action {
                 $thumbPath = '';
                 $duration = 0;
                 $ext = strtolower(pathinfo($uploadPath, PATHINFO_EXTENSION));
-                
-                switch ($ext){
+
+                switch ($ext) {
                     case 'mp3':
                         /* mp3文件需要获取时长 */
                         $info = MediaInfo::getMediaInfo($uploadPath);
@@ -113,9 +111,8 @@ class MergeChunksAction extends Action {
                         /* 图片截图 */
                         $thumbPath = $this->createThumb($uploadPath);
                         break;
-                        
                 }
-                
+
                 /**
                  * 记录视频 width,height,duration,level,bitrate
                  */
@@ -124,21 +121,22 @@ class MergeChunksAction extends Action {
                  * 写入数据库
                  */
                 $dbFile = Uploadfile::findOne(['id' => $fileMd5]);
-                if($dbFile == null){
+                if ($dbFile == null) {
                     $dbFile = new Uploadfile(['id' => $fileMd5]);
                 }
-                $dbFile->customer_id = Yii::$app->user->identity->customer_id;
-                $dbFile->name = $fileName;
+                $dbFile->customer_id = $customer_id;
+                $dbFile->name = $name;
                 $dbFile->path = $uploadPath;
                 $dbFile->del_mark = 0;          //重置删除标志
-                $dbFile->is_fixed = isset($_REQUEST['is_fixed']) ? $_REQUEST['is_fixed'] : 1;          //设置永久标志
+                $dbFile->is_fixed = isset($params['is_fixed']) ? $params['is_fixed'] : 1;          //设置永久标志
                 $dbFile->created_by = Yii::$app->user->id;
                 $dbFile->thumb_path = $thumbPath;
                 $dbFile->duration = $duration;
-                $dbFile->size = $fileSize;
+                $dbFile->size = $fileSize == 0 ? filesize($uploadPath) : $fileSize;
                 $dbFile->app_id = $app_id;
                 $dbFile->is_del = 0;
                 $dbFile->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_NO;
+                $dbFile->oss_key = $replace_file == null ? "" : $replace_file->oss_key;
                 if ($dbFile->save()) {
                     //删除临时文件
                     foreach ($fileChunks as $fileChunk) {
@@ -147,12 +145,12 @@ class MergeChunksAction extends Action {
                     //删除数据库分片数据记录
                     Yii::$app->db->createCommand()->delete(UploadfileChunk::tableName(), ['file_id' => $fileMd5])->execute();
                     //上传到OSS
-                    
+
                     $result = $dbFile->uploadOSS();
-                    if(!$result['success']){
+                    if (!$result['success']) {
                         return new UploadResponse(UploadResponse::CODE_UPLOAD_OSS_FAIL, null, $result['msg']);
                     }
-                    
+
                     // Return Success JSON-RPC response
                     return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $dbFile->toArray());
                 } else {

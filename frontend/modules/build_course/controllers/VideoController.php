@@ -253,27 +253,28 @@ class VideoController extends Controller
      * 转码 现有的 Video。
      * 如果转码成功，浏览器将被重定向到“查看”页面。
      * @param string $id
+     * @param bool $force 强制转码
      * @return mixed
      */
-    public function actionTranscoding($id)
+    public function actionTranscoding($id ,$force = false)
     {
         $model = $this->findModel($id);
-        
-        if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
-            if($model->is_del){
+
+        if ($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) {
+            if ($model->is_del) {
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
-            if($model->mts_status == Video::MTS_STATUS_YES){
+            if (!$force && $model->mts_status == Video::MTS_STATUS_YES) {
                 throw new NotFoundHttpException(Yii::t('app', '该视频已转码，请不要重复转码。'));
             }
-            if($model->mts_status == Video::MTS_STATUS_DOING){
+            if (!$force && $model->mts_status == Video::MTS_STATUS_DOING) {
                 throw new NotFoundHttpException(Yii::t('app', '该视频正在转码中。'));
             }
-        }else{
+        } else {
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-        
-        if (Yii::$app->request->isPost) {
+
+        if (Yii::$app->request->isPost || $force) {
             ActionUtils::getInstance()->transcodingVideo($model);
             return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
         }
