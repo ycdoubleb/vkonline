@@ -23,6 +23,7 @@ use yii\web\UploadedFile;
  * @property string $teacher_id 老师ID
  * @property string $customer_id 所属客户ID
  * @property string $user_cat_id 用户目录ID
+ * @property string $file_id     文件ID
  * @property string $name 视频名称
  * @property string $duration 时长
  * @property int $is_link 是否为外链：0否 1是
@@ -138,9 +139,9 @@ class Video extends ActiveRecord {
     public function scenarios() {
         return [
             self::SCENARIO_TOOL_UPLOAD =>
-            ['id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
+            ['id','file_id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
             self::SCENARIO_DEFAULT =>
-            ['id', 'teacher_id', 'customer_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+            ['id', 'teacher_id', 'customer_id','file_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'des', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
         ];
     }
@@ -150,6 +151,7 @@ class Video extends ActiveRecord {
      */
     public function rules() {
         return [
+            [['file_id'], 'required',],
             [['user_cat_id'], 'checkUserCategoryType'],
             [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
                 'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),

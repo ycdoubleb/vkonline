@@ -20,6 +20,8 @@ use yii\web\UploadedFile;
  * @property string $id
  * @property string $name           名称
  * @property string $short_name     简称
+ * @property integer $level         级别： 1 个人工作室（1-10人），2 小型企业（11~50人），3 大企业（51~500人），4 集团（500人以上）
+ * @property string $company        公司名
  * @property string $domain         域名，不带http
  * @property string $logo           logo
  * @property int $status            状态：0停用 1试用 10 正常
@@ -51,9 +53,29 @@ class Customer extends ActiveRecord
     //正常的客户
     const STATUS_ACTIVE = 10;
     
+    /* 个人工作室（1-10人）*/
+    const LEVEL_1 = 1;
+    /* 小型企业（11~50人） */
+    const LEVEL_2 = 2;
+    /* 大企业（51~500人） */
+    const LEVEL_3 = 3;
+    /* 集团（500人以上） */
+    const LEVEL_4 = 4;
+    
     public static $statusUser = [
         self::STATUS_STOP => '停用',
         self::STATUS_ACTIVE => '正常',
+    ];
+    
+    /**
+     * 品牌级别
+     * @var type 
+     */
+    public static $levelKey = [
+        self::LEVEL_1 => '个人工作室（1-10人）',
+        self::LEVEL_2 => '小型企业（11~50人）',
+        self::LEVEL_3 => '大企业（51~500人）',
+        self::LEVEL_4 => '集团（500人以上）',
     ];
 
         /**
@@ -81,11 +103,11 @@ class Customer extends ActiveRecord
     {
         return [
 //            [['id'], 'required'],
-            [['expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon',
+            [['level','expire_time', 'renew_time', 'good_id', 'province', 'city', 'district', 'twon',
                'status', 'created_at', 'updated_at', 'is_official', 'sort_order'], 'integer'],
             [['location'], 'string'],
             [['id', 'created_by'], 'string', 'max' => 32],
-            [['name', 'domain', 'logo', 'des', 'address'], 'string', 'max' => 255],
+            [['name','company', 'domain', 'logo', 'des', 'address'], 'string', 'max' => 255],
             [['short_name'], 'string', 'max' => 20],
 //            [['status'], 'string', 'max' => 1],
             [['invite_code'], 'string', 'max' => 6],

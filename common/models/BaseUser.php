@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\components\aliyuncs\Aliyun;
+use Exception;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -227,7 +228,11 @@ class BaseUser extends ActiveRecord implements IdentityInterface{
      * @return bool if password provided is valid for current user
      */
     public function validatePassword($password) {
-        return Yii::$app->security->validatePassword($password, $this->password_hash);
+        try{
+            return Yii::$app->security->validatePassword($password, $this->password_hash);
+        } catch (Exception $ex) {
+            return false;
+        }
     }
 
     /**
