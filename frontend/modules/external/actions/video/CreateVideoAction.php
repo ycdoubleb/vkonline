@@ -11,12 +11,10 @@ namespace frontend\modules\external\actions\video;
 use common\models\User;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
-use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadResponse;
 use Yii;
 use yii\base\Action;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -36,18 +34,9 @@ class CreateVideoAction extends Action {
 
         $file = Uploadfile::findOne(['id' => $file_id]);
         /* 查询是否已经存在 */
-        $video = (new Query())
-                        ->select('Video.*')
-                        ->from(['VideoFile' => VideoFile::tableName()])
-                        ->leftJoin(['Video' => Video::tableName()], 'Video.id = VideoFile.video_id')
-                        ->where([
-                            'Video.created_by' => $user->id,
-                            'Video.is_del' => 0,
-                            'VideoFile.file_id' => $file_id,
-                            'VideoFile.is_del' => 0,
-                        ])->one();
+        $video = Video::find()->where(['file_id' => $file_id, 'is_del' => 0])->asArray()->one();
         if ($video) {
-            $video['videos'] = [$file];
+            $video['videos'] = [$file->toArray()];
             return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $video);
         } else {
             /* 不存即创建 */
@@ -56,6 +45,7 @@ class CreateVideoAction extends Action {
             //创建 VIDEO 资源
             $video = new Video([
                 'customer_id' => $user->customer_id,
+                'file_id' => $file_id,
                 'name' => $file->name,
                 'duration' => $file->duration,
                 'level' => Video::PUBLIC_LEVEL,
@@ -67,21 +57,10 @@ class CreateVideoAction extends Action {
             ]);
             $video->setScenario(Video::SCENARIO_TOOL_UPLOAD);
             if ($video->save()) {
-                /* 关联Video与实体文件file */
-                $video_file = new VideoFile([
-                    'video_id' => $video->id,
-                    'file_id' => $file->id,
-                    'is_source' => 1,
-                ]);
-                if ($video_file->save()) {
-                    $tran->commit();
-                    $video_arr = $video->toArray();
-                    $video_arr['videos'] = [$file];
-                    return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $video_arr);
-                } else {
-                    $tran->rollBack();
-                    return new UploadResponse(UploadResponse::CODE_FILE_SAVE_FAIL, null, $video_file->getErrorSummary(true));
-                }
+                $tran->commit();
+                $video_arr = $video->toArray();
+                $video_arr['videos'] = [$file->toArray()];
+                return new UploadResponse(UploadResponse::CODE_COMMON_OK, null, $video_arr);
             } else {
                 $tran->rollBack();
                 return new UploadResponse(UploadResponse::CODE_FILE_SAVE_FAIL, null, $video->getErrorSummary(true));
