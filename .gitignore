@@ -40,5 +40,6 @@ phpunit.phar
 /backend/web/assets/
 /api/runtime/
 /api/web/assets/
+/api/web/upload/
 /dailylessonend/runtime/
 /dailylessonend/web/assets/

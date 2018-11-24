@@ -23,9 +23,7 @@ use common\models\vk\VideoFavorite;
 use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
-use common\utils\StringUtil;
 use Yii;
-use yii\data\ArrayDataProvider;
 use yii\db\Exception;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -298,8 +296,7 @@ class DefaultController extends Controller
         $videoQuery->leftJoin(['KnowledgeVideo' => KnowledgeVideo::tableName()], '(KnowledgeVideo.knowledge_id = Knowledge.id AND KnowledgeVideo.is_del = 0)');
         $videoQuery->leftJoin(['Video' => Video::tableName()], 'Video.id = KnowledgeVideo.video_id');
         $videoQuery->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
-        $videoQuery->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1)');
-        $videoQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id');
+        $videoQuery->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.file_id');
         $videoQuery->leftJoin(['Favorite' => VideoFavorite::tableName()],"(Favorite.video_id = Video.id AND Favorite.user_id = '$user_id')");
         $videoQuery->where(['Knowledge.id' => $id, 'Knowledge.is_del' => 0]);
         

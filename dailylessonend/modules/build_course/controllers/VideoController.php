@@ -14,10 +14,8 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
-use dailylessonend\modules\build_course\utils\ActionUtils;
-use Yii;
+use frontend\modules\video\utils\ActionUtils;
 use yii\data\ArrayDataProvider;
-use yii\db\Exception;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -213,7 +211,7 @@ class VideoController extends Controller
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),    //已存在的视频文件
             'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印

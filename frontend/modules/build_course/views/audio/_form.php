@@ -139,6 +139,7 @@ $js = <<<JS
      */
     window.uploader;
     require(['euploader'], function (euploader) {
+        var audioFiles = $audioFiles;
         //公共配置
         window.config = {
             swf: "$swfpath" + "/Uploader.swf",
@@ -172,6 +173,8 @@ $js = <<<JS
                 _csrf: "$csrfToken",
                 //指定文件上传到的应用
                 app_id: "$app_id",
+                //指定文件 替换id
+                replace_id: audioFiles.length > 0 ? audioFiles[0]['id'] : '',
                 //同时创建缩略图
                 makeThumb: 1
             }
@@ -180,7 +183,7 @@ $js = <<<JS
         //音频
         window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
         window.uploader.clearAll();
-        window.uploader.addCompleteFiles($audioFiles);
+        window.uploader.addCompleteFiles(audioFiles);
     });
     /**
     * 上传文件完成才可以提交

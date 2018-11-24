@@ -10,7 +10,6 @@ use common\models\vk\TagRef;
 use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
-use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use dailylessonend\modules\build_course\utils\VideoAliyunAction;
 use Exception;
@@ -114,6 +113,7 @@ class VideoImportController extends Controller{
             'customer_id'   => Yii::$app->user->identity->customer_id, 
             'mts_watermark_ids'   => ArrayHelper::getValue($post, 'mts_watermark_ids' , ''), 
             'user_cat_id'   => (integer)ArrayHelper::getValue($post, 'user_cat_id' , 0), 
+            'file_id'       =>  $file_id,
             'duration'      => $uploadfile->duration,
             'img'           => $uploadfile->thumb_path,
             'is_link'       => $uploadfile->is_link,
@@ -124,9 +124,7 @@ class VideoImportController extends Controller{
             $video->loadDefaultValues();
             if($video->load($post) && $video->validate()){
                 $trans = Yii::$app->db->beginTransaction();
-                //关联 Video 与 视频文件
-                $videoFile = new VideoFile(['video_id' => $video->id, 'is_source' => 1, 'file_id' => $file_id,]);
-                if($video->save() && $videoFile->save()){
+                if($video->save()){
                     //添加转码、截图
                     VideoAliyunAction::addVideoTranscode($video);
                     VideoAliyunAction::addVideoSnapshot($video);
@@ -142,7 +140,7 @@ class VideoImportController extends Controller{
                 }else{
                     return [
                         'success' => true,
-                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $videoFile->getErrorSummary(true)),
+                        'data' => new ApiResponse(ApiResponse::CODE_COMMON_SAVE_DB_FAIL, null, $video->getErrorSummary(true)),
                     ];
                 }
             }else{
@@ -254,18 +252,16 @@ class VideoImportController extends Controller{
      */
     private function checkFileHasUse($file_id){
         $result = (new Query())->select([
-                            'VideoFile.id as file_id',
+                            'Video.id as file_id',
                             'Video.id video_id', 'Video.name video_name', 'Video.created_at created_at',
                             'User.id user_id', 'User.nickname user_name',
                             'Uploadfile.name file_name',
                         ])
-                        ->from(['VideoFile' => VideoFile::tableName()])
-                        ->leftJoin(['Video' => Video::tableName()], 'Video.id = VideoFile.video_id')
+                        ->from(['Video' => Video::tableName()])
                         ->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by')
-                        ->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = VideoFile.file_id')
+                        ->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.file_id')
                         ->where([
-                            'VideoFile.file_id' => $file_id,
-                            'VideoFile.is_del' => 0,
+                            'Video.file_id' => $file_id,
                             'Video.is_del' => 0,
                         ])->one();
         return $result;

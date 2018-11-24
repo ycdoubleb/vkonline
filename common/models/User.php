@@ -37,7 +37,8 @@ use yii\web\IdentityInterface;
  * @property string $updated_at             更新时间
  * @property string $password write-only password
  * 
- * @property Customer $customer 客户
+ * @property Customer $customer             客户
+ * @property UserProfile $profile           用户配置属性
  */
 class User extends BaseUser implements IdentityInterface {
 
@@ -185,6 +186,13 @@ class User extends BaseUser implements IdentityInterface {
     public function getCustomer()
     {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
+    }
+    /**
+     * 获取用户配置
+     * @return ActiveQuery
+     */
+    public function getProfile(){
+        return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
     }
     
     public function beforeSave($insert) {
