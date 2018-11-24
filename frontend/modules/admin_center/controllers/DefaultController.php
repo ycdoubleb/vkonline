@@ -6,6 +6,7 @@ use common\models\User;
 use common\models\vk\Customer;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\searchs\CustomerSearch;
+use common\models\vk\VideoTranscode;
 use common\modules\webuploader\models\Uploadfile;
 use frontend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
@@ -371,18 +372,29 @@ class DefaultController extends Controller
     
     /**
      * 查询已使用的空间
-     * @param string $id   客户ID
+     * @param string $brand_id   客户ID
      * @return array
      */
-    public function getUsedSpace($id)
+    public function getUsedSpace($brand_id)
     {
-        $query = (new Query())->select(['SUM(Uploadfile.size) AS size'])
-            ->from(['Uploadfile' => Uploadfile::tableName()]);
+        // Uploadfile表里面的数据
+        $uploadfile = (new Query())->select(['SUM(Uploadfile.size) AS size'])
+            ->from(['Uploadfile' => Uploadfile::tableName()])
+            ->where([
+                'Uploadfile.is_del' => 0,
+                'Uploadfile.customer_id' => $brand_id
+            ])->one();
+        // 视频转码后的数据
+        $videotranscode = (new Query())->select(['SUM(VideoTranscode.size) AS size'])
+            ->from(['VideoTranscode' => VideoTranscode::tableName()])
+            ->where([
+                'VideoTranscode.is_del' => 0,
+                'VideoTranscode.customer_id' => $brand_id
+            ])->one();
         
-        $query->where(['Uploadfile.is_del' => 0]);
-        $query->andFilterWhere(['Uploadfile.customer_id' => Yii::$app->user->identity->customer_id]);
+        $usedSpace = $uploadfile['size'] + $videotranscode['size'];
         
-        return $query->one();
+        return $usedSpace;
     }
     
     /**

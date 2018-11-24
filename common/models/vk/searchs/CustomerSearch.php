@@ -6,14 +6,13 @@ use common\models\AdminUser;
 use common\models\Region;
 use common\models\User;
 use common\models\vk\Course;
-use common\models\vk\CourseAttachment;
 use common\models\vk\Customer;
 use common\models\vk\CustomerActLog;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\Good;
 use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
-use common\models\vk\VideoAttachment;
+use common\models\vk\VideoTranscode;
 use common\modules\webuploader\models\Uploadfile;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -298,37 +297,44 @@ class CustomerSearch extends Customer
      */
     public function findUsedSizeByCustomer()
     {
-        $users = $this->findCustomerUser()->all();      //查找客户下拥有的用户
-        $userIds = array_filter(ArrayHelper::getColumn($users, 'id'));
+        $brand_ids = (new Query())->select(['Customer.id'])
+            ->from(['Customer' => Customer::tableName()])->all();
+        $brandIds = array_filter(ArrayHelper::getColumn($brand_ids, 'id'));
+        // Uploadfile表里面的数据
+        $uploadfile = (new Query())
+                ->select(['Uploadfile.customer_id AS id', 'SUM(Uploadfile.size) AS customer_size'])
+                ->from(['Uploadfile' => Uploadfile::tableName()])
+                ->where([
+                    'Uploadfile.is_del' => 0,
+                    'Uploadfile.customer_id' => $brandIds, ])
+                ->groupBy(['Uploadfile.customer_id'])->all();
+        // 视频转码后的数据
+        $videotranscode = (new Query())
+                ->select(['VideoTranscode.customer_id AS id', 'SUM(VideoTranscode.size) AS customer_size'])
+                ->from(['VideoTranscode' => VideoTranscode::tableName()])
+                ->where([
+                    'VideoTranscode.is_del' => 0,
+                    'VideoTranscode.customer_id' => $brandIds, ])
+                ->groupBy(['VideoTranscode.customer_id'])->all();
+        $uploadfiles = ArrayHelper::index($uploadfile, 'id');
+        $videotranscodes = ArrayHelper::index($videotranscode, 'id');
+        $usedSpace = [];
+        
+        foreach ($uploadfiles as $id => $value) {
+            if(isset($videotranscodes[$id])){
+                $usedSpace[] = [
+                    'id' => $id,
+                    'customer_size' => $uploadfiles[$id]['customer_size'] + $videotranscodes[$id]['customer_size'],
+                ];
+            } else {
+                $usedSpace[] = [
+                    'id' => $id,
+                    'customer_size' => $uploadfiles[$id]['customer_size'],
+                ];
+            }
+        }
 
-        $query = (new Query())->select(['Customer.id', 'SUM(Uploadfile.size) AS customer_size'])
-            ->from(['Uploadfile' => Uploadfile::tableName()]);
-        
-        $query->leftJoin(['User' => User::tableName()],'Uploadfile.created_by = User.id');
-        $query->leftJoin(['Customer' => Customer::tableName()],'Customer.id = User.customer_id');
-        
-        $query->where(['Uploadfile.is_del' => 0]);
-        $query->where(['Uploadfile.created_by' => $userIds]);
-        
-        $query->groupBy(['Customer.id']);
-
-        return $query->all();
-    }
-    
-    /**
-     * 查找客户下拥有的用户
-     * @return Query
-     */
-    protected function findCustomerUser()
-    {
-        $query = (new Query())->select(['User.id'])
-            ->from(['Customer' => Customer::tableName()]);
-        
-        $query->leftJoin(['User' => User::tableName()], 'User.customer_id = Customer.id');
-        
-        $query->groupBy('User.id');
-        
-        return $query;
+        return $usedSpace;
     }
     
     /**
