@@ -85,7 +85,7 @@ class UserController extends GridViewChangeSelfController
         $model = $this->findModel($id);
         return $this->render('view', [
             'model' => $model,
-            'usedSpace' => $this->getUsedSpace($id),               //用户已经使用的空间
+//            'usedSpace' => $this->getUsedSpace($id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($id),     //已学课程数
             'courseFavorite' => $this->getCourseFavorite($id),     //关注的课程数
@@ -169,7 +169,7 @@ class UserController extends GridViewChangeSelfController
         $model->status = User::STATUS_STOP;
         $model->save(false,['status']);
         //绑定品牌(标记为删除)
-        UserBrand::userBingding($model->id, $model->customer_id, false);
+//        UserBrand::userBingding($model->id, $model->customer_id, false);
         
         return $this->redirect(['index']);
     }
@@ -363,4 +363,19 @@ class UserController extends GridViewChangeSelfController
         
         return false;
     }
+    
+//    public function actionChangeValue($id, $fieldName, $value) {
+//        $model = $this->findModel($id);
+//        var_dump($id, $fieldName, $value);exit;
+//        if($fieldName == 'status'){
+//            if($value == 10){
+//                UserBrand::userBingding($model->id, $model->customer_id, false);
+//            } else {
+//                UserBrand::userBingding($model->id, $model->customer_id, true);
+//            }
+//            
+//        } else {
+//            parent::actionChangeValue($id, $fieldName, $value);
+//        }
+//    }
 }

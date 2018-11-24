@@ -88,7 +88,7 @@ class UserController extends GridViewChangeSelfController
         return $this->render('view', [
             'model' => $model,
             
-            'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
+//            'usedSpace' => $this->getUsedSpace($user_id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($user_id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($user_id),     //已学课程数
             'courseFavorite' => $this->getCourseFavorite($user_id),     //关注的课程数
@@ -110,7 +110,9 @@ class UserController extends GridViewChangeSelfController
        
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //绑定品牌
-            UserBrand::userBingding($model->id, $model->customer_id, true);
+            if($model->customer_id != null && $model->customer_id != 0){
+                UserBrand::userBingding($model->id, $model->customer_id, true);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -135,7 +137,9 @@ class UserController extends GridViewChangeSelfController
         
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //绑定品牌
-            UserBrand::userBingding($model->id, $model->customer_id, true);
+            if($model->customer_id != null && $model->customer_id != 0){
+                UserBrand::userBingding($model->id, $model->customer_id, true);
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }else{
             $model->max_store = ($model->max_store / User::MBYTE);

@@ -107,6 +107,7 @@ class User extends BaseUser implements IdentityInterface {
             [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE]],
             [['username', 'nickname', 'phone'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
+            [['username'], 'checkUsername', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
             [['created_at', 'updated_at', 'is_official', 'sex', 'type'], 'integer'],
@@ -125,6 +126,23 @@ class User extends BaseUser implements IdentityInterface {
         ];
     }
     
+    /**
+     * 检查用户名是否为数字或字母及其组合
+     * @param string $attribute username
+     * @param string $params
+     * @return boolean
+     */
+    public function checkUsername($attribute, $params)
+    {
+        $regex = '/[\x7f-\xff]/';
+        if(preg_match($regex, $this->getAttribute($attribute))) {
+            $this->addError($attribute, "用户名不能包含中文！"); 
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * 检查用户的存储空间是否超过限制
      * @param bigint $attribute     max_store
@@ -173,9 +191,14 @@ class User extends BaseUser implements IdentityInterface {
         if (parent::beforeSave($insert)) {
             //设置是否属于官网账号/企业用户or散户
             if($this->customer_id != null){
-                $isOfficial = Customer::findOne(['id' => $this->customer_id]);
-                $this->is_official = $isOfficial->is_official;
-                $this->type = 2;        //企业用户
+                if($this->customer_id == 0){
+                    $this->is_official = 0;
+                    $this->type = $this->type == 1 ? 1 : 2;        //企业用户
+                } else {
+                    $isOfficial = Customer::findOne(['id' => $this->customer_id]);
+                    $this->is_official = $isOfficial->is_official;
+                    $this->type = 2;        //企业用户
+                }
             } else {
                 $this->type = 1;        //散户
                 $this->is_official = 0; //非官网用户
