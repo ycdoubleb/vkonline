@@ -14,7 +14,7 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
-use frontend\modules\video\utils\ActionUtils;
+use dailylessonend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
@@ -208,7 +208,7 @@ class VideoController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
-        
+                
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师

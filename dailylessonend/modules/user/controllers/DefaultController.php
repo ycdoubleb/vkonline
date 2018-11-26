@@ -71,16 +71,16 @@ class DefaultController extends Controller
         return $this->render('index', [
             'model' => $model,
             'userBrand' => User::getUserBrand($model->id),         //用户绑定的品牌
-            'usedSpace' => $this->getUsedSpace($model->id),               //用户已经使用的空间
+//            'usedSpace' => $this->getUsedSpace($model->id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($model->id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($model->id),     //已学课程数
             'courseFavorite' => $this->getCourseFavorite($model->id),     //关注的课程数
             'videoFavorite' => $this->getVideoFavorite($model->id),       //收藏的视频数
             'courseMessage' => $this->getCourseMessage($model->id),       //评论数
-            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
-            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
-            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
-            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
+//            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+//            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
+//            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
+//            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
         ]);
     }
     
@@ -234,6 +234,10 @@ class DefaultController extends Controller
                 $num = UserBrand::userBingding($user_id, $brand_id['id'], true);
             } 
             if($num > 0){
+                $model = $this->findModel($user_id);
+                $model->customer_id = $brand_id['id'];
+                $model->type = 2;
+                $model->save(false, ['customer_id', 'type']);
                 Yii::$app->getSession()->setFlash('success','操作成功！');
                 return ['code' => 200];
             } else {

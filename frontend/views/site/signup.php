@@ -41,18 +41,18 @@ TimerButtonAssets::register($this);
 	<!-- fieldsets 邀请码 -->
 	<fieldset>
             <h2 class="fs-title">邀请码</h2>
-            <h3 class="fs-subtitle">若无邀请码则进入下一步操作</h3>
+            <h3 class="fs-subtitle">请输入您的邀请码</h3>
             <?= $form->field($model, 'customer_id')->textInput(['value' => $code,
                 'placeholder' => '邀请码...'])->label('')?>
             <!--客户名或注释信息-->
             <div id="customer" class="name-info"><span></span></div>
             <input type="button" name="next" class="next action-button" value="下一步" />
             <div class="third" id="third1">
-                <span class="third-login">使用社交账号注册</span>
+                <!--<span class="third-login">使用社交账号注册</span>-->
                 <div class="third-content">
-                    <a href="javascrip:;" class="wechat"></a>
-                    <a href="<?= $weibo_url?>" class="weibo"></a>
-                    <a href="/callback/qq-callback/index" class="qq"></a>
+<!--                    <a href="javascrip:;" class="wechat"></a>
+                    <a href="<?php // echo $weibo_url?>" class="weibo"></a>
+                    <a href="/callback/qq-callback/index" class="qq"></a>-->
                 </div>
             </div>
 	</fieldset>
@@ -60,7 +60,7 @@ TimerButtonAssets::register($this);
 	<fieldset>
             <h2 class="fs-title">账号信息</h2>
             <h3 class="fs-subtitle">设置您的用户名和密码</h3>
-            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名（英文或数字组合）...'])
+            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名（不能包含中文）...'])
                 ->label('')?>
             <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6,'maxlength' => 20,
                 'placeholder' => '密码...'])->label('') ?>
@@ -112,10 +112,10 @@ TimerButtonAssets::register($this);
 
 $js = <<<JS
     //复制第三方登录按钮到每个步骤页面
-    var html = $('#third1').html();
-    $('#third2').append(html);
-    $('#third3').append(html);
-    $('#third4').append(html);
+//    var html = $('#third1').html();
+//    $('#third2').append(html);
+//    $('#third3').append(html);
+//    $('#third4').append(html);
         
     //判断输入框是否有默认值
     if($("#user-customer_id").val() != ""){

@@ -82,14 +82,14 @@ class UserSearch extends User
         //用户创建的视频数量
         $videos = $this->getUserVideoNodeNumber();
         //用户使用的空间大小
-        $userSize = $this->findUsedSizeByUser()->asArray()->all();
+//        $userSize = $this->findUsedSizeByUser()->asArray()->all();
         //添加字段and 关联查询
         self::$query->addSelect(['User.*', 'CustomerAdmin.level'])->with('customer');
         self::$query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.user_id = User.id');
         //以user_id为索引
         $users = ArrayHelper::index(self::$query->asArray()->all(), 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
-                ArrayHelper::index($videos, 'created_by'), ArrayHelper::index($userSize, 'created_by'));
+                ArrayHelper::index($videos, 'created_by'));
         //合并查询后的结果
         foreach ($users as $id => $item) {
             if(isset($results[$id])){
@@ -132,14 +132,14 @@ class UserSearch extends User
         //用户创建的视频数量
         $videos = $this->getUserVideoNodeNumber();
         //用户使用的空间大小
-        $userSize = $this->findUsedSizeByUser()->asArray()->all();
+//        $userSize = $this->findUsedSizeByUser()->asArray()->all();
         //添加字段and 关联查询
         $query->addSelect(['User.*', 'CustomerAdmin.level']);
         $query->leftJoin(['CustomerAdmin' => CustomerAdmin::tableName()], 'CustomerAdmin.user_id = UserBrand.user_id');
         //以user_id为索引
         $users = ArrayHelper::index($query->asArray()->all(), 'id');
         $results = ArrayHelper::merge(ArrayHelper::index($courses, 'created_by'), 
-                ArrayHelper::index($videos, 'created_by'), ArrayHelper::index($userSize, 'created_by'));
+                ArrayHelper::index($videos, 'created_by'));
         //合并查询后的结果
         foreach ($users as $id => $item) {
             if(isset($results[$id])){

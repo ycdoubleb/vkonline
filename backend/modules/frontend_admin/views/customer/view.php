@@ -140,15 +140,15 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'Use' => Yii::t('app', 'Use'),
                             ]),
                             'format' => 'raw',
-                            'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
-                                '<span style="color:#929292">（'. sprintf("%.2f", ($usedSpace['size'] / $model->good->data)*100).' %）</span>' : null,
+                            'value' => !empty($usedSpace) ? Yii::$app->formatter->asShortSize($usedSpace) . 
+                                '<span style="color:#929292">（'. sprintf("%.2f", ($usedSpace / $model->good->data)*100).' %）</span>' : null,
                         ],
                         [
                             'label' => Yii::t('app', 'Surplus'),
                             'format' => 'raw',
-                            'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace['size']) .
-                                '<span style="color:#929292">（' . sprintf("%.2f", ($model->good->data - $usedSpace['size']) / $model->good->data * 100) . ' % '.
-                                    (((100 - floor($usedSpace['size'] / $model->good->data *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
+                            'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace) .
+                                '<span style="color:#929292">（' . sprintf("%.2f", ($model->good->data - $usedSpace) / $model->good->data * 100) . ' % '.
+                                    (((100 - floor($usedSpace / $model->good->data *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
                                         '<span style="color:red"> 不足</span>') .'）</span>' : null,
                         ],
                     ],

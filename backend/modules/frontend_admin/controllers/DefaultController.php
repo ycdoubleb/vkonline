@@ -8,6 +8,7 @@ use common\models\vk\Course;
 use common\models\vk\Customer;
 use common\models\vk\PlayStatistics;
 use common\models\vk\Video;
+use common\models\vk\VideoTranscode;
 use common\modules\webuploader\models\Uploadfile;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -97,13 +98,20 @@ class DefaultController extends Controller
      */
     public function getUsedSpace()
     {
-        $usedSize = (new Query())
-                ->select(['SUM(size) AS size'])
-                ->from(['Uploadfile' => Uploadfile::tableName()])
-                ->where(['is_del' => 0])
-                ->one();
+        // Uploadfile表里面的数据
+        $uploadfile = (new Query())->select(['SUM(Uploadfile.size) AS size'])
+            ->from(['Uploadfile' => Uploadfile::tableName()])
+            ->where(['Uploadfile.is_del' => 0])
+            ->one();
+        // 视频转码后的数据
+        $videotranscode = (new Query())->select(['SUM(VideoTranscode.size) AS size'])
+            ->from(['VideoTranscode' => VideoTranscode::tableName()])
+            ->where(['VideoTranscode.is_del' => 0])
+            ->one();
         
-        return $usedSize;
+        $usedSpace = $uploadfile['size'] + $videotranscode['size'];
+        
+        return $usedSpace;
     }
     
     /**

@@ -65,22 +65,22 @@ ModuleAssets::register($this);
                         'value' => Html::img($model->avatar, ['class' => 'img-circle', 'width' => 128, 'height' => 128]),
                     ],
                     'email:email',
-                    [
-                        'label' => '绑定第三方账号',
-                        'attribute' => 'max_store',
-                        'format' => 'raw',
-                        'value' => function() use($wechatUser, $weiboUser, $weibo_url, $qqUser) {
-                            $bingdingUser = '';
-                            if($wechatUser == null){
-                                $bingdingUser = '<a href="javascrip:;" class="wechat" title="绑定微信号"></a>';
-                            } if ($weiboUser == null) {
-                                $bingdingUser .= '<a href="'. $weibo_url .'" class="weibo" title="绑定微博账号"></a>';
-                            } if ($qqUser == null) {
-                                $bingdingUser .= '<a href="/callback/qq-callback/index" class="qq" title="绑定QQ账号"></a>';
-                            }
-                            return $bingdingUser;
-                        }
-                    ],
+//                    [
+//                        'label' => '绑定第三方账号',
+//                        'attribute' => 'max_store',
+//                        'format' => 'raw',
+//                        'value' => function() use($wechatUser, $weiboUser, $weibo_url, $qqUser) {
+//                            $bingdingUser = '';
+//                            if($wechatUser == null){
+//                                $bingdingUser = '<a href="javascrip:;" class="wechat" title="绑定微信号"></a>';
+//                            } if ($weiboUser == null) {
+//                                $bingdingUser .= '<a href="'. $weibo_url .'" class="weibo" title="绑定微博账号"></a>';
+//                            } if ($qqUser == null) {
+//                                $bingdingUser .= '<a href="/callback/qq-callback/index" class="qq" title="绑定QQ账号"></a>';
+//                            }
+//                            return $bingdingUser;
+//                        }
+//                    ],
 //                    [
 //                        'attribute' => 'max_store',
 //                        'format' => 'raw',

@@ -64,15 +64,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     'value' => Html::img($model->avatar, ['class' => 'img-circle', 'width' => '128px', 'height' => '128px']),
                 ],
                 'email:email',
-                [
-                    'attribute' => 'max_store',
-                    'format' => 'raw',
-                    'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
-                        '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
-                            (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
-                                '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
-                    ,
-                ],
+//                [
+//                    'attribute' => 'max_store',
+//                    'format' => 'raw',
+//                    'value' => !empty($model->max_store) ? (Yii::$app->formatter->asShortSize($model->max_store) . 
+//                        '（<span style="color:'.(($model->max_store-$usedSpace['size'] > $usedSpace['size']) ? 'green' : 'red').'">已用'. 
+//                            (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）') :
+//                                '不限制（<span style="color:green">已用'. (!empty($usedSpace['size'])? Yii::$app->formatter->asShortSize($usedSpace['size']) : ' 0' ).'</span>）'
+//                    ,
+//                ],
                 'des:ntext',
             ],
         ]) ?>
