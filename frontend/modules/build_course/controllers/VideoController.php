@@ -209,7 +209,7 @@ class VideoController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
-        
+                
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师

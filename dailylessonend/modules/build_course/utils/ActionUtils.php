@@ -955,6 +955,24 @@ class ActionUtils
             $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
             $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
             
+            /* 如果旧的视频实体文件id不等于新的视频实体文件id，则执行 */
+            if($oldAttributes['file_id'] != $fileId){
+                //如果上传的视频文件已经被使用过, 则返回使用者的信息
+                $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+                if($userInfo['results']){
+                    throw new NotFoundHttpException(
+                        "{$userInfo['message']}\n\r"
+                        . "以下是该视频文件著作者的信息：\n\r"
+                        . "著作者：{$userInfo['data']['nickname']}\n\r"
+                        . "手机号：{$userInfo['data']['phone']}\n\r"
+                        . "视频id：{$userInfo['data']['video_id']}\n\r"
+                        . "视频名：{$userInfo['data']['video_name']}\n\r"
+                        . "文件名：{$userInfo['data']['file_name']}"
+                    );
+                }
+                $model->mts_status = Video::MTS_STATUS_NO;  //更改原来的转码状态为“未转码”
+            }
+            
             //查询实体文件
             $uploadFile = $this->findUploadfileModel($fileId);
             //需保存的Video属性
@@ -965,32 +983,10 @@ class ActionUtils
             $model->mts_watermark_ids = $watermarkIds;
             //保存video属性
             if($model->save()){
-                /* 如果旧的视频实体文件id不等于新的视频实体文件id，则执行 */
-                if($oldAttributes['file_id'] != $fileId){
-                    //如果上传的视频文件已经被使用过, 则返回使用者的信息
-                    $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-                    if($userInfo['results']){
-                        throw new NotFoundHttpException(
-                            "{$userInfo['message']}\n\r"
-                            . "以下是该视频文件著作者的信息：\n\r"
-                            . "著作者：{$userInfo['data']['nickname']}\n\r"
-                            . "手机号：{$userInfo['data']['phone']}\n\r"
-                            . "视频id：{$userInfo['data']['video_id']}\n\r"
-                            . "视频名：{$userInfo['data']['video_name']}\n\r"
-                            . "文件名：{$userInfo['data']['file_name']}"
-                        );
-                    }
-                    $model->mts_status = Video::MTS_STATUS_NO;  //更改原来的转码状态为“未转码”
-                    $videoFile->file_id = $fileId;
-                    /**
-                     * 转码条件：
-                     * 1、转码状态是保存成功
-                     * 2、提交的表单数据转码需求是自动转码
-                     */
-                    if($model->save(false, ['mts_status']) && $mts_need){
-                        VideoAliyunAction::addVideoTranscode($model->id);
-                        VideoAliyunAction::addVideoSnapshot($model->id);
-                    }
+                /* 转码条件：提交的表单数据转码需求是自动转码 */
+                if($mts_need){
+                    VideoAliyunAction::addVideoTranscode($model->id);
+                    VideoAliyunAction::addVideoSnapshot($model->id);
                 }
                 $this->saveObjectTags($model->id, $tagIds, 2);
                 //如果设置了新属性的name，则保存日志
