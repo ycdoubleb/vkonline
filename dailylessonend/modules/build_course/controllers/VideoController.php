@@ -15,6 +15,7 @@ use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
 use frontend\modules\video\utils\ActionUtils;
+use Yii;
 use yii\data\ArrayDataProvider;
 use yii\db\Query;
 use yii\filters\AccessControl;
