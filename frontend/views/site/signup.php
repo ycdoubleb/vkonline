@@ -41,7 +41,7 @@ TimerButtonAssets::register($this);
 	<!-- fieldsets 邀请码 -->
 	<fieldset>
             <h2 class="fs-title">邀请码</h2>
-            <h3 class="fs-subtitle">请输入您的验证码</h3>
+            <h3 class="fs-subtitle">请输入您的邀请码</h3>
             <?= $form->field($model, 'customer_id')->textInput(['value' => $code,
                 'placeholder' => '邀请码...'])->label('')?>
             <!--客户名或注释信息-->
