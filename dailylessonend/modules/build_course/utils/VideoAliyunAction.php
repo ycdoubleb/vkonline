@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\modules\build_course\utils;
+namespace dailylessonend\modules\build_course\utils;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\AliyunMtsService;

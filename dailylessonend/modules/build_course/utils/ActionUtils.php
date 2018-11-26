@@ -25,6 +25,7 @@ use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use dailylessonend\modules\build_course\utils\ActionUtils;
 use dailylessonend\modules\build_course\utils\VideoAliyunAction;
+use Yii;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\imagine\Image;
