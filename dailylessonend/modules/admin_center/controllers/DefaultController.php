@@ -6,6 +6,7 @@ use common\models\User;
 use common\models\vk\Customer;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\searchs\CustomerSearch;
+use common\models\vk\VideoTranscode;
 use common\modules\webuploader\models\Uploadfile;
 use dailylessonend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
