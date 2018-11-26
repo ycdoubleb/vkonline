@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user_category;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\Image;
@@ -20,11 +20,14 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class SearchImageAction extends BaseActioin{
+class SearchImageAction extends BaseAction{
     public function run(){
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         /* @var $user User */
         $user = Yii::$app->user->identity;
-        $post = Yii::$app->request->getQueryParams();
+        $post = $this->getSecretParams();
         
         $user_cat_id = ArrayHelper::getValue($post, 'user_cat_id', '0');        //目标目录
         $customer_id = ArrayHelper::getValue($post, 'customer_id', null);       //品牌ID
@@ -90,7 +93,7 @@ class SearchImageAction extends BaseActioin{
          *  2、共享目录下的文件必须同吕牌
          */
         $query->andWhere(['or',
-            ['UserCategory.type' => UserCategory::TYPE_PRIVATE, 'Image.created_by' => $user->id,],
+            ['UserCategory.type' => [UserCategory::TYPE_PRIVATE, UserCategory::TYPE_SYSTEM], 'Image.created_by' => $user->id,],
             ['UserCategory.type' => UserCategory::TYPE_SHARING,]]);
 
         //-----------------------

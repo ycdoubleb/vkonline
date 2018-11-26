@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user_category;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use common\models\vk\Document;
@@ -20,12 +20,15 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class GetDocumentDetailAction extends BaseActioin {
+class GetDocumentDetailAction extends BaseAction {
 
     public function run() {
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         /* @var $user User */
         $user = Yii::$app->user->identity;
-        $post = Yii::$app->request->getQueryParams();
+        $post = $this->getSecretParams();
 
         $document_id = ArrayHelper::getValue($post, 'document_id', null);             //品牌ID
 

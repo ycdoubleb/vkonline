@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use Yii;
 
@@ -12,10 +12,15 @@ use Yii;
  *
  * @author Administrator
  */
-class GetUserDetailsAction extends BaseActioin{
+class GetUserDetailsAction extends BaseAction{
 
     public function run() {
-        $id = Yii::$app->request->getQueryParam('id');
+        
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        
+        $id = $this->getSecretParam('id');
         if (!$id || $id == '') {
             $id = Yii::$app->user->id;
         }

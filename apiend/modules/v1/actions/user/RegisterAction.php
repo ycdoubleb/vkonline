@@ -4,7 +4,7 @@ namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
 use apiend\models\SignupForm;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use Yii;
 
 /**
@@ -12,11 +12,14 @@ use Yii;
  *
  * @author Administrator
  */
-class RegisterAction extends BaseActioin {
+class RegisterAction extends BaseAction {
 
     public function run() {
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         $model = new SignupForm();
-        $model->setAttributes(Yii::$app->request->post());
+        $model->setAttributes($this->getSecretParams());
         if ($user = $model->signup()) {
             return new Response(Response::CODE_COMMON_OK);
         }

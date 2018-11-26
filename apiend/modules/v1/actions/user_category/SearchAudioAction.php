@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user_category;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use common\models\vk\Audio;
 use common\models\vk\TagRef;
@@ -19,12 +19,16 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class SearchAudioAction extends BaseActioin{
-    public function run(){
+class SearchAudioAction extends BaseAction {
+
+    public function run() {
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         /* @var $user User */
         $user = Yii::$app->user->identity;
-        $post = Yii::$app->request->getQueryParams();
-        
+        $post = $this->getSecretParams();
+
         $user_cat_id = ArrayHelper::getValue($post, 'user_cat_id', '0');        //目标目录
         $customer_id = ArrayHelper::getValue($post, 'customer_id', null);       //品牌ID
         $recursive = ArrayHelper::getValue($post, 'recursive', false);          //是否递归
@@ -33,8 +37,8 @@ class SearchAudioAction extends BaseActioin{
         $page = ArrayHelper::getValue($post, 'page', 1);                        //当前页
         $order_by = ArrayHelper::getValue($post, 'order_by', 'user_cat_id');    //排序
         $sort = strtoupper(ArrayHelper::getValue($post, 'sort', 'ASC'));        //排序方向
-        
-        /** 
+
+        /**
          * 检查用户是否存在关联多品牌情况 
          */
         $user_brands = UserBrand::findAll([
@@ -45,12 +49,12 @@ class SearchAudioAction extends BaseActioin{
             return new Response(Response::CODE_COMMON_MISS_PARAM, '用户关联多个品牌，获取目录时 customer_id 参数不能为空');
         }
         /* 目录为空时返回根目录 */
-        if($user_cat_id == ''){
+        if ($user_cat_id == '') {
             $user_cat_id = '0';
         }
-        
+
         //$startTime = microtime(true);
-        
+
         /* @var $query Query */
         $query = new Query();
         $query->from(['Audio' => Audio::tableName()]);
@@ -62,22 +66,22 @@ class SearchAudioAction extends BaseActioin{
         // 字段过滤
         //-----------------------
         $query->addSelect([
-            'Audio.id as id', 'Audio.customer_id', 'Audio.user_cat_id', 'Audio.name', 
+            'Audio.id as id', 'Audio.customer_id', 'Audio.user_cat_id', 'Audio.name',
             'Audio.duration', 'Audio.created_at', 'Audio.updated_at',
             'GROUP_CONCAT(Tags.name) tags',
             'User.nickname as creater_name',
         ]);
-        
+
         //
         // 条件
         //
         //-----------------------
         // 目录过滤
         //-----------------------
-        if(!$recursive){
+        if (!$recursive) {
             //只在当前目录下搜索
             $query->andWhere(['Audio.user_cat_id' => $user_cat_id]);
-        }else{
+        } else {
             //递归搜索所有目录
             $query->andWhere(['or',
                 ['like', 'UserCategory.path', UserCategory::getCatById($user_cat_id)->path . ",%", false],
@@ -89,7 +93,7 @@ class SearchAudioAction extends BaseActioin{
          *  2、共享目录下的文件必须同吕牌
          */
         $query->andWhere(['or',
-            ['UserCategory.type' => UserCategory::TYPE_PRIVATE, 'Audio.created_by' => $user->id,],
+            ['UserCategory.type' => [UserCategory::TYPE_PRIVATE, UserCategory::TYPE_SYSTEM], 'Audio.created_by' => $user->id,],
             ['UserCategory.type' => UserCategory::TYPE_SHARING,]]);
 
         //-----------------------
@@ -99,7 +103,7 @@ class SearchAudioAction extends BaseActioin{
             'Audio.customer_id' => $customer_id,
             'Audio.is_del' => 0,
         ]);
-       
+
         //-----------------------
         // 排序
         //-----------------------
@@ -115,10 +119,10 @@ class SearchAudioAction extends BaseActioin{
         $total_count = $query->count();
         $query->offset(($page - 1) * $limit);
         $query->limit($limit);
-        
-        
+
+
         $list = $query->all();
-        
+
         //echo $query->createCommand()->rawSql;exit;
         //-----------------------
         // 处理结果，添加 cat_path、补全路径 
@@ -127,12 +131,12 @@ class SearchAudioAction extends BaseActioin{
             $video['cat_path'] = UserCategory::getCatById($video['user_cat_id'])->getParents(['id', 'name'], true);
         }
         //$endTime = microtime(true);
-        
         //echo $endTime - $startTime 
-        return new Response(Response::CODE_COMMON_OK,null,[
+        return new Response(Response::CODE_COMMON_OK, null, [
             'page' => $page,
             'total_count' => $total_count,
             'list' => $list,
         ]);
     }
+
 }

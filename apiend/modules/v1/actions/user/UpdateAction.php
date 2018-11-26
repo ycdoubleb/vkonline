@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use Yii;
 
@@ -12,10 +12,13 @@ use Yii;
  *
  * @author Administrator
  */
-class UpdateAction extends BaseActioin {
+class UpdateAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->post();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $post = $this->getSecretParams();
         //只允许自己本人更新，其它人无法更新
         /* @var $user User */
         $user = Yii::$app->user->identity;

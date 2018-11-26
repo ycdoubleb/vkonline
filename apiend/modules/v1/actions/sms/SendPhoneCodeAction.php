@@ -4,7 +4,7 @@ namespace apiend\modules\v1\actions\sms;
 
 use apiend\components\sms\SmsService;
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\utils\StringUtil;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -14,15 +14,17 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class SendPhoneCodeAction extends BaseActioin{
+class SendPhoneCodeAction extends BaseAction{
     
     public function run() {
-        
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         //发送验证码配置
         $sendYunSmsConfig = Yii::$app->params['sendYunSms'];  
         //应用模板
         $SMS_TEMPLATE_ID = $sendYunSmsConfig['SMS_TEMPLATE_ID'];                          
-        $post = Yii::$app->request->post();
+        $post = $this->getSecretParams();
         /* 检查必须参数 */
         $notfounds = $this->checkRequiredParams($post, ['phone']);
         if (count($notfounds) > 0) {

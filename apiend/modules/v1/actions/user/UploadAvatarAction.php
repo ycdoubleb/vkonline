@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
 use Yii;
@@ -15,9 +15,12 @@ use yii\web\UploadedFile;
  *
  * @author Administrator
  */
-class UploadAvatarAction extends BaseActioin {
+class UploadAvatarAction extends BaseAction {
 
     public function run() {
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         $upload = UploadedFile::getInstanceByName('avatar');
         if ($upload) {
             /* @var $user User */
