@@ -103,7 +103,11 @@ class SyncUserAction extends BaseAction {
         $user_id = $params['id'];
         $user = DailyLessonUser::findOne(['id' => $user_id, 'status' => DailyLessonUser::STATUS_ACTIVE]);
         if (!$user) {
-            $user = new DailyLessonUser(['id' => $user_id]);
+            $user = new DailyLessonUser([
+                'id' => $user_id,
+                'type' => DailyLessonUser::TYPE_PARTNER,
+                'from' => 'dailylesson',
+            ]);
         }
         //$user->loadDefaultValues();
         $user->setAttributes($params);
