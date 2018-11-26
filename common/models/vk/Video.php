@@ -20,38 +20,38 @@ use yii\web\UploadedFile;
  * This is the model class for table "{{%video}}".
  *
  * @property string $id
- * @property string $teacher_id 老师ID
- * @property string $customer_id 所属客户ID
- * @property string $user_cat_id 用户目录ID
- * @property string $file_id     文件ID
- * @property string $name 视频名称
- * @property string $duration 时长
- * @property int $is_link 是否为外链：0否 1是
- * @property int $content_level 内容评级：初1 中2 高3
- * @property string $des 视频简介
- * @property int $level 等级：0私有 1内网 2公共
- * @property string $img 图片路径
- * @property int $is_recommend 是否推荐：0否 1是
- * @property int $is_publish 是否发布：0否 1是
- * @property int $is_official 是否为官网资源：0否 1是
- * @property string $zan_count 赞数
- * @property string $favorite_count 收藏数
- * @property int $is_del 是否删除：0否 1是
- * @property int $sort_order 排序
- * @property int $mts_status            是否转码：0未转码 1转码中 2已转码 5转码失败
- * @property int $mts_need              是否需要转码：0否 1是
- * @property string $mts_watermark_ids     水印配置，多个使用逗号分隔
- * @property string $created_by 创建人ID
- * @property string $created_at 创建时间
- * @property string $updated_at 更新时间
+ * @property string $teacher_id                 老师ID
+ * @property string $customer_id                所属客户ID
+ * @property string $user_cat_id                用户目录ID
+ * @property string $file_id                    文件ID
+ * @property string $name                       视频名称
+ * @property string $duration                   时长
+ * @property int $is_link                       是否为外链：0否 1是
+ * @property int $content_level                 内容评级：初1 中2 高3
+ * @property string $des                        视频简介
+ * @property int $level                         等级：0私有 1内网 2公共
+ * @property string $img                        图片路径
+ * @property int $is_recommend                  是否推荐：0否 1是
+ * @property int $is_publish                    是否发布：0否 1是
+ * @property int $is_official                   是否为官网资源：0否 1是
+ * @property string $zan_count                  赞数
+ * @property string $favorite_count             收藏数
+ * @property int $is_del                        是否删除：0否 1是
+ * @property int $sort_order                    排序
+ * @property int $mts_status                    是否转码：0未转码 1转码中 2已转码 5转码失败
+ * @property int $mts_need                      是否需要转码：0否 1是
+ * @property string $mts_watermark_ids          水印配置，多个使用逗号分隔
+ * @property string $created_by                 创建人ID
+ * @property string $created_at                 创建时间
+ * @property string $updated_at                 更新时间
  *
- * @property UserCategory $userCategory 获取用户自定义分类
- * @property Customer $customer 获取客户
- * @property User $createdBy 获取创建者
- * @property Teacher $teacher 获取老师
- * @property Uploadfile $file   获取上传文件
- * @property TagRef[] $tagRefs 获取标签
- * @property Knowledge[] $knowledges    获取所有知识点
+ * @property UserCategory $userCategory         获取用户自定义分类
+ * @property Customer $customer                 获取客户
+ * @property User $createdBy                    获取创建者
+ * @property Teacher $teacher                   获取老师
+ * @property Uploadfile $file                   获取上传文件
+ * @property TagRef[] $tagRefs                  获取标签
+ * @property Knowledge[] $knowledges            获取所有知识点
  */
 class Video extends ActiveRecord {
 
