@@ -397,22 +397,4 @@ class DefaultController extends Controller
         return $usedSpace;
     }
     
-    /**
-     * 查找客户下拥有的用户
-     * @param string $id   客户ID
-     * @return Query
-     */
-    protected function findCustomerUser($id)
-    {
-        $query = (new Query())->select(['User.id'])
-            ->from(['Customer' => Customer::tableName()]);
-        
-        $query->leftJoin(['User' => User::tableName()], 'User.customer_id = Customer.id');
-        $query->andFilterWhere(['Customer.id' => $id]);
-        
-        $query->groupBy('User.id');
-        
-        return $query;
-    }
-    
 }

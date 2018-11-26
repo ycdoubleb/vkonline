@@ -101,11 +101,11 @@ TimerButtonAssets::register($this);
                 <?php ActiveForm::end(); ?> 
                 <!--第三方账号登录-->
                 <div class="col-xs-12 btn-signup">
-                    <div class="third-login">第三方账号登录</div>
+                    <!--<div class="third-login">第三方账号登录</div>-->
                     <div class="third-content">
-                        <a href="javascrip:;" class="wechat"></a>
-                        <a href="<?= $weibo_url?>" class="weibo"></a>
-                        <a href="/callback/qq-callback/index" class="qq"></a>
+<!--                        <a href="javascrip:;" class="wechat"></a>
+                        <a href="<?php // $weibo_url?>" class="weibo"></a>
+                        <a href="/callback/qq-callback/index" class="qq"></a>-->
                     </div>
                 </div>
             </div>

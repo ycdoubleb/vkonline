@@ -76,10 +76,10 @@ class DefaultController extends Controller
             'courseFavorite' => $this->getCourseFavorite($model->id),     //关注的课程数
             'videoFavorite' => $this->getVideoFavorite($model->id),       //收藏的视频数
             'courseMessage' => $this->getCourseMessage($model->id),       //评论数
-            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
-            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
-            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
-            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
+//            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+//            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
+//            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
+//            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
         ]);
     }
     
