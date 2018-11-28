@@ -123,13 +123,13 @@ $this->title = Yii::t('app', 'Survey');
                         'Use' => Yii::t('app', 'Use'),
                     ]),
                     'format' => 'raw',
-                    'value' => !empty($usedSpace) ? Yii::$app->formatter->asShortSize($usedSpace) . 
+                    'value' => (!empty($usedSpace) && !empty($model->good->data)) ? Yii::$app->formatter->asShortSize($usedSpace) . 
                         '<span style="color:#929292">（'. sprintf("%.2f", ($usedSpace / $model->good->data)*100).' %）</span>' : null,
                 ],
                 [
                     'label' => Yii::t('app', 'Surplus'),
                     'format' => 'raw',
-                    'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace) .
+                    'value' => (!empty($usedSpace) && !empty($model->good->data)) ? Yii::$app->formatter->asShortSize($model->good->data - $usedSpace) .
                         '<span style="color:#929292">（' . sprintf("%.2f", ($model->good->data - $usedSpace) / $model->good->data * 100) . ' % '.
                             (((100 - floor($usedSpace / $model->good->data *100)) > 10) ? '<span style="color:#33CC00"> 充足</span>' : 
                                 '<span style="color:red"> 不足</span>') .'）</span>' : null,
