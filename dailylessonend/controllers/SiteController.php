@@ -200,12 +200,12 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $model = new User();
-        $model->scenario = User::SCENARIO_CREATE;
+        $model = new DailyLessonUser();
+        $model->scenario = DailyLessonUser::SCENARIO_CREATE;
         $params = \Yii::$app->request->queryParams;     //参数
         $post = \Yii::$app->request->post();            //post传值
-        $phone = ArrayHelper::getValue($post, 'User.phone');    //获取post传的号码
-        $code = ArrayHelper::getValue($post, 'User.code');      //获取post传的验证码
+        $phone = ArrayHelper::getValue($post, 'DailyLessonUser.phone');    //获取post传的号码
+        $code = ArrayHelper::getValue($post, 'DailyLessonUser.code');      //获取post传的验证码
         
         $weiboConfig = Yii::$app->params[self::$weiboConfig];       //获取微博登录的配置
         $weibo = new SaeTOAuthV2($weiboConfig['WB_AKEY'], $weiboConfig['WB_SKEY']);
@@ -248,8 +248,8 @@ class SiteController extends Controller
         $name = trim(strrchr($pathName, '/'),'/');
 
         //检查提交的号码是否存在
-        $hasPhone = (new Query())->select(['id'])->from(['User' => User::tableName()])
-                ->where(['status' => User::STATUS_ACTIVE,'phone' => $phone])
+        $hasPhone = (new Query())->select(['id'])->from(['DailyLessonUser' => DailyLessonUser::tableName()])
+                ->where(['status' => DailyLessonUser::STATUS_ACTIVE,'phone' => $phone])
                 ->one(); 
         if($name == 'signup'){      //注册页面
             if(empty($hasPhone)){
@@ -353,7 +353,7 @@ class SiteController extends Controller
         if(empty($sessonPhone)){
             return $this->goHome();
         }
-        $model = User::findOne(['phone' => $sessonPhone]);        
+        $model = DailyLessonUser::findOne(['phone' => $sessonPhone]);        
         $model->password_hash = '';
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->setPassword($model->password_hash);
@@ -466,7 +466,7 @@ class SiteController extends Controller
             try
             { 
                 $relBrands = ArrayHelper::getColumn($customers, 'id');  //用户关联的所有品牌
-                $userModel = User::findOne(Yii::$app->user->id);
+                $userModel = DailyLessonUser::findOne(Yii::$app->user->id);
                 $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
                 
                 if(in_array($userModel->customer_id, $relBrands)){
@@ -506,8 +506,8 @@ class SiteController extends Controller
         $post = \Yii::$app->request->post();
         $phone = ArrayHelper::getValue($post, 'phone');   //获取输入的邀请码
         
-        $hasPhone = (new Query())->select(['id'])->from(['User' => User::tableName()])
-                ->where(['status' => User::STATUS_ACTIVE,'phone' => $phone])
+        $hasPhone = (new Query())->select(['id'])->from(['DailyLessonUser' => DailyLessonUser::tableName()])
+                ->where(['status' => DailyLessonUser::STATUS_ACTIVE,'phone' => $phone])
                 ->one();
         
         if(empty($hasPhone)){
@@ -602,16 +602,16 @@ class SiteController extends Controller
      */
     public function signup($post)
     {   
-        $user = new User();
+        $user = new DailyLessonUser();
         if (!$user->validate()) {   //数据验证
             return null;
         }
 
-        $cusId = ArrayHelper::getValue($post, 'User.customer_id');  //邀请码
-        $username = ArrayHelper::getValue($post, 'User.username');  //用户名
-        $phone = ArrayHelper::getValue($post, 'User.phone');        //联系方式
-        $nickname = ArrayHelper::getValue($post, 'User.nickname');  //姓名
-        $password_hash = ArrayHelper::getValue($post, 'User.password_hash');    //密码
+        $cusId = ArrayHelper::getValue($post, 'DailyLessonUser.customer_id');  //邀请码
+        $username = ArrayHelper::getValue($post, 'DailyLessonUser.username');  //用户名
+        $phone = ArrayHelper::getValue($post, 'DailyLessonUser.phone');        //联系方式
+        $nickname = ArrayHelper::getValue($post, 'DailyLessonUser.nickname');  //姓名
+        $password_hash = ArrayHelper::getValue($post, 'DailyLessonUser.password_hash');    //密码
         
         if($cusId != null){
             $customer = Customer::find()->select(['id'])->where(['invite_code' => $cusId])->asArray()->one();//客户ID

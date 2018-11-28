@@ -60,7 +60,7 @@ TimerButtonAssets::register($this);
 	<fieldset>
             <h2 class="fs-title">账号信息</h2>
             <h3 class="fs-subtitle">设置您的用户名和密码</h3>
-            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名（英文或数字组合）...'])
+            <?= $form->field($model, 'username')->textInput(['maxlength' => true,'placeholder' => '用户名（不能包含中文）...'])
                 ->label('')?>
             <?= $form->field($model, 'password_hash')->passwordInput(['minlength' => 6,'maxlength' => 20,
                 'placeholder' => '密码...'])->label('') ?>
@@ -82,7 +82,7 @@ TimerButtonAssets::register($this);
             <div id="user-phone-info" class="name-info"><span></span></div>
             <div class="form-group field-user-code required">
                 <div class="col-lg-12 col-md-12">
-                    <?= Html::input('input', 'User[code]', '', [
+                    <?= Html::input('input', 'DailyLessonUser[code]', '', [
                         'placeholder' => '验证码...',
                         'id' => 'code', 'class' => 'form-control',
                         'style' => 'width:50%; float:left; display:inline-block'
@@ -118,29 +118,29 @@ $js = <<<JS
 //    $('#third4').append(html);
         
     //判断输入框是否有默认值
-    if($("#user-customer_id").val() != ""){
-        var txtVal=$("#user-customer_id").val();     //获取默认值内容
+    if($("#dailylessonuser-customer_id").val() != ""){
+        var txtVal=$("#dailylessonuser-customer_id").val();     //获取默认值内容
         $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
             if (rel['code'] == 200) {
-                $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
+                $("#dailylessonuser-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
                 $("#customer > span").html(rel['data']['name']);
             }else{
-                $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
+                $("#dailylessonuser-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
                 $("#customer > span").html(rel['message']);
             }
         })
     }
         
     //输入邀请码后触发
-    $('#user-customer_id').blur(function() {
-        var txtVal=$("#user-customer_id").val();     //获取输入的内容
+    $('#dailylessonuser-customer_id').blur(function() {
+        var txtVal=$("#dailylessonuser-customer_id").val();     //获取输入的内容
         if(txtVal != ""){
             $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
                 if (rel['code'] == 200) {
-                    $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
+                    $("#dailylessonuser-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
                     $("#customer > span").html(rel['data']['name']);
                 }else{
-                    $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
+                    $("#dailylessonuser-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
                     $("#customer > span").html('<span style="color:#a94442">无效的邀请码</span>');
                 }
             })
@@ -148,7 +148,7 @@ $js = <<<JS
     });
 
     //当邀请码输入框内容被更改时
-    $("#user-customer_id").bind("input propertychange change",function(event){
+    $("#dailylessonuser-customer_id").bind("input propertychange change",function(event){
         $(".fa").remove();              //移除右侧图标
         $("#customer > span").empty();  //移除客户名或注释
     });
@@ -163,12 +163,12 @@ $js = <<<JS
     });
      
     //检查号码是否已被注册
-    $("#user-phone").change(function(){
-        $.post("/site/chick-phone",{'phone': $("#user-phone").val()}, function(data){
+    $("#dailylessonuser-phone").change(function(){
+        $.post("/site/chick-phone",{'phone': $("#dailylessonuser-phone").val()}, function(data){
             if(data['code'] == 400){
                 $("#j_getVerifyCode").addClass('disabled');
                 $("#user-phone-info > span").html('该号码已被注册!请<a href="/site/login">直接登录</a>');
-            }else if($("#user-phone").val().length == 11){
+            }else if($("#dailylessonuser-phone").val().length == 11){
                 $("#j_getVerifyCode").removeClass('disabled');
             }
         })
@@ -185,7 +185,7 @@ $js = <<<JS
             }
         });
     });
-    $("#user-phone").bind("input propertychange change",function(event){
+    $("#dailylessonuser-phone").bind("input propertychange change",function(event){
         $("#user-phone-info > span").empty();  //移除注释
     });
     $("#code").bind("input propertychange change",function(event){

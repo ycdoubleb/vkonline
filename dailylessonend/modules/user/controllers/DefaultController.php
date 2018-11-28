@@ -3,7 +3,7 @@
 namespace dailylessonend\modules\user\controllers;
 
 use common\components\OAuths\weiboAPI\SaeTOAuthV2;
-use common\models\User;
+use dailylessonend\models\DailyLessonUser;
 use common\models\UserAuths;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
@@ -70,7 +70,7 @@ class DefaultController extends Controller
 
         return $this->render('index', [
             'model' => $model,
-            'userBrand' => User::getUserBrand($model->id),         //用户绑定的品牌
+            'userBrand' => DailyLessonUser::getUserBrand($model->id),         //用户绑定的品牌
 //            'usedSpace' => $this->getUsedSpace($model->id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($model->id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($model->id),     //已学课程数
@@ -85,7 +85,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * 显示一个单一的 User 模型.
+     * 显示一个单一的 DailyLessonUser 模型.
      * @return mixed [model => 模型]
      */
     public function actionInfo($id)
@@ -102,7 +102,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * 更新现有的 User 模型。
+     * 更新现有的 DailyLessonUser 模型。
      * 如果更新成功，浏览器将被重定向到“index”页面。
      * @param string $id
      * @return mixed
@@ -111,7 +111,7 @@ class DefaultController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = User::SCENARIO_UPDATE;
+        $model->scenario = DailyLessonUser::SCENARIO_UPDATE;
         
         if($model->id != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
@@ -248,15 +248,15 @@ class DefaultController extends Controller
     
     
     /**
-     * 根据其主键值查找 User 模型。
+     * 根据其主键值查找 DailyLessonUser 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return model User 
+     * @return model DailyLessonUser 
      * @throws NotFoundHttpException
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = DailyLessonUser::findOne($id)) !== null) {
             return $model;
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));

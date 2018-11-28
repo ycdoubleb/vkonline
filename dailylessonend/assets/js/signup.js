@@ -5,7 +5,7 @@ var animating; //flag to prevent quick multi-click glitches
 
 //邀请码页下一步
 $(".next").click(function () {
-    var brand = $("#user-customer_id").val();
+    var brand = $("#dailylessonuser-customer_id").val();
     if (brand === "") {
         alert("请输入您的邀请码！");
         return false;
@@ -27,7 +27,7 @@ $(".next").click(function () {
 
 //用户账号密码页下一步
 $("#user-next").click(function () {
-    var user = $("#user-username").val();
+    var user = $("#dailylessonuser-username").val();
     if (user === "") {
         alert("请输入用户名！");
         return false;
@@ -37,8 +37,8 @@ $("#user-next").click(function () {
       alert ("用户名不能包含中文！");
       return false;
     }
-    var pass = $("#user-password_hash").val();
-    var pass1 = $("#user-password2").val();
+    var pass = $("#dailylessonuser-password_hash").val();
+    var pass1 = $("#dailylessonuser-password2").val();
     if (pass === "") {
         alert("请输入密码！");
         return false;
@@ -65,12 +65,12 @@ $("#user-next").click(function () {
 
 //用户信息页下一步
 $("#info-next").click(function () {
-    var user = $("#user-nickname").val();
+    var user = $("#dailylessonuser-nickname").val();
     if (user === "") {
         alert("请输入真实姓名！");
         return false;
     }
-    var phone = $("#user-phone").val(),
+    var phone = $("#dailylessonuser-phone").val(),
             phoneReg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/,
             flag = phoneReg.test(phone);
     if (phone === "") {

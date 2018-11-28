@@ -34,7 +34,8 @@ $this->title = Yii::t('app', 'Customer');
      ])?>
       
     <!--被置底不显示的邀请码框-->
-    <?= Html::textInput('inviteCode', $model->invite_code, ['id' => 'inviteCode', 'class' => 'inviteCode', 'readonly'=> 'readonly'])?>
+    <?= Html::textInput('inviteCode', Yii::$app->request->hostInfo . '/site/signup?code=' . $model->invite_code,
+            ['id' => 'inviteCode', 'class' => 'inviteCode', 'readonly'=> 'readonly'])?>
 </div>
 
 <?php

@@ -273,7 +273,7 @@ $this->title = Yii::t('app', 'Survey');
 
 <?php
 $adminCount = count($customerAdmin);    //管理员人数
-$WEB_ROOT = WEB_ROOT;   //web域名
+
 $js = <<<JS
     //加载管理员列表
     $("#admin_info").load("../default/admin-index?id={$model->id}"); 
@@ -296,7 +296,6 @@ $js = <<<JS
      */
     window.jsCopy = function jsCopy() {
         var e = document.getElementById("inviteCode");//对象是inviteCode
-        e.value = "$WEB_ROOT/site/signup?code="+e.value;
         e.select();                         //选择复制对象
         tag = document.execCommand("Copy");   //执行浏览器复制命令
         if(tag){

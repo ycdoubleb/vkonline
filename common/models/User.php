@@ -112,7 +112,7 @@ class User extends BaseUser implements IdentityInterface {
             [['username'], 'checkUsername', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at', 'is_official', 'sex', 'type'], 'integer'],
+            [['created_at', 'updated_at', 'is_official', 'sex', 'type', 'max_store'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname'], 'string', 'max' => 50],
@@ -124,7 +124,7 @@ class User extends BaseUser implements IdentityInterface {
             [['avatar'], 'image'],
             [['password2'], 'compare', 'compareAttribute' => 'password_hash'],
             [['avatar'], 'file', 'extensions' => 'jpg, png', 'mimeTypes' => 'image/jpeg, image/png'],
-            [['max_store'], 'checkMaxStore', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]]
+//            [['max_store'], 'checkMaxStore', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]]
         ];
     }
     

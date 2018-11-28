@@ -99,7 +99,7 @@ $menuItems = [
             'label' => Yii::t('app', 'Log'),
             'url' => ['/admin_center/log/index'],
             'icons' => null, 
-            'condition' => true,
+            'condition' => false,
             'options' => ['class' => 'links']
         ],
     ]
@@ -139,7 +139,8 @@ foreach ($menuItems as $index => $items) {
 }
 
 $resource = implode("", $menuHtml['resource']);
-$admin = implode("", $menuHtml['admin']);
+$admin = implode("", isset($menuHtml['admin']) ? $menuHtml['admin'] : []);
+$isHidden =  $admin == '' ? 'hidden' : '';  //是否隐藏
 //组装制作工具
 $lastTool = end($toolItems);   //数组中的最后一个元素的值
 foreach ($toolItems as $tool) {
@@ -159,7 +160,7 @@ $html = <<<Html
                 <span>我的资源</span>
             </div>
             <ul>{$resource}</ul>
-            <div class="title">
+            <div class="title {$isHidden}">
                 <i class="fa fa-list-ul"></i>
                 <span>管理中心</span>
             </div>
