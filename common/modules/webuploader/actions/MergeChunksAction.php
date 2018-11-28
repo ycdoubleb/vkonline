@@ -90,33 +90,7 @@ class MergeChunksAction extends Action {
                     flock($out, LOCK_UN);
                 }
                 @fclose($out);
-                /**
-                 * 创建缩略图、获取时长
-                 */
-                $thumbPath = '';
-                $duration = 0;
-                $ext = strtolower(pathinfo($uploadPath, PATHINFO_EXTENSION));
 
-                switch ($ext) {
-                    case 'mp3':
-                        /* mp3文件需要获取时长 */
-                        $info = MediaInfo::getMediaInfo($uploadPath);
-                        $duration = $info['playtime_seconds'];
-                        break;
-                    case 'jpg':
-                    case 'jpeg':
-                    case 'gif':
-                    case 'png':
-                    case 'bmp':
-                        /* 图片截图 */
-                        $thumbPath = $this->createThumb($uploadPath);
-                        break;
-                }
-
-                /**
-                 * 记录视频 width,height,duration,level,bitrate
-                 */
-                $file_media_info = [];
                 /*
                  * 写入数据库
                  */
@@ -124,16 +98,15 @@ class MergeChunksAction extends Action {
                 if ($dbFile == null) {
                     $dbFile = new Uploadfile(['id' => $fileMd5]);
                 }
+                //设置 thumb_path,duration,width,height,bitrate
+                $dbFile->setAttributes($this->getFileInfo($uploadPath));
                 $dbFile->customer_id = $customer_id;
                 $dbFile->name = $name;
                 $dbFile->path = $uploadPath;
                 $dbFile->del_mark = 0;          //重置删除标志
                 $dbFile->is_fixed = isset($params['is_fixed']) ? $params['is_fixed'] : 1;          //设置永久标志
                 $dbFile->created_by = Yii::$app->user->id;
-                $dbFile->thumb_path = $thumbPath;
-                $dbFile->duration = $duration;
                 $dbFile->size = $fileSize == 0 ? filesize($uploadPath) : $fileSize;
-                $dbFile->app_id = $app_id;
                 $dbFile->is_del = 0;
                 $dbFile->oss_upload_status = Uploadfile::OSS_UPLOAD_STATUS_NO;
                 $dbFile->oss_key = $replace_file == null ? "" : $replace_file->oss_key;
@@ -160,34 +133,56 @@ class MergeChunksAction extends Action {
         }
         return new UploadResponse(UploadResponse::CODE_COMMON_UNKNOWN);
     }
+    /**
+     * 获取文件信息
+     * 视频：width,height,duration,bitrate,thumb_path
+     * 音频：duration
+     * 图片：thumb_path
+     * @param string $filepath
+     */
+    private function getFileInfo($filepath) {
+        $info = ['duration' => 0, 'thumb_path' => ""];
+        try {
+            $filter = [
+                'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
+                'audio' => ['mp3'],
+                'image' => ['jpg', 'jpeg', 'png', 'gif'],
+            ];
+            $type = '';
+            foreach ($filter as $key => $filters) {
+                if (in_array(strtolower(pathinfo($filepath, PATHINFO_EXTENSION)), $filters)) {
+                    $type = $key;
+                    break;
+                }
+            }
+            switch ($type) {
+                case 'video':
+                    $info = FfmpegUtil::getVideoInfoByUfileId($filepath);
+                case 'image':
+                    $info['thumb_path'] = $this->createThumb($type, $filepath);
+                    break;
+                case 'audio':
+                    $info['duration'] = MediaInfo::getMediaInfo($filepath)['playtime_seconds'];
+                    break;
+            }
+        } catch (\Exception $ex) {
+            
+        }
+
+        return $info;
+    }
 
     /**
      * 创建文件缩略图，只会对视频和图片生成缩略图
+     * @param string $type          资源类型 video,image
      * @param string $filepath      文件路径
      * @param type $width           缩略图宽度
      * @param type $height          缩略图高度
      * @param type $mode            模式：outbound填满高宽，inset等比缩放
      * @return string   生成缩略图路径
      */
-    private function createThumb($filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND) {
-        //需要生成缩略图的文件
-        $filter = [
-            //'video' => ['mp4', 'flv', 'wmv', 'mov', 'avi', 'mpg', 'rmvb', 'rm', 'mkv'],
-            'image' => ['jpg', 'jpeg', 'png', 'gif'],
-        ];
-
+    private function createThumb($type, $filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND) {
         $fileinfo = pathinfo($filepath);
-        $type = '';
-        foreach ($filter as $key => $filters) {
-            if (in_array(strtolower($fileinfo['extension']), $filters)) {
-                $type = $key;
-                break;
-            }
-        }
-        if ($type == '') {
-            //其它文件不创建缩略图，返回''
-            return "";
-        }
         $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg';
         $this->mkdir($fileinfo['dirname'] . '/thumbs/');
         Image::$thumbnailBackgroundColor = '000';
