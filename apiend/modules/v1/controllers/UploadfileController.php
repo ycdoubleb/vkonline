@@ -3,9 +3,9 @@
 namespace apiend\modules\v1\controllers;
 
 use apiend\controllers\ApiController;
-use common\modules\webuploader\actions\CheckFileAction;
-use common\modules\webuploader\actions\MergeChunksAction;
-use common\modules\webuploader\actions\UploadAction;
+use apiend\modules\v1\actions\uploadfile\CheckFileAction;
+use apiend\modules\v1\actions\uploadfile\MergeChunksAction;
+use apiend\modules\v1\actions\uploadfile\UploadAction;
 
 /**
  * 文件上传接口

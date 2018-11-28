@@ -48,7 +48,8 @@ class User extends BaseUser implements IdentityInterface {
     const TYPE_FREE = 1;
     //团体用户
     const TYPE_GROUP = 2;
-    
+    //合作伙伴用户,如每日一课
+    const TYPE_PARTNER = 3;
 
     /** 空间大小 MB */
     const MBYTE = 1024 * 1024;

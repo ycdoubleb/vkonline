@@ -4,7 +4,7 @@ namespace apiend\modules\v1\actions\user;
 
 use apiend\components\sms\SmsService;
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -14,10 +14,13 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class ResetPasswordAction extends BaseActioin {
+class ResetPasswordAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->post();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $post = $this->getSecretParams();
         /* 验证验证码 */
         $code_key = trim(ArrayHelper::getValue($post, 'code_key', null));
         $code = trim(ArrayHelper::getValue($post, 'code', null));

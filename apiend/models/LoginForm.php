@@ -3,7 +3,6 @@
 namespace apiend\models;
 
 use common\models\User;
-use common\models\vk\Customer;
 use Yii;
 use yii\base\Model;
 
@@ -22,7 +21,7 @@ class LoginForm extends Model {
     public $phone;
     public $password;
     public $rememberMe = true;
-    private $_user;
+    protected $_user;
 
     public function init() {
         parent::init();
@@ -88,14 +87,6 @@ class LoginForm extends Model {
             $userModel = $this->getUser();
             if(!$userModel){
                 return false;
-            }
-            //检查客户是否到期停用 停用则不能登录
-            if ($userModel && $userModel->type == User::TYPE_GROUP) {
-                $customer = Customer::findOne($userModel->customer_id);
-                if ($customer->status == Customer::STATUS_STOP) {
-                    $this->addError('username', '客户套餐已到期！待管理员续费后可继续使用');
-                    return false;
-                }
             }
             $hasLogin = Yii::$app->user->login($userModel, $this->rememberMe ? 3600 * 24 * 30 : 0);
             if ($hasLogin) {

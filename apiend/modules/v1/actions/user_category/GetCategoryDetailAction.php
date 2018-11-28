@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user_category;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use common\models\vk\UserBrand;
 use common\models\vk\UserCategory;
@@ -17,12 +17,14 @@ use Yii;
   }
  * @author Administrator
  */
-class GetCategoryDetailAction extends BaseActioin {
+class GetCategoryDetailAction extends BaseAction {
 
     public function run() {
-
-        $user_cat_id = Yii::$app->request->getQueryParam('user_cat_id', '0');
-        $customer_id = Yii::$app->request->getQueryParam('customer_id', null);
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $user_cat_id = $this->getSecretParam('user_cat_id', '0');
+        $customer_id = $this->getSecretParam('customer_id', null);
         /* @var $user User */
         $user = Yii::$app->user->identity;
         /* 检查用户是否存在关联多品牌情况 */
@@ -34,14 +36,14 @@ class GetCategoryDetailAction extends BaseActioin {
             return new Response(Response::CODE_COMMON_MISS_PARAM, '用户关联多个品牌，获取目录时 customer_id 参数不能为空');
         }
         /* 目录为空时返回根目录 */
-        if($user_cat_id == ''){
+        if ($user_cat_id == '') {
             $user_cat_id == 0;
         }
         /* 用户只关联一个品牌自己下 */
         if ($customer_id == null) {
             $customer_id = $user->customer_id;
         }
-        
+
         /* @var $category UserCategory */
         $category = UserCategory::getCatById($user_cat_id);
 

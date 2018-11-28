@@ -1,7 +1,8 @@
 <?php
 
-namespace common\modules\webuploader\actions;
+namespace apiend\modules\v1\actions\uploadfile;
 
+use apiend\modules\v1\actions\BaseAction;
 use common\components\getid3\MediaInfo;
 use common\modules\webuploader\models\Uploadfile;
 use common\modules\webuploader\models\UploadfileChunk;
@@ -9,7 +10,6 @@ use common\modules\webuploader\models\UploadResponse;
 use common\utils\FfmpegUtil;
 use Imagine\Image\ManipulatorInterface;
 use Yii;
-use yii\base\Action;
 use yii\helpers\ArrayHelper;
 use yii\imagine\Image;
 use yii\web\HttpException;
@@ -24,10 +24,13 @@ use yii\web\HttpException;
  *
  * @author Administrator
  */
-class MergeChunksAction extends Action {
+class MergeChunksAction extends BaseAction {
 
     public function run() {
-        $params = $_REQUEST;
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $params = $this->getSecretParams();
         //应用
         $app_id = isset($params["app_id"]) ? $params["app_id"] : '';
         //应用web路径，默认会放本应用的web下，通过设置root_path可改变目标路径
@@ -90,7 +93,6 @@ class MergeChunksAction extends Action {
                     flock($out, LOCK_UN);
                 }
                 @fclose($out);
-
                 /*
                  * 写入数据库
                  */
@@ -133,6 +135,7 @@ class MergeChunksAction extends Action {
         }
         return new UploadResponse(UploadResponse::CODE_COMMON_UNKNOWN);
     }
+
     /**
      * 获取文件信息
      * 视频：width,height,duration,bitrate,thumb_path
@@ -168,7 +171,6 @@ class MergeChunksAction extends Action {
         } catch (\Exception $ex) {
             
         }
-
         return $info;
     }
 

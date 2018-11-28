@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -13,10 +13,14 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class CheckUsernameRegisteredAction extends BaseActioin {
+class CheckUsernameRegisteredAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->getQueryParams();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        
+        $post = $this->getSecretParams();
         $username = ArrayHelper::getValue($post, 'username', null);
         if (!$username) {
             return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'username']);

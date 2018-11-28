@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use common\utils\StringUtil;
 use Yii;
@@ -14,10 +14,13 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class CheckPhoneRegisteredAction extends BaseActioin {
+class CheckPhoneRegisteredAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->getQueryParams();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $post = $this->getSecretParams();
         $phone = ArrayHelper::getValue($post, 'phone', null);
 
         if (!$phone) {

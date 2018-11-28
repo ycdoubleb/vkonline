@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\UserAuths;
 use Yii;
 
@@ -12,9 +12,14 @@ use Yii;
  *
  * @author Administrator
  */
-class GetAuthAccountListAction extends BaseActioin {
+class GetAuthAccountListAction extends BaseAction {
 
     public function run() {
+        
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        
         $userAuths = UserAuths::findAll(['user_id' => Yii::$app->user->id]);
         return new Response(Response::CODE_COMMON_OK, null, $userAuths);
     }

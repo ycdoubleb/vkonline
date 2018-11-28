@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
 use Yii;
 
@@ -12,9 +12,12 @@ use Yii;
  *
  * @author Administrator
  */
-class LogoutAction extends BaseActioin {
+class LogoutAction extends BaseAction {
 
     public function run() {
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
         /* @var $user User */
         $user = Yii::$app->user->identity;
         $user->access_token = '';

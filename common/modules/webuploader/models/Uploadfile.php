@@ -4,7 +4,6 @@ namespace common\modules\webuploader\models;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
-use common\utils\StringUtil;
 use OSS\Core\OssException;
 use Yii;
 use yii\base\Exception;

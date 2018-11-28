@@ -3,7 +3,7 @@
 namespace apiend\modules\v1\actions\user;
 
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\UserAuths;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -13,10 +13,14 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class BindAuthAccountAction extends BaseActioin {
+class BindAuthAccountAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->post();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        
+        $post = $this->getSecretParams();
         $notfounds = $this->checkRequiredParams($post, ['identity_type', 'identifier', 'credential']);
         if (count($notfounds) > 0) {
             return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);

@@ -18,7 +18,7 @@ class DailyLessonUser extends User{
      */
     public function validatePassword($password) {
         //return Yii::$app->security->validatePassword($password, $this->password_hash);
-        return $password == $this->password_hash;
+        return md5($password) == $this->password_hash;
     }
 
     /**
@@ -27,6 +27,6 @@ class DailyLessonUser extends User{
      * @param string $password
      */
     public function setPassword($password) {
-        //$this->password_hash = Yii::$app->security->generatePasswordHash($password);
+        $this->password_hash = md5($password);
     }
 }
