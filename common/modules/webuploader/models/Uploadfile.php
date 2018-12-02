@@ -138,7 +138,6 @@ class Uploadfile extends ActiveRecord {
      * @return array [success,msg]
      */
     public function uploadOSS($key = null) {
-        $thumb_key = '';
         if ($key == null) {
             /* @var $user User */
             $user = User::findOne(['id' => $this->created_by]);
@@ -156,7 +155,8 @@ class Uploadfile extends ActiveRecord {
         } else {
             $object_key = $key;
         }
-        $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME) . '_thumb.jpg';
+        $object_key_path_info = pathinfo($object_key);
+        $thumb_key = "{$object_key_path_info['dirname']}/{$object_key_path_info['filename']}_thumb.jpg";
 
         try {
             //上传文件
