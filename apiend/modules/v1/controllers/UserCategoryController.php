@@ -5,9 +5,11 @@ namespace apiend\modules\v1\controllers;
 use apiend\controllers\ApiController;
 use apiend\modules\v1\actions\user_category\GetAudioDetailAction;
 use apiend\modules\v1\actions\user_category\GetCategoryDetailAction;
+use apiend\modules\v1\actions\user_category\GetCategoryListAction;
 use apiend\modules\v1\actions\user_category\GetDocumentDetailAction;
 use apiend\modules\v1\actions\user_category\GetImageDetailAction;
 use apiend\modules\v1\actions\user_category\GetVideoDetailAction;
+use apiend\modules\v1\actions\user_category\SearchAction;
 use apiend\modules\v1\actions\user_category\SearchAudioAction;
 use apiend\modules\v1\actions\user_category\SearchDocumentAction;
 use apiend\modules\v1\actions\user_category\SearchImageAction;
@@ -26,6 +28,8 @@ class UserCategoryController extends ApiController{
             //'check-phone-registered',
         ];
         $behaviors['verbs']['actions'] = [
+            'get-category-list' =>                          ['get'],
+            'search' =>                                     ['get'],
             'get-category-detail' =>                        ['get'],
             'search-video' =>                               ['get'],
             'get-video-detail' =>                           ['get'],
@@ -43,6 +47,8 @@ class UserCategoryController extends ApiController{
      */
     public function actions() {
         return [
+            'get-category-list' =>                          ['class' => GetCategoryListAction::class],
+            'search' =>                                     ['class' => SearchAction::class],
             'get-category-detail' =>                        ['class' => GetCategoryDetailAction::class],
             'search-video' =>                               ['class' => SearchVideoAction::class],
             'get-video-detail' =>                           ['class' => GetVideoDetailAction::class],
