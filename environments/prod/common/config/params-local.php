@@ -2,8 +2,8 @@
 return [
     /* ffmpeg配置 */
     'ffmpeg' => [
-        'ffmpeg.binaries' => 'D:/Program Files/ffmpeg/bin/ffmpeg.exe',
-        'ffprobe.binaries' => 'D:/Program Files/ffmpeg/bin/ffprobe.exe',
+        'ffmpeg.binaries' => '/usr/bin/ffmpeg',
+        'ffprobe.binaries' => '/usr/bin/ffprobe',
     ],
      /* 阿里云OSS配置 */
     'aliyun' => [
