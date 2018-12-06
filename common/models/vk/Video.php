@@ -24,11 +24,12 @@ use yii\web\UploadedFile;
  * @property string $customer_id                所属客户ID
  * @property string $user_cat_id                用户目录ID
  * @property string $file_id                    文件ID
- * @property string $name                       视频名称
+ * @property int $type                          素材类型
+ * @property string $name                       素材名称
  * @property string $duration                   时长
  * @property int $is_link                       是否为外链：0否 1是
  * @property int $content_level                 内容评级：初1 中2 高3
- * @property string $des                        视频简介
+ * @property string $des                        素材简介
  * @property int $level                         等级：0私有 1内网 2公共
  * @property string $img                        图片路径
  * @property int $is_recommend                  是否推荐：0否 1是
@@ -87,7 +88,13 @@ class Video extends ActiveRecord {
 
     /** 转码失败 */
     const MTS_STATUS_FAIL = 5;
-
+    
+    /* 素材类型 视频、音频、图片、文档 */
+    const TYPE_VIDEO = 1;
+    const TYPE_AUDIO = 2;
+    const TYPE_IMAGE = 3;
+    const TYPE_DOCUMENT = 4;
+    
     /**
      * 可见范围
      * @var array 
@@ -118,7 +125,15 @@ class Video extends ActiveRecord {
         self::MTS_STATUS_YES => '已转码',
         self::MTS_STATUS_FAIL => '转码失败',
     ];
-
+    
+    /* 素材类型名称 */
+    public static $typeMap = [
+        self::TYPE_VIDEO => "视频",
+        self::TYPE_AUDIO => "音频",
+        self::TYPE_IMAGE => "图片",
+        self::TYPE_DOCUMENT => "文档",
+    ];
+    
     /**
      * @inheritdoc
      */
@@ -199,6 +214,7 @@ class Video extends ActiveRecord {
             'teacher_id' => Yii::t('app', 'Teacher ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
             'user_cat_id' => Yii::t('app', 'User Cat ID'),
+            'type' => Yii::t('app', 'Type'),
             'name' => Yii::t('app', 'Name'),
             'duration' => Yii::t('app', 'Duration'),
             'is_link' => Yii::t('app', 'Is Link'),
