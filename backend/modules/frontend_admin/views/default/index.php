@@ -76,15 +76,15 @@ $this->title = Yii::t('app', 'Survey');
                         'Use' => Yii::t('app', 'Use'),
                     ]),
                     'format' => 'raw',
-                    'value' => !empty($usedSpace['size']) ? Yii::$app->formatter->asShortSize($usedSpace['size']) . 
-                        '<span style="color:#929292">（' . sprintf("%.2f", ($usedSpace['size'] / $totalSize) * 100) .' %）</span>' : null,
+                    'value' => !empty($usedSpace) ? Yii::$app->formatter->asShortSize($usedSpace) . 
+                        '<span style="color:#929292">（' . sprintf("%.2f", ($usedSpace / $totalSize) * 100) .' %）</span>' : null,
                 ],
                 [
                     'label' => Yii::t('app', 'Surplus'),
                     'format' => 'raw',
-                    'value' => Yii::$app->formatter->asShortSize($totalSize - $usedSpace['size']) .
-                        '<span style="color:#929292">（' . sprintf("%.2f", ($totalSize - $usedSpace['size']) / $totalSize * 100) . ' % '.
-                                    (((100 - floor($usedSpace['size'] / $totalSize *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
+                    'value' => Yii::$app->formatter->asShortSize($totalSize - $usedSpace) .
+                        '<span style="color:#929292">（' . sprintf("%.2f", ($totalSize - $usedSpace) / $totalSize * 100) . ' % '.
+                                    (((100 - floor($usedSpace / $totalSize *100)) > 10) ? '<span style="color:green"> 充足</span>' : 
                                         '<span style="color:red"> 不足</span>') .'）</span>',
                 ],
             ],

@@ -4,7 +4,7 @@ namespace apiend\modules\v1\actions\sms;
 
 use apiend\components\sms\SmsService;
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\utils\StringUtil;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -14,10 +14,13 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class VerificationAction extends BaseActioin {
+class VerificationAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->post();
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        $post = $this->getSecretParams();
         $code_key = trim(ArrayHelper::getValue($post, 'code_key', null));
         $code = trim(ArrayHelper::getValue($post, 'code', null));
         $phone = trim(ArrayHelper::getValue($post, 'phone', null));

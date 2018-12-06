@@ -12,7 +12,7 @@ $(function (){
         //执行条件，可以是function也可以是Boolean值，如果是函数则需返回true才会执行
         condition: function () {
             var phoneReg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/,
-            flag = phoneReg.test($("#user-phone").val());
+            flag = phoneReg.test($("#dailylessonuser-phone").val() == null ? $("#user-phone").val() : $("#dailylessonuser-phone").val());
             if(!flag){
                 alert("电话号码填写不正确！");
                 return false;
@@ -32,7 +32,7 @@ $(function (){
             btn.html("重新获取");
         },
         eventFn: function () {         //事件执行后的回调
-            var phone = $("#user-phone").val(),
+            var phone = $("#dailylessonuser-phone").val() == null ? $("#user-phone").val() : $("#dailylessonuser-phone").val(),
                 pathname = location.pathname;   //获取当前页面的路径
             $.post("/site/send-sms", {'MOBILE': phone, 'pathname': pathname});
         }

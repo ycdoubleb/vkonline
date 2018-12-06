@@ -23,7 +23,6 @@ use common\models\vk\Teacher;
 use common\models\vk\TeacherCertificate;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
-use common\models\vk\VideoFile;
 use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\db\Exception;
@@ -906,6 +905,7 @@ class ActionUtils
             //查询实体文件
             $uploadFile = $this->findUploadfileModel($fileId);
             //需保存的Video属性
+            $model->file_id = $uploadFile->id;
             $model->duration = $uploadFile->duration;
             $model->img = $uploadFile->thumb_path;
             $model->is_link = $uploadFile->is_link;
@@ -913,9 +913,8 @@ class ActionUtils
             $model->is_publish = 1;
             //保存video属性
             if($model->save()){
-                $videoFile = new VideoFile(['video_id' => $model->id, 'is_source' => 1, 'file_id' => $fileId]);
-                //如果视频实体文件关联表属性保存成功，并且是自动转码，则执行转码需求
-                if($videoFile->save() && $mts_need){
+                //如果自动转码，则执行转码需求
+                if($mts_need){
                     VideoAliyunAction::addVideoTranscode($model->id);
                     VideoAliyunAction::addVideoSnapshot($model->id);
                 }
@@ -957,44 +956,38 @@ class ActionUtils
             $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
             $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
             
+            /* 如果旧的视频实体文件id不等于新的视频实体文件id，则执行 */
+            if($oldAttributes['file_id'] != $fileId){
+                //如果上传的视频文件已经被使用过, 则返回使用者的信息
+                $userInfo = $this->getUploadVideoFileUserInfo($fileId);
+                if($userInfo['results']){
+                    throw new NotFoundHttpException(
+                        "{$userInfo['message']}\n\r"
+                        . "以下是该视频文件著作者的信息：\n\r"
+                        . "著作者：{$userInfo['data']['nickname']}\n\r"
+                        . "手机号：{$userInfo['data']['phone']}\n\r"
+                        . "视频id：{$userInfo['data']['video_id']}\n\r"
+                        . "视频名：{$userInfo['data']['video_name']}\n\r"
+                        . "文件名：{$userInfo['data']['file_name']}"
+                    );
+                }
+                $model->mts_status = Video::MTS_STATUS_NO;  //更改原来的转码状态为“未转码”
+            }
+            
             //查询实体文件
             $uploadFile = $this->findUploadfileModel($fileId);
             //需保存的Video属性
+            $model->file_id = $uploadFile->id;
             $model->duration = $uploadFile->duration;
             $model->img = $uploadFile->thumb_path;
             $model->is_link = $uploadFile->is_link;
             $model->mts_watermark_ids = $watermarkIds;
             //保存video属性
             if($model->save()){
-                //查询视频实体文件关联数据
-                $videoFile = VideoFile::findOne(['video_id' => $model->id,  'is_source' => 1]);
-                /* 如果旧的视频实体文件id不等于新的视频实体文件id，则执行 */
-                if($videoFile->file_id != $fileId){
-                    //如果上传的视频文件已经被使用过, 则返回使用者的信息
-                    $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-                    if($userInfo['results']){
-                        throw new NotFoundHttpException(
-                            "{$userInfo['message']}\n\r"
-                            . "以下是该视频文件著作者的信息：\n\r"
-                            . "著作者：{$userInfo['data']['nickname']}\n\r"
-                            . "手机号：{$userInfo['data']['phone']}\n\r"
-                            . "视频id：{$userInfo['data']['video_id']}\n\r"
-                            . "视频名：{$userInfo['data']['video_name']}\n\r"
-                            . "文件名：{$userInfo['data']['file_name']}"
-                        );
-                    }
-                    $model->mts_status = Video::MTS_STATUS_NO;  //更改原来的转码状态为“未转码”
-                    $videoFile->file_id = $fileId;
-                    /**
-                     * 转码条件：
-                     * 1、转码状态是保存成功
-                     * 2、视频实体文件id是保存成功
-                     * 3、提交的表单数据转码需求是自动转码
-                     */
-                    if($model->save(false, ['mts_status']) && $videoFile->save(false, ['file_id']) && $mts_need){
-                        VideoAliyunAction::addVideoTranscode($model->id);
-                        VideoAliyunAction::addVideoSnapshot($model->id);
-                    }
+                /* 转码条件：提交的表单数据转码需求是自动转码 */
+                if($mts_need){
+                    VideoAliyunAction::addVideoTranscode($model->id);
+                    VideoAliyunAction::addVideoSnapshot($model->id);
                 }
                 $this->saveObjectTags($model->id, $tagIds, 2);
                 //如果设置了新属性的name，则保存日志
@@ -1886,31 +1879,30 @@ class ActionUtils
     {
         //查询视频关联实体文件
         $videoFile = (new Query())->select([
-            'VideoFile.video_id', 'VideoFile.file_id', 
+            'Video.id AS video_id', 'Video.file_id', 
             'Video.name AS video_name', 'Uploadfile.name AS file_name',
             'User.nickname', 'User.sex', 'User.phone', 'User.email'
         ])->from(['Video' => Video::tableName()]);
-        //查询视频
-        $videoFile->leftJoin(['VideoFile' => VideoFile::tableName()], '(VideoFile.video_id = Video.id AND VideoFile.is_source = 1 AND VideoFile.is_del = 0)');
         //查询用户
         $videoFile->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
         //查询文件
-        $videoFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = VideoFile.file_id AND Uploadfile.is_del = 0)');
+        $videoFile->leftJoin(['Uploadfile' => Uploadfile::tableName()], '(Uploadfile.id = Video.file_id AND Uploadfile.is_del = 0)');
         //条件
-        $videoFile->where(['Video.is_del' => 0, 'VideoFile.file_id' => $fileId]);
+        $videoFile->where(['Video.is_del' => 0, 'Video.file_id' => $fileId]);
         //结果
         $userInfo = $videoFile->one();
+        
         //$userInfo是否非空
         if(!empty($userInfo)){
             return [
-                'results' => 1,
+                'results' => true,
                 'data' => $userInfo,
                 'message' => '该视频文件已有著作者，请与该视频的著作者沟通使用。'
             ];
         }
         
         return [
-            'results' => 0,
+            'results' => false,
             'data' => [],
             'message' => '尚未发现有著作者，请放心使用。'
         ];

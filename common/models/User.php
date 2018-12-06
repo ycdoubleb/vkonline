@@ -37,7 +37,8 @@ use yii\web\IdentityInterface;
  * @property string $updated_at             更新时间
  * @property string $password write-only password
  * 
- * @property Customer $customer 客户
+ * @property Customer $customer             客户
+ * @property UserProfile $profile           用户配置属性
  */
 class User extends BaseUser implements IdentityInterface {
 
@@ -47,7 +48,8 @@ class User extends BaseUser implements IdentityInterface {
     const TYPE_FREE = 1;
     //团体用户
     const TYPE_GROUP = 2;
-    
+    //合作伙伴用户,如每日一课
+    const TYPE_PARTNER = 3;
 
     /** 空间大小 MB */
     const MBYTE = 1024 * 1024;
@@ -107,9 +109,10 @@ class User extends BaseUser implements IdentityInterface {
             [['password_hash', 'password2'], 'required', 'on' => [self::SCENARIO_CREATE]],
             [['username', 'nickname', 'phone'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['username'], 'string', 'max' => 36, 'on' => [self::SCENARIO_CREATE]],
+            [['username'], 'checkUsername', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['id', 'username'], 'unique'],
             [['password_hash'], 'string', 'min' => 6, 'max' => 64],
-            [['created_at', 'updated_at', 'is_official', 'sex', 'type'], 'integer'],
+            [['created_at', 'updated_at', 'is_official', 'sex', 'type', 'max_store'], 'integer'],
             [['des'], 'string'],
             [['customer_id', 'id', 'auth_key'], 'string', 'max' => 32],
             [['username', 'nickname'], 'string', 'max' => 50],
@@ -121,10 +124,27 @@ class User extends BaseUser implements IdentityInterface {
             [['avatar'], 'image'],
             [['password2'], 'compare', 'compareAttribute' => 'password_hash'],
             [['avatar'], 'file', 'extensions' => 'jpg, png', 'mimeTypes' => 'image/jpeg, image/png'],
-            [['max_store'], 'checkMaxStore', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]]
+//            [['max_store'], 'checkMaxStore', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]]
         ];
     }
     
+    /**
+     * 检查用户名是否为数字或字母及其组合
+     * @param string $attribute username
+     * @param string $params
+     * @return boolean
+     */
+    public function checkUsername($attribute, $params)
+    {
+        $regex = '/[\x7f-\xff]/';
+        if(preg_match($regex, $this->getAttribute($attribute))) {
+            $this->addError($attribute, "用户名不能包含中文！"); 
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * 检查用户的存储空间是否超过限制
      * @param bigint $attribute     max_store
@@ -168,14 +188,26 @@ class User extends BaseUser implements IdentityInterface {
     {
         return $this->hasOne(Customer::class, ['id' => 'customer_id']);
     }
+    /**
+     * 获取用户配置
+     * @return ActiveQuery
+     */
+    public function getProfile(){
+        return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
+    }
     
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             //设置是否属于官网账号/企业用户or散户
             if($this->customer_id != null){
-                $isOfficial = Customer::findOne(['id' => $this->customer_id]);
-                $this->is_official = $isOfficial->is_official;
-                $this->type = 2;        //企业用户
+                if($this->customer_id == 0){
+                    $this->is_official = 0;
+                    $this->type = $this->type == 1 ? 1 : 2;        //企业用户
+                } else {
+                    $isOfficial = Customer::findOne(['id' => $this->customer_id]);
+                    $this->is_official = $isOfficial->is_official;
+                    $this->type = 2;        //企业用户
+                }
             } else {
                 $this->type = 1;        //散户
                 $this->is_official = 0; //非官网用户

@@ -89,36 +89,36 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                         ],
                     ],
                 ],
-                [
-                    'attribute' => 'status',
-                    'class' => GridViewChangeSelfColumn::class,
-                    'plugOptions' => [
-                        'labels' => ['停用','启用'],
-                        'values' => [0,10],
-                    ],
-                    'disabled' => function($data) use ($userLevel){
-                        return ($data['id'] == Yii::$app->user->id) ? true : 
-                                (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? true : false) : false);
-                    },
-                    'value' => function ($data){
-                        return User::$statusIs[$data['status']];
-                    },
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'status',
-                        'data' => User::$statusIs,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '80px',
-                        ],
-                    ],
-                ],
+//                [
+//                    'attribute' => 'status',
+//                    'class' => GridViewChangeSelfColumn::class,
+//                    'plugOptions' => [
+//                        'labels' => ['停用','启用'],
+//                        'values' => [0,10],
+//                    ],
+//                    'disabled' => function($data) use ($userLevel){
+//                        return ($data['id'] == Yii::$app->user->id) ? true : 
+//                                (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? true : false) : false);
+//                    },
+//                    'value' => function ($data){
+//                        return User::$statusIs[$data['status']];
+//                    },
+//                    'filter' => Select2::widget([
+//                        'model' => $searchModel,
+//                        'attribute' => 'status',
+//                        'data' => User::$statusIs,
+//                        'hideSearch' => true,
+//                        'options' => ['placeholder' => Yii::t('app', 'All')],
+//                        'pluginOptions' => [
+//                            'allowClear' => true,
+//                        ],
+//                    ]),
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'width' => '80px',
+//                        ],
+//                    ],
+//                ],
                 [
                     'attribute' => 'cour_num',
                     'label' => Yii::t('app', 'Course'),
@@ -177,8 +177,8 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                 ],
                 [
                     'class' => 'yii\grid\ActionColumn',
-                    'template' => '{view} {update}{delete}',
-                    'headerOptions' => ['style' => 'width:70px'],
+                    'template' => '{view} {update}',
+                    'headerOptions' => ['style' => 'width:60px'],
                     'contentOptions' => ['style' => 'text-align:center;color:#666666'],
                     'buttons' => [
                         'view' => function ($url, $data, $key) {
@@ -220,27 +220,27 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             ];
                             return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']).' ';
                         },
-                        'delete' => function ($url, $data, $key) use ($userLevel) {
-                            $options = [
-                                'class' => (($data['id'] == Yii::$app->user->id) ? 'disabled' : 
-                                    (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
-                                'style' => 'color:#666666',
-                                'title' => Yii::t('app', 'Delete'),
-                                'aria-label' => Yii::t('app', 'Delete'),
-                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
-                                'data-method' => 'post',
-                                'data-pjax' => '0',
-                            ];
-                            $buttonHtml = [
-                                'name' => '<span class="glyphicon glyphicon-trash"></span>',
-                                'url' => ['delete', 'id' => $data['id']],
-                                'options' => $options,
-                                'symbol' => '&nbsp;',
-                                'conditions' => true,
-                                'adminOptions' => true,
-                            ];
-                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
-                        },       
+//                        'delete' => function ($url, $data, $key) use ($userLevel) {
+//                            $options = [
+//                                'class' => (($data['id'] == Yii::$app->user->id) ? 'disabled' : 
+//                                    (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? 'disabled' : ' ') : ' ')),
+//                                'style' => 'color:#666666',
+//                                'title' => Yii::t('app', 'Delete'),
+//                                'aria-label' => Yii::t('app', 'Delete'),
+//                                'data-confirm' => Yii::t('yii', 'Are you sure you want to delete this item?'),
+//                                'data-method' => 'post',
+//                                'data-pjax' => '0',
+//                            ];
+//                            $buttonHtml = [
+//                                'name' => '<span class="glyphicon glyphicon-trash"></span>',
+//                                'url' => ['delete', 'id' => $data['id']],
+//                                'options' => $options,
+//                                'symbol' => '&nbsp;',
+//                                'conditions' => true,
+//                                'adminOptions' => true,
+//                            ];
+//                            return Html::a($buttonHtml['name'],$buttonHtml['url'],$buttonHtml['options']);
+//                        },       
                     ],
                 ],
             ],

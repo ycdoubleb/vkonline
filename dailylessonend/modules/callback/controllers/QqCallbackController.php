@@ -5,6 +5,7 @@ namespace dailylessonend\modules\callback\controllers;
 use common\components\OAuths\qqAPI\core\QC;
 use common\models\User;
 use common\models\UserAuths;
+use Yii;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotAcceptableHttpException;

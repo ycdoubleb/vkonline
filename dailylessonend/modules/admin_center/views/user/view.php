@@ -50,37 +50,37 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
                          * 启用按钮显示条件：
                          * 1、用户状态要为【禁用】
                          */
-                        if($model->status == User::STATUS_STOP){
-                            echo  '&nbsp;' . Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
-                                'class' => 'btn btn-success btn-flat',
-                                'data' => [
-                                    'pjax' => 0, 
-                                    'confirm' => Yii::t('app', "{Are you sure}{Enable}【{$model->nickname}】{User}", [
-                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Enable' => Yii::t('app', 'Enable'), 
-                                        'User' => Yii::t('app', 'User')
-                                    ]),
-                                    'method' => 'post',
-                                ],
-                            ]);
-                        }
+//                        if($model->status == User::STATUS_STOP){
+//                            echo  '&nbsp;' . Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
+//                                'class' => 'btn btn-success btn-flat',
+//                                'data' => [
+//                                    'pjax' => 0, 
+//                                    'confirm' => Yii::t('app', "{Are you sure}{Enable}【{$model->nickname}】{User}", [
+//                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Enable' => Yii::t('app', 'Enable'), 
+//                                        'User' => Yii::t('app', 'User')
+//                                    ]),
+//                                    'method' => 'post',
+//                                ],
+//                            ]);
+//                        }
                         /**
                          * 禁用按钮显示条件：
                          * 1、不能禁用自己
                          * 2、用户状态要为【启用】
                          */
-                        if($model->id != Yii::$app->user->id && $model->status == User::STATUS_ACTIVE){
-                            echo '&nbsp;' . Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
-                                'class' => 'btn btn-danger btn-flat',
-                                'data' => [
-                                    'pjax' => 0, 
-                                    'confirm' => Yii::t('app', "{Are you sure}{Disabled}【{$model->nickname}】{User}", [
-                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Disabled' => Yii::t('app', 'Disabled'), 
-                                        'User' => Yii::t('app', 'User')
-                                    ]),
-                                    'method' => 'post',
-                                ],
-                            ]);
-                        }
+//                        if($model->id != Yii::$app->user->id && $model->status == User::STATUS_ACTIVE){
+//                            echo '&nbsp;' . Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
+//                                'class' => 'btn btn-danger btn-flat',
+//                                'data' => [
+//                                    'pjax' => 0, 
+//                                    'confirm' => Yii::t('app', "{Are you sure}{Disabled}【{$model->nickname}】{User}", [
+//                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Disabled' => Yii::t('app', 'Disabled'), 
+//                                        'User' => Yii::t('app', 'User')
+//                                    ]),
+//                                    'method' => 'post',
+//                                ],
+//                            ]);
+//                        }
                     }
                 ?>
             </div>
@@ -127,75 +127,75 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
     </div>    
     
     <!--建设数据-->
-    <div class="vk-panel">
+<!--    <div class="vk-panel">
         <div class="title">
             <span>
-                <?= Yii::t('app', '{Build}{Data}',[
-                    'Build' => Yii::t('app', 'Build'), 'Data' => Yii::t('app', 'Data'),
-                ]) ?>
+                <?php // Yii::t('app', '{Build}{Data}',[
+//                    'Build' => Yii::t('app', 'Build'), 'Data' => Yii::t('app', 'Data'),
+//                ]) ?>
             </span>
         </div>
-        <?= DetailView::widget([
-            'model' => $model,
-            'options' => ['class' => 'table detail-view vk-table'],
-            'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
-            'attributes' => [
-                [
-                    'label' => Yii::t('app', 'Course'),
-                    'format' => 'raw',
-                    'value' => $userCouVid['course_num'] . ' 门' .
-                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
-                            "/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"
-                        ]),
-                ],
-                [
-                    'label' => Yii::t('app', 'Video'),
-                    'format' => 'raw',
-                    'value' => $userCouVid['video_num'] . ' 个' .
-                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
-                            "/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"
-                        ]),
-                ],
-            ],
-        ]) ?>
+        <?php // DetailView::widget([
+//            'model' => $model,
+//            'options' => ['class' => 'table detail-view vk-table'],
+//            'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
+//            'attributes' => [
+//                [
+//                    'label' => Yii::t('app', 'Course'),
+//                    'format' => 'raw',
+//                    'value' => $userCouVid['course_num'] . ' 门' .
+//                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
+//                            "/admin_center/course?CourseSearch%5Bcreated_by%5D=$model->id"
+//                        ]),
+//                ],
+//                [
+//                    'label' => Yii::t('app', 'Video'),
+//                    'format' => 'raw',
+//                    'value' => $userCouVid['video_num'] . ' 个' .
+//                        Html::a('<span style="float:right"><i class="icon fa fa-eye"></i></span>', [
+//                            "/admin_center/video?VideoSearch%5Bcreated_by%5D=$model->id"
+//                        ]),
+//                ],
+//            ],
+//        ]) ?>
         
-    </div>
+    </div>-->
     
     <!--学习数据-->
-    <div class="vk-panel">
+<!--    <div class="vk-panel">
         <div class="title">
             <span>
-                <?= Yii::t('app', '{Study}{Data}',[
-                    'Study' => Yii::t('app', 'Study'), 'Data' => Yii::t('app', 'Data'),
-                ]) ?>
+                <?php // Yii::t('app', '{Study}{Data}',[
+//                    'Study' => Yii::t('app', 'Study'), 'Data' => Yii::t('app', 'Data'),
+//                ]) ?>
             </span>
         </div>
-        <?= DetailView::widget([
-            'model' => $model,
-            'options' => ['class' => 'table detail-view vk-table'],
-            'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
-            'attributes' => [
-                [
-                    'label' => '已学课程',
-                    'format' => 'raw',
-                    'value' => $courseProgress['cou_pro_num'] . ' 门',
-                ],
-                [
-                    'label' => '关注课程',
-                    'format' => 'raw',
-                    'value' => $courseFavorite['cou_fav_num'] . ' 门',
-                ],
-                [
-                    'label' => '收藏视频',
-                    'format' => 'raw',
-                    'value' => $videoFavorite['vid_fav_num'] . ' 个',
-                ],
-                [
-                    'label' => '评论',
-                    'format' => 'raw',
-                    'value' => $courseMessage['cou_mes_num'] . ' 条',
-                ],
-            ],
-        ]) ?>
-    </div>
+        <?php // DetailView::widget([
+//            'model' => $model,
+//            'options' => ['class' => 'table detail-view vk-table'],
+//            'template' => '<tr><th class="detail-th">{label}</th><td class="detail-td">{value}</td></tr>',
+//            'attributes' => [
+//                [
+//                    'label' => '已学课程',
+//                    'format' => 'raw',
+//                    'value' => $courseProgress['cou_pro_num'] . ' 门',
+//                ],
+//                [
+//                    'label' => '关注课程',
+//                    'format' => 'raw',
+//                    'value' => $courseFavorite['cou_fav_num'] . ' 门',
+//                ],
+//                [
+//                    'label' => '收藏视频',
+//                    'format' => 'raw',
+//                    'value' => $videoFavorite['vid_fav_num'] . ' 个',
+//                ],
+//                [
+//                    'label' => '评论',
+//                    'format' => 'raw',
+//                    'value' => $courseMessage['cou_mes_num'] . ' 条',
+//                ],
+//            ],
+//        ]) ?>
+    </div>-->
 </div>

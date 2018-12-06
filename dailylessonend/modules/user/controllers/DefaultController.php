@@ -3,7 +3,7 @@
 namespace dailylessonend\modules\user\controllers;
 
 use common\components\OAuths\weiboAPI\SaeTOAuthV2;
-use common\models\User;
+use dailylessonend\models\DailyLessonUser;
 use common\models\UserAuths;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
@@ -70,22 +70,22 @@ class DefaultController extends Controller
 
         return $this->render('index', [
             'model' => $model,
-            'userBrand' => User::getUserBrand($model->id),         //用户绑定的品牌
-            'usedSpace' => $this->getUsedSpace($model->id),               //用户已经使用的空间
+            'userBrand' => DailyLessonUser::getUserBrand($model->id),         //用户绑定的品牌
+//            'usedSpace' => $this->getUsedSpace($model->id),               //用户已经使用的空间
             'userCouVid' => $this->getUserCouVid($model->id),             //用户自己创建的课程和视频
             'courseProgress' => $this->getCourseProgress($model->id),     //已学课程数
             'courseFavorite' => $this->getCourseFavorite($model->id),     //关注的课程数
             'videoFavorite' => $this->getVideoFavorite($model->id),       //收藏的视频数
             'courseMessage' => $this->getCourseMessage($model->id),       //评论数
-            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
-            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
-            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
-            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
+//            'weibo_url' => $weibo->getAuthorizeURL($weiboConfig['WB_CALLBACK_URL']), //微博登录回调地址
+//            'weiboUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'weibo']),  //是否已经绑定微博账号
+//            'qqUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'qq']),        //是否已绑定QQ号
+//            'wechatUser' => UserAuths::findOne(['user_id' => $model->id, 'identity_type' => 'wechat']),//是否已绑定微信账号
         ]);
     }
     
     /**
-     * 显示一个单一的 User 模型.
+     * 显示一个单一的 DailyLessonUser 模型.
      * @return mixed [model => 模型]
      */
     public function actionInfo($id)
@@ -102,7 +102,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * 更新现有的 User 模型。
+     * 更新现有的 DailyLessonUser 模型。
      * 如果更新成功，浏览器将被重定向到“index”页面。
      * @param string $id
      * @return mixed
@@ -111,7 +111,7 @@ class DefaultController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = User::SCENARIO_UPDATE;
+        $model->scenario = DailyLessonUser::SCENARIO_UPDATE;
         
         if($model->id != Yii::$app->user->id){
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
@@ -234,6 +234,10 @@ class DefaultController extends Controller
                 $num = UserBrand::userBingding($user_id, $brand_id['id'], true);
             } 
             if($num > 0){
+                $model = $this->findModel($user_id);
+                $model->customer_id = $brand_id['id'];
+                $model->type = 2;
+                $model->save(false, ['customer_id', 'type']);
                 Yii::$app->getSession()->setFlash('success','操作成功！');
                 return ['code' => 200];
             } else {
@@ -244,15 +248,15 @@ class DefaultController extends Controller
     
     
     /**
-     * 根据其主键值查找 User 模型。
+     * 根据其主键值查找 DailyLessonUser 模型。
      * 如果找不到模型，就会抛出404个HTTP异常。
      * @param string $id
-     * @return model User 
+     * @return model DailyLessonUser 
      * @throws NotFoundHttpException
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = DailyLessonUser::findOne($id)) !== null) {
             return $model;
         }else{
             throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));

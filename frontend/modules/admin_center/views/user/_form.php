@@ -38,7 +38,7 @@ use yii\widgets\ActiveForm;
     <!--用户名-->
     <?= $form->field($model, 'username')->textInput([
         'maxlength' => true, 
-        'placeholder' => '用户名/手机号（注：用户名请不要用中文）',
+        'placeholder' => '用户名/手机号（注：用户名不能包含中文）',
         'disabled' => $model->isNewRecord ? false : true
     ]) ?>
     

@@ -60,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'des:ntext',
                 [
                     'label' => Yii::t('app', 'Created By'),
-                    'value' => $model->createdBy->nickname,
+                    'value' => empty($model->created_by) ? null : $model->createdBy->nickname,
                 ],
                 [
                     'label' => Yii::t('app', 'Created At'),

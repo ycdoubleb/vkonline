@@ -8,7 +8,7 @@ use common\models\vk\Customer;
 use common\models\vk\Knowledge;
 use common\models\vk\TagRef;
 use common\models\vk\Teacher;
-use common\models\vk\VideoFile;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -20,38 +20,39 @@ use yii\web\UploadedFile;
  * This is the model class for table "{{%video}}".
  *
  * @property string $id
- * @property string $teacher_id 老师ID
- * @property string $customer_id 所属客户ID
- * @property string $user_cat_id 用户目录ID
- * @property string $name 视频名称
- * @property string $duration 时长
- * @property int $is_link 是否为外链：0否 1是
- * @property int $content_level 内容评级：初1 中2 高3
- * @property string $des 视频简介
- * @property int $level 等级：0私有 1内网 2公共
- * @property string $img 图片路径
- * @property int $is_recommend 是否推荐：0否 1是
- * @property int $is_publish 是否发布：0否 1是
- * @property int $is_official 是否为官网资源：0否 1是
- * @property string $zan_count 赞数
- * @property string $favorite_count 收藏数
- * @property int $is_del 是否删除：0否 1是
- * @property int $sort_order 排序
- * @property int $mts_status            是否转码：0未转码 1转码中 2已转码 5转码失败
- * @property int $mts_need              是否需要转码：0否 1是
- * @property string $mts_watermark_ids     水印配置，多个使用逗号分隔
- * @property string $created_by 创建人ID
- * @property string $created_at 创建时间
- * @property string $updated_at 更新时间
+ * @property string $teacher_id                 老师ID
+ * @property string $customer_id                所属客户ID
+ * @property string $user_cat_id                用户目录ID
+ * @property string $file_id                    文件ID
+ * @property int $type                          素材类型
+ * @property string $name                       素材名称
+ * @property string $duration                   时长
+ * @property int $is_link                       是否为外链：0否 1是
+ * @property int $content_level                 内容评级：初1 中2 高3
+ * @property string $des                        素材简介
+ * @property int $level                         等级：0私有 1内网 2公共
+ * @property string $img                        图片路径
+ * @property int $is_recommend                  是否推荐：0否 1是
+ * @property int $is_publish                    是否发布：0否 1是
+ * @property int $is_official                   是否为官网资源：0否 1是
+ * @property string $zan_count                  赞数
+ * @property string $favorite_count             收藏数
+ * @property int $is_del                        是否删除：0否 1是
+ * @property int $sort_order                    排序
+ * @property int $mts_status                    是否转码：0未转码 1转码中 2已转码 5转码失败
+ * @property int $mts_need                      是否需要转码：0否 1是
+ * @property string $mts_watermark_ids          水印配置，多个使用逗号分隔
+ * @property string $created_by                 创建人ID
+ * @property string $created_at                 创建时间
+ * @property string $updated_at                 更新时间
  *
- * @property UserCategory $userCategory 获取用户自定义分类
- * @property Customer $customer 获取客户
- * @property User $createdBy 获取创建者
- * @property Teacher $teacher 获取老师
- * @property VideoFile $videoFile     获取视频与实体文件关联表
- * @property TagRef[] $tagRefs 获取标签
- * @property Knowledge[] $knowledges    获取所有知识点
- * @property VideoFile[] $videoFiles     获取所有视频与实体文件关联表
+ * @property UserCategory $userCategory         获取用户自定义分类
+ * @property Customer $customer                 获取客户
+ * @property User $createdBy                    获取创建者
+ * @property Teacher $teacher                   获取老师
+ * @property Uploadfile $file                   获取上传文件
+ * @property TagRef[] $tagRefs                  获取标签
+ * @property Knowledge[] $knowledges            获取所有知识点
  */
 class Video extends ActiveRecord {
 
@@ -87,7 +88,13 @@ class Video extends ActiveRecord {
 
     /** 转码失败 */
     const MTS_STATUS_FAIL = 5;
-
+    
+    /* 素材类型 视频、音频、图片、文档 */
+    const TYPE_VIDEO = 1;
+    const TYPE_AUDIO = 2;
+    const TYPE_IMAGE = 3;
+    const TYPE_DOCUMENT = 4;
+    
     /**
      * 可见范围
      * @var array 
@@ -118,7 +125,15 @@ class Video extends ActiveRecord {
         self::MTS_STATUS_YES => '已转码',
         self::MTS_STATUS_FAIL => '转码失败',
     ];
-
+    
+    /* 素材类型名称 */
+    public static $typeMap = [
+        self::TYPE_VIDEO => "视频",
+        self::TYPE_AUDIO => "音频",
+        self::TYPE_IMAGE => "图片",
+        self::TYPE_DOCUMENT => "文档",
+    ];
+    
     /**
      * @inheritdoc
      */
@@ -138,9 +153,9 @@ class Video extends ActiveRecord {
     public function scenarios() {
         return [
             self::SCENARIO_TOOL_UPLOAD =>
-            ['id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
+            ['id','file_id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
             self::SCENARIO_DEFAULT =>
-            ['id', 'teacher_id', 'customer_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+            ['id', 'teacher_id', 'customer_id','file_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'des', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
         ];
     }
@@ -163,7 +178,7 @@ class Video extends ActiveRecord {
             [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
             [['des'], 'string'],
-            [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'teacher_id', 'customer_id', 'file_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             [['img'], 'string', 'max' => 255],
             [['id'], 'unique'],
@@ -199,6 +214,7 @@ class Video extends ActiveRecord {
             'teacher_id' => Yii::t('app', 'Teacher ID'),
             'customer_id' => Yii::t('app', 'Customer ID'),
             'user_cat_id' => Yii::t('app', 'User Cat ID'),
+            'type' => Yii::t('app', 'Type'),
             'name' => Yii::t('app', 'Name'),
             'duration' => Yii::t('app', 'Duration'),
             'is_link' => Yii::t('app', 'Is Link'),
@@ -287,9 +303,9 @@ class Video extends ActiveRecord {
     /**
      * @return ActiveQuery
      */
-    public function getVideoFile() {
-        return $this->hasOne(VideoFile::className(), ['video_id' => 'id'])
-                        ->where(['is_source' => 1, 'is_del' => 0]);
+    public function getFile()
+    {
+        return $this->hasOne(Uploadfile::className(), ['id' => 'file_id']);
     }
 
     /**
@@ -305,13 +321,6 @@ class Video extends ActiveRecord {
      */
     public function getKnowledges() {
         return $this->hasMany(Knowledge::className(), ['video_id' => 'id']);
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getVideoFiles() {
-        return $this->hasMany(VideoFile::className(), ['video_id' => 'id']);
     }
 
     /**

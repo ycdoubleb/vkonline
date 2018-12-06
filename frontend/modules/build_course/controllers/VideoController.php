@@ -168,7 +168,7 @@ class VideoController extends Controller
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
-        
+
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             if($is_success){
@@ -209,11 +209,11 @@ class VideoController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
-        
+                
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->videoFile->file_id)),    //已存在的视频文件
+            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),    //已存在的视频文件
             'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
@@ -241,7 +241,7 @@ class VideoController extends Controller
         if (Yii::$app->request->isPost) {
             $is_success = ActionUtils::getInstance()->deleteVideo($model);
             if($is_success){
-                return $this->redirect(['index']);
+                return $this->redirect(['index', 'user_cat_id' => $model->user_cat_id == 0 ? null : $model->user_cat_id]);
             }else{
                 Yii::$app->getSession()->setFlash('error','操作失败，该视频在其它地方被引用了。');
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -253,27 +253,28 @@ class VideoController extends Controller
      * 转码 现有的 Video。
      * 如果转码成功，浏览器将被重定向到“查看”页面。
      * @param string $id
+     * @param bool $force 强制转码
      * @return mixed
      */
-    public function actionTranscoding($id)
+    public function actionTranscoding($id ,$force = false)
     {
         $model = $this->findModel($id);
-        
-        if($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING){
-            if($model->is_del){
+
+        if ($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) {
+            if ($model->is_del) {
                 throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
             }
-            if($model->mts_status == Video::MTS_STATUS_YES){
+            if (!$force && $model->mts_status == Video::MTS_STATUS_YES) {
                 throw new NotFoundHttpException(Yii::t('app', '该视频已转码，请不要重复转码。'));
             }
-            if($model->mts_status == Video::MTS_STATUS_DOING){
+            if (!$force && $model->mts_status == Video::MTS_STATUS_DOING) {
                 throw new NotFoundHttpException(Yii::t('app', '该视频正在转码中。'));
             }
-        }else{
+        } else {
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
-        
-        if (Yii::$app->request->isPost) {
+
+        if (Yii::$app->request->isPost || $force) {
             ActionUtils::getInstance()->transcodingVideo($model);
             return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
         }

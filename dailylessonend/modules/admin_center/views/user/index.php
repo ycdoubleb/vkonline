@@ -89,60 +89,60 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                         ],
                     ],
                 ],
-                [
-                    'attribute' => 'status',
-                    'class' => GridViewChangeSelfColumn::class,
-                    'plugOptions' => [
-                        'labels' => ['停用','启用'],
-                        'values' => [0,10],
-                    ],
-                    'disabled' => function($data) use ($userLevel){
-                        return ($data['id'] == Yii::$app->user->id) ? true : 
-                                (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? true : false) : false);
-                    },
-                    'value' => function ($data){
-                        return User::$statusIs[$data['status']];
-                    },
-                    'filter' => Select2::widget([
-                        'model' => $searchModel,
-                        'attribute' => 'status',
-                        'data' => User::$statusIs,
-                        'hideSearch' => true,
-                        'options' => ['placeholder' => Yii::t('app', 'All')],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                        ],
-                    ]),
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '80px',
-                        ],
-                    ],
-                ],
-                [
-                    'attribute' => 'cour_num',
-                    'label' => Yii::t('app', 'Course'),
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '105px',
-                        ],
-                    ],
-                    'value' => function($data) {
-                        return (isset($data['cour_num']) ? $data['cour_num'] : 0 ). ' 门';
-                    },
-                ],
-                [
-                    'attribute' => 'video_num',
-                    'label' => Yii::t('app', 'Video'),
-                    'headerOptions' => [
-                        'style' => [
-                            'width' => '105px',
-                        ],
-                    ],
-                    'value' => function($data) {
-                        return (isset($data['node_num']) ? $data['node_num'] : 0)  . ' 个';
-                    },
-                ],
+//                [
+//                    'attribute' => 'status',
+//                    'class' => GridViewChangeSelfColumn::class,
+//                    'plugOptions' => [
+//                        'labels' => ['停用','启用'],
+//                        'values' => [0,10],
+//                    ],
+//                    'disabled' => function($data) use ($userLevel){
+//                        return ($data['id'] == Yii::$app->user->id) ? true : 
+//                                (!empty($data['level']) ? ($userLevel['level'] >= $data['level'] ? true : false) : false);
+//                    },
+//                    'value' => function ($data){
+//                        return User::$statusIs[$data['status']];
+//                    },
+//                    'filter' => Select2::widget([
+//                        'model' => $searchModel,
+//                        'attribute' => 'status',
+//                        'data' => User::$statusIs,
+//                        'hideSearch' => true,
+//                        'options' => ['placeholder' => Yii::t('app', 'All')],
+//                        'pluginOptions' => [
+//                            'allowClear' => true,
+//                        ],
+//                    ]),
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'width' => '80px',
+//                        ],
+//                    ],
+//                ],
+//                [
+//                    'attribute' => 'cour_num',
+//                    'label' => Yii::t('app', 'Course'),
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'width' => '105px',
+//                        ],
+//                    ],
+//                    'value' => function($data) {
+//                        return (isset($data['cour_num']) ? $data['cour_num'] : 0 ). ' 门';
+//                    },
+//                ],
+//                [
+//                    'attribute' => 'video_num',
+//                    'label' => Yii::t('app', 'Video'),
+//                    'headerOptions' => [
+//                        'style' => [
+//                            'width' => '105px',
+//                        ],
+//                    ],
+//                    'value' => function($data) {
+//                        return (isset($data['node_num']) ? $data['node_num'] : 0)  . ' 个';
+//                    },
+//                ],
 //                [
 //                    'attribute' => 'max_store',
 //                    'filter' => false,

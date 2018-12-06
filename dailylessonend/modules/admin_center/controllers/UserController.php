@@ -3,7 +3,7 @@
 namespace dailylessonend\modules\admin_center\controllers;
 
 use common\models\searchs\UserSearch;
-use common\models\User;
+use dailylessonend\models\DailyLessonUser;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
@@ -25,7 +25,7 @@ use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
- * UserController implements the CRUD actions for User model.
+ * UserController implements the CRUD actions for DailyLessonUser model.
  */
 class UserController extends GridViewChangeSelfController
 {
@@ -55,7 +55,7 @@ class UserController extends GridViewChangeSelfController
     }
 
     /**
-     * Lists all User models.
+     * Lists all DailyLessonUser models.
      * @return mixed
      */
     public function actionIndex()
@@ -75,7 +75,7 @@ class UserController extends GridViewChangeSelfController
     }
 
     /**
-     * Displays a single User model.
+     * Displays a single DailyLessonUser model.
      * @param string $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -96,7 +96,7 @@ class UserController extends GridViewChangeSelfController
     }
 
     /**
-     * Creates a new User model.
+     * Creates a new DailyLessonUser model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
@@ -104,9 +104,9 @@ class UserController extends GridViewChangeSelfController
     {
         $customer_id = Yii::$app->user->identity->customer_id;
         
-        $model = new User(['customer_id' => $customer_id]);
+        $model = new DailyLessonUser(['customer_id' => $customer_id]);
         $model->loadDefaultValues();
-        $model->scenario = User::SCENARIO_CREATE;
+        $model->scenario = DailyLessonUser::SCENARIO_CREATE;
              
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //绑定品牌
@@ -120,7 +120,7 @@ class UserController extends GridViewChangeSelfController
     }
 
     /**
-     * Updates an existing User model.
+     * Updates an existing DailyLessonUser model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param string $id
      * @return mixed
@@ -129,7 +129,7 @@ class UserController extends GridViewChangeSelfController
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->scenario = User::SCENARIO_UPDATE;   
+        $model->scenario = DailyLessonUser::SCENARIO_UPDATE;   
         
         if(!$this->getIsCustomerAdmin($id)){
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
@@ -140,7 +140,7 @@ class UserController extends GridViewChangeSelfController
             UserBrand::userBingding($model->id, $model->customer_id, true);
             return $this->redirect(['view', 'id' => $model->id]);
         }else{
-            $model->max_store = ($model->max_store / User::MBYTE);
+            $model->max_store = ($model->max_store / DailyLessonUser::MBYTE);
             return $this->render('update', [
                 'model' => $model,
             ]);
@@ -148,7 +148,7 @@ class UserController extends GridViewChangeSelfController
     }
 
     /**
-     * Deletes an existing User model.
+     * Deletes an existing DailyLessonUser model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -166,7 +166,7 @@ class UserController extends GridViewChangeSelfController
             throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
         }
         
-        $model->status = User::STATUS_STOP;
+        $model->status = DailyLessonUser::STATUS_STOP;
         $model->save(false,['status']);
         //绑定品牌(标记为删除)
         UserBrand::userBingding($model->id, $model->customer_id, false);
@@ -175,7 +175,7 @@ class UserController extends GridViewChangeSelfController
     }
     
     /**
-     * Enables an existing User model.
+     * Enables an existing DailyLessonUser model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param string $id
      * @return mixed
@@ -185,22 +185,22 @@ class UserController extends GridViewChangeSelfController
     {
         $model = $this->findModel($id);
         
-        $model->status = User::STATUS_ACTIVE;
+        $model->status = DailyLessonUser::STATUS_ACTIVE;
         $model->save(false,['status']);
         
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the User model based on its primary key value.
+     * Finds the DailyLessonUser model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param string $id
-     * @return User the loaded model
+     * @return DailyLessonUser the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = User::findOne($id)) !== null) {
+        if (($model = DailyLessonUser::findOne($id)) !== null) {
             return $model;
         }
 
@@ -229,13 +229,13 @@ class UserController extends GridViewChangeSelfController
      */
     public function getUserCouVid($user_id)
     {
-        $userCou = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Course.id) AS course_num'])
+        $userCou = (new Query())->from(['User' => DailyLessonUser::tableName()])->select(['COUNT(Course.id) AS course_num'])
                 ->leftJoin(['Course' => Course::tableName()], 'Course.created_by = User.id')         //关联查询课程
                 ->where([
                     'User.id' => $user_id,
                     'Course.customer_id' => Yii::$app->user->identity->customer_id,
                 ])->one();
-        $userVid = (new Query())->from(['User' => User::tableName()])->select(['COUNT(Video.id) AS video_num'])
+        $userVid = (new Query())->from(['User' => DailyLessonUser::tableName()])->select(['COUNT(Video.id) AS video_num'])
                 ->leftJoin(['Video' => Video::tableName()], 'Video.created_by = User.id')            //关联查询视频
                 ->where([
                     'User.id' => $user_id,
@@ -255,7 +255,7 @@ class UserController extends GridViewChangeSelfController
     {
         $courseProgress = (new Query())
                 ->select(['COUNT(CourseProgress.user_id) AS cou_pro_num'])
-                ->from(['User' => User::tableName()])
+                ->from(['User' => DailyLessonUser::tableName()])
                 ->leftJoin(['CourseProgress' => CourseProgress::tableName()], 'CourseProgress.user_id = User.id')
                 ->where(['CourseProgress.is_finish' => 1,'User.id' => $user_id,])
                 ->one();
@@ -272,7 +272,7 @@ class UserController extends GridViewChangeSelfController
     {
         $videoProgress = (new Query())
                 ->select(['COUNT(VideoProgress.user_id) AS vid_pro_num'])
-                ->from(['User' => User::tableName()])
+                ->from(['User' => DailyLessonUser::tableName()])
                 ->leftJoin(['VideoProgress' => VideoProgress::tableName()], 'VideoProgress.user_id = User.id')
                 ->where(['VideoProgress.is_finish' => 1,'User.id' => $user_id,])
                 ->one();
@@ -290,7 +290,7 @@ class UserController extends GridViewChangeSelfController
     {
         $courseFavorite = (new Query())
                 ->select(['COUNT(CourseFavorite.user_id) AS cou_fav_num'])
-                ->from(['User' => User::tableName()])
+                ->from(['User' => DailyLessonUser::tableName()])
                 ->leftJoin(['CourseFavorite' => CourseFavorite::tableName()], 'CourseFavorite.user_id = User.id')
                 ->where(['User.id' => $user_id])
                 ->one();
@@ -307,7 +307,7 @@ class UserController extends GridViewChangeSelfController
     {
         $videoFavorite = (new Query())
                 ->select(['COUNT(VideoFavorite.user_id) AS vid_fav_num'])
-                ->from(['User' => User::tableName()])
+                ->from(['User' => DailyLessonUser::tableName()])
                 ->leftJoin(['VideoFavorite' => VideoFavorite::tableName()], 'VideoFavorite.user_id = User.id')
                 ->where(['User.id' => $user_id])
                 ->one();
@@ -324,7 +324,7 @@ class UserController extends GridViewChangeSelfController
     {
         $courseMessage = (new Query())
                 ->select(['COUNT(CourseMessage.user_id) AS cou_mes_num'])
-                ->from(['User' => User::tableName()])
+                ->from(['User' => DailyLessonUser::tableName()])
                 ->leftJoin(['CourseMessage' => CourseMessage::tableName()], 'CourseMessage.user_id = User.id')
                 ->where(['User.id' => $user_id])
                 ->one();

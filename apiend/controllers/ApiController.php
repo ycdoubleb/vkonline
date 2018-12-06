@@ -3,13 +3,13 @@
 
 namespace apiend\controllers;
 
+use apiend\components\auth\QueryParamHeaderAuth;
 use Yii;
 use yii\base\Controller;
 use yii\base\ErrorException;
 use yii\base\Event;
 use yii\base\UserException;
 use yii\db\Exception;
-use yii\filters\auth\QueryParamAuth;
 use yii\filters\VerbFilter;
 use yii\web\ForbiddenHttpException;
 use yii\web\HttpException;
@@ -33,7 +33,7 @@ class ApiController extends Controller {
         $behaviors = parent::behaviors();
         /* 使用令牌访问规则 */
         $behaviors['authenticator'] = [
-            'class' => QueryParamAuth::className(),
+            'class' => QueryParamHeaderAuth::className(),
             'optional' => [
                 //'login',  //设置login接口可忽视该规则
             ],

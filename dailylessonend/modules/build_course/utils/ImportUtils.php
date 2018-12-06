@@ -1,35 +1,20 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace dailylessonend\modules\build_course\utils;
 
 use common\components\aliyuncs\Aliyun;
-use common\models\vk\CourseActLog;
-use common\models\vk\CourseNode;
-use common\models\vk\CustomerWatermark;
-use common\models\vk\Knowledge;
-use common\models\vk\KnowledgeVideo;
-use common\models\vk\TagRef;
-use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
-use common\models\vk\Video;
-use common\models\vk\VideoFile;
-use common\modules\webuploader\models\Uploadfile;
+use dailylessonend\modules\build_course\utils\ActionUtils;
+use dailylessonend\modules\build_course\utils\ImportUtils;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\MemoryDrawing;
-use Yii;
 use yii\data\ArrayDataProvider;
-use yii\db\Exception;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\UploadedFile;
+
 
 /**
  * Description of ImportUtils
@@ -261,7 +246,7 @@ class ImportUtils {
             {  
                 $category = new UserCategory([
                     'name' => trim($name), 'parent_id' => $parent_id, 'type' => 1,
-                    'created_by' => \Yii::$app->user->id
+                    'created_by' => Yii::$app->user->id
                 ]);
                 //如果parent_id == 0，则level = 1，否则level就是父级的level + 1
                 if($category->parent_id == 0){
@@ -299,7 +284,7 @@ class ImportUtils {
         $userCategory = (new Query())->from(['UserCategory' => UserCategory::tableName()]);
         $userCategory->select(['UserCategory.id', 'UserCategory.path']);
         $userCategory->where(['UserCategory.name' => $dirs, 'UserCategory.type' => 1]);
-        $userCategory->andWhere(['or', ['UserCategory.created_by' => \Yii::$app->user->id], ['UserCategory.is_public' => 1]]);
+        $userCategory->andWhere(['or', ['UserCategory.created_by' => Yii::$app->user->id], ['UserCategory.is_public' => 1]]);
         $userCategory->orderBy(['UserCategory.path' => SORT_ASC]);
         $categorys = $userCategory->all();
         //获取需要的已存在目录
@@ -344,7 +329,7 @@ class ImportUtils {
         $teacher->where($condition);
         $teacher->andWhere(['Teacher.is_del' => 0]);
         $teacher->andWhere([
-            'or', ['Teacher.created_by' => \Yii::$app->user->id], ['is_certificate' => 1]
+            'or', ['Teacher.created_by' => Yii::$app->user->id], ['is_certificate' => 1]
         ]);
         $teacher_results = $teacher->all();
         

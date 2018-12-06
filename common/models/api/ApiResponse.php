@@ -55,6 +55,18 @@ class ApiResponse {
     const CODE_COMMON_FORBIDDEN = '10005';
     
     /**
+     * 超时
+     * eg: 
+     */
+    const CODE_COMMON_TIMEOUT = '10006';
+    
+    /**
+     * 签名验证失败
+     * eg: 
+     */
+    const CODE_COMMON_VERIFY_SIGN_FAIL = '10007';
+    
+    /**
      * 未知错误
      */
     const CODE_COMMON_UNKNOWN = '10099';
@@ -106,6 +118,8 @@ class ApiResponse {
             self::CODE_COMMON_DATA_INVALID => '{param}无效',
             self::CODE_COMMON_NOT_FOUND => '找不到对应{param}',
             self::CODE_COMMON_FORBIDDEN => '禁止访问',
+            self::CODE_COMMON_TIMEOUT => '访问超时',
+            self::CODE_COMMON_VERIFY_SIGN_FAIL => '签名验证失败',
             self::CODE_COMMON_UNKNOWN => '未知错误！',
         ];
     }

@@ -50,37 +50,37 @@ $userLevel = CustomerAdmin::find()->where(['user_id' => Yii::$app->user->id])->o
                          * 启用按钮显示条件：
                          * 1、用户状态要为【禁用】
                          */
-                        if($model->status == User::STATUS_STOP){
-                            echo  '&nbsp;' . Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
-                                'class' => 'btn btn-success btn-flat',
-                                'data' => [
-                                    'pjax' => 0, 
-                                    'confirm' => Yii::t('app', "{Are you sure}{Enable}【{$model->nickname}】{User}", [
-                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Enable' => Yii::t('app', 'Enable'), 
-                                        'User' => Yii::t('app', 'User')
-                                    ]),
-                                    'method' => 'post',
-                                ],
-                            ]);
-                        }
+//                        if($model->status == User::STATUS_STOP){
+//                            echo  '&nbsp;' . Html::a(Yii::t('app', 'Enable'), ['enable', 'id' => $model->id], [
+//                                'class' => 'btn btn-success btn-flat',
+//                                'data' => [
+//                                    'pjax' => 0, 
+//                                    'confirm' => Yii::t('app', "{Are you sure}{Enable}【{$model->nickname}】{User}", [
+//                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Enable' => Yii::t('app', 'Enable'), 
+//                                        'User' => Yii::t('app', 'User')
+//                                    ]),
+//                                    'method' => 'post',
+//                                ],
+//                            ]);
+//                        }
                         /**
                          * 禁用按钮显示条件：
                          * 1、不能禁用自己
                          * 2、用户状态要为【启用】
                          */
-                        if($model->id != Yii::$app->user->id && $model->status == User::STATUS_ACTIVE){
-                            echo '&nbsp;' . Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
-                                'class' => 'btn btn-danger btn-flat',
-                                'data' => [
-                                    'pjax' => 0, 
-                                    'confirm' => Yii::t('app', "{Are you sure}{Disabled}【{$model->nickname}】{User}", [
-                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Disabled' => Yii::t('app', 'Disabled'), 
-                                        'User' => Yii::t('app', 'User')
-                                    ]),
-                                    'method' => 'post',
-                                ],
-                            ]);
-                        }
+//                        if($model->id != Yii::$app->user->id && $model->status == User::STATUS_ACTIVE){
+//                            echo '&nbsp;' . Html::a(Yii::t('app', 'Disabled'), ['delete', 'id' => $model->id], [
+//                                'class' => 'btn btn-danger btn-flat',
+//                                'data' => [
+//                                    'pjax' => 0, 
+//                                    'confirm' => Yii::t('app', "{Are you sure}{Disabled}【{$model->nickname}】{User}", [
+//                                        'Are you sure' => Yii::t('app', 'Are you sure '), 'Disabled' => Yii::t('app', 'Disabled'), 
+//                                        'User' => Yii::t('app', 'User')
+//                                    ]),
+//                                    'method' => 'post',
+//                                ],
+//                            ]);
+//                        }
                     }
                 ?>
             </div>

@@ -5,7 +5,7 @@ namespace apiend\modules\v1\actions\user;
 use apiend\components\sms\SmsService;
 use apiend\models\LoginForm;
 use apiend\models\Response;
-use apiend\modules\v1\actions\BaseActioin;
+use apiend\modules\v1\actions\BaseAction;
 use common\models\vk\Customer;
 use common\models\vk\UserBrand;
 use Yii;
@@ -16,10 +16,15 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class LoginAction extends BaseActioin {
+class LoginAction extends BaseAction {
 
     public function run() {
-        $post = Yii::$app->request->post();
+        
+        if (!$this->verify()) {
+            return $this->verifyError;
+        }
+        
+        $post = $this->getSecretParams();
         $model = new LoginForm();
         /* 验证方式 1用户名和密码，2手机号和短信 */
         $type = ArrayHelper::getValue($post, 'type', 1);
@@ -61,7 +66,8 @@ class LoginAction extends BaseActioin {
                     ->all();
             return new Response(Response::CODE_COMMON_OK, null, [
                 'user' => $user,
-                'access-token' => Yii::$app->user->identity->access_token,
+                'access_token' => Yii::$app->user->identity->access_token,
+                'access_token_expire_time' => Yii::$app->user->identity->access_token_expire_time,
             ]);
         } else {
             return new Response(Response::CODE_USER_AUTH_FAILED, null, $model->errors);

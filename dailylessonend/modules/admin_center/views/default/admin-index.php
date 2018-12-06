@@ -98,7 +98,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             'title' => Yii::t('yii', 'Update'),
                             'aria-label' => Yii::t('yii', 'Update'),
                             'data-pjax' => '0',
-                            'onclick' => 'showElemModal($(this));return false;'
+                            'onclick' => 'showModal($(this).attr("href"));return false;'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="fa fa-pencil"></span>',
@@ -119,7 +119,7 @@ $userLevel = CustomerAdmin::find()->select(['level'])
                             'aria-label' => Yii::t('yii', 'Delete'),
                             'data-pjax' => '0',
                             //'data' => ['method' => 'post'],
-                            'onclick' => 'showElemModal($(this));return false;'
+                            'onclick' => 'showModal($(this).attr("href"));return false;'
                         ];
                         $buttonHtml = [
                             'name' => '<span class="glyphicon glyphicon-trash"></span>',

@@ -4,7 +4,6 @@ namespace common\modules\webuploader\models;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
-use common\utils\StringUtil;
 use OSS\Core\OssException;
 use Yii;
 use yii\base\Exception;
@@ -139,7 +138,6 @@ class Uploadfile extends ActiveRecord {
      * @return array [success,msg]
      */
     public function uploadOSS($key = null) {
-        $thumb_key = '';
         if ($key == null) {
             /* @var $user User */
             $user = User::findOne(['id' => $this->created_by]);
@@ -150,14 +148,15 @@ class Uploadfile extends ActiveRecord {
             } else if (!file_exists($this->path)) {
                 return ['success' => false, 'msg' => '找不到文件！'];
             }
-
+            //生成文件名，当oss_key不为空时，将使用oss_key作为文件名
+            $filename = "brand/{$user->customer_id}/{$user->id}/". pathinfo($this->path,PATHINFO_BASENAME);
             //设置文件名
-            $object_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}.{$this->getExt()}";
-            $thumb_key = "brand/{$user->customer_id}/{$user->id}/{$this->id}_thumb.jpg";
+            $object_key = $this->oss_key == '' ? $filename : $this->oss_key;
         } else {
             $object_key = $key;
-            $thumb_key = pathinfo($object_key, PATHINFO_DIRNAME) . '_thumb.jpg';
         }
+        $object_key_path_info = pathinfo($object_key);
+        $thumb_key = "{$object_key_path_info['dirname']}/{$object_key_path_info['filename']}_thumb.jpg";
 
         try {
             //上传文件
