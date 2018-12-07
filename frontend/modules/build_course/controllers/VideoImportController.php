@@ -1,6 +1,6 @@
 <?php
 
-namespace dailylessonend\modules\build_course\controllers;
+namespace frontend\modules\build_course\controllers;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\api\ApiResponse;
@@ -11,7 +11,7 @@ use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
-use dailylessonend\modules\build_course\utils\VideoAliyunAction;
+use frontend\modules\build_course\utils\VideoAliyunAction;
 use Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yii;
@@ -28,7 +28,7 @@ use yii\web\UploadedFile;
  * @author Administrator
  */
 class VideoImportController extends Controller{
-    public $layout = '@dailylessonend/views/layouts/main_no_nav';
+    public $layout = '@frontend/views/layouts/main_no_nav';
     /**
      * @inheritdoc
      */
