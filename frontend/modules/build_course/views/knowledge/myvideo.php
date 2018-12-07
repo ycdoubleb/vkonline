@@ -92,7 +92,7 @@ $tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
 $params_js = json_encode($filters); //js参数
 //加载 REF_DOM 模板
 $ref_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/knowledge/_list_dom.php')));
+    $this->renderFile('@frontend/modules/build_course/views/knowledge/____list_dom.php')));
 $js = <<<JS
     //动态目录跳转
     $('.folder > ul > li > a').each(function(){
@@ -103,7 +103,7 @@ $js = <<<JS
     });    
         
     /**
-     * 滚屏自动换页
+     * 单击分页
      */
     var page = 0; //页数
     var isPageLoading = false;
@@ -173,10 +173,10 @@ $js = <<<JS
         
     /**
      * 单击选择事件
-     * @param object elem 指定对象
+     * @param object _this
      */
-    window.clickChoiceEvent = function(elem){
-        $.get(elem.attr('href'), function(rel){
+    window.clickChoiceEvent = function(_this){
+        $.get(_this.attr('href'), function(rel){
             var data = rel.data.result;
             //请求成功返回数据，否则提示错误信息
             if(rel['code'] == '200'){

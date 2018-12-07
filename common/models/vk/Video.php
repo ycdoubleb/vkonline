@@ -155,7 +155,7 @@ class Video extends ActiveRecord {
             self::SCENARIO_TOOL_UPLOAD =>
             ['id','file_id', 'customer_id', 'name', 'created_at', 'updated_at', 'created_by'],
             self::SCENARIO_DEFAULT =>
-            ['id', 'teacher_id', 'customer_id','file_id', 'name', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+            ['id', 'teacher_id', 'customer_id','file_id', 'name', 'type', 'duration', 'user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'des', 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need', 'created_by', 'img', 'mts_watermark_ids'],
         ];
     }
@@ -166,19 +166,19 @@ class Video extends ActiveRecord {
     public function rules() {
         return [
             [['user_cat_id'], 'checkUserCategoryType'],
-            [['teacher_id'], 'required', 'message' => Yii::t('app', "{MainSpeak}{Teacher}{Can't be empty}", [
-                'MainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher'),
-                "Can't be empty" => Yii::t('app', "Can't be empty.")
-            ]), 'on' => [self::SCENARIO_DEFAULT]],
             [['name'], 'required', 'message' => Yii::t('app', "{Video}{Name}{Can't be empty}", [
                 'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name'),
                 "Can't be empty" => Yii::t('app', "Can't be empty.")
             ])],
+            [['type'], 'required', 'message' => Yii::t('app', "{Material}{Type}{Can't be empty}", [
+                'Material' => Yii::t('app', 'Material'), 'Type' => Yii::t('app', 'Type'),
+                "Can't be empty" => Yii::t('app', "Can't be empty.")
+            ])],
             [['duration'], 'number'],
-            [['user_cat_id', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
+            [['user_cat_id', 'type', 'is_link', 'content_level', 'level', 'is_recommend', 'is_publish', 'is_official', 'zan_count',
                 'favorite_count', 'is_del', 'sort_order', 'created_at', 'updated_at', 'mts_status', 'mts_need'], 'integer'],
             [['des'], 'string'],
-            [['id', 'teacher_id', 'customer_id', 'file_id', 'created_by'], 'string', 'max' => 32],
+            [['id', 'teacher_id', 'customer_id', 'created_by'], 'string', 'max' => 32],
             [['name'], 'string', 'max' => 50],
             [['img'], 'string', 'max' => 255],
             [['id'], 'unique'],
@@ -322,7 +322,7 @@ class Video extends ActiveRecord {
     public function getKnowledges() {
         return $this->hasMany(Knowledge::className(), ['video_id' => 'id']);
     }
-
+    
     /**
      * 检查目标路径是否存在，不存即创建目标
      * @param string $uploadpath    目录路径

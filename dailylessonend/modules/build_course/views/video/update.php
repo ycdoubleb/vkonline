@@ -27,7 +27,7 @@ $this->title = Yii::t('app', "{Update}{Video}：{$model->name}", [
     <?= $this->render('_form', [
         'model' => $model,
         'teacherMap' => $teacherMap,
-        'videoFiles' => $videoFiles,
+        'materialFiles' => $materialFiles,
         'watermarksFiles' => $watermarksFiles,
         'tagsSelected' => $tagsSelected,
         'wateSelected' => $wateSelected
@@ -51,12 +51,12 @@ $js = <<<JS
             return;
         }
         //判断是否提交和是否为空
-        if(!(tijiao() && isExist())){
-            $('.field-videofile-file_id').addClass('has-error');
-            $('.field-videofile-file_id .help-block').html('视频文件不能为空或者必须是已上传。');
+        if(!(isEmpty())){
+            $('.field-video-file_id').addClass('has-error');
+            $('.field-video-file_id .help-block').html('视频文件不能为空或者必须是已上传。');
             setTimeout(function(){
-                $('.field-videofile-file_id').removeClass('has-error');
-                $('.field-videofile-file_id .help-block').html('');
+                $('.field-video-file_id').removeClass('has-error');
+                $('.field-video-file_id .help-block').html('');
             }, 3000);
             return;
         }

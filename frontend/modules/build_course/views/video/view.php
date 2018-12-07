@@ -41,7 +41,7 @@ foreach ($watermarksFiles as $watermark) {
         <div class="btngroup pull-right">
             <?php 
                 if(($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) 
-                    && $model->mts_status !== Video::MTS_STATUS_YES){
+                    && $model->mts_status !== Video::MTS_STATUS_YES && $model->type == Video::TYPE_VIDEO){
                         switch($model->mts_status){
                             case Video::MTS_STATUS_NO :
                                 $statusName = Yii::t('app', 'Transcoding');
@@ -123,6 +123,14 @@ foreach ($watermarksFiles as $watermark) {
                     'value' => $model->user_cat_id > 0 ? str_replace(' > ', ' / ', $model->userCategory->getFullPath()) : '根目录',
                 ],
                 [
+                    'attribute' => 'type',
+                    'label' => Yii::t('app', '{Material}{Type}', [
+                        'Material' => Yii::t('app', 'Material'), 'Type' => Yii::t('app', 'Type')
+                    ]),
+                    'format' => 'raw',
+                    'value' => isset(Video::$typeMap[$model->type]) ? Video::$typeMap[$model->type] : null,
+                ],
+                [
                     'attribute' => 'level',
                     'label' => Yii::t('app', '{Visible}{Range}', [
                         'Visible' => Yii::t('app', 'Visible'), 'Range' => Yii::t('app', 'Range')
@@ -178,165 +186,45 @@ foreach ($watermarksFiles as $watermark) {
                     'format' => 'raw',
                     'value' => date('Y-m-d H:i', $model->updated_at),
                 ],
-                [
-                    'label' => Yii::t('app', 'Preview'),
-                    'format' => 'raw',
-                    'value' => !empty($model->file_id) ? 
-                        '<video src="' . Aliyun::absolutePath($model->file->oss_key) . '" class="vk-video" controls poster="' . $model->img . '"></video>' : null,
-                ],
             ],
         ]) ?>
     </div>
     
-    <!--关联课程-->
+    <!--预览-->
     <div class="vk-panel set-bottom">
         <div class="title">
             <span>
-                <?= Yii::t('app', '{Relation}{Course}',[
-                    'Relation' => Yii::t('app', 'Relation'), 'Course' => Yii::t('app', 'Course'),
-                ]) ?>
+                <?= Yii::t('app', 'Preview') ?>
             </span>
-        </div>    
-
-        <div class="set-padding">
-            <?= GridView::widget([
-                'dataProvider' => $dataProvider,
-                'tableOptions' => ['class' => 'table table-bordered vk-table'],
-                'layout' => "{items}\n{summary}\n{pager}",
-                'summaryOptions' => [
-                    'class' => 'hidden',
-                ],
-                'pager' => [
-                    'options' => [
-                        'class' => 'hidden',
-                    ]
-                ],
-                'columns' => [
-                    [
-                        'label' => Yii::t('app', '{The}{Customer}', [
-                            'The' => Yii::t('app', 'The'), 'Customer' => Yii::t('app', 'Customer')
-                        ]),
-                        'format' => 'raw',
-                        'value'=> function($data){
-                            return $data['customer_name'];
-                        },
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '200px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                            ],
-                        ],
-                    ],
-                    [
-                        'label' => Yii::t('app', '{Course}{Name}', [
-                            'Course' => Yii::t('app', 'Course'), 'Name' => Yii::t('app', 'Name')
-                        ]),
-                        'format' => 'raw',
-                        'value'=> function($data){
-                            return $data['course_name'];
-                        },
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '200px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'class' => 'single-clamp',
-                        ],
-                    ],
-                    [
-                        'label' => Yii::t('app', '{The}{Knowledge}', [
-                            'The' => Yii::t('app', 'The'), 'Knowledge' => Yii::t('app', 'Knowledge')
-                        ]),
-                        'format' => 'raw',
-                        'value'=> function($data){
-                            return $data['knowledge_name'];
-                        },
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '200px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'class' => 'single-clamp',
-                        ],
-                    ],
-                    [
-                        'label' => Yii::t('app', 'Created By'),
-                        'value'=> function($data){
-                            return $data['nickname'];
-                        },
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '100px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                            ],
-                        ],
-                    ],
-                    [
-                        'label' => Yii::t('app', '{Relation}{Time}', [
-                            'Relation' => Yii::t('app', 'Relation'), 'Time' => Yii::t('app', 'Time')
-                        ]),
-                        'value'=> function($data){
-                            return date('Y-m-d H:i', $data['created_at']);
-                        },
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '110px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                            ],
-                        ],
-                    ],
-                    [
-                        'class' => 'yii\grid\ActionColumn',
-                        'buttons' => [
-                            'view' => function ($url, $data, $key) {
-                                 $options = [
-                                    'title' => Yii::t('yii', 'View'),
-                                    'aria-label' => Yii::t('yii', 'View'),
-                                    'data-pjax' => '0',
-                                    'target' => '_black'
-                                ];
-                                $buttonHtml = [
-                                    'name' => '<span class="fa fa-eye"></span>',
-                                    'url' => ['/course/default/view', 'id' => $data['id']],
-                                    'options' => $options,
-                                    'symbol' => '&nbsp;',
-                                    'adminOptions' => true,
-                                ];
-                                return Html::a($buttonHtml['name'], $buttonHtml['url'], $buttonHtml['options']);
-                            },
-                        ],
-                        'headerOptions' => [
-                            'style' => [
-                                'width' => '45px',
-                            ],
-                        ],
-                        'contentOptions' =>[
-                            'style' => [
-                                'padding' => '4px 0px',
-                            ],
-                        ],
-                        'template' => '{view}',
-                    ],
-                ],
-            ]); ?>
-            <div class="summary">
-                <span>共 <?= $dataProvider->totalcount ?> 条记录</span>
-            </div>
         </div>
+        
+        <div class="set-padding">
+            
+            <?php 
+                if(!empty($model->file_id)){
+                    switch ($model->type){
+                        case Video::TYPE_VIDEO :
+                            echo '<video src="' . Aliyun::absolutePath($model->file->oss_key) . '"  poster="' . $model->img . '" width="100%" controls="controls"></video>';
+                            break;
+                        case Video::TYPE_AUDIO :
+                            echo '<audio src="'. Aliyun::absolutePath($model->file->oss_key) . '" style="width: 100%" controls="controls"></audio>';
+                            break;
+                        case Video::TYPE_IMAGE :
+                            echo '<img src="' . Aliyun::absolutePath($model->file->oss_key) . '" width="100%" />';
+                            break;
+                        case Video::TYPE_DOCUMENT :
+                            echo '<iframe src="http://eezxyl.gzedu.com/?furl=' . Aliyun::absolutePath($model->file->oss_key) . '" width="100%" height="700" style="border: none"></iframe>';
+                            break;
+                        default :
+                            echo '<span class="not-set">无</span>';
+                            break;
+                    }
+                }
+            ?>            
+        </div>
+        
     </div>
-</div>
-
+    
 <?php
 $js = <<<JS
     /**

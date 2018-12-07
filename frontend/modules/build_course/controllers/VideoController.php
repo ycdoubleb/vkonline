@@ -14,6 +14,7 @@ use common\models\vk\UserCategory;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
 use common\utils\DateUtil;
+use common\utils\StringUtil;
 use frontend\modules\build_course\utils\ActionUtils;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -64,12 +65,38 @@ class VideoController extends Controller
     {
         $searchModel = new VideoListSearch();
         $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 8]));
-        $videos = array_values($results['data']['video']);    //视频数据
-        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        //素材数据
+        $materials = array_values($results['data']['materials']);    
+        //用户分类id
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id');  
+
         //重修课程数据里面的元素值
-        foreach ($videos as &$item) {
-            $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+        foreach ($materials as &$item) {
+            switch ($item['video_type']){
+                case Video::TYPE_VIDEO :
+                    $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+                    $item['is_hidden'] =  $item['is_show'] = '';
+                    break;
+                case Video::TYPE_AUDIO :
+                    $item['img'] = StringUtil::completeFilePath('/imgs/build_course/images/audio.png');
+                    $item['is_show'] = 'hidden';
+                    $item['is_hidden']  = '';
+                    break;
+                case Video::TYPE_IMAGE :
+                    $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
+                    $item['is_hidden'] = $item['is_show'] = 'hidden';
+                    break;
+                case Video::TYPE_DOCUMENT :
+                    $item['img'] = StringUtil::completeFilePath('/imgs/build_course/images/' . StringUtil::getFileExtensionName(Aliyun::absolutePath($item['oss_key'])) . '.png');
+                    $item['is_hidden'] = $item['is_show'] = 'hidden';
+                    break;
+                default :
+                    $item['img'] = Aliyun::absolutePath('static/imgs/notfound.png');
+                    $item['is_hidden'] = $item['is_show'] = '';
+                    break;
+            }
             $item['status'] = Video::$mtsStatusName[$item['mts_status']];
+            
             $item['duration'] = DateUtil::intToTime($item['duration']);
             $item['des'] = Html::decode($item['des']);
             $item['created_at'] = Date('Y-m-d H:i', $item['created_at']);
@@ -84,7 +111,7 @@ class VideoController extends Controller
                 return [
                     'code'=> 200,
                     'data' => [
-                        'result' => $videos, 
+                        'result' => $materials, 
                         'page' => $results['filter']['page']
                     ],
                     'message' => '请求成功！',
@@ -116,9 +143,10 @@ class VideoController extends Controller
     {
         $searchModel = new VideoListSearch();
         $results = $searchModel->search(array_merge(Yii::$app->request->queryParams));
-        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        //用户分类id
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id');  
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
+            'allModels' => array_values($results['data']['materials']),
             'key' => 'id',
             'pagination' => [
                 'pageSize' => 20,
@@ -168,19 +196,19 @@ class VideoController extends Controller
             'created_by' => Yii::$app->user->id
         ]);
         $model->loadDefaultValues();
-
+        
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $is_success = ActionUtils::getInstance()->createVideo($model, Yii::$app->request->post());
             if($is_success){
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }
-        
+       
         return $this->render('create', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel(Yii::$app->user->id, 0, false),  //和自己相关的老师
             'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
-            'videoFiles' => json_encode([]),
+            'materialFiles' => json_encode([]),
             'wateSelected' => json_encode([]),
         ]);
     }
@@ -213,7 +241,7 @@ class VideoController extends Controller
         return $this->render('update', [
             'model' => $model,  //模型
             'teacherMap' => Teacher::getTeacherByLevel($model->created_by, 0, false),   //和自己相关的老师
-            'videoFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),    //已存在的视频文件
+            'materialFiles' => json_encode(Uploadfile::getUploadfileByFileId($model->file_id)),    //已存在的视频文件
             'watermarksFiles' => json_encode($this->getCustomerWatermark()),    //客户下已启用的水印
             'tagsSelected' => array_values(TagRef::getTagsByObjectId($model->id, 2)),   //已选的标签
             'wateSelected' => json_encode(explode(',', $model->mts_watermark_ids)),    //已选的水印
@@ -260,20 +288,24 @@ class VideoController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) {
-            if ($model->is_del) {
-                throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+        if($model->type == Video::TYPE_VIDEO){
+            if ($model->created_by == Yii::$app->user->id || $model->userCategory->type == UserCategory::TYPE_SHARING) {
+                if ($model->is_del) {
+                    throw new NotFoundHttpException(Yii::t('app', 'The video does not exist.'));
+                }
+                if (!$force && $model->mts_status == Video::MTS_STATUS_YES) {
+                    throw new NotFoundHttpException(Yii::t('app', '该视频已转码，请不要重复转码。'));
+                }
+                if (!$force && $model->mts_status == Video::MTS_STATUS_DOING) {
+                    throw new NotFoundHttpException(Yii::t('app', '该视频正在转码中。'));
+                }
+            } else {
+                throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
             }
-            if (!$force && $model->mts_status == Video::MTS_STATUS_YES) {
-                throw new NotFoundHttpException(Yii::t('app', '该视频已转码，请不要重复转码。'));
-            }
-            if (!$force && $model->mts_status == Video::MTS_STATUS_DOING) {
-                throw new NotFoundHttpException(Yii::t('app', '该视频正在转码中。'));
-            }
-        } else {
-            throw new NotFoundHttpException(Yii::t('app', 'You have no permissions to perform this operation.'));
+        }else{
+            throw new NotFoundHttpException(Yii::t('app', '只有视频才可以转码。'));
         }
-
+        
         if (Yii::$app->request->isPost || $force) {
             ActionUtils::getInstance()->transcodingVideo($model);
             return Yii::$app->controller->redirect(['view', 'id' => $model->id]);
