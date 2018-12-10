@@ -1,5 +1,5 @@
 /**
- * 视频批量上传
+ * 素材批量上传
  * @param {Window} win
  * @param {jQuery} $
  * @returns {undefined}
@@ -11,7 +11,7 @@
     //
     //================================================================================================
     /**
-     * 视频信息模型
+     * 素材信息模型
      * @param {int} id 
      * @param {array} data
      * @returns {video-batch-uploadL#7.VideoData}
@@ -20,15 +20,16 @@
         var _self = this;
 
         this.id = id;                                       //ID
-        this.video_name = data['video.name'];               //视频名称
-        this.video_tags = data['video.tags'];               //视频标签
-        this.video_des = data['video.des'];                 //视频描述
-        this.video_filename = data['video.filename'];       //视频文件名
+        this.video_name = data['video.name'];               //素材名称
+        this.video_type = data['video.type'];               //素材名称
+        this.video_tags = data['video.tags'];               //素材标签
+        this.video_des = data['video.des'];                 //素材描述
+        this.video_filename = data['video.filename'];       //素材文件名
         this.teacher_name = data['teacher.name'];           //老师名称
 
-        this.video_id = null;                               //视频ID,上传成功后设置
+        this.video_id = null;                               //素材ID,上传成功后设置
         this.teacher_id = null;                             //老师ID,校检后设置
-        this.file_id = null;                                //视频文件ID,校检后设置
+        this.file_id = null;                                //素材文件ID,校检后设置
 
         this.submit_status = 0;                             //提交状态 0/1/2 未提交/提交中/已提交
         this.submit_result = false;                         //提交结果 false/true 失败/成功
@@ -37,6 +38,29 @@
         this.errors = {};                                   //错误 key:mes
         
         this.setTags(this.video_tags);
+    };
+    
+    /*
+     * 设置类型
+     * @param {array} typeMap
+     * @returns {void}
+     */
+    VideoData.prototype.setVideoType = function (typeMap, manual) {
+        var _self = this;
+        typeMap = typeMap || [];
+
+        manual = !!manual;
+        //手动或者未设置情况
+        if (manual || !_self.file_id) {
+            if (typeMap.length > 0) {
+                _self.type = typeMap[0].id;
+                delete _self.errors['video_type'];
+            } else if(!_self.type){
+               _self.errors['video_type'] = "找不到【" + _self.video_type + "】" + '，素材类型不能为空！'; 
+            }            
+        }
+        
+        this.sentChangeEvent();
     };
     
     /**
@@ -59,7 +83,7 @@
                     _self.teacher_id = teachers[0].id;
                     delete _self.errors['teacher_id'];
                 }
-            } else if(!_self.teacher_id){
+            } else if(!_self.teacher_id && _self.type === 1){
                 //_self.teacher_id = null;
                 _self.errors['teacher_id'] = "找不到【" + _self.teacher_name + "】" + ',老师不能为空！';
             }
@@ -81,16 +105,16 @@
         //手动或者未设置情况
         if (manual || !_self.file_id) {
             if (files.length > 0) {
-                //存在多个同名视频
+                //存在多个同名素材
                 if (files.length > 1 && !_self.file_id) {
-                    _self.errors['file_id'] = '存在多个同名视频文件！【' + _self.video_filename + ' 】, 请手动选择';
+                    _self.errors['file_id'] = '存在多个同名素材文件！【' + _self.video_filename + ' 】, 请手动选择';
                 } else {
                     _self.file_id = files[0].id;
                     delete _self.errors['file_id'];
                 }
             } else if (!_self.file_id) {
                 // _self.file_id = null;
-                _self.errors['file_id'] = "找不到【" + _self.video_filename + "】" + ',视频文件不能为空！';
+                _self.errors['file_id'] = "找不到【" + _self.video_filename + "】" + ',素材文件不能为空！';
             }
         }
         this.sentChangeEvent();
@@ -152,15 +176,16 @@
      */
     VideoData.prototype.getPostData = function(){
         return {
-            /* 视频基本信息 */
+            /* 素材基本信息 */
             Video : {
                 name : this.video_name,
+                type : this.type,
                 des : this.video_des,
                 teacher_id : this.teacher_id
             },
             /* 标签信息 */
             video_tags : this.video_tags,
-            /* 视频文件 */
+            /* 素材文件 */
             video_file : this.file_id
         };
     };
@@ -190,26 +215,26 @@
     //
     //================================================================================================
     /**
-     * 视频批量导入控制器
+     * 素材批量导入控制器
      * @param {type} config
      * @returns {video-batch-uploadL#7.VideoBatchUpload}
      */
     function VideoBatchUpload(config) {
         this.config = $.extend({
-            add_video_url : '/build_course/video-import/add-video',  //添加视频             
+            add_video_url : '/build_course/video-import/add-video',  //添加素材             
             submit_force: false,                            //已提交的强制提交
             submit_common_params: {},                    //提交公共参数，如_scrf，wartermaker，catgory_id
             
-            videoinfo: '.video-info',                       //视频信息容器
-            videofile: '.video-file'                        //视频文件容器
+            videoinfo: '.video-info',                       //素材信息容器
+            videofile: '.video-file'                        //素材文件容器
         }, config);
         //dom
         this.videoinfo = $(this.config['videoinfo']);
         this.videofile = $(this.config['videofile']);
         //model
-        this.videos = [];           //视频信息数据
+        this.videos = [];           //素材信息数据
         this.teachers = [];         //老师数据
-        this.files = [];            //视频文件数据
+        this.files = [];            //素材文件数据
         //vars
         this.is_submiting = false;  //是否提交中
         this.submit_index = -1;     //当前提交索引
@@ -231,7 +256,7 @@
     };
 
     /**
-     * 校检视频数据
+     * 校检素材数据
      * @param {VideoData} item
      * @returns {void}
      */
@@ -243,7 +268,7 @@
     // 视图 创建/更新
     //------------------------------------------------------
     /**
-     * 创建视频列表
+     * 创建素材列表
      * @returns {void}
      */
     VideoBatchUpload.prototype.__createVideoList = function(){
@@ -254,11 +279,36 @@
             $(Wskeee.StringUtil.renderDOM(_self.config['video_data_tr_dom'], videoData)).appendTo($table);
         });
         //添加提示组件
+        
         //this.__createTeacherDom();
         this.__createTagsDom();
         //this.__createFileDom();
     }
    
+    /**
+     * 创建素材类型下拉组件
+     * @returns {void}
+     */
+    VideoBatchUpload.prototype.__createVideoTypeDom = function(){
+        var _self = this;
+        
+        //已经成功的不用刷新
+        this.videoinfo.find('.type-select:not([disabled])').html('<option></option>');
+        var select2 = this.videoinfo.find('.type-select:not([disabled])').select2({
+            placeholder: "请选择对应类型",
+            data:_self.typeMap,
+            width:'100%',
+            dropdownParent:_self.videoinfo,
+        });
+        
+        /* 侦听更改事件，更新选择的类型 */
+        select2.on('select2:select', function (e) {
+            var $tr = $(this).parents('tr');                            //找到父级 tr 
+            var vd = _self.__getVideodataById($tr.attr('data-vid'));    //通过data-vid 找到videodata
+            vd.setVideoType([{id: $(this).val()}],true);                //手动更新
+        });
+    };
+    
     /**
      * 创建老师下拉组件
      * @returns {void}
@@ -307,7 +357,7 @@
     };
     
     /**
-     * 创建视频文件下拉组件
+     * 创建素材文件下拉组件
      * @returns {void}
      */
     VideoBatchUpload.prototype.__createFileDom = function(){
@@ -319,7 +369,7 @@
         //已经成功的不用刷新
         this.videoinfo.find('.file-select:not([disabled])').html('<option></option>');
         var select2 = this.videoinfo.find('.file-select:not([disabled])').select2({
-            placeholder: "请选择对应视频",
+            placeholder: "请选择对应素材",
             data:_self.files,
             width:'100%',
             dropdownParent:_self.videoinfo,
@@ -328,7 +378,7 @@
             escapeMarkup: function(m) { return m; }
         });
         
-        /* 侦听更改事件，更新选择的老师 */
+        /* 侦听更改事件，更新选择的文件 */
         select2.on('select2:select', function (e) {
             var $tr = $(this).parents('tr');                            //找到父级 tr 
             var vd = _self.__getVideodataById($tr.attr('data-vid'));    //通过data-vid 找到videodata
@@ -358,10 +408,12 @@
         $video_tr = this.videoinfo.find('tr[data-vid='+videoData.id+']');
         //更新下拉显示
         if(videoData.submit_status == 2 && videoData.submit_result){
+            $video_tr.find('.type-select').prop("disabled", 'disabled');
             $video_tr.find('.teacher-select').prop("disabled", 'disabled');
             $video_tr.find('.file-select').prop("disabled", 'disabled');
             $video_tr.find('input[data-role=tagsinput]').prop("disabled", 'disabled');
         }else{
+            $video_tr.find('.type-select').val(videoData.type).trigger("change");
             $video_tr.find('.teacher-select').val(videoData.teacher_id).trigger("change");
             $video_tr.find('.file-select').val(videoData.file_id).trigger("change");
         }
@@ -450,7 +502,7 @@
     }
 
     /**
-     * 上传视频数据，创建视频
+     * 上传素材数据，创建素材
      * 
      * @param {int} index       需要上传的索引
      * @param {bool} force      已完成的是否需要强制提交 默认false
@@ -473,7 +525,7 @@
                     try{
                         var feedback = "";
                         if (response.data.code == 'FILE_REPEAT') {
-                            feedback = Wskeee.StringUtil.renderDOM(_self.config['video_use_more_dom'], response.data.data);   //显示视频多次使用提示
+                            feedback = Wskeee.StringUtil.renderDOM(_self.config['video_use_more_dom'], response.data.data);   //显示素材多次使用提示
                         } else {
                             feedback = response.data.msg;     //其它错误显示
                         }
@@ -486,7 +538,7 @@
                         vd.setSubmitResult(2, false,  '未知错误');
                     }
 
-                    $(_self).trigger('submitCompleted', vd);         //发送单个视频上传完成
+                    $(_self).trigger('submitCompleted', vd);         //发送单个素材上传完成
                     _self.__submitNext();
                 });
             } else {
@@ -505,13 +557,15 @@
     //--------------------------------------------------------------------------
     /**
      * 初始上传组件，准备所有数据，也可以后面再补其它数据
-     * @param {array} videos            视频信息数据
+     * @param {array} videos            素材信息数据
+     * @param {array} typeMap           素材类型
      * @param {array} teachers          老师数据
-     * @param {array} files             视频文件数据
+     * @param {array} files             素材文件数据
      * @returns {void}  
      */
-    VideoBatchUpload.prototype.init = function (videos, teachers, files) {
+    VideoBatchUpload.prototype.init = function (videos, typeMap, teachers, files) {
         videos = videos || [];
+        this.typeMap =  typeMap || [];
         this.teachers = teachers || [];
         this.files = files || [];
 
@@ -528,10 +582,27 @@
         });
 
         this.__createVideoList();       //创建列表
+        this.setVideoTypes(this.typeMap);
         this.setTeachers(this.teachers);
         this.setFiles(this.files);
         //this.__reflash();               //刷新
     };
+    
+    /**
+     * 设置素材类型
+     * @param {array} typeMap  
+     * @returns {void}
+     */
+    VideoBatchUpload.prototype.setVideoTypes = function(typeMap) {
+        var _self = this;
+        this.typeMap = typeMap || [];
+        this.__createVideoTypeDom();
+        $.each(this.videos,function(){
+            /* VideoData */
+            this.setVideoType(_self.__getTypeByName(this.video_type));
+        });
+    };
+    
     
     /**
      * 设置老师数据
@@ -549,7 +620,7 @@
     };
     
     /**
-     * 设置视频文件数据
+     * 设置素材文件数据
      * @param {array} files
      * @returns {void}
      */
@@ -600,6 +671,21 @@
     //
     //--------------------------------------------------------------------------
     /**
+     * 通过名称查找类型
+     * @param {string} name
+     * @returns {Array}
+     */
+    VideoBatchUpload.prototype.__getTypeByName = function (name) {
+        var arr = [];
+        $.each(this.typeMap, function (index, item) {
+            if (name === item.text) {
+                arr.push(item);
+            }
+        });
+        return arr;
+    };
+    
+    /**
      * 通过名称查找老师
      * @param {string} name
      * @returns {Array}
@@ -615,7 +701,7 @@
     };
     
     /**
-     * 查找同名视频文件
+     * 查找同名素材文件
      * @param {string} name
      * @returns {array}
      */
@@ -646,7 +732,7 @@
     };
     
     /**
-     * 点击复制视频id
+     * 点击复制素材id
      * @param {obj} target   目标对象  
      */
     VideoBatchUpload.prototype.__addCopyAct = function (target){ 

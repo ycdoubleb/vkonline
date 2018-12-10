@@ -5,6 +5,9 @@
     <td data-id="video_name">
         <div class="c-box" data-toggle="popover" data-placement="auto top">{%video_name%}</div>
     </td>
+    <td data-id="video_type">
+        <div class="c-box" data-toggle="popover" data-placement="auto top"><select class="type-select"><option></option></select></div>
+    </td>
     <td data-id="teacher_id">
         <div class="c-box" data-toggle="popover" data-placement="auto top"><select class="teacher-select"><option></option></select></div>
     </td>

@@ -1,6 +1,6 @@
 <?php
 
-namespace dailylessonend\modules\build_course\controllers;
+namespace frontend\modules\build_course\controllers;
 
 use common\components\aliyuncs\Aliyun;
 use common\models\api\ApiResponse;
@@ -11,7 +11,7 @@ use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\Video;
 use common\modules\webuploader\models\Uploadfile;
-use dailylessonend\modules\build_course\utils\VideoAliyunAction;
+use frontend\modules\build_course\utils\VideoAliyunAction;
 use Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Yii;
@@ -23,12 +23,12 @@ use yii\web\Controller;
 use yii\web\UploadedFile;
 
 /**
- * 批量导入视频
+ * 批量导入素材
  *
  * @author Administrator
  */
 class VideoImportController extends Controller{
-    public $layout = '@dailylessonend/views/layouts/main_no_nav';
+    public $layout = '@frontend/views/layouts/main_no_nav';
     /**
      * @inheritdoc
      */
@@ -62,20 +62,28 @@ class VideoImportController extends Controller{
         $isImport = Yii::$app->request->isPost;
         
         $videos = $isImport ? $this->getSpreadsheet('importfile') : [];
+        $typeMap = [];
         $teachers = $isImport ? $this->getTeachers(ArrayHelper::getColumn($videos, 'teacher.name')) : [];
-
+        foreach (Video::$typeMap as $key => $value){
+            $typeMap[] = [ 
+                'id' => $key,
+                'text' => $value 
+            ];
+        }
+        
         return $this->render('index',[
             'isImport' => $isImport,                                                //导入中，选择文件表上传后
             'user_cat_id' => ArrayHelper::getValue($params, 'user_cat_id', 0),      //存放目录
             'mts_watermark_ids'   => ArrayHelper::getValue($params, 'mts_watermark_ids' , ''), 
             'watermarks' => json_encode($this->getCustomerWatermark()),             //品牌水印数据
-            'videos' => $videos,                                                    //excel表的视频信息
+            'videos' => $videos,                                                    //excel表的素材信息
+            'typeMap' => $typeMap,                                           //素材类型
             'teachers' => $teachers,                                                //表中所有涉及的老师
         ]);
     }
     
     /**
-     * 添加视频
+     * 添加素材
      * post = 
      * [
      *  Video:[name,teacher_id,des,],
@@ -88,13 +96,13 @@ class VideoImportController extends Controller{
     public function actionAddVideo(){
         \Yii::$app->response->format = 'json';
         $post = Yii::$app->request->post();
+        $type = ArrayHelper::getValue($post, 'Video.type');
         $file_id = ArrayHelper::getValue($post, 'video_file');
-        
         
         /* 检查文件使用情况 */
         $checkFileResult = $this->checkFileHasUse($file_id);
         //已经使用过
-        if($checkFileResult){
+        if($checkFileResult && $type == Video::TYPE_VIDEO){
             return [
                 'success' => false,
                 'data' => new ApiResponse('FILE_REPEAT', '文件重复使用', $checkFileResult),
@@ -104,7 +112,7 @@ class VideoImportController extends Controller{
         if(!$uploadfile){
             return [
                 'success' => true,
-                'data' => new ApiResponse('FILE_NOT_FOUND', '视频文件不能为空！'),
+                'data' => new ApiResponse('FILE_NOT_FOUND', '素材文件不能为空！'),
             ];
         }
         /* 配置特定属性 */
@@ -158,14 +166,14 @@ class VideoImportController extends Controller{
         }
     }
     /**
-     * 更新视频
+     * 更新素材
      */
     public function actionUpdateVideo(){
         
     }
     
     /**
-     * 获取视频信息
+     * 获取素材信息
      * @param type $name    filename
      */
     private function getSpreadsheet($name){
@@ -253,7 +261,7 @@ class VideoImportController extends Controller{
     private function checkFileHasUse($file_id){
         $result = (new Query())->select([
                             'Video.id as file_id',
-                            'Video.id video_id', 'Video.name video_name', 'Video.created_at created_at',
+                            'Video.id video_id', 'Video.name video_name', "FROM_UNIXTIME(Video.created_at,'%Y-%m-%d %H:%i') created_at",
                             'User.id user_id', 'User.nickname user_name',
                             'Uploadfile.name file_name',
                         ])
@@ -264,12 +272,13 @@ class VideoImportController extends Controller{
                             'Video.file_id' => $file_id,
                             'Video.is_del' => 0,
                         ])->one();
+      
         return $result;
     }
     
     /**
      * 保存标签
-     * @param string        $video_id      视频ID
+     * @param string        $video_id      素材ID
      * @param array<Tags>   $tags         标签
      */
     private function saveVideoTags($video_id,$tags){
