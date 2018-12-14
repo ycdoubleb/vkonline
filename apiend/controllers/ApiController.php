@@ -101,7 +101,7 @@ class ApiController extends Controller {
                 }
                 //请求错误时数据为  {"success":false,"data":{"name":"Not Found","message":"页面未找到。","code":0,"status":404}}
                 $response->data = [
-                    'code'=> $response->statusCode,
+                    'code'=> (string)$response->statusCode,
                     'msg'=> implode("  ", $messages),
                     'data'=>$response->data
                 ];
@@ -137,13 +137,13 @@ class ApiController extends Controller {
         }
         $response = [
             'msg' => $exception->getMessage(),
-            'code' => property_exists($exception,'statusCode') ? $exception->statusCode : 500,
+            'code' => property_exists($exception,'statusCode') ? (string)$exception->statusCode : "500",
         ];
         $array = [
             'name' => ($exception instanceof Exception2 || $exception instanceof ErrorException) ? $exception->getName() : 'Exception',
         ];
         if ($exception instanceof HttpException) {
-            $array['status'] = property_exists($exception,'statusCode') ? $exception->statusCode : 500;
+            $array['status'] = property_exists($exception,'statusCode') ? (string)$exception->statusCode : "500";
         }
         if (YII_DEBUG) {
             $array['type'] = get_class($exception);
