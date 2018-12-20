@@ -6,7 +6,6 @@ use apiend\models\Response;
 use apiend\modules\v1\actions\BaseAction;
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
-use common\models\vk\Log;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
@@ -68,12 +67,22 @@ class CreateVideoAction extends BaseAction {
         }
         //创建新目录
         if ($cat_new_name = ArrayHelper::getValue($params, 'cat_new_name', '闪视频')) {
-            $model = new UserCategory([
+            $model = UserCategory::findOne([
                 'customer_id' => $user->customer_id,
                 'created_by' => $user->id,
                 'name' => $cat_new_name,
-                'parent_id' => $user_cat_id
+                'parent_id' => $user_cat_id,
+                'is_show' => 1,
             ]);
+            if($model == null){
+                 $model = new UserCategory([
+                    'customer_id' => $user->customer_id,
+                    'created_by' => $user->id,
+                    'name' => $cat_new_name,
+                    'parent_id' => $user_cat_id
+                ]);
+            }
+           
             $model->loadDefaultValues();
 
             $parentModel = UserCategory::getCatById($model->parent_id);
@@ -120,10 +129,10 @@ class CreateVideoAction extends BaseAction {
             'user_cat_id' => $params['user_cat_id'],
             'teacher_id' => $teacher->id,
             'file_id' => $params['file_id'],
-            'name' => $params['name'],
+            'name' => isset($params['name']) ? $params['name'] : $file->name,
             'duration' => $file->duration,
             'img' => $file->thumb_path,
-            'des' => $params['des'],
+            'des' => isset($params['des']) ? $params['des'] : "",
             'mts_need' => 1,
             'created_by' => $user->id,
         ]);
