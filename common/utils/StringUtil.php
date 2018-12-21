@@ -59,7 +59,7 @@ class StringUtil {
      * @param type $phone
      */
     public static function checkPhoneValid($phone) {
-        return preg_match('/^[1][34578][0-9]{9}$/', $phone);
+        return preg_match('/^[1][345678][0-9]{9}$/', $phone);
     }
 
 }
