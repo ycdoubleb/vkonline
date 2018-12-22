@@ -139,7 +139,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
                                 $imgPath = Aliyun::absolutePath(!empty($model['img']) ? $model['img'] : 'static/imgs/notfound.png');
                                 break;
                             case Video::TYPE_DOCUMENT :
-                                $imgPath = StringUtil::completeFilePath('/imgs/build_course/images/' . StringUtil::getFileExtensionName(Aliyun::absolutePath($item['oss_key'])) . '.png');
+                                $imgPath = StringUtil::completeFilePath('/imgs/build_course/images/' . StringUtil::getFileExtensionName(Aliyun::absolutePath($model['oss_key'])) . '.png');
                                 break;
                             default :
                                 $imgPath = Aliyun::absolutePath('static/imgs/notfound.png');
