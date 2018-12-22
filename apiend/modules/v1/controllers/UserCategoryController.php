@@ -8,6 +8,7 @@ use apiend\modules\v1\actions\user_category\GetCategoryDetailAction;
 use apiend\modules\v1\actions\user_category\GetCategoryListAction;
 use apiend\modules\v1\actions\user_category\GetDocumentDetailAction;
 use apiend\modules\v1\actions\user_category\GetImageDetailAction;
+use apiend\modules\v1\actions\user_category\GetMediaDetailAction;
 use apiend\modules\v1\actions\user_category\GetVideoDetailAction;
 use apiend\modules\v1\actions\user_category\SearchAction;
 use apiend\modules\v1\actions\user_category\SearchAudioAction;
@@ -31,6 +32,7 @@ class UserCategoryController extends ApiController{
             'get-category-list' =>                          ['get'],
             'search' =>                                     ['get'],
             'get-category-detail' =>                        ['get'],
+            'get-media-detail' =>                           ['get'],
             'search-video' =>                               ['get'],
             'get-video-detail' =>                           ['get'],
             'search-audio' =>                               ['get'],
@@ -50,6 +52,7 @@ class UserCategoryController extends ApiController{
             'get-category-list' =>                          ['class' => GetCategoryListAction::class],
             'search' =>                                     ['class' => SearchAction::class],
             'get-category-detail' =>                        ['class' => GetCategoryDetailAction::class],
+            'get-media-detail' =>                           ['class' => GetMediaDetailAction::class],
             'search-video' =>                               ['class' => SearchVideoAction::class],
             'get-video-detail' =>                           ['class' => GetVideoDetailAction::class],
             'search-audio' =>                               ['class' => SearchAudioAction::class],
