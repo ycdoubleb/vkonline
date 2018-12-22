@@ -3,6 +3,7 @@
 use common\components\aliyuncs\Aliyun;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
+use common\utils\StringUtil;
 use frontend\modules\build_course\assets\ModuleAssets;
 use kartik\growl\GrowlAsset;
 use yii\data\Pagination;
@@ -53,7 +54,11 @@ $this->title = Yii::t('app', '{My}{Video}', [
             <li>
                 <span class="summary">
                     搜索结果： 共搜索到 <b><?= $totalCount ?></b> 个视频素材
-                    <i class="fa fa-times-circle times-close" aria-hidden="true"></i>
+                    <?= Html::a('<i class="fa fa-times-circle" aria-hidden="true"></i>', ['index', 
+                        'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id'),
+                        'type' => ArrayHelper::getValue($filters, 'type')
+                    ]) ?>
+                    
                 </span>
             </li>
         </ul>
@@ -102,6 +107,17 @@ $this->title = Yii::t('app', '{My}{Video}', [
                         return Html::checkbox('Video[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
                     }
                 ],
+//                [
+//                    'attribute' => 'type',
+//                    'header' => Yii::t('app', '{Material}{Type}', [
+//                        'Material' => Yii::t('app', 'Material'), 'Type' => Yii::t('app', 'Type')
+//                    ]),
+//                    'filter' => false,
+//                    'value' => function($model){
+//                        return Video::$typeMap[$model['type']];  
+//                    },
+//                    'headerOptions' => ['style' => 'width:80px'],
+//                ],
                 [
                     'attribute' => 'img',
                     'header' => Yii::t('app', '{Preview}{Image}', [
@@ -112,13 +128,31 @@ $this->title = Yii::t('app', '{My}{Video}', [
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
-                        return Html::img(Aliyun::absolutePath(!empty($model['img']) ? $model['img'] : 'static/imgs/notfound.png'), ['width' => 121, 'height' => 68]);
+                        switch ($model['video_type']){
+                            case Video::TYPE_VIDEO :
+                                $imgPath = Aliyun::absolutePath(!empty($model['img']) ? $model['img'] : 'static/imgs/notfound.png');
+                                break;
+                            case Video::TYPE_AUDIO :
+                                $imgPath = StringUtil::completeFilePath('/imgs/build_course/images/audio.png');
+                                break;
+                            case Video::TYPE_IMAGE :
+                                $imgPath = Aliyun::absolutePath(!empty($model['img']) ? $model['img'] : 'static/imgs/notfound.png');
+                                break;
+                            case Video::TYPE_DOCUMENT :
+                                $imgPath = StringUtil::completeFilePath('/imgs/build_course/images/' . StringUtil::getFileExtensionName(Aliyun::absolutePath($model['oss_key'])) . '.png');
+                                break;
+                            default :
+                                $imgPath = Aliyun::absolutePath('static/imgs/notfound.png');
+                                break;
+                        }
+                    
+                        return Html::img($imgPath, ['width' => 121, 'height' => 68]);
                     },
                 ],
                 [
                     'attribute' => 'name',
-                    'header' => Yii::t('app', '{Video}{Name}', [
-                        'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
+                    'header' => Yii::t('app', '{Material}{Name}', [
+                        'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
                     ]),
                     'filter' => false,
                     'headerOptions' => ['style' => 'width:200px'],
@@ -192,15 +226,8 @@ $this->title = Yii::t('app', '{My}{Video}', [
 </div>
 
 <?php
-//用户分类id
-$userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  
 $js = <<<JS
     
-    //删除搜索条件
-    $('.times-close').click(function(){
-        $(location).attr({'href': "../video/index?user_cat_id={$userCatId}"});
-    });
-        
     //单击整理视频
     $("#arrange").click(function(){
         $(".vk-tabs .pull-right").removeClass("hidden");

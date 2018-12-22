@@ -9,6 +9,7 @@ use common\models\vk\Tags;
 use common\models\vk\Teacher;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
+use common\modules\webuploader\models\Uploadfile;
 use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
@@ -32,7 +33,7 @@ class VideoListSearch extends Video
     public function rules()
     {
         return [
-            [['id', 'teacher_id', 'customer_id', 'user_cat_id', 'name', 'duration', 'is_link', 'content_level', 'mts_status', 'des', 
+            [['id', 'teacher_id', 'customer_id', 'user_cat_id', 'name', 'type', 'duration', 'is_link', 'content_level', 'mts_status', 'des', 
                 'level', 'img', 'is_recommend', 'is_publish', 'is_official', 'sort_order', 'created_by', 'keyword'], 'safe'],
             [['zan_count', 'favorite_count', 'created_at', 'updated_at'], 'integer'],
         ];
@@ -51,17 +52,17 @@ class VideoListSearch extends Video
      * 使用搜索查询创建数据提供程序实例
      *
      * @param array $params
-     * @param array $addArrays  查询属性数组
      *
      * @return ArrayDataProvider
      */
     public function search($params)
     {
-        $sign = ArrayHelper::getValue($params, 'sign', 0);  //标记搜索方式
-        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');    //排序
-        $page = ArrayHelper::getValue($params, 'page', 1); //分页
-        $limit = ArrayHelper::getValue($params, 'limit', 20); //显示数
-        $this->user_cat_id = ArrayHelper::getValue($params, 'user_cat_id', null);    //用户分类id
+        $sign = ArrayHelper::getValue($params, 'sign', 0);                              //标记搜索方式
+        $sort_name = ArrayHelper::getValue($params, 'sort', 'created_at');              //排序
+        $page = ArrayHelper::getValue($params, 'page', 1);                              //分页
+        $limit = ArrayHelper::getValue($params, 'limit', 20);                           //显示数
+        $this->user_cat_id = ArrayHelper::getValue($params, 'user_cat_id');             //用户分类id
+        $this->type = ArrayHelper::getValue($params, 'type');                           //素材类型
         
         $query = Video::find()->from(['Video' => Video::tableName()]);
         
@@ -85,12 +86,14 @@ class VideoListSearch extends Video
 
         //条件查询
         $query->andFilterWhere([
+            'Video.type' => $this->type,
             'Video.teacher_id' => $this->teacher_id,
             'Video.mts_status' => $this->mts_status
         ]);
         
         //关联查询
         $query->leftJoin(['UserCategory' => UserCategory::tableName()], 'UserCategory.id = Video.user_cat_id');
+        $query->leftJoin(['Uploadfile' => Uploadfile::tableName()], 'Uploadfile.id = Video.file_id');
         $query->leftJoin(['Customer' => Customer::tableName()], 'Customer.id = Video.customer_id');
         $query->leftJoin(['Teacher' => Teacher::tableName()], 'Teacher.id = Video.teacher_id');
         $query->leftJoin(['User' => User::tableName()], 'User.id = Video.created_by');
@@ -104,8 +107,8 @@ class VideoListSearch extends Video
         $query->andFilterWhere(['AND', 
             new Expression("IF(UserCategory.type=:type, (Video.customer_id=:customer_id AND UserCategory.type=:type), (Video.created_by=:created_by AND Video.customer_id=:customer_id))", [
                 'type' => UserCategory::TYPE_SHARING, 
-                'created_by' => \Yii::$app->user->id,
-                'customer_id' => \Yii::$app->user->identity->customer_id
+                'created_by' => Yii::$app->user->id,
+                'customer_id' => Yii::$app->user->identity->customer_id
             ])
         ]);
         
@@ -118,12 +121,12 @@ class VideoListSearch extends Video
         //以视频id为分组
         $query->groupBy(['Video.id']);
         //查询总数
-        $totalCount = $query->count('id');
+        $totalCount = $query->select(['Video.id'])->count('id');
         //添加字段
         $query->select([
-            'Video.id', 'Video.user_cat_id', 'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 
+            'Video.id', 'Video.user_cat_id',  'Video.type AS video_type',  'Video.name', 'Video.img', 'Video.duration',  'Video.des', 'Video.created_at', 
             'Video.is_publish', 'Video.level', 'Video.mts_status',  'UserCategory.type',
-            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name'
+            'Teacher.id AS teacher_id', 'Teacher.avatar AS teacher_avatar', 'Teacher.name AS teacher_name', 'Uploadfile.oss_key',
         ]);
         
         //排序
@@ -132,16 +135,14 @@ class VideoListSearch extends Video
         //显示数量
         $query->offset(($page - 1) * $limit)->limit($limit);
         
-        //查询的视频结果
-        $viedoResult = $query->asArray()->all();      
-        //以video_id为索引
-        $videos = ArrayHelper::index($viedoResult, 'id');
+        //查询的素材结果
+        $materialResult = $query->asArray()->all();      
         
         return [
             'filter' => $params,
             'total' => $totalCount,
             'data' => [
-                'video' => $videos
+                'materials' => $materialResult
             ],
         ];
     }

@@ -58,7 +58,7 @@ $tabs = ArrayHelper::getValue($filters, 'sort', 'created_at');  //排序
 $params_js = json_encode($filters); //js参数
 //加载 REF_DOM 模板
 $ref_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@frontend/modules/build_course/views/knowledge/_list_dom.php')));
+    $this->renderFile('@frontend/modules/build_course/views/knowledge/____list_dom.php')));
 $js = 
 <<<JS
    

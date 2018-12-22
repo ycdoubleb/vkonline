@@ -120,11 +120,12 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                     <thead>
                         <tr>
                             <th style="width: 30px;">#</th>
-                            <th style="width: 200px;">视频名称</th>
+                            <th style="width: 200px;">素材名称</th>
+                            <th style="width: 80px;">素材类型</th>
                             <th style="width: 180px;">老师</th>
-                            <th style="width: 320px;">视频标签</th>
-                            <th style="width: 300px;">视频文件</th>
-                            <th style="width: 100px;">&nbsp;</th>
+                            <th style="width: 220px;">素材标签</th>
+                            <th style="width: 300px;">素材文件</th>
+                            <th style="width: 80px;">&nbsp;</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -150,15 +151,13 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
     
     <!-- 模态框 -->
     <div id="pop-modal" class="modal fade" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">预览视频</h4>
+                    <h4 class="modal-title">预览素材</h4>
                 </div>
-                <div class="modal-body">
-                    <video id="media-player" width="100%" height="100%" autoplay="true" controls="controls"></video>
-                </div>
+                <div class="modal-body material-preview"></div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
@@ -174,6 +173,8 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
     var php_watermark_ids = <?= json_encode(explode(',', $mts_watermark_ids)) ?>;
     //品牌水印数据
     var php_watermarks = <?= $watermarks ?>;
+    //素材类型数据
+    var php_typeMap = <?= json_encode($typeMap) ?>;
     //老师数据
     var php_teachers = <?= json_encode($teachers) ?>;
     //视频数据
@@ -269,7 +270,7 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
             video_data_tr_dom : php_video_data_tr_dom,
             video_use_more_dom : php_video_use_more_dom
         });
-        videoBatchUpload.init( php_videodatas, php_teachers );
+        videoBatchUpload.init( php_videodatas, php_typeMap, php_teachers );
         
         /**
          * 上传完成
@@ -289,10 +290,14 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
         
         /* 弹出视频模态框 */
         $('#pop-modal').on('shown.bs.modal',function(){
-            $('#media-player').get(0).play();
+            if($('#pop-modal').find('#media-preview').length > 0){
+                $('#media-preview').get(0).play();
+            }
         });
         $('#pop-modal').on('hide.bs.modal',function(){
-            $('#media-player').get(0).pause();
+            if($('#pop-modal').find('#media-preview').length > 0){
+                $('#media-preview').get(0).pause();
+            }
         });
     }
     /* 提交表数据 */
@@ -311,7 +316,26 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
      * @returns {void}
      */
     function popVideo($dom){
-        $('#media-player').get(0).src = $dom.attr('data-path');
+        var $tr = $dom.parents('tr');
+        var videoType = $tr.find('.type-select option:selected').val();
+        switch(videoType){
+            case '1':
+                $('#pop-modal .material-preview').html('<video id="media-preview" src="'+ $dom.attr('data-path') +'" width="100%" controls="controls"></video>');
+                break;
+            case '2':
+                $('#pop-modal .material-preview').html('<audio id="media-preview" src="'+ $dom.attr('data-path') +'" style="width: 100%" controls="controls"></audio>');
+                break;
+            case '3':
+                $('#pop-modal .material-preview').html('<img src="'+ $dom.attr('data-path') +'" width="100%" height="100%" />');
+                break;
+            case '4':
+                $('#pop-modal .material-preview').html('<iframe src="http://eezxyl.gzedu.com/?furl='+ $dom.attr('data-path') +'" width="100%" height="500" style="border: none">');
+                break;
+            default :
+                $('#pop-modal .material-preview').html('<span class="not-set">无</span>');
+                break;
+            
+        }
         $('#pop-modal').modal('show');
     }
         
@@ -340,9 +364,9 @@ $video_use_more_dom = str_replace("\n", ' ', $this->render('____video_use_more_t
                 container: '#uploader-container',
                 //指定接受哪些类型的文件
                 accept: {
-                    title: 'Mp4',
-                    extensions: 'mp4',
-                    mimeTypes: 'video/mp4',
+                    title: 'Material',
+                    extensions: 'mp4,mp3,gif,jpg,jpeg,bmp,png,doc,docx,txt,xls,xlsx,ppt,pptx',
+                    mimeTypes: 'video/mp4,audio/mp3,image/*,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx',
                 },
                 formData: {
                     _csrf: "$csrfToken",

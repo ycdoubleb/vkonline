@@ -1,12 +1,9 @@
 <?php
 
-use common\models\vk\UserCategory;
-use common\utils\StringUtil;
-use common\widgets\depdropdown\DepDropdown;
+use common\models\vk\Video;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\JsExpression;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -75,7 +72,7 @@ $this->registerJs($format, View::POS_HEAD);
             <div class="col-lg-11 col-md-11">
                 <div class="breadcrumb">
                     <?php 
-                        $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);  //用户分类id
+                        $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id');  //用户分类id
                         $setRoute = '<span class="set-route">›</span>';
                         if(isset($locationPathMap[$user_cat_id]) && count($locationPathMap[$user_cat_id]) > 0){
                             $endPath = end($locationPathMap[$user_cat_id]);
@@ -102,13 +99,37 @@ $this->registerJs($format, View::POS_HEAD);
                 'Type' => Yii::t('app', 'Type')]) . '：', 'material-type', [
                     'class' => 'col-lg-1 col-md-1 control-label form-label'
             ]) ?>
-            <div class="col-lg-4 col-md-4">
+            <div class="col-lg-5 col-md-5">
                 <div class="btn-group" role="group">
                     <?php
-                        echo Html::a(Yii::t('app', 'Video'), ['video/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn active']);
-                        echo Html::a(Yii::t('app', 'Audio'), ['audio/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
-                        echo Html::a(Yii::t('app', 'Document'), ['document/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
-                        echo Html::a(Yii::t('app', 'Image'), ['image/index', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id')], ['class' => 'btn btn-default material-btn']);
+                        //用户分类id
+                        $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id');
+                        //素材类型
+                        $materialType = ArrayHelper::getValue($filters, 'type');
+                        //全部
+                        echo Html::a(Yii::t('app', '全部'), ['index', 
+                            'user_cat_id' => $user_cat_id,
+                        ], ['class' => 'btn btn-default material-btn ' . ($materialType == null ? 'active' : '')]);
+                        //视频
+                        echo Html::a(Yii::t('app', 'Video'), ['index', 
+                            'user_cat_id' => $user_cat_id, 'type' => Video::TYPE_VIDEO
+                        ], ['class' => 'btn btn-default material-btn ' . ($materialType == Video::TYPE_VIDEO ? 'active' : '')]);
+                        //音频
+                        echo Html::a(Yii::t('app', 'Audio'), ['index', 
+                            'user_cat_id' => $user_cat_id, 'type' => Video::TYPE_AUDIO
+                        ], ['class' => 'btn btn-default material-btn ' . ($materialType == Video::TYPE_AUDIO ? 'active' : '')]);
+                        //图片
+                        echo Html::a(Yii::t('app', 'Image'), ['index', 
+                            'user_cat_id' => $user_cat_id, 'type' => Video::TYPE_IMAGE
+                        ], ['class' => 'btn btn-default material-btn ' . ($materialType == Video::TYPE_IMAGE ? 'active' : '')]);
+                        //文档
+                        echo Html::a(Yii::t('app', 'Document'), ['index', 
+                            'user_cat_id' => $user_cat_id, 'type' => Video::TYPE_DOCUMENT
+                        ], ['class' => 'btn btn-default material-btn ' . ($materialType == Video::TYPE_DOCUMENT ? 'active' : '')]);
+                        
+                        if($materialType != null){
+                            echo Html::hiddenInput('type', $materialType);
+                        }
                     ?>
                 </div>
             </div>
@@ -166,13 +187,14 @@ $this->registerJs($format, View::POS_HEAD);
         <!--按钮组-->
         <div class="btngroup material-operation">
             <?php
-                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => ArrayHelper::getValue($filters, 'user_cat_id', null)], ['class' => 'btn btn-success btn-flat']);
+                $user_cat_id = ArrayHelper::getValue($filters, 'user_cat_id', null);
+                echo Html::a(Yii::t('app', 'Create'), ['create', 'user_cat_id' => $user_cat_id], ['class' => 'btn btn-success btn-flat']);
                 echo '&nbsp;' . Html::a(Yii::t('app', 'Arrange'), 'javascript:;', [
                     'id' => 'arrange', 'class' => 'btn btn-success btn-flat',
                 ]);
                 echo '&nbsp;' . Html::a(Yii::t('app', '{Batch}{Import}', [
                     'Batch' => Yii::t('app', 'Batch'), 'Import' => Yii::t('app', 'Import'),
-                ]), ['/build_course/video-import'], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
+                ]), ['/build_course/video-import', 'user_cat_id' => $user_cat_id], ['class' => 'btn btn-success btn-flat', 'target' => '_blank']);
             ?>
         </div>
         

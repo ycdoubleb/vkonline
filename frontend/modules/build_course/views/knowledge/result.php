@@ -151,7 +151,7 @@ $actionId = Yii::$app->controller->action->id;
 
 <?php
 //用户分类id
-$userCatId = ArrayHelper::getValue($filters, 'user_cat_id', null);  
+$userCatId = ArrayHelper::getValue($filters, 'user_cat_id');  
 $js = 
 <<<JS
     

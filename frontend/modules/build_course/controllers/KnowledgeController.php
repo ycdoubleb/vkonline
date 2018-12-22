@@ -212,9 +212,9 @@ class KnowledgeController extends Controller
     public function actionMyVideo()
     {
         $searchModel = new VideoListSearch();
-        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['limit' => 15]));
-        $videos = array_values($results['data']['video']);    //视频数据
-        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['type' => Video::TYPE_VIDEO, 'limit' => 15]));
+        $videos = array_values($results['data']['materials']);    //视频数据
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id');  //用户分类id
         //重修视频数据里面的元素值
         foreach ($videos as &$item) {
             $item['img'] = Aliyun::absolutePath(!empty($item['img']) ? $item['img'] : 'static/imgs/notfound.png');
@@ -262,10 +262,10 @@ class KnowledgeController extends Controller
     public function actionResult()
     {
         $searchModel = new VideoListSearch();
-        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams));
-        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id', null);  //用户分类id
+        $results = $searchModel->search(array_merge(Yii::$app->request->queryParams, ['type' => Video::TYPE_VIDEO]));
+        $user_cat_id = ArrayHelper::getValue($results['filter'], 'user_cat_id');  //用户分类id
         $dataProvider = new ArrayDataProvider([
-            'allModels' => array_values($results['data']['video']),
+            'allModels' => array_values($results['data']['materials']),
             'key' => 'id',
             'pagination' => [
                 'pageSize' => 20,
@@ -290,33 +290,33 @@ class KnowledgeController extends Controller
     public function actionChoice($video_id)
     {
         $results = $this->findVideoDetails($video_id);
+        
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
+            
+            $is_success = false;
+            $message = '';
+            
             try
             { 
                 if($results[0]['mts_status'] == Video::MTS_STATUS_YES){
-                    return [
-                        'code'=> 200,
-                        'data' => [
-                            'result' => $results[0], 
-                        ],
-                        'message' => '请求成功！',
-                    ];
+                    $is_success = true;
+                    $message = '请求成功！';
                 }else{
-                    return [
-                        'code'=> 404,
-                        'data' => Video::$mtsStatusName[$results[0]['mts_status']],
-                        'message' => '请求失败::引用的视频必须为已转码。' ,
-                    ];
+                    $message = '请求失败::引用的视频必须为已转码。';
                 }
             }catch (Exception $ex) {
-                return [
-                    'code'=> 404,
-                    'data' => [],
-                    'message' => '请求失败::' . $ex->getMessage(),
-                ];
+                $message = '请求失败::' . $ex->getMessage();
             }
         }
+        
+        return [
+            'code'=> $is_success ? 200 : 404,
+            'data' => [
+                'result' => $results[0], 
+            ],
+            'message' => $message,
+        ];
     }
 
     /**
