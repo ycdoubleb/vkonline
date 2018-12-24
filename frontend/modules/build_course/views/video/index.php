@@ -278,7 +278,20 @@ $js = <<<JS
                 type: "danger",
             });
         }); 
-    }     
+    }
+        
+        
+    $('p.folder-name').each(function(i, obj){
+        var lineHeight = parseInt($(this).css("line-height"));
+        var height = parseInt($(this).height());
+        if((height / lineHeight) >  2 ){
+            $(this).addClass("p-after")
+            $(this).css("height","36px");
+        }else{
+            $(this).removeClass("p-after");
+        }
+    });
+        
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>
