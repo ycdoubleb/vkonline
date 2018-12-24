@@ -71,7 +71,7 @@ $("#info-next").click(function () {
         return false;
     }
     var phone = $("#user-phone").val(),
-            phoneReg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/,
+            phoneReg = /^1[3|4|5|6|7|8][0-9]{9}$/,
             flag = phoneReg.test(phone);
     if (phone === "") {
         alert("请输入手机号！");
