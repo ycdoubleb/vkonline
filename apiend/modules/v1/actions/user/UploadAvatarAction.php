@@ -37,7 +37,7 @@ class UploadAvatarAction extends BaseAction {
             //更新数据库
             $user->avatar = $img_path . '?rand=' . rand(0, 9999);
             if ($user->save()) {
-                return new Response(Response::CODE_COMMON_OK);
+                return new Response(Response::CODE_COMMON_OK, null, ['avatar' => Aliyun::absolutePath($user->avatar)]);
             } else {
                 return new Response(Response::CODE_COMMON_SAVE_DB_FAIL, null, $user->errors);
             }

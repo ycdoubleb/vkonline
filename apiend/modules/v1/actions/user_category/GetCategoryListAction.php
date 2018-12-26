@@ -6,9 +6,6 @@ use apiend\models\Response;
 use apiend\modules\v1\actions\BaseAction;
 use common\components\aliyuncs\Aliyun;
 use common\models\User;
-use common\models\vk\Audio;
-use common\models\vk\Document;
-use common\models\vk\Image;
 use common\models\vk\UserBrand;
 use common\models\vk\UserCategory;
 use common\models\vk\Video;
@@ -84,7 +81,7 @@ class GetCategoryListAction extends BaseAction {
                     ->groupBy('dir_id')
                     ->all();
             $dir_count_map = ArrayHelper::map($dir_count_result, 'dir_id', 'count');
-            
+
             foreach ($children as &$item) {
                 $item['thumb_path'] = empty($item['thumb_path']) ? "" : Aliyun::absolutePath($item['thumb_path']);    //转换成绝对路径
                 $item['url'] = empty($item['url']) ? "" : Aliyun::absolutePath($item['url']);                         //转换成绝对路径
@@ -134,35 +131,22 @@ class GetCategoryListAction extends BaseAction {
                 ->addSelect(['id', 'name', new Expression('-1 type'), new Expression('"" thumb_path'), new Expression("1 is_dir"), 'created_at', 'is_public'])
                 ->addSelect([new Expression('"" url'), new Expression("0 size")]);
 
-        $querys = [];
-        /* 视频 */
-        $querys[1] = $this->createFileQuery(Video::tableName(), $user_cat_id, $user, $customer_id)
-                ->addSelect(['File.id', 'File.name', new Expression("1 type"), 'File.img thumb_path', new Expression("0 is_dir"), 'File.created_at', new Expression("0 is_public")]);
-
-        /* 音频 */
-        $querys[2] = $this->createFileQuery(Audio::tableName(), $user_cat_id, $user, $customer_id)
-                ->addSelect(['File.id', 'File.name', new Expression("2 type"), new Expression('"" thumb_path'), new Expression("0 is_dir"), 'File.created_at', new Expression("0 is_public")]);
-
-        /* 图片 */
-        $querys[3] = $this->createFileQuery(Image::tableName(), $user_cat_id, $user, $customer_id)
-                ->addSelect(['File.id', 'File.name', new Expression("3 type"), 'File.thumb_path', new Expression("0 is_dir"), 'File.created_at', new Expression("0 is_public")]);
-
-        /* 文档 */
-        $querys[4] = $this->createFileQuery(Document::tableName(), $user_cat_id, $user, $customer_id)
-                ->addSelect(['File.id', 'File.name', new Expression("4 type"), new Expression('"" thumb_path'), new Expression("0 is_dir"), 'File.created_at', new Expression("0 is_public")]);
+        //媒体查询
+        $media_query = $this->createFileQuery(Video::tableName(), $user_cat_id, $user, $customer_id)
+                ->addSelect(['File.id', 'File.name', 'File.type', 'File.img thumb_path', new Expression("0 is_dir"), 'File.created_at', new Expression("0 is_public")]);
 
         /* 过滤内容 $type = 1,2,3 */
-        $type_arr = [1, 2, 3, 4];
+        $type_arr = null;
         if (!empty($type)) {
             $type_arr = explode(',', $type);
         }
-        foreach ($type_arr as $value) {
-            /* 加上文件大小和实现路径 */
-            $querys[$value]->leftJoin(['Uploadfile' => Uploadfile::tableName()], "Uploadfile.id = File.file_id")
-                    ->addSelect(['Uploadfile.oss_key url', 'Uploadfile.size']);
-            //添加关联
-            $query->union($querys[$value]);
-        }
+        //添加类型过滤
+        $media_query->andFilterWhere(['File.type' => $type_arr]);
+        /* 加上文件大小和实现路径 */
+        $media_query->leftJoin(['Uploadfile' => Uploadfile::tableName()], "Uploadfile.id = File.file_id")
+                ->addSelect(['Uploadfile.oss_key url', 'Uploadfile.size']);
+        //添加关联
+        $query->union($media_query);
 
         return (new Query())->from([$query]);
     }
@@ -189,26 +173,19 @@ class GetCategoryListAction extends BaseAction {
          */
         $query = $this->createCatQuery($user_cat_ids, $user, $customer_id)->addSelect(['UserCategory.parent_id dir_id', 'UserCategory.id']);
 
-        $querys = [];
-        /* 视频 */
-        $querys[1] = $this->createFileQuery(Video::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
-        /* 音频 */
-        $querys[2] = $this->createFileQuery(Audio::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
-        /* 图片 */
-        $querys[3] = $this->createFileQuery(Image::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
-        /* 文档 */
-        $querys[4] = $this->createFileQuery(Document::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
+        /* 媒体查询 */
+        $media_query = $this->createFileQuery(Video::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
 
         /* 过滤内容 $type = 1,2,3 */
         $type_arr = [1, 2, 3, 4];
         if (!empty($type)) {
             $type_arr = explode(',', $type);
         }
-        
-        foreach ($type_arr as $value) {
-            //添加关联
-            $query->union($querys[$value]);
-        }
+
+        //添加类型过滤
+        $media_query->andFilterWhere(['File.type' => $type_arr]);
+        //添加关联
+        $query->union($media_query);
 
         return (new Query())->from([$query]);
     }

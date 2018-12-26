@@ -11,7 +11,7 @@ $(function (){
         event: "click", //事件触发方式
         //执行条件，可以是function也可以是Boolean值，如果是函数则需返回true才会执行
         condition: function () {
-            var phoneReg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(14[0-9]{1}))+\d{8})$/,
+            var phoneReg = /^1[3|4|5|6|7|8][0-9]{9}$/,
             flag = phoneReg.test($("#user-phone").val());
             if(!flag){
                 alert("电话号码填写不正确！");

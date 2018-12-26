@@ -521,7 +521,7 @@
 }
 
 .vk-material .vk-list .folder > ul > li {
-    max-height: 73px;
+    max-height: 60px;
     float: left;
     margin-bottom: 25px;
 }
@@ -537,6 +537,25 @@
 
 .vk-material .vk-list .folder > ul > li > a:hover {
     background-color: #f9f9f9;
+}
+
+
+.vk-material .vk-list .folder p {
+    position: relative;
+    line-height: 17px;
+    overflow: hidden;
+
+}
+.vk-material .vk-list .folder .p-after:after{
+    content: "..."; 
+    position: absolute; 
+    bottom: 0; 
+    right: 0; 
+    padding-left: 5px;
+    background: -webkit-linear-gradient(left, transparent, #fff 0%);
+    background: -moz-linear-gradient(left, transparent, #fff 0%);
+    background: -o-linear-gradient(left, transparent, #fff 0%);
+    background: linear-gradient(to right, transparent, #fff 0%);
 }
 
 .vk-material .vk-list .ifolder {
@@ -562,7 +581,6 @@
 }
 
 .vk-material .vk-list .folder-name {
-    margin-top: 5px;
     margin-bottom: 0px;
 }
 

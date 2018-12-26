@@ -154,6 +154,11 @@
     border: solid 2px #e04f4f;
 	border-radius: 6px;
 }
+/* 素材类型 */
+.video-import .video-info .type-item-box{
+    position: relative;
+    text-align: center;
+}
 
 /* 老师 */
 .video-import .video-info .teacher-item-box{

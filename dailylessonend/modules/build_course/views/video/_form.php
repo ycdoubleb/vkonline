@@ -9,7 +9,6 @@ use common\widgets\ueditor\UeditorAsset;
 use common\widgets\watermark\WatermarkAsset;
 use common\widgets\webuploader\WebUploaderAsset;
 use kartik\growl\GrowlAsset;
-use kartik\widgets\FileInput;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -58,7 +57,6 @@ $format = <<< SCRIPT
 SCRIPT;
 $escape = new JsExpression("function(m) { return m; }");
 $this->registerJs($format, View::POS_HEAD);
-
 ?>
 
 <div class="video-form vk-form set-bottom">
@@ -90,6 +88,32 @@ $this->registerJs($format, View::POS_HEAD);
         
         <!--基本信息-->
         <div role="tabpanel" class="tab-pane fade active in" id="basics" aria-labelledby="basics-tab">
+            
+            <!--封面-->
+            <?php
+//                echo $form->field($model, 'img')->widget(FileInput::class, [
+//                    'options' => [
+//                        'accept' => 'image/*',
+//                        'multiple' => false,
+//                    ],
+//                    'pluginOptions' => [
+//                        'resizeImages' => true,
+//                        'showCaption' => false,
+//                        'showRemove' => false,
+//                        'showUpload' => false,
+//                        'browseClass' => 'btn btn-primary btn-block',
+//                        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+//                        'browseLabel' => '选择图片...',
+//                        'initialPreview' => [
+//                            $model->isNewRecord || empty($model->img) ?
+//                                    Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
+//                                    Html::img($model->img, ['class' => 'file-preview-image', 'width' => '215', 'height' => '140'])
+//                        ],
+//                        'overwriteInitial' => true,
+//                    ],
+//                ])->label('封面预览'); 
+            ?>
+            
             <!--所属目录-->
             <?= $form->field($model, 'user_cat_id', [
                 'template' => "<span class=\"form-must text-danger\">*</span>"
@@ -107,29 +131,27 @@ $this->registerJs($format, View::POS_HEAD);
                 ],
             ])->label(Yii::t('app', '{The}{Catalog}',['The' => Yii::t('app', 'The'),'Catalog' => Yii::t('app', 'Catalog')])) ?>
 
-            <!--封面-->
-            <?= $form->field($model, 'img')->widget(FileInput::class, [
-                    'options' => [
-                        'accept' => 'image/*',
-                        'multiple' => false,
-                    ],
-                    'pluginOptions' => [
-                        'resizeImages' => true,
-                        'showCaption' => false,
-                        'showRemove' => false,
-                        'showUpload' => false,
-                        'browseClass' => 'btn btn-primary btn-block',
-                        'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
-                        'browseLabel' => '选择图片...',
-                        'initialPreview' => [
-                            $model->isNewRecord || empty($model->img) ?
-                                    Html::img(Aliyun::absolutePath('static/imgs/notfound.png'), ['class' => 'file-preview-image', 'width' => '215', 'height' => '140']) :
-                                    Html::img($model->img, ['class' => 'file-preview-image', 'width' => '215', 'height' => '140'])
-                        ],
-                        'overwriteInitial' => true,
-                    ],
-                ])->label('视频封面'); ?>
-
+            <!--素材类型-->
+            <?= $form->field($model, 'type', [
+                'template' => "<span class=\"form-must text-danger\">*</span>"
+                . "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
+            ])->widget(Select2::class, [
+                'data' => Video::$typeMap, 
+                'options' => ['placeholder'=>'请选择...',]
+            ])->label(Yii::t('app', '{Material}{Type}', [
+                'Material' => Yii::t('app', 'Material'), 'Type' => Yii::t('app', 'Type')
+            ])) ?>
+            
+            <!--素材名称-->
+            <?= $form->field($model, 'name', [
+                'template' => "<span class=\"form-must text-danger\">*</span>"
+                . "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
+            ])->textInput([
+                'placeholder' => '请输入...'
+            ])->label(Yii::t('app', '{Material}{Name}', [
+                'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
+            ])) ?>
+            
             <!--主讲老师-->
             <?php
                 $refresh = Html::a('<i class="glyphicon glyphicon-refresh"></i>', ['teacher/refresh'], [
@@ -138,8 +160,8 @@ $this->registerJs($format, View::POS_HEAD);
                 $newAdd = Html::a('新增', ['teacher/create'], ['class' => 'btn btn-primary', 'target' => '_blank']);
                 $prompt = Html::tag('span', '（新增完成后请刷新列表）', ['style' => 'color: #999']);
                 echo  $form->field($model, 'teacher_id', [
-                    'template' => "<span class=\"form-must text-danger\">*</span>{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
-                        "<div class=\"operate\" class=\"col-lg-4 col-md-4\">" .
+                    'template' => "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>"  . 
+                        "<div class=\"operate col-lg-4 col-md-4\">" .
                             "<div class=\"pull-left\" style=\"width: 50px;padding: 3px\">{$refresh}</div>" . 
                             "<div class=\"pull-left\" style=\"width: 70px;padding: 3px\">{$newAdd}</div>" . 
                             "<div class=\"pull-left\" style=\"width: 170px; padding: 10px 0;\">{$prompt}</div>" . 
@@ -157,16 +179,6 @@ $this->registerJs($format, View::POS_HEAD);
                     'mainSpeak' => Yii::t('app', 'Main Speak'), 'Teacher' => Yii::t('app', 'Teacher')
                 ]));
             ?>
-
-            <!--视频名称-->
-            <?= $form->field($model, 'name', [
-                'template' => "<span class=\"form-must text-danger\">*</span>"
-                . "{label}\n<div class=\"col-lg-6 col-md-6\">{input}</div>\n<div class=\"col-lg-6 col-md-6\">{error}</div>", 
-            ])->textInput([
-                'placeholder' => '请输入...'
-            ])->label(Yii::t('app', '{Video}{Name}', [
-                'Video' => Yii::t('app', 'Video'), 'Name' => Yii::t('app', 'Name')
-            ])) ?>
 
             <!--标签-->
             <div class="form-group field-tagref-tag_id required">
@@ -186,15 +198,16 @@ $this->registerJs($format, View::POS_HEAD);
             ])->textarea([
                 'id' => 'container', 'type' => 'text/plain', 'style' => 'width:100%; height:200px;',
                 'value' => $model->isNewRecord ? '无' : $model->des, 'rows' => 8, 'placeholder' => '请输入...'
-            ])->label(Yii::t('app', '{Video}{Des}', [
-                'Video' => Yii::t('app', 'Video'), 'Des' => Yii::t('app', 'Des')
+            ])->label(Yii::t('app', '{Material}{Des}', [
+                'Material' => Yii::t('app', 'Material'), 'Des' => Yii::t('app', 'Des')
             ])) ?>
 
             <!--视频文件-->
-            <div class="form-group field-videofile-file_id">
-                <?= Html::label(Yii::t('app', '{Video}{File}', [
-                    'Video' => Yii::t('app', 'Video'), 'File' => Yii::t('app', 'File')
-                ]), 'video-source_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
+            <div class="form-group field-video-file_id">
+                <span class="form-must text-danger">*</span>
+                <?= Html::label(Yii::t('app', '{Material}{File}', [
+                    'Material' => Yii::t('app', 'Material'), 'File' => Yii::t('app', 'File')
+                ]), 'video-file_id', ['class' => 'col-lg-1 col-md-1 control-label form-label']) ?>
                 <div id="uploader-container" class="col-lg-11 col-md-11"></div>
                 <div class="col-lg-11 col-md-11"><div class="help-block"></div></div>
             </div>
@@ -274,7 +287,7 @@ $csrfToken = Yii::$app->request->csrfToken;
 $app_id = Yii::$app->id ;
 //加载 ITEM_DOM 模板
 $item_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-    $this->renderFile('@dailylessonend/modules/build_course/views/video/____watermark_dom.php')));
+    $this->renderFile('@frontend/modules/build_course/views/video/____watermark_dom.php')));
 $isNewRecord = $model->isNewRecord ? 1 : 0;
 $js = <<<JS
     /**
@@ -318,6 +331,7 @@ $js = <<<JS
      */
     window.uploader;
     require(['euploader'], function (euploader) {
+        var materialFiles = $materialFiles;
         //公共配置
         window.config = {
             swf: "$swfpath" + "/Uploader.swf",
@@ -328,29 +342,26 @@ $js = <<<JS
             //分片合并
             mergeChunks: '/webuploader/default/merge-chunks',
             //自动上传
-            auto: false,
+            auto: true,
             //开起分片上传
             chunked: true,
-            name: 'VideoFile[file_id]',
+            name: 'Video[file_id]',
             // 上传容器
             container: '#uploader-container',
             //验证文件总数量, 超出则不允许加入队列
             fileNumLimit: 1,
-            //指定选择文件的按钮容器
-            pick: {
-                id:  '#uploader-container .euploader-btns > div',
-                multiple: false,
-            },
             //指定接受哪些类型的文件
             accept: {
-                title: 'Mp4',
-                extensions: 'mp4',
-                mimeTypes: 'video/mp4',
+                title: 'Material',
+                extensions: 'mp4,mp3,gif,jpg,jpeg,bmp,png,doc,docx,txt,xls,xlsx,ppt,pptx',
+                mimeTypes: 'video/mp4,audio/mp3,image/*,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx',
             },
             formData: {
                 _csrf: "$csrfToken",
                 //指定文件上传到的应用
                 app_id: "$app_id",
+                //指定文件 替换id
+                replace_id: materialFiles.length > 0 ? materialFiles[0]['id'] : '',
                 //同时创建缩略图
                 makeThumb: 1
             }
@@ -359,7 +370,7 @@ $js = <<<JS
         //视频
         window.uploader = new euploader.Uploader(window.config, euploader.FilelistView);
         window.uploader.clearAll();
-        window.uploader.addCompleteFiles($videoFiles);
+        window.uploader.addCompleteFiles(materialFiles);
     });
     /**
     * 上传文件完成才可以提交
@@ -372,9 +383,9 @@ $js = <<<JS
      * 判断视频文件是否存在
      * @return boolean  
      */
-    function isExist(){
-        var len = $('#uploader-container input[name="'+ 'VideoFile[file_id][]'+'"]').length;
-        if(len <= 0){
+    function isEmpty(){
+        var target = $('#euploader-list > tbody > tr').find("input");
+        if(target.length <= 0){
             return false;
         }else{
             return true;

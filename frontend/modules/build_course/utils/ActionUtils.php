@@ -3,7 +3,6 @@
 namespace frontend\modules\build_course\utils;
 
 use common\models\User;
-use common\models\vk\Audio;
 use common\models\vk\Category;
 use common\models\vk\Course;
 use common\models\vk\CourseActLog;
@@ -11,8 +10,6 @@ use common\models\vk\CourseAttachment;
 use common\models\vk\CourseAttr;
 use common\models\vk\CourseNode;
 use common\models\vk\CourseUser;
-use common\models\vk\Document;
-use common\models\vk\Image;
 use common\models\vk\Knowledge;
 use common\models\vk\KnowledgeVideo;
 use common\models\vk\Log;
@@ -885,13 +882,14 @@ class ActionUtils
         try
         {  
             $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+            $fileId = ArrayHelper::getValue($post, 'Video.file_id.0');  //文件id
             $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks',[]));    //水印id
             $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
             
             //如果上传的视频文件已经被使用过, 则返回使用者的信息
             $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-            if($userInfo['results']){
+            
+            if($model->type == Video::TYPE_VIDEO && $userInfo['results']){
                 throw new NotFoundHttpException(
                     "{$userInfo['message']}\n\r"
                     . "以下是该视频文件著作者的信息：\n\r"
@@ -914,7 +912,7 @@ class ActionUtils
             //保存video属性
             if($model->save()){
                 //如果自动转码，则执行转码需求
-                if($mts_need){
+                if($model->type == Video::TYPE_VIDEO && $mts_need){
                     VideoAliyunAction::addVideoTranscode($model->id);
                     VideoAliyunAction::addVideoSnapshot($model->id);
                 }
@@ -950,7 +948,7 @@ class ActionUtils
         try
         {  
             $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $fileId = ArrayHelper::getValue($post, 'VideoFile.file_id.0');  //文件id
+            $fileId = ArrayHelper::getValue($post, 'Video.file_id.0');  //文件id
             $watermarkIds = implode(',', ArrayHelper::getValue($post, 'video_watermarks', []));    //水印id
             $mts_need = ArrayHelper::getValue($post, 'Video.mts_need');    //转码需求
             $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
@@ -960,7 +958,7 @@ class ActionUtils
             if($oldAttributes['file_id'] != $fileId){
                 //如果上传的视频文件已经被使用过, 则返回使用者的信息
                 $userInfo = $this->getUploadVideoFileUserInfo($fileId);
-                if($userInfo['results']){
+                if($model->type == Video::TYPE_VIDEO && $userInfo['results']){
                     throw new NotFoundHttpException(
                         "{$userInfo['message']}\n\r"
                         . "以下是该视频文件著作者的信息：\n\r"
@@ -985,7 +983,7 @@ class ActionUtils
             //保存video属性
             if($model->save()){
                 /* 转码条件：提交的表单数据转码需求是自动转码 */
-                if($mts_need){
+                if($model->type == Video::TYPE_VIDEO && $mts_need){
                     VideoAliyunAction::addVideoTranscode($model->id);
                     VideoAliyunAction::addVideoSnapshot($model->id);
                 }
@@ -1073,367 +1071,7 @@ class ActionUtils
             Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
         }
     }
-    
-    /**
-     * 添加音频操作
-     * @param Audio $model
-     * @throws Exception
-     */
-    public function createAudio($model, $post)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
-
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Audio属性
-            $model->duration = $uploadFile->duration;
-            $model->is_publish = 1;
-            //保存Audio属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 3);  //保存音频的标签
-                //保存日志
-                Log::savaLog('素材', '____material_add', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
         
-        return true;
-    }
-    
-    /**
-     * 编辑音频操作
-     * @param Audio $model
-     * @throws Exception
-     */
-    public function updateAudio($model, $post)
-    {        
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'AudioFile.file_id.0');  //文件id
-            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
-            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
-            
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Video属性
-            $model->duration = $uploadFile->duration;
-            //保存Audio的属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 3);  //保存音频的标签
-                //如果设置了新属性的name，则保存日志
-                if(isset($newAttributes['name'])){
-                    //保存日志
-                    Log::savaLog('素材', '____material_update', [
-                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                        'material_old_name' => $oldAttributes['name'],
-                        'material_new_name' => $newAttributes['name'],
-                    ]);
-                }
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 删除音频操作
-     * @param Audio $model
-     * @throws Exception
-     */
-    public function deleteAudio($model)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $model->is_del = 1;
-            //修改Audio的is_del属性
-            if($model->update(true, ['is_del'])){
-                //保存日志
-                Log::savaLog('素材', '____material_delete', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 添加文档操作
-     * @param Document $model
-     * @throws Exception
-     */
-    public function createDocument($model, $post)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
-
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Document属性
-            $model->duration = $uploadFile->duration;
-            $model->is_publish = 1;
-            //保存Document的属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 4);  //保存文档的标签
-                //保存日志
-                Log::savaLog('素材', '____material_add', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 编辑文档操作
-     * @param Document $model
-     * @throws Exception
-     */
-    public function updateDocument($model, $post)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'DocumentFile.file_id.0');  //文件id
-            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
-            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
-            
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Document属性
-            $model->duration = $uploadFile->duration;
-            //保存Document的属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 4);  //保存文档标签
-                //如果设置了新属性的name，则保存日志
-                if(isset($newAttributes['name'])){
-                    //保存日志
-                    Log::savaLog('素材', '____material_update', [
-                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                        'material_old_name' => $oldAttributes['name'],
-                        'material_new_name' => $newAttributes['name'],
-                    ]);
-                }
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 删除文档操作
-     * @param Document $model
-     * @throws Exception
-     */
-    public function deleteDocument($model)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $model->is_del = 1;
-            //修改Document的is_del属性
-            if($model->update(true, ['is_del'])){
-                //保存日志
-                Log::savaLog('素材', '____material_delete', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 添加图像操作
-     * @param Image $model
-     * @throws Exception
-     */
-    public function createImage($model, $post)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
-
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Image属性
-            $model->thumb_path = $uploadFile->thumb_path;
-            $model->is_publish = 1;
-            //保存Image的属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 5);  //保存图像的标签
-                //保存日志
-                Log::savaLog('素材', '____material_add', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 编辑图像操作
-     * @param Image $model
-     * @throws Exception
-     */
-    public function updateImage($model, $post)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $tagIds = explode(',', ArrayHelper::getValue($post, 'TagRef.tag_id'));  //标签id
-            $model->file_id = ArrayHelper::getValue($post, 'ImageFile.file_id.0');  //文件id
-            $newAttributes = $model->getDirtyAttributes();    //获取所有新属性值
-            $oldAttributes = $model->getOldAttributes();    //获取所有旧属性值
-
-            //查询实体文件
-            $uploadFile = $this->findUploadfileModel($model->file_id);
-            //需保存的Image属性
-            $model->thumb_path = $uploadFile->thumb_path;
-            //保存Image的属性
-            if($model->save()){
-                $this->saveObjectTags($model->id, $tagIds, 5);  //保存图像的标签
-                //如果设置了新属性的name，则保存日志
-                if(isset($newAttributes['name'])){
-                    //保存日志
-                    Log::savaLog('素材', '____material_update', [
-                        'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                        'material_old_name' => $oldAttributes['name'],
-                        'material_new_name' => $newAttributes['name'],
-                    ]);
-                }
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
-    /**
-     * 删除图像操作
-     * @param Image $model
-     * @throws Exception
-     */
-    public function deleteImage($model)
-    {
-        /** 开启事务 */
-        $trans = Yii::$app->db->beginTransaction();
-        try
-        {  
-            $model->is_del = 1;
-            //修改Image的is_del属性
-            if($model->update(true, ['is_del'])){
-                //保存日志
-                Log::savaLog('素材', '____material_delete', [
-                    'material_path' => $model->user_cat_id > 0 ? UserCategory::getCatById($model->user_cat_id)->getFullPath() : '根目录',
-                    'material_name' => $model->name,
-                ]);
-            }else{
-                return false;
-            }
-            
-            $trans->commit();  //提交事务
-            Yii::$app->getSession()->setFlash('success','操作成功！');
-        }catch (Exception $ex) {
-            $trans ->rollBack(); //回滚事务
-            Yii::$app->getSession()->setFlash('error','操作失败::'.$ex->getMessage());
-        }
-        
-        return true;
-    }
-    
     /**
      * 创建老师操作
      * @param Teacher $model

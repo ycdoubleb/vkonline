@@ -59,7 +59,32 @@ class StringUtil {
      * @param type $phone
      */
     public static function checkPhoneValid($phone) {
-        return preg_match('/^[1][34578][0-9]{9}$/', $phone);
+        return preg_match('/^[1][345678][0-9]{9}$/', $phone);
     }
 
+    /**
+     * 获取文件的后缀名
+     * @param string $file
+     * @return string
+     */
+    public static function getFileExtensionName($file) {
+        $extName = '';
+        //获取文件的后缀名
+        $ext = pathinfo($file, PATHINFO_EXTENSION);
+        //判断文件后缀名的最后一个字符是否是大写
+        if(preg_match('/^[A-Z]+$/', substr($ext, -1))){
+            //判断后缀名最后一个字符是否为大写X
+            if(substr($ext, -1) == 'X'){
+                //在后缀名最后一个字符是大写X的情况下替换为小写
+                $extName = str_replace(substr($extName, -1), 'x', $extName);
+            }
+        //判断后缀名最后一个字符是否为小写x
+        }else if(substr($ext, -1) == 'x'){
+            $extName = $ext;
+        }else{
+            $extName = $ext . 'x';
+        }
+        
+        return $extName;
+    }
 }
