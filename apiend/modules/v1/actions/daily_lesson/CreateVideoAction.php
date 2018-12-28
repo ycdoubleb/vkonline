@@ -127,6 +127,7 @@ class CreateVideoAction extends BaseAction {
         $video = new Video([
             'customer_id' => $user->customer_id,
             'user_cat_id' => $params['user_cat_id'],
+            'type' => Video::TYPE_VIDEO,
             'teacher_id' => $teacher->id,
             'file_id' => $params['file_id'],
             'name' => isset($params['name']) ? $params['name'] : $file->name,

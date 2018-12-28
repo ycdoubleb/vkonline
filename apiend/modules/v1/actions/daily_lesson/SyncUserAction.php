@@ -27,7 +27,7 @@ class SyncUserAction extends BaseAction {
         }
         $params = $this->getSecretParams();
         ;
-        $notfounds = $this->checkRequiredParams($params, ['id', 'username', 'nickname', 'password_hash', 'sex', 'phone',]);
+        $notfounds = $this->checkRequiredParams($params, ['id', 'username', 'nickname', 'password_hash', 'phone',]);
         if (count($notfounds) > 0) {
             return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
         }
