@@ -166,16 +166,17 @@ class UserCategoryController extends GridViewChangeSelfController
                 if($model->save()){
                     $is_submit = true;
                     $model->updateParentPath();    //修改路径
+                    UserCategory::invalidateCache();    //清除缓存
                     foreach($moveCatChildrens as $moveChildren){
                         //获取修改子集的UserCategory模型
                         $childrenModel = $this->findModel($moveChildren['id']);
                         $childrenModel->updateParentPath(); //修改子集路径
+                        UserCategory::invalidateCache();    //清除缓存
                         //计算 "," 在字符串中出现的次数,
                         $childrenModel->level = substr_count($childrenModel->path, ',');
                         $childrenModel->type = $model->type;
                         $childrenModel->update(false, ['level', 'type']);
                     }
-                    UserCategory::invalidateCache();    //清除缓存
                     //如果设置了新属性的name，则保存日志
                     if(isset($newAttributes['name'])){
                         //保存日志
