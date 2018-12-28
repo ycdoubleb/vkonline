@@ -107,24 +107,22 @@ $this->title = Yii::t('app', '{My}{Video}', [
                         return Html::checkbox('Video[id]', false, ['class' => 'hidden', 'value' => $model['id']]);
                     }
                 ],
-//                [
-//                    'attribute' => 'type',
-//                    'header' => Yii::t('app', '{Material}{Type}', [
-//                        'Material' => Yii::t('app', 'Material'), 'Type' => Yii::t('app', 'Type')
-//                    ]),
-//                    'filter' => false,
-//                    'value' => function($model){
-//                        return Video::$typeMap[$model['type']];  
-//                    },
-//                    'headerOptions' => ['style' => 'width:80px'],
-//                ],
+                [
+                    'attribute' => 'type',
+                    'header' => Yii::t('app', 'Type'),
+                    'filter' => false,
+                    'value' => function($model){
+                        return Video::$typeMap[$model['type']];  
+                    },
+                    'headerOptions' => ['style' => 'width:40px'],
+                ],
                 [
                     'attribute' => 'img',
                     'header' => Yii::t('app', '{Preview}{Image}', [
                         'Preview' => Yii::t('app', 'Preview'), 'Image' => Yii::t('app', 'Image'),
                     ]),
                     'filter' => false,
-                    'headerOptions' => ['style' => 'width:137px'],
+                    'headerOptions' => ['style' => 'width:125px'],
                     'contentOptions' => ['style' => 'text-align:left; height: 76px'],
                     'format' => 'raw',
                     'value' => function ($model){
@@ -155,8 +153,11 @@ $this->title = Yii::t('app', '{My}{Video}', [
                         'Material' => Yii::t('app', 'Material'), 'Name' => Yii::t('app', 'Name')
                     ]),
                     'filter' => false,
-                    'headerOptions' => ['style' => 'width:200px'],
-                    'contentOptions' => ['style' => 'white-space: unset;'],
+                    'headerOptions' => ['style' => 'width:180px'],
+                    'contentOptions' => [
+                        'class' => 'single-clamp',
+                        'style' => 'white-space: unset;'
+                    ],
                 ],
                 [
                     'attribute' => 'teacher_name',
@@ -166,23 +167,23 @@ $this->title = Yii::t('app', '{My}{Video}', [
                     'filter' => false,
                     'headerOptions' => ['style' => 'width:80px'],
                 ],
-                [
-                    'attribute' => 'level',
-                    'header' => Yii::t('app', '{View}{Privilege}', [
-                        'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
-                    ]),
-                    'filter' => false,
-                    'value' => function ($model){
-                        return Video::$levelMap[$model['level']];
-                    },
-                    'headerOptions' => ['style' => 'width:80px'],
-                ],
+//                [
+//                    'attribute' => 'level',
+//                    'header' => Yii::t('app', '{View}{Privilege}', [
+//                        'View' => Yii::t('app', 'View'), 'Privilege' => Yii::t('app', 'Privilege')
+//                    ]),
+//                    'filter' => false,
+//                    'value' => function ($model){
+//                        return Video::$levelMap[$model['level']];
+//                    },
+//                    'headerOptions' => ['style' => 'width:80px'],
+//                ],
                 [
                     'attribute' => 'mts_status',
                     'header' => Yii::t('app', 'Mts Status'),
                     'filter' => false,
                     'value' => function ($model){
-                        return Video::$mtsStatusName[$model['mts_status']];
+                        return $model['type'] == Video::TYPE_VIDEO ? Video::$mtsStatusName[$model['mts_status']] : null;
                     },
                     'headerOptions' => ['style' => 'width:80px'],
                 ],
@@ -209,7 +210,7 @@ $this->title = Yii::t('app', '{My}{Video}', [
                             return '根目录';
                         }
                     },
-                    'headerOptions' => ['style' => 'width:365px'],
+                    'headerOptions' => ['style' => 'width:350px'],
                 ],
             ],
         ]); ?>
