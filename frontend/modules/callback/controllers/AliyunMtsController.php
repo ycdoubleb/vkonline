@@ -5,6 +5,7 @@ namespace frontend\modules\callback\controllers;
 use common\models\vk\AliyunMtsService;
 use Exception;
 use frontend\modules\build_course\utils\VideoAliyunAction;
+use linslin\yii2\curl\Curl;
 use Yii;
 use yii\base\Object;
 use yii\web\Controller;
@@ -54,21 +55,26 @@ class AliyunMtsController extends Controller {
         $jobId = $message->JobId;                       //任务ID
         $requestId = $message->RequestId;               //请求ID
         $state = $message->State;                       //状态 Success,Fail
-        $userData = json_decode($message->UserData);    //自定义数据 [level,video_id,created_by]
+        $userData = json_decode($message->UserData,true);    //自定义数据 [level,video_id,created_by]
         
-        //更新转码服务记录
-        $mtsService = AliyunMtsService::findOne(['job_id' => $jobId]);
-        if ($mtsService == null) {
-            return;
+        //检查是否为重定向
+        if(isset($userData['is_redirect']) && $userData['is_redirect'] == 1){
+            $curl = new Curl();
+            $curl->setRawPostData($post);
+            $result = $curl->post($userData['redirect_url'],false);
+        }else{
+            //更新转码服务记录
+            $mtsService = AliyunMtsService::findOne(['job_id' => $jobId]);
+            if ($mtsService == null) {
+                return;
+            }
+            $mtsService->result = ($state == 'Success' ? 1 : 0);
+            $mtsService->is_finish = 1;
+            $mtsService->save(false, ['result', 'is_finish']);
+
+            //整合视频转码
+            $result = VideoAliyunAction::integrateVideoTrancode($userData['video_id']);
         }
-        $mtsService->result = ($state == 'Success' ? 1 : 0);
-        $mtsService->is_finish = 1;
-        $mtsService->save(false, ['result', 'is_finish']);
-        
-        //整合视频转码
-        $result = VideoAliyunAction::integrateVideoTrancode($userData->video_id);
-        $method = $result['success'] ? "info" : "error";
-        \Yii::$method("视频 {$userData->video_id} 转码结果：{$result['msg']}",__FUNCTION__);
     }
 
     /**
