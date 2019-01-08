@@ -90,7 +90,7 @@ class MtsService extends Component {
      * @param string $oss_input_object          转码对象，OSS文件名称
      * @param stirng $oss_output_object         输出路径默认：brand/transcode/{video_id}.mp4
      * @param array $water_mark_options         水印对象配置[[water_mark_object,width,height,dx,dy,refer_pos],[]]
-     * @param array $skipLevels                 跳过等级1~4
+     * @param array $skipLevels                 跳过等级0~3 = [流畅,标清,高清,超清]
      * @param array $user_data                  用户自定义数据
      * 
      * @return array [success,code,msg,response]<br/>
@@ -142,7 +142,7 @@ class MtsService extends Component {
                 'Container' => ['Format' => 'mp4'], //Ouput->Container
                 'OutputObject' => urlencode("{$oss_output_object_prefix}-{$this->templateIdKeys[$index]}.{$oss_output_object_extension}"), //输出名
                 'WaterMarks' => $water_mark_options_new, //水印配置
-                'UserData' => array_merge(['level' => $index], $user_data), //用户自义数据[video_id,source_file_id]
+                'UserData' => array_merge(['level' => $index+1], $user_data), //用户自义数据[video_id,source_file_id]
             ];
         }
         $request->setOUtputs(json_encode($outputs));

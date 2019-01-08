@@ -34,7 +34,7 @@ class FfmpegUtil {
             //'level' => self::getVideoLevel($stream_info->get('height')),
         ];
         $format_info = $ffprobe->format($path);
-        $info['bitrate'] = $format_info->get('bit_rate');
+        $info['bitrate'] = (integer)($format_info->get('bit_rate')/1000);
         $info['duration'] = $format_info->get('duration');
         return $info;
     }
