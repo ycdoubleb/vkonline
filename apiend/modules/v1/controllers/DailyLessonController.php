@@ -25,6 +25,7 @@ class DailyLessonController extends ApiController {
             'login' => ['post'],
             'sync-user' => ['post'],
             'create-video' => ['post'],
+            'create-media' => ['post'],
         ];
         return $behaviors;
     }
@@ -37,6 +38,7 @@ class DailyLessonController extends ApiController {
             'login' => ['class' => LoginAction::class],
             'sync-user' => ['class' => SyncUserAction::class],
             'create-video' => ['class' => CreateVideoAction::class],
+            'create-media' => ['class' => CreateVideoAction::class],
         ];
     }
 

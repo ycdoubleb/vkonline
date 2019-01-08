@@ -45,7 +45,7 @@ class CreateVideoAction extends BaseAction {
             return new Response(Response::CODE_COMMON_OK, null, $video);
         } catch (Exception $ex) {
             $tran->rollBack();
-            return new Response(Response::CODE_COMMON_SAVE_DB_FAIL, null, $ex);
+            return new Response(Response::CODE_COMMON_SAVE_DB_FAIL, '创建素材失败！', $ex->getMessage());
         }
     }
 
@@ -60,17 +60,22 @@ class CreateVideoAction extends BaseAction {
     private function prepareCategory($user, $params) {
         $user_cat_id = ArrayHelper::getValue($params, 'user_cat_id');
         if (!$user_cat_id) {
-            $root_cat = UserCategory::findOne(['is_public' => 1, 'name' => '私人']);
+            $is_share = isset($params['is_share']) ? $params['is_share'] : 0;
+            $root_cat = UserCategory::findOne(['is_public' => 1, 'name' => $is_share == 0 ? '私人' : '共享']);
             if ($root_cat) {
                 $user_cat_id = $root_cat->id;
             }
         }
+        $targetDir = UserCategory::findOne(['id' => $user_cat_id,'is_show' => 1]);
+        if($targetDir == null){
+            throw new Exception("找不到 user_cat_id=$user_cat_id 的目录");
+        }
         //创建新目录
-        if ($cat_new_name = ArrayHelper::getValue($params, 'cat_new_name', '闪视频')) {
+        if ($new_cat_name = ArrayHelper::getValue($params, 'new_cat_name')) {
             $model = UserCategory::findOne([
                 'customer_id' => $user->customer_id,
                 'created_by' => $user->id,
-                'name' => $cat_new_name,
+                'name' => $new_cat_name,
                 'parent_id' => $user_cat_id,
                 'is_show' => 1,
             ]);
@@ -78,14 +83,14 @@ class CreateVideoAction extends BaseAction {
                  $model = new UserCategory([
                     'customer_id' => $user->customer_id,
                     'created_by' => $user->id,
-                    'name' => $cat_new_name,
+                    'name' => $new_cat_name,
                     'parent_id' => $user_cat_id
                 ]);
             }
            
             $model->loadDefaultValues();
 
-            $parentModel = UserCategory::getCatById($model->parent_id);
+            $parentModel = $targetDir;
             /* 如果父级目录类型为系统目录，设置该目录类型为私有，否则目录类型为父级目录类型 */
             if ($parentModel->type == UserCategory::TYPE_SYSTEM) {
                 $model->type = UserCategory::TYPE_PRIVATE;
@@ -127,8 +132,8 @@ class CreateVideoAction extends BaseAction {
         $video = new Video([
             'customer_id' => $user->customer_id,
             'user_cat_id' => $params['user_cat_id'],
-            'type' => Video::TYPE_VIDEO,
-            'teacher_id' => $teacher->id,
+            'type' => isset($params['type']) ? $params['type'] : $this->getType($file->oss_key),
+            'teacher_id' => $teacher ? $teacher->id : null,
             'file_id' => $params['file_id'],
             'name' => isset($params['name']) ? $params['name'] : $file->name,
             'duration' => $file->duration,
@@ -139,13 +144,40 @@ class CreateVideoAction extends BaseAction {
         ]);
 
         if ($video->save()) {
-            $video_arr = $video->toArray(['id', 'name', 'duration', 'des']);
+            $video_arr = $video->toArray(['id','type', 'name', 'duration', 'des']);
             $video_arr['thumb_path'] = Aliyun::absolutePath($video->img);
             $video_arr['url'] = Aliyun::absolutePath($file->oss_key);
+            $video_arr['cat_path'] = UserCategory::getCatById($params['user_cat_id'])->getParents(['id', 'name'], true);
             return $video_arr;
         } else {
             throw new Exception(implode("", $video->getErrorSummary(true)));
         }
+    }
+    
+    /**
+     * 获取素材类型
+     * @param type $path
+     */
+    private function getType($path) {
+        /* 文件类型 */
+        $types = [
+            null,
+            ['mp4', 'avi', 'mpg', 'wmv', 'rmvb', 'rm', 'mov'],
+            ['mp3', 'wma'],
+            ['gif', 'jpg', 'jpeg', 'png', 'wmp', 'psd'],
+            ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'ai'],
+        ];
+        $path_ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        foreach ($types as $type => $exts) {
+            if ($exts != null) {
+                foreach ($exts as $ext) {
+                    if ($path_ext == $ext) {
+                        return $type;
+                    }
+                }
+            }
+        }
+        return 1;
     }
 
 }
