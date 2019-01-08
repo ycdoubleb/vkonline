@@ -46,7 +46,7 @@ TimerButtonAssets::register($this);
                 'placeholder' => '邀请码...'])->label('')?>
             <!--客户名或注释信息-->
             <div id="customer" class="name-info"><span></span></div>
-            <input type="button" name="next" class="next action-button" value="下一步" />
+            <input type="button" name="next" id="invite-next" class="next action-button" value="下一步" />
             <div class="third" id="third1">
                 <!--<span class="third-login">使用社交账号注册</span>-->
                 <div class="third-content">
@@ -117,40 +117,42 @@ $js = <<<JS
 //    $('#third3').append(html);
 //    $('#third4').append(html);
         
-    //判断输入框是否有默认值
-    if($("#user-customer_id").val() != ""){
-        var txtVal=$("#user-customer_id").val();     //获取默认值内容
-        $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
-            if (rel['code'] == 200) {
-                $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
-                $("#customer > span").html(rel['data']['name']);
-            }else{
-                $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
-                $("#customer > span").html(rel['message']);
-            }
-        })
-    }
-        
-    //输入邀请码后触发
-    $('#user-customer_id').blur(function() {
-        var txtVal=$("#user-customer_id").val();     //获取输入的内容
-        if(txtVal != ""){
+    /**
+     * 检测邀请码的有效性
+     * @param String txtVal 邀请码
+     **/
+    function checkCustomerVerify(txtVal){
+        if(txtVal != ''){
             $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
                 if (rel['code'] == 200) {
+                    //设置邀请码有效，下一步按钮可通过该参数判断是否继续下一步
+                    $("#invite-next").removeClass('disabled');
                     $("#user-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
                     $("#customer > span").html(rel['data']['name']);
                 }else{
                     $("#user-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
-                    $("#customer > span").html('<span style="color:#a94442">无效的邀请码</span>');
+                    $("#customer > span").html(rel['message']);
                 }
-            })
+            });
+        }else{
+            $("#invite-next").addClass('disabled');
         }
+    }
+        
+    //判断输入框是否有默认值
+    checkCustomerVerify($("#user-customer_id").val());
+        
+    //输入邀请码后触发
+    $('#user-customer_id').blur(function() {
+        checkCustomerVerify($("#user-customer_id").val());
     });
 
     //当邀请码输入框内容被更改时
     $("#user-customer_id").bind("input propertychange change",function(event){
         $(".fa").remove();              //移除右侧图标
         $("#customer > span").empty();  //移除客户名或注释
+        //设置邀请码下一步按钮无效
+        $("#invite-next").addClass('disabled');
     });
         
     //提交表单

@@ -95,7 +95,7 @@ TimerButtonAssets::register($this);
                         ]) ?>
 
                         <div class="col-xs-6 forget">
-                            <a href="get-password">忘记密码</a><span>&nbsp;|&nbsp;</span><a href="signup">注册</a>
+                            <a href="get-password">忘记密码</a><!--<span>&nbsp;|&nbsp;</span><a href="signup">注册</a>-->
                         </div>
                     </div>
                 <?php ActiveForm::end(); ?> 

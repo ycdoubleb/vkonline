@@ -106,6 +106,7 @@ class UserController extends GridViewChangeSelfController
         
         $model = new User(['customer_id' => $customer_id]);
         $model->loadDefaultValues();
+        $model->type = User::TYPE_GROUP;
         $model->scenario = User::SCENARIO_CREATE;
              
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

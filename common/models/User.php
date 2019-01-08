@@ -30,6 +30,7 @@ use yii\web\IdentityInterface;
  * @property bigint $max_store              最大存储空间（最小单位为B）
  * @property string $des                    简介
  * @property string $auth_key               认证
+ * @property string $from                   来源
  * @property int $is_official 是否为官网资源：0否 1是
  * @property string $access_token           访问令牌
  * @property string $access_token_expire_time           访问令牌到期时间
@@ -194,37 +195,6 @@ class User extends BaseUser implements IdentityInterface {
      */
     public function getProfile(){
         return $this->hasOne(UserProfile::class, ['user_id' => 'id']);
-    }
-    
-    public function beforeSave($insert) {
-        if (parent::beforeSave($insert)) {
-            //设置是否属于官网账号/企业用户or散户
-            if($this->customer_id != null){
-                if($this->customer_id == 0){
-                    $this->is_official = 0;
-                    $this->type = $this->type == 1 ? 1 : 2;        //企业用户
-                } else {
-                    $isOfficial = Customer::findOne(['id' => $this->customer_id]);
-                    $this->is_official = $isOfficial->is_official;
-                    $this->type = 2;        //企业用户
-                }
-            } else {
-                $this->type = 1;        //散户
-                $this->is_official = 0; //非官网用户
-            }
-            
-            if ($this->scenario == self::SCENARIO_CREATE) {
-                $this->max_store = $this->max_store * $this->byte;
-            }else if ($this->scenario == self::SCENARIO_UPDATE) {
-                if($this->max_store == $this->getOldAttribute('max_store')){
-                    $this->max_store = $this->getOldAttribute('max_store');
-                }else{
-                    $this->max_store = $this->max_store * $this->byte;
-                }
-            }
-            return true;
-        }
-        return false;
     }
     
     /**

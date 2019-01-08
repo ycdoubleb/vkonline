@@ -12,10 +12,10 @@ use yii\web\View;
 <?php
 
 if(!Yii::$app->user->isGuest){
-    $nickname = Yii::$app->user->identity->nickname;
+    $group_name = Yii::$app->user->identity->customer->short_name;
     $brandCount = UserBrand::find()->where(['user_id' => Yii::$app->user->id, 'is_del' => 0])->count('id');
 } else {
-    $nickname = '';
+    $group_name = '';
     $brandCount = 1;
 }
 
@@ -29,9 +29,9 @@ NavBar::begin([
 $menuItems = [
     //登录
     [
-        'label' => "<div class='customer-box'><span class='short_name'>{$nickname}</span><span class='m_name'>工作坊</span></div>", 'url' => ['/build_course/default'], 
+        'label' => "<div class='customer-box'><span class='short_name'>{$group_name}</span><span class='m_name'>工作坊</span></div>", 'url' => ['/build_course/default'], 
         'encode' => false,
-        'visible' => $nickname != null
+        'visible' => $group_name != null
     ],
 ];
 
@@ -101,7 +101,7 @@ $menuItems = [
         'encode' => false,
     ],
     //未登录
-    ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'], 'visible' => Yii::$app->user->isGuest],
+    ['label' => Yii::t('app', 'Signup'), 'url' => ['/site/signup'], 'visible' => false],
     ['label' => Yii::t('app', 'Login'), 'url' => ['/site/login'], 'visible' => Yii::$app->user->isGuest],
 ];
 echo Nav::widget([

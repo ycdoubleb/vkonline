@@ -3,7 +3,6 @@
 namespace dailylessonend\modules\admin_center\controllers;
 
 use common\models\searchs\UserSearch;
-use dailylessonend\models\DailyLessonUser;
 use common\models\vk\Course;
 use common\models\vk\CourseFavorite;
 use common\models\vk\CourseMessage;
@@ -15,6 +14,7 @@ use common\models\vk\VideoFavorite;
 use common\models\vk\VideoProgress;
 use common\modules\webuploader\models\Uploadfile;
 use common\widgets\grid\GridViewChangeSelfController;
+use dailylessonend\models\DailyLessonUser;
 use dailylessonend\modules\admin_center\components\ActionVerbFilter;
 use Yii;
 use yii\data\ArrayDataProvider;
@@ -106,6 +106,8 @@ class UserController extends GridViewChangeSelfController
         
         $model = new DailyLessonUser(['customer_id' => $customer_id]);
         $model->loadDefaultValues();
+        $model->type = DailyLessonUser::TYPE_PARTNER;
+        $model->from = DailyLessonUser::DAILY_LESSON;
         $model->scenario = DailyLessonUser::SCENARIO_CREATE;
              
         if ($model->load(Yii::$app->request->post()) && $model->save()) {

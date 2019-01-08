@@ -106,7 +106,7 @@ class SyncUserAction extends BaseAction {
             $user = new DailyLessonUser([
                 'id' => $user_id,
                 'type' => DailyLessonUser::TYPE_PARTNER,
-                'from' => 'dailylesson',
+                'from' => DailyLessonUser::DAILY_LESSON,
             ]);
         }
         //$user->loadDefaultValues();

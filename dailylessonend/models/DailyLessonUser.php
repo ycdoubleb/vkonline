@@ -10,6 +10,13 @@ use common\models\User;
  * @author Administrator
  */
 class DailyLessonUser extends User{
+    /* 应用名 */
+    const DAILY_LESSON = "dailylesson";
+    
+    
+    public function beforeSave($insert) {
+        return parent::beforeSave($insert);
+    }
      /**
      * Validates password
      *

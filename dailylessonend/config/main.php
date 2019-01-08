@@ -16,7 +16,7 @@ return [
             'baseUrl' => '',
         ],
         'user' => [
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'dailylessonend\models\DailyLessonUser',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-dailylessonend', 'httpOnly' => true],
         ],

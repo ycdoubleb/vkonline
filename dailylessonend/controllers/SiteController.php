@@ -3,7 +3,6 @@ namespace dailylessonend\controllers;
 
 use common\components\OAuths\weiboAPI\SaeTOAuthV2;
 use common\models\LoginForm;
-use common\models\User;
 use common\models\vk\Course;
 use common\models\vk\CourseNode;
 use common\models\vk\Customer;
@@ -624,7 +623,9 @@ class SiteController extends Controller
             $customerId = '';
         }
         //赋值
+        $user->from = DailyLessonUser::DAILY_LESSON;
         $user->customer_id = $customerId;
+        $user->type = DailyLessonUser::TYPE_PARTNER;
         $user->username = $username;
         $user->phone = $phone;
         $user->nickname = $nickname;

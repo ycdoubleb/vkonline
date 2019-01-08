@@ -99,7 +99,7 @@ class LoginForm extends Model
                 }
             }
             $hasLogin = Yii::$app->user->login($userModel, $this->rememberMe ? 3600 * 24 * 30 : 0);
-            if($hasLogin && $this->userClass == User::class){
+            if($hasLogin){
                 $this->_user->generateAccessToken();
                 $this->_user->save(false);
             }

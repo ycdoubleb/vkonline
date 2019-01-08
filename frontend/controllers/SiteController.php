@@ -508,7 +508,7 @@ class SiteController extends Controller
                 $relBrands = ArrayHelper::getColumn($customers, 'id');  //用户关联的所有品牌
                 $userModel = User::findOne(Yii::$app->user->id);
                 $userModel->customer_id = ArrayHelper::getValue(Yii::$app->request->post(), 'customer_id');
-                
+                $userModel->type = $userModel->customer_id == "" ? User::TYPE_FREE : User::TYPE_GROUP;
                 if(in_array($userModel->customer_id, $relBrands)){
                     if($userModel->save(false, ['customer_id'])) {
                         $is_success = true;
@@ -665,6 +665,7 @@ class SiteController extends Controller
         }
         //赋值
         $user->customer_id = $customerId;
+        $user->type = $customerId == "" ? User::TYPE_FREE : User::TYPE_GROUP;
         $user->username = $username;
         $user->phone = $phone;
         $user->nickname = $nickname;

@@ -117,35 +117,37 @@ $js = <<<JS
 //    $('#third3').append(html);
 //    $('#third4').append(html);
         
-    //判断输入框是否有默认值
-    if($("#dailylessonuser-customer_id").val() != ""){
-        var txtVal=$("#dailylessonuser-customer_id").val();     //获取默认值内容
-        $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
-            if (rel['code'] == 200) {
-                $("#dailylessonuser-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
-                $("#customer > span").html(rel['data']['name']);
-            }else{
-                $("#dailylessonuser-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
-                $("#customer > span").html(rel['message']);
-            }
-        })
-    }
-        
-    //输入邀请码后触发
-    $('#dailylessonuser-customer_id').blur(function() {
-        var txtVal=$("#dailylessonuser-customer_id").val();     //获取输入的内容
-        if(txtVal != ""){
+    /**
+     * 检测邀请码的有效性
+     * @param String txtVal 邀请码
+     **/
+    function checkCustomerVerify(txtVal){
+        if(txtVal != ''){
             $.post("/site/customer", {'txtVal': txtVal}, function (rel) {
                 if (rel['code'] == 200) {
+                    //设置邀请码有效，下一步按钮可通过该参数判断是否继续下一步
+                    $("#dailylessonuser-customer_id").attr('data-verify',1);
                     $("#dailylessonuser-customer_id").after('<i class="fa fa-check-circle icon-y"></i>');
                     $("#customer > span").html(rel['data']['name']);
                 }else{
+                    //设置邀请码无效
+                    $("#dailylessonuser-customer_id").attr('data-verify',0);
                     $("#dailylessonuser-customer_id").after('<i class="fa fa-times-circle icon-n"></i>');
-                    $("#customer > span").html('<span style="color:#a94442">无效的邀请码</span>');
+                    $("#customer > span").html(rel['message']);
                 }
-            })
+            });
         }
+    }
+        
+    //判断输入框是否有默认值
+    checkCustomerVerify($("#dailylessonuser-customer_id").val());
+        
+    //输入邀请码后触发
+    $('#dailylessonuser-customer_id').blur(function() {
+        checkCustomerVerify($("#dailylessonuser-customer_id").val());
     });
+        
+    
 
     //当邀请码输入框内容被更改时
     $("#dailylessonuser-customer_id").bind("input propertychange change",function(event){

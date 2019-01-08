@@ -6,10 +6,7 @@ var animating; //flag to prevent quick multi-click glitches
 //邀请码页下一步
 $(".next").click(function () {
     var brand = $("#user-customer_id").val();
-    if (brand === "") {
-        alert("请输入您的邀请码！");
-        return false;
-    }
+    
     if (animating)
         return false;
     animating = true;
