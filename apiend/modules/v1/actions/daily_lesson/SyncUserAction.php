@@ -9,8 +9,10 @@ use common\models\UserProfile;
 use common\models\vk\Customer;
 use common\models\vk\CustomerAdmin;
 use common\models\vk\Teacher;
+use common\models\vk\UserBrand;
 use dailylessonend\models\DailyLessonUser;
 use Exception;
+use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -32,7 +34,7 @@ class SyncUserAction extends BaseAction {
             return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
         }
 
-        $tran = \Yii::$app->db->beginTransaction();
+        $tran = Yii::$app->db->beginTransaction();
         try {
             //校验数据
             $params = $this->validateParams($params);
@@ -159,6 +161,11 @@ class SyncUserAction extends BaseAction {
                 'level' => CustomerAdmin::MAIN,
                 'created_by' => $user->id,
             ]);
+            
+            /**
+             * 添加用户品牌关联
+             */
+            $userBrand = new UserBrand(['user_id' => $user->id, 'brand_id' => $brand->id]);
         }
         // 同步更新数据
         $brand->setAttributes([
@@ -172,7 +179,10 @@ class SyncUserAction extends BaseAction {
             'address' => $user->profile->address,
         ]);
 
-        if ($brand->validate() && $brand->save() && (!isset($brandAdmin) || $brandAdmin->save(false))) {
+        if ($brand->validate() && $brand->save() 
+                && (!isset($brandAdmin) || $brandAdmin->save(false))
+                && (!isset($userBrand) || $userBrand->save(false))
+                ) {
             if ($is_new) {
                 $brand->status = Customer::STATUS_ACTIVE;
                 $brand->save(false, ['status']);
