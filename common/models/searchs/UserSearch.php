@@ -71,6 +71,7 @@ class UserSearch extends User
         //条件查询
         self::$query->andFilterWhere([
             'User.customer_id' => $this->customer_id,
+            'User.type' => $this->type,
             'User.status' => $this->status,
             'User.sex' => $this->sex,
         ]);
