@@ -56,7 +56,7 @@ class SyncUserAction extends BaseAction {
             return new Response(Response::CODE_COMMON_OK);
         } catch (Exception $ex) {
             $tran->rollBack();
-            return new Response(Response::CODE_COMMON_SAVE_DB_FAIL, null, $ex->getTraceAsString());
+            return new Response(Response::CODE_COMMON_SAVE_DB_FAIL, $ex->getMessage(), $ex->getTraceAsString());
         }
     }
 
@@ -103,15 +103,17 @@ class SyncUserAction extends BaseAction {
      */
     private function saveUser($params) {
         $user_id = $params['id'];
-        $user = DailyLessonUser::findOne(['id' => $user_id, 'status' => DailyLessonUser::STATUS_ACTIVE]);
+        $user = DailyLessonUser::findOne(['id' => $user_id]);
         if (!$user) {
             $user = new DailyLessonUser([
                 'id' => $user_id,
-                'type' => DailyLessonUser::TYPE_PARTNER,
-                'from' => DailyLessonUser::DAILY_LESSON,
             ]);
         }
         //$user->loadDefaultValues();
+        
+        $user->type = DailyLessonUser::TYPE_PARTNER;
+        $user->from = DailyLessonUser::DAILY_LESSON;
+        $user->status = DailyLessonUser::STATUS_ACTIVE;
         $user->setAttributes($params);
         if ($user->validate() && $user->save()) {
             /* 创建/更新 用户配置 */

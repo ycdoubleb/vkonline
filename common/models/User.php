@@ -73,6 +73,7 @@ class User extends BaseUser implements IdentityInterface {
     public static $typeNames = [
         self::TYPE_FREE => '自由用户',
         self::TYPE_GROUP => '团体用户',
+        self::TYPE_PARTNER => '合作用户',
     ];
     
     /**
