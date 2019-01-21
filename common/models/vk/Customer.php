@@ -128,6 +128,7 @@ class Customer extends ActiveRecord
             'domain' => Yii::t('app', 'Domain'),
             'sort_order' => Yii::t('app', 'Sort Order'),
             'logo' => Yii::t('app', 'Logo'),
+            'level' => Yii::t('app', 'Customer Level'),
             'status' => Yii::t('app', 'Status'),
             'des' => Yii::t('app', 'Des'),
             'expire_time' => Yii::t('app', '{Expire}{Time}',[

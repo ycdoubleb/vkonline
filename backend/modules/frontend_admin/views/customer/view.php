@@ -70,6 +70,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => !empty($model->good_id) ? $model->good->name : null,
                     ],
                     [
+                        'attribute' => 'level',
+                        'value' => Customer::$levelKey[$model->level],
+                    ],
+                    [
                         'attribute' => 'status',
                         'format' => 'raw',
                         'value' => '<span style="color:' . ($model->status == 10 ? 'green' : 'red') . '">' 
@@ -120,12 +124,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
             <!--储存信息-->
-            <div>
+            <div style="display: none;">
                 <div class="frame-title">
                     <i class="icon fa fa-database"></i>
                     <span><?= Yii::t('app', 'Storage') ?></span>
                 </div>
-                <?= DetailView::widget([
+                <?php 
+                /*
+                DetailView::widget([
                     'model' => $model,
                     'template' => '<tr><th class="viewdetail-th">{label}</th><td class="viewdetail-td">{value}</td></tr>',
                     'attributes' => [
@@ -134,6 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'format' => 'raw',
                             'value' => !empty($model->good->data) ? Yii::$app->formatter->asShortSize($model->good->data) : null,
                         ],
+                        
                         [
                             'label' => Yii::t('app', '{Already}{Use}',[
                                 'Already' => Yii::t('app', 'Already'),
@@ -152,7 +159,9 @@ $this->params['breadcrumbs'][] = $this->title;
                                         '<span style="color:red"> 不足</span>') .'）</span>' : null,
                         ],
                     ],
-                ]) ?>   
+                ]) 
+                */
+                ?>   
             </div>
         </div>
     </div>

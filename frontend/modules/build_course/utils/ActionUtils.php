@@ -109,7 +109,7 @@ class ActionUtils
                             ($oldAttributes['category_id'] !== $model->category_id ? "课程分类：【旧】{$oldCategoryModel->name}>>【新】{$model->category->name},\n\r" : null).
                             ($oldAttributes['name'] !== $model->name ? "课程名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null).
                             ($oldAttributes['teacher_id'] !== $model->teacher_id ? "主讲老师：【旧】{$oldTeacherModel->name} >> 【新】{$model->teacher->name}": null).
-                            ($oldAttributes['des'] != $model->des ? "描述：【旧】{$oldAttr['des']} >>【新】{$model->des}\n\r" : null),
+                            ($oldAttributes['des'] != $model->des ? "内容修改" : null),
                     ]);
                 }
             }else{
@@ -423,7 +423,7 @@ class ActionUtils
                     'action' => '修改', 'title' => "环节管理", 'course_id' => $model->course_id,
                     'content'=>"调整 【{$oldAttributes['name']}】 以下属性：\n\r"
                                 . ($oldAttributes['name'] != $model->name ? "名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null)
-                                . ($oldAttributes['des'] !== $model->des ? "描述：【旧】{$oldAttributes['des']} >> 【新】{$model->des}": null),
+                                . ($oldAttributes['des'] !== $model->des ? "描述修改": null),
                 ]);
             }else{
                 $message = '未能保存成功。';
@@ -612,7 +612,7 @@ class ActionUtils
                 //新属性值非空,执行 
                 if($newAttributes != null){
                     $content .= ($oldAttributes['name'] != $model->name ? "名称：【旧】{$oldAttributes['name']}>>【新】{$model->name},\n\r" : null).
-                        ($oldAttributes['des'] != $model->des ? "描述：【旧】{$oldAttributes['des']} >>【新】{$model->des}\n\r" : null);
+                        ($oldAttributes['des'] != $model->des ? "描述修改" : null);
                 }
                 //新属性值非空或者（设置旧资源id，并且旧资源id不等于新资源id），保存课程操作日志
                 if($newAttributes != null || (isset($oldResourceId) && $oldResourceId != $newResourceId)){
