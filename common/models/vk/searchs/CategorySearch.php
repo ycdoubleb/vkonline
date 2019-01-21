@@ -95,15 +95,13 @@ class CategorySearch extends Category
         ]);
         
         $this->load($params);
-        
+   
         // grid filtering conditions
         $query->andFilterWhere(['NOT IN', 'id', $this->id]);
-        $query->andFilterWhere([
-            'customer_id' => Yii::$app->user->identity->customer_id,
-            'is_show' => $this->is_show,
+        $query->andFilterWhere(['or',
+            ['customer_id' => Yii::$app->user->identity->customer_id],
+            ['is_show' => $this->is_show, 'level' => 1],
         ]);
-        
-        $query->orFilterWhere(['level' => 1]);
         
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'mobile_name', $this->mobile_name]);

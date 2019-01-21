@@ -52,7 +52,7 @@ class CategoryController extends GridViewChangeSelfController
     public function actionIndex()
     {     
         $searchModel = new CategorySearch();
-        $dataProvider = $searchModel->searchCustomerCategory(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->searchCustomerCategory(array_merge(Yii::$app->request->queryParams, ['CategorySearch' => ['is_show' =>1]]));
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -236,7 +236,7 @@ class CategoryController extends GridViewChangeSelfController
     {
         $move_ids = explode(',', $move_ids);
         $searchModel = new CategorySearch();
-        $dataProvider = $searchModel->searchCustomerCategory(['id' => $move_ids]); 
+        $dataProvider = $searchModel->searchCustomerCategory(array_merge(['id' => $move_ids], ['CategorySearch' => ['is_show' =>1]])); 
         
         if (Yii::$app->request->isPost) {
             /** 开启事务 */

@@ -145,13 +145,13 @@ $this->title = Yii::t('app', '{Category}{Admin}',[
                         <td style="text-align: center;">
                             <?php
                                 echo Html::a('<span class="glyphicon glyphicon-plus"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Create'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Create'), 'onclick' => "showModal($(this).attr('href')); return false;"
                                 ]) . '&nbsp;';
                                 echo Html::a('<span class="glyphicon glyphicon-eye-open"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'View'),
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-pencil"></span>', 'javascript:;', [
-                                    'title' => Yii::t('app', 'Update'), 'onclick' => 'showModal($(this)); return false;'
+                                    'title' => Yii::t('app', 'Update'), 'onclick' => "showModal($(this).attr('href')); return false;"
                                 ]) . '&nbsp;';     
                                 echo Html::a('<span class="glyphicon glyphicon-trash"></span>', 'javascript:;', [
                                     'title' => Yii::t('app', 'Delete'), 
