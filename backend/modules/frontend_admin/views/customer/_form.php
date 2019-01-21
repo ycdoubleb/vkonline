@@ -67,6 +67,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'domain')->textInput(['maxlength' => true]) ?>
+    <!-- 等级 -->
+    <?= $form->field($model, 'level')->dropDownList(Customer::$levelKey)?>
     
     <?= $form->field($model, 'is_official')->widget(SwitchInput::class, [
         'pluginOptions' => [

@@ -344,6 +344,7 @@ return [
     'Solve' => '解决',
     'Processer' => '处理人',
     'Feedbacker' => '反馈者',
+    'Customer Level' => '等级',
     
     'Authorizes' => '授权',
     'Brand From' => '授权方',

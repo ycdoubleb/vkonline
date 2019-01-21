@@ -66,7 +66,7 @@ class CustomerController extends GridViewChangeSelfController
             'allModels' => array_values($result['data']['customer']),
             'key' => 'id',
         ]);
-
+        
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

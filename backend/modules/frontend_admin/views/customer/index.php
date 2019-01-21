@@ -118,6 +118,23 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
                 [
+                    'attribute' => 'level',
+                    'label' => Yii::t('app', 'Customer Level'),
+                    'filter' => Select2::widget([
+                        'model' => $searchModel,
+                        'attribute' => 'level',
+                        'data' => Customer::$levelKey,
+                        'hideSearch' => true,
+                        'options' => ['placeholder' => Yii::t('app', 'All')],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                        ],
+                    ]),
+                    'value' => function($model){
+                        return Customer::$levelKey[$model['level']];
+                    }
+                ],
+                [
                     'attribute' => 'user_id',
                     'label' => Yii::t('app', 'Administrators'),
                     'filter' => Select2::widget([
@@ -159,6 +176,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ],
                 ],
+                /*
                 [//剩余空间！！！！
                     'label' => Yii::t('app', '{Surplus}{Space}',[
                         'Surplus' => Yii::t('app', 'Surplus'),
@@ -175,7 +193,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             'text-align' => 'center',
                         ],
                     ],
-                ],
+                ],*/
                 [
                     'attribute' => 'status',
                     'label' => Yii::t('app', 'Status'),
@@ -204,7 +222,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'attribute' => 'sort_order',
                     'headerOptions' => [
                         'style' => [
-                            'min-width' => '45px'
+                            'width' => '50px'
                         ],
                     ],
                     'filter' => false,
