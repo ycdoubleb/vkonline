@@ -221,7 +221,7 @@ $this->registerJs($format, View::POS_HEAD);
                     <div class="col-lg-6 col-md-6">
                         <?php 
                             $path = !$model->isNewRecord && $model->is_link ? 
-                                    Aliyun::absolutePath($model->videoFile->uploadfile->path) : null;
+                                    Aliyun::absolutePath($model->file->path) : null;
                             echo Html::textInput(null, $path, [
                                 'id' => 'outside_link', 'class' => 'form-control', 'placeholder' => '请输入...'
                             ]) 
