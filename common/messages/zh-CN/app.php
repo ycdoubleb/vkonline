@@ -225,6 +225,10 @@ return [
     'Uploading course resources' => '课程资源上传',
     'Select the mobile material to the directory' => '选择移动素材到目录',
     
+    //external 外部访问模块
+    'Material Library' => '素材库',
+    'My Material' => '我的素材',
+    
     //后台-公共配置
     'Config' => '配置',
     'Config Name' => '配置名称',

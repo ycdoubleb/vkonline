@@ -94,7 +94,14 @@ return [
         'external' => [
             'class' => 'frontend\modules\external\Module',
         ],
-        //course marker测试
+        //CM_素材库
+        'cm_material_library' => [
+            'class' => 'frontend\modules\cm_material_library\Module',
+        ],
+        //CM_我的素材库
+        'cm_my_material' => [
+            'class' => 'frontend\modules\cm_my_material\Module',
+        ],
     ],
 
     'params' => $params,

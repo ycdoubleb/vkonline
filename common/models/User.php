@@ -203,6 +203,7 @@ class User extends BaseUser implements IdentityInterface {
      * @param bool $insert                  是否为插入数据
      * @param array $changedAttributes      更改的字段
      */
+    /*
     public function afterSave($insert, $changedAttributes) {
         //保存后同步到 res.studying8.com 站点
         $url = Yii::$app->params['res']['host'] . Yii::$app->params['res']['synchronization_user_action'];
@@ -225,7 +226,7 @@ class User extends BaseUser implements IdentityInterface {
         }
         
         parent::afterSave($insert, $changedAttributes);
-    }
+    }*/
     
     /**
      * 查询用户绑定的品牌

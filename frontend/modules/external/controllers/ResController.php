@@ -2,8 +2,6 @@
 
 namespace frontend\modules\external\controllers;
 
-use frontend\modules\external\actions\res\Download;
-use frontend\modules\external\actions\res\Library;
 use yii\filters\auth\QueryParamAuth;
 use yii\web\Controller;
 
@@ -25,11 +23,17 @@ class ResController extends Controller
         ];
         return $behaviors;
     }
-    
-    public function actions() {
-        return array_merge(parent::actions(), [
-            'list' => ['class' => Library::class],
-            'download' => ['class' => Download::class],
-        ]);
+
+    public function actionList() {
+        return $this->redirect('/cm_material_library/default');
     }
+    
+    /**
+     * 下载素材
+     * @param string $file_id
+     */
+    public function actionDownload($file_id){
+        return $this->redirect(base64_decode($file_id));
+    }
+
 }
