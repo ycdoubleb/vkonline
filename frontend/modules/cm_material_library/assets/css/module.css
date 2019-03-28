@@ -1,0 +1,196 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 2019-3-25, 16:36:23
+    Author     : Administrator
+*/
+
+.material-index .header-top {
+    width: 100%;
+    padding: 18px 20px 25px 20px;
+    background-color: #fff;
+    margin-bottom: 20px;
+}
+
+.material-index .header-top .label-name,
+.material-index .header-top .select-value {
+    display: inline-block;
+    line-height: 40px;
+    font-weight: bold;
+    padding-left: 0px;
+}
+
+.material-index .header-top .label-name {
+    width: 90px;
+}
+
+.material-index .header-top .select-value {
+    font-weight: normal;
+    color: #666666;
+}
+
+.material-index .header-top .position-search .select-value a {
+    display: inline-block;
+    font-size: 12px;
+    border: 1px dotted red;
+    color: red;
+    height: 22px;
+    vertical-align: middle;
+    line-height: 22px;
+    padding-left: 10px;
+    padding-right: 4px;
+}
+
+.material-index .header-top .position-search .select-value a i {
+    color: #B3B3B3;
+    margin-left: 4px;
+}
+
+.material-index .header-top .position-search .select-value .arrow {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.material-index .header-top .position-search,
+.material-index .header-top .material-category,
+.material-index .header-top .material-type {
+    height: 40px;
+}
+
+.material-index .header-top .position,
+.material-index .header-top .search-input {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 0px;
+}
+
+.material-index .header-top .search-input {
+    width: 260px;
+    height: 38px;
+    float: right;
+    text-align: right;
+    padding-right: 0px;
+}
+
+.material-index .header-top .search-input input {
+    width: 260px;
+    height: 38px;
+    padding-left: 10px;
+    padding-right: 35px;
+    border: #cccccc 1px solid;
+}
+
+.material-index .header-top .search-input .search-icon {
+    width: 40px;
+    height: 40px;
+    float: right;
+    text-align: center;
+    color: #cccccc;
+    padding-top: 10px;
+    position: relative;
+    bottom: 38px;
+    z-index: 2;
+    cursor: pointer;
+}
+
+.material-index .header-top .material-dir .select-value a{
+    padding: 6px;
+    padding-left: 0;
+    margin-right: 20px;
+}
+
+.material-index .header-top .material-type .select-value label {
+    width: 80px;
+    font-weight: normal;
+}
+
+.material-index .lists-content {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.material-index .lists-content .material-lists {
+    margin-right: -12px;
+}
+
+.material-index .material-lists .material-content {
+    width: 210px;
+    height: 200px;
+    display: inline-block;
+    background-color: #ffffff;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    -webkit-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    transition: all 0.2s linear;
+}
+
+.material-index .material-lists .material-content.hover {
+    -webkit-box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    -webkit-transform: translate3d(0, -2px, 0);
+    -moz-transform: translate3d(0, -2px, 0);
+    transform: translate3d(0, -2px, 0);
+}
+
+.material-index .material-lists .material-content .material-info {
+    height: 160px;
+}
+
+.material-index .material-lists .material-content .material-info .material-img {
+    width: 210px;
+    height: 160px;
+}
+
+.material-index .material-lists .material-content .material-info .open-save {
+    position: absolute;
+    width: 210px;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 12px;
+    color: #f2f2f2;
+    z-index: 2;
+    background-color: rgba(40, 40, 40, 0.37);
+}
+
+.material-index .material-lists .material-content .material-info .open-save span {
+    margin-right: 10px;
+}
+
+.material-index .material-lists .material-content .material-operating {
+    height: 40px;
+    line-height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #999999;
+}
+
+.material-index .material-lists .material-content .material-operating .material-name {
+    width: 142px;
+    display: inline-block;
+}
+
+.material-index .material-lists .material-content .material-operating a {
+    width: 20px;
+    color: #fe4d20;
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+}
+
+/*素材预览模态框*/
+.preview .modal-dialog .modal-content .modal-footer {
+    text-align: left;
+    font-size: 14px;
+}
+
+.preview .modal-dialog .modal-content .modal-footer .media-tags {
+    font-size: 12px;
+    color: #999999;
+    margin-top: 5px;
+}
