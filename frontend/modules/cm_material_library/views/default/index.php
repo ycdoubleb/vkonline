@@ -10,6 +10,11 @@ use yii\widgets\ActiveForm;
 
 CmMaterialAssets::register($this);
 //var_dump($medias);exit;
+$params = Yii::$app->request->getQueryParams();
+$params_php = json_encode($params); //js参数
+$details_dom_php = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
+$this->renderFile("@frontend/modules/cm_material_library/views/default/____lists.php")));
+
 ?>
 <div class="cm_material_library-default-index material-index ">
     <!--过滤条件-->
@@ -37,7 +42,7 @@ CmMaterialAssets::register($this);
                 </div>
             </div>
             <div class="search-input">
-                <?= Html::input('input', 'keyword', $keyword, [])?>
+                <?= Html::input('input', 'keyword', $keyword, ['onblur' => 'searchF({keyword:$(this).val()})'])?>
                 <div class="search-icon">
                     <i class="glyphicon glyphicon-search"></i>
                 </div>
@@ -74,22 +79,100 @@ CmMaterialAssets::register($this);
 
             <!--总结记录-->
             <div class="summary set-bottom">
-                <span>共 <b><?= $totalCount; ?></b> 条记录</span>
+                <span>共 <b>0</b> 条记录</span>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    var page = 0;
+    var total_page = 0;
+    var pageSize = 20;
+    var isPageLoading = false;
+    var params_js = <?= $params_php ?>; //js参数
+    var details_dom_js = <?= $details_dom_php ?>;
+    var plagePageUrl = '/cm_material_library/default/page-list';
+    
+    window.onload = function(){
+        // 搜索图标的点击事件
+        $(".search-icon").click(function(){
+            searchF({keyword:$(this).val()});
+        });
+        //滚动事件
+        $(window).scroll(function(){
+            if($(document).scrollTop() >= $(document).height() - $(window).height() - 300){
+                listPage(++page);
+            }
+        });
+        //页面初始后马上云查询第一页数据
+        listPage(1,true);
+    }
     
     /**
-     * 
-     * @param {type} keys
+     * 刷新条件
+     * @param {key:value} keys  改变的条件
      * @returns {void}
      */
     function searchF(keys){
-        var params = $.extend($params_js,keys);
+        var params = $.extend(params_js,keys);
         window.location.href = "/cm_material_library/default/index?"+urlEncode(params).substr(1);
+    }
+    
+    function listPage(target_page , force){
+        page = target_page > total_page ? total_page : target_page;
+        // 当前页数是否大于最大页数
+        if(!force && target_page >= total_page){
+            $('.loading-box .loading').hide();
+            $('.loading-box .no_more').show();
+            return;
+        }
+        /**
+         * 如果页面非加载当中执行
+         */
+        if(!isPageLoading){
+            isPageLoading = true;   //设置已经加载当中...
+            var params = $.extend(params_js, {page: target_page});  //传值
+            //console.log(params);
+            $.get(plagePageUrl, params, function(rel){
+                isPageLoading = false;      //取消设置加载当中...
+                var data = rel.data;        //获取返回的数据
+                
+                page = Number(data.page);
+                total_page = Number(Math.ceil(data.totalCount / pageSize));
+                
+                //console.log(page,total_page);
+                //请求成功返回数据，否则提示错误信息
+                if(rel['code'] == '0'){
+                    for(var i in data.result){
+                        var item = $(Wskeee.StringUtil.renderDOM(details_dom_js, data.result[i])).appendTo($(".meida-details"));
+                        //鼠标经过、离开事件
+                        item.hover(function(){
+                            $(this).addClass('hover');
+                        }, function(){
+                            $(this).removeClass('hover');
+                        });
+                        //点击查看详情
+                        item.find(".material-info").click(function(){
+                            showModal($(this).attr('data-url'));return false;
+                        });
+                    }
+                    //如果当前页大于最大页数显示“没有更多了”
+                    if(page >= total_page){
+                        $('.loading-box .no_more').show();
+                    }
+                }else{
+                    $.notify({
+                        message: rel['message'],    //提示消息
+                    },{
+                        type: "danger", //错误类型
+                    });
+                }
+                $('.loading-box .loading').hide();   //隐藏loading
+            });
+            $('.loading-box .loading').show();
+            $('.loading-box .no_more').hide();
+        }
     }
     
     function onTypeChange(){
@@ -118,96 +201,10 @@ CmMaterialAssets::register($this);
 </script>
 
 <?php
-$params = Yii::$app->request->getQueryParams();
-$params_js = json_encode($params); //js参数
-$page_size = 16;                                                //一页显示的数量
-$page = ArrayHelper::getValue($params, 'page', 1);              //当前页
 
-$details_dom = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
-$this->renderFile("@frontend/modules/cm_material_library/views/default/____lists.php")));
 
 $js = <<<JS
-    /**
-     * 滚屏自动换页
-     */
-    var page = 0; //页数
-    var isPageLoading = false;
-    $(window).scroll(function(){
-        if($(document).scrollTop() >= $(document).height() - $(window).height() - 300){
-            //loaddata(page, '/cm_material_library/default/search');
-        }
-    });
-    //加载第一页的课程数据
-    //loaddata(page, '/cm_material_library/default/index');
-    /**
-     * 加载数据
-     * @param int target_page 指定页
-     * @param string url 指定的链接
-     */
-    function loaddata (target_page, url) {
-        var maxPageNum =  $totalCount / 20;
-        // 当前页数是否大于最大页数
-        if(target_page >= Math.ceil(maxPageNum)){
-            $('.loading-box .loading').hide();
-            $('.loading-box .no_more').show();
-            return;
-        }
-        /**
-         * 如果页面非加载当中执行
-         */
-        if(!isPageLoading){
-            isPageLoading = true;   //设置已经加载当中...
-            var params = $.extend($params_js, {page: (target_page + 1)});  //传值
-            $.get(url, params, function(rel){
-                isPageLoading = false;      //取消设置加载当中...
-                var data = rel.data;        //获取返回的数据
-                page = Number(data.page);   //当前页
-                //请求成功返回数据，否则提示错误信息
-                if(rel['code'] == '0'){
-                    for(var i in data.result){
-                        var item = $(Wskeee.StringUtil.renderDOM($details_dom, data.result[i])).appendTo($(".meida-details"));
-                        //鼠标经过、离开事件
-                        item.hover(function(){
-                            $(this).addClass('hover');
-                        }, function(){
-                            $(this).removeClass('hover');
-                        });
-                        //点击查看详情
-                        item.find(".material-info").click(function(){
-                            showModal($(this).attr('data-url'));return false;
-                        });
-                    }
-                    //如果当前页大于最大页数显示“没有更多了”
-                    if(page >= Math.ceil(maxPageNum)){
-                        $('.loading-box .no_more').show();
-                    }
-                }else{
-                    $.notify({
-                        message: rel['message'],    //提示消息
-                    },{
-                        type: "danger", //错误类型
-                    });
-                }
-                $('.loading-box .loading').hide();   //隐藏loading
-            });
-            $('.loading-box .loading').show();
-            $('.loading-box .no_more').hide();
-        }
-    }
-        
-        
-    // 搜索图标的点击事件
-    $(".search-icon").click(function(){
-        searchF({keyword:$(this).val()});
-    })
-        
-    /**
-     * 提交表单
-     */
-    window.submit = function(){
-        $('.loading-box .loading').show();
-        $('#media-form').submit();
-    }
+    
 JS;
     $this->registerJs($js,  View::POS_READY);
 ?>

@@ -41,33 +41,7 @@ class DefaultController extends Controller
         //素材分类ID
         $mediaTypes = $this->getMediaType();
         $type_ids = ArrayHelper::getValue($params, 'MediaSearch.type_id', $mediaTypes['type_id']);  //素材类型ID
-
-        //素材信息
-        $materialDatas = $this->searchMedia($keyword, $dirDetail['dir_ids'], implode(',', $type_ids), $page, $limit);
-        $medias = []; $totalCount = 0;
-        if($materialDatas['code'] == 0){
-            $medias = $materialDatas['data']['list'];
-            $page = $materialDatas['data']['page'];
-            $totalCount = $materialDatas['data']['total_count'];
-        }
-
-        //如果是ajax请求，返回json
-        if(\Yii::$app->request->isAjax){
-            Yii::$app->getResponse()->format = 'json';
-            foreach($medias as &$media){
-                $media['cover_img'] = Aliyun::absolutePath(!empty($media['cover_url']) ? $media['cover_url'] : 'static/imgs/notfound.png');
-                $media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
-                $media['file_id'] = base64_encode($media['url']);
-            }
-            try
-            { 
-                $data = ['result' => $medias, 'page' => $page ];
-                return new ApiResponse(ApiResponse::CODE_COMMON_OK, '请求成功！', $data);
-            }catch (Exception $ex) {
-                return new ApiResponse(ApiResponse::CODE_COMMON_UNKNOWN, '请求失败::' . $ex->getMessage());
-            }
-        }
-
+        
         return $this->render('index', [
             'filters' => $params,       //查询过滤的属性
             'keyword' => $keyword,      //关键字
@@ -75,7 +49,6 @@ class DefaultController extends Controller
             'dirs' => $dirDetail['childrens'],      //选择过滤的目录条件
             'type_id' => $type_ids,                 //选中的素材类型ID
             'mediaType' => $mediaTypes['type_name'],     //过滤的素材类型条件
-            'totalCount' => $totalCount,            //素材总数
         ]);
     }
     
@@ -101,7 +74,8 @@ class DefaultController extends Controller
             Yii::$app->getResponse()->format = 'json';
             foreach($medias as &$media){
                 $media['cover_img'] = Aliyun::absolutePath(!empty($media['cover_url']) ? $media['cover_url'] : 'static/imgs/notfound.png');
-                $media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
+                //$media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
+                $media['icon'] = "";
                 $media['file_id'] = base64_encode($media['url']);
             }
             try
