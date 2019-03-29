@@ -1,13 +1,10 @@
 <?php
 
-use common\models\vk\CustomerAdmin;
 use kartik\growl\GrowlAsset;
 use yii\helpers\Html;
 use yii\web\View;
 
-
 /* @var $this View */
-/* @var $model CustomerAdmin */
 
 GrowlAsset::register($this);
 

@@ -64,6 +64,10 @@ return [
         'frontend_admin' => [
             'class' => 'backend\modules\frontend_admin\Module',
         ],
+        //reids缓存管理
+        'rediscache_admin' => [
+            'class' => 'backend\modules\rediscache_admin\Module',
+        ],
     ],
     'params' => $params,
     'as access' => [

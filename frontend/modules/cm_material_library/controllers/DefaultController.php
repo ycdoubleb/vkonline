@@ -3,7 +3,9 @@
 namespace frontend\modules\cm_material_library\controllers;
 
 use common\components\aliyuncs\Aliyun;
+use common\components\redis\RedisService;
 use common\models\api\ApiResponse;
+use common\models\Config;
 use common\utils\ApiService;
 use Yii;
 use yii\db\Exception;
@@ -16,6 +18,16 @@ use yii\web\Controller;
  */
 class DefaultController extends Controller 
 {
+    /**
+     * redis 键名前缀
+     * format：
+     * cm_material:dir:{目录ID}: => [dirPath,childrens]
+     * eg：cm_material:dir:0 => [dirPath:1,childrens:1]
+     */
+    const REDIS_DIR_KEY = 'cm_material:dir:';
+    
+    const REDIS_TYPE_KEY = 'cm_material:type';
+    
     private $api_server = "";
 
     public function init() 
@@ -31,37 +43,39 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         $params = Yii::$app->request->queryParams;
-        $keyword = ArrayHelper::getValue($params, 'keyword');               //关键字
-        $dir_id = ArrayHelper::getValue($params, 'dir_id', 0);              //素材目录ID
-        $page = ArrayHelper::getValue($params, 'page');     //页数
-        $limit = ArrayHelper::getValue($params, 'limit');   //截取条数
-//        var_dump($params);exit;
+        $keyword = ArrayHelper::getValue($params, 'keyword');   //关键字
+        $dir_id = ArrayHelper::getValue($params, 'dir_id');     //素材目录ID
+
         //目录详情
         $dirDetail = $this->getDirDetail($dir_id);
         //素材分类ID
         $mediaTypes = $this->getMediaType();
-        $type_ids = ArrayHelper::getValue($params, 'MediaSearch.type_id', $mediaTypes['type_id']);  //素材类型ID
-        
+        $type_ids = ArrayHelper::getValue($params, 'type_id', $mediaTypes['type_id']);  //素材类型ID
+
         return $this->render('index', [
-            'filters' => $params,       //查询过滤的属性
             'keyword' => $keyword,      //关键字
             'dirPath' => $dirDetail['dirPath'],     //当前位置
             'dirs' => $dirDetail['childrens'],      //选择过滤的目录条件
             'type_id' => $type_ids,                 //选中的素材类型ID
-            'mediaType' => $mediaTypes['type_name'],     //过滤的素材类型条件
+            'mediaType' => $mediaTypes['type_name'],//过滤的素材类型条件
         ]);
     }
     
-    public function actionPageList(){
+    /**
+     * 素材列表数据
+     * @return ApiResponse
+     */
+    public function actionPageList()
+    {
         $params = Yii::$app->request->queryParams;
-        $keyword = ArrayHelper::getValue($params, 'keyword');               //关键字
-        $dir_id = ArrayHelper::getValue($params, 'dir_id', 0);              //素材目录ID
-        $type_id = ArrayHelper::getValue($params, 'type_id', 0);             //素材目录ID
+        $keyword = ArrayHelper::getValue($params, 'keyword');       //关键字
+        $dir_id = ArrayHelper::getValue($params, 'dir_id', 0);      //素材目录ID
+        $type_id = ArrayHelper::getValue($params, 'type_id', []);   //素材类型ID
         $page = ArrayHelper::getValue($params, 'page');     //页数
         $limit = ArrayHelper::getValue($params, 'limit');   //截取条数
-        //
+        
         //素材信息
-        $materialDatas = $this->searchMedia($keyword, $dir_id, $type_id, $page, $limit);
+        $materialDatas = $this->searchMedia($keyword, $dir_id, implode(',', $type_id), $page, $limit);
         $medias = []; $totalCount = 0;
         if($materialDatas['code'] == 0){
             $medias = $materialDatas['data']['list'];
@@ -121,8 +135,19 @@ class DefaultController extends Controller
      */
     private function getMediaType() 
     {
-        $mediaTypes = ApiService::get("{$this->api_server}/v1/media-type/list", []);
+        //$redis_key 
+        //format = user_visit_log:2019012401:1 => [order_id:1,user_id:1,visit_time:1572233424,visit_count:12]
+        //
+        $time_out = 24*60*60;
+        $redis_key = self::REDIS_TYPE_KEY;
         
+        if (!RedisService::getRedis()->exists($redis_key)) {
+            $mediaTypes = ApiService::get("{$this->api_server}/v1/media-type/list", []);
+            //不存在，添加一条记录
+            RedisService::getRedis()->setex($redis_key, $time_out, json_encode($mediaTypes));
+        } else {
+            $mediaTypes = json_decode(RedisService::getRedis()->get($redis_key), true);
+        }
         $type_name = []; $type_id = []; $type_sign = [];
         if($mediaTypes['code'] == 0){
             foreach ($mediaTypes['data'] as $key => $mediaType){
@@ -146,15 +171,26 @@ class DefaultController extends Controller
      */
     private function getDirDetail($dir_id = 0) 
     {
-        $dirDetail = ApiService::get("{$this->api_server}/v1/dir/get-detail", ['dir_id' => $dir_id, 'category_id' => $this->getMediaLibraryID()]);
+        //$redis_key 
+        //format = user_visit_log:2019012401:1 => [order_id:1,user_id:1,visit_time:1572233424,visit_count:12]
+        //
+        $time_out = 24*60*60;
+        $redis_key = self::REDIS_DIR_KEY . "$dir_id";
+        
+        if (!RedisService::getRedis()->exists($redis_key)) {
+            $dirDetail = ApiService::get("{$this->api_server}/v1/dir/get-detail", ['dir_id' => $dir_id, 'category_id' => $this->getMediaLibraryID()]);
+            //不存在，添加一条记录
+            RedisService::getRedis()->setex($redis_key, $time_out, json_encode($dirDetail));
+        } else {
+            $dirDetail = json_decode(RedisService::getRedis()->get($redis_key), true);
+        }
         //处理目录详情
-        $children_ids = []; $childrens = []; $dirPath = [];
+        $childrens = []; $dirPath = [];
         if($dirDetail['code'] == 0){
             foreach ($dirDetail['data']['children'] as $key => $children) {
                 $childrens += [
                     $children['id'] => $children['name']
                 ];
-                $children_ids += [$key => $children['id']];
             }
             foreach ($dirDetail['data']['dir']['path'] as $key => $value) {
                 $dirPath += [
@@ -165,13 +201,10 @@ class DefaultController extends Controller
                 ];
             }
         }
-        $dir_ids = empty($dir_id) ? $dir_id : $dir_id . ',' . implode(',', $children_ids);    //过滤参数--目录ID
         
         return [
-            'dirDetail' => $dirDetail,  //目录详情
             'childrens' => $childrens,  //选择过滤的目录条件
             'dirPath' => $dirPath,      //当前位置
-            'dir_ids' => $dir_ids,      //当前目录ID及其子目录ID
         ];
     }
 
@@ -230,7 +263,7 @@ class DefaultController extends Controller
     {
         //icon配置
         $iconConfig = (new Query())->select(['config_name', 'config_value'])
-                ->from(['Config' => \common\models\Config::tableName()])
+                ->from(['Config' => Config::tableName()])
                 ->andFilterWhere(['like', 'config_name', 'cm_material_icon_'])
                 ->all();
         

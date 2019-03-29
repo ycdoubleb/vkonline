@@ -1,0 +1,52 @@
+/*******************************************************************************
+ *
+ * 公共
+ *
+********************************************************************************/
+.rediscache_admin-default-index {
+    position: relative;
+}
+
+.rediscache_admin-default-index table{
+    width: 100%;
+    border: #d2d6de solid 1px;
+    border-collapse: collapse;
+}
+.rediscache_admin-default-index tr {
+    border: #d2d6de solid 1px;
+}
+.rediscache_admin-default-index th {
+    border: #d2d6de solid 1px;
+    padding: 8px;
+}
+.rediscache_admin-default-index td{
+    border: #d2d6de solid 1px;
+    padding: 8px;
+}
+
+
+.rediscache_admin-default-index .key-info {
+    margin-bottom: 20px;
+}
+
+.rediscache_admin-default-index .key-info tr th{
+    width: 10%;
+    background-color: #f2f2f2;
+}
+
+.rediscache_admin-default-index .key-info tr td {
+    width: 90%;
+}
+
+.rediscache_admin-default-index .detail-flow {
+    height: 600px;
+    overflow: auto;
+}
+.rediscache_admin-default-index .key-detail thead {
+    background-color: #f2f2f2;
+}
+
+.rediscache_admin-default-index .key-detail th,
+.rediscache_admin-default-index .key-detail td {
+   text-align: center;
+}

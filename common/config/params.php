@@ -4,6 +4,12 @@ return [
     'supportEmail' => 'lmgclj@qq.com',
     'user.passwordResetTokenExpire' => 3600,
     'user.passwordAccessTokenExpire' => 3600 * 24 * 7,
+    /* 
+     * redis 配置
+     */
+    'redis' => [
+        'prefix' => 'studying8:',                  //区分其它应用
+    ],
     /* 企业微信配置 */
     'notification.qywx' => [
         "CorpId" => "wwd0cb15376ce0a58a",

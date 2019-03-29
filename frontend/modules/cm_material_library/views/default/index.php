@@ -9,9 +9,9 @@ use yii\widgets\ActiveForm;
 /* @var $this View */
 
 CmMaterialAssets::register($this);
-//var_dump($medias);exit;
+
 $params = Yii::$app->request->getQueryParams();
-$params_php = json_encode($params); //js参数
+$params_php = json_encode(array_merge(['page' => 1], $params)); //js参数
 $details_dom_php = json_encode(str_replace(array("\r\n", "\r", "\n"), " ", 
 $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists.php")));
 
@@ -29,20 +29,17 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
                 <div class="label-name">当前位置：</div>
                 <div class="select-value">
                     <?php $ids = []; foreach ($dirPath as $key => $dir): ?>
-                        <?php
-                            $ids += [$key => $dir['id']];   //保存目录ID
-                            if($dir['id'] == 0){
-                                echo Html::a($dir['name'] . " <i></i>", 'javascript:;');
-                            } else {
-                                echo Html::a($dir['name'] . " <i>×</i>", array_merge(['index'], array_merge($filters, ['dir_id' => $ids[$key - 1]])));
-                            }
-                        ?>
+                        <?php  $ids += [$key => $dir['id']]; if($dir['id'] == 0):?>
+                            <a href="javascript:;"><?= $dir['name'];?> <i></i></a>
+                        <?php else: ?>
+                            <a href="javascript:;" onclick="searchF({dir_id:<?= $ids[$key - 1];?>})"><?= $dir['name'];?> <i>×</i></a>
+                        <?php endif;?>
                         <i class="arrow">&gt;</i>
                     <?php endforeach; ?>
                 </div>
             </div>
             <div class="search-input">
-                <?= Html::input('input', 'keyword', $keyword, ['onblur' => 'searchF({keyword:$(this).val()})'])?>
+                <?= Html::input('input', 'keyword', $keyword, ['onchange' => 'searchF({keyword:$(this).val()})'])?>
                 <div class="search-icon">
                     <i class="glyphicon glyphicon-search"></i>
                 </div>
@@ -59,7 +56,7 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         <div class="material-type">
             <div class="label-name">类型</div>
             <div class="select-value">
-                <?= Html::checkboxList("MediaSearch[type_id]", $type_id, $mediaType, ['onclick' => 'onTypeChange();']);?>
+                <?= Html::checkboxList("type_id", $type_id, $mediaType, ['itemOptions'=> ['onchange' => 'onTypeChange();']]);?>
             </div>
         </div>
         <?php ActiveForm::end(); ?>
@@ -79,7 +76,7 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
 
             <!--总结记录-->
             <div class="summary set-bottom">
-                <span>共 <b>0</b> 条记录</span>
+                <span>共 <b></b> 条记录</span>
             </div>
         </div>
     </div>
@@ -119,10 +116,16 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         window.location.href = "/cm_material_library/default/index?"+urlEncode(params).substr(1);
     }
     
+    /**
+     * 加载数据
+     * @param {int} target_page 当前页面
+     * @param {int} force       是否强制执行
+     * @returns {undefined}
+     */
     function listPage(target_page , force){
         page = target_page > total_page ? total_page : target_page;
         // 当前页数是否大于最大页数
-        if(!force && target_page >= total_page){
+        if(!force && target_page > total_page){
             $('.loading-box .loading').hide();
             $('.loading-box .no_more').show();
             return;
@@ -133,25 +136,19 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         if(!isPageLoading){
             isPageLoading = true;   //设置已经加载当中...
             var params = $.extend(params_js, {page: target_page});  //传值
-            //console.log(params);
+            console.log(params);
             $.get(plagePageUrl, params, function(rel){
                 isPageLoading = false;      //取消设置加载当中...
                 var data = rel.data;        //获取返回的数据
                 
                 page = Number(data.page);
                 total_page = Number(Math.ceil(data.totalCount / pageSize));
-                
+                $('.summary b').html(data.totalCount);  //设置素材总数
                 //console.log(page,total_page);
                 //请求成功返回数据，否则提示错误信息
                 if(rel['code'] == '0'){
                     for(var i in data.result){
                         var item = $(Wskeee.StringUtil.renderDOM(details_dom_js, data.result[i])).appendTo($(".meida-details"));
-                        //鼠标经过、离开事件
-                        item.hover(function(){
-                            $(this).addClass('hover');
-                        }, function(){
-                            $(this).removeClass('hover');
-                        });
                         //点击查看详情
                         item.find(".material-info").click(function(){
                             showModal($(this).attr('data-url'));return false;
@@ -175,13 +172,21 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         }
     }
     
+    /**
+     * 素材类型更改
+     * @returns {void}
+     */
     function onTypeChange(){
-        searchF({type_id:""});
+        var type_id = [];
+        $.each($('input[name="type_id[]"]:checked'), function(){
+            type_id.push($(this).val()); 
+        });
+        searchF({type_id: type_id});
     }
     
     /**
      * 对象转url参数
-       @param string url    地址 
+     * @param string url    地址 
      * @param array data    参数对象
      **/
     function urlEncode (param, key, encode) {  
@@ -199,12 +204,3 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         return paramStr;  
     }
 </script>
-
-<?php
-
-
-$js = <<<JS
-    
-JS;
-    $this->registerJs($js,  View::POS_READY);
-?>
