@@ -18,10 +18,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div style="width:50%;display: inline-block;margin-right: 10px;">
         <input id="key-input" list="browsers" name="browser" onchange="changeInput()" class="form-control" />
         <datalist id="browsers">
-            <option value="mediacloud:acl:data:*">
-            <option value="mediacloud:user_visit_log:*">
-            <option value="mediacloud:media_visit_log:*">
-            <option value="mediacloud:acl:dirty">
+            <option value="studying8:cm_material:dir:*">
+            <option value="studying8:cm_material:type">
         </datalist>
         <select multiple="multiple" class="form-control keylist" size="30" onchange="selectKey($(this).val()[0])">
         </select>
@@ -78,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
         if(key == null || key == ""){
             key = "*";
         }
-        $.get('/rediscache_admin/acl/search-key',{key:key},function(r){
+        $.get('/rediscache_admin/redis/search-key',{key:key},function(r){
             buildKeyList(r.data.keys);
         });
     }
@@ -100,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
      * @returns {void}
      */
     function selectKey(key){
-        $.get('/rediscache_admin/acl/get-value',{key:key},function(rel){
+        $.get('/rediscache_admin/redis/get-value',{key:key},function(rel){
             reflashKeyDetail(rel.data);
         });
     }
@@ -119,6 +117,8 @@ $this->params['breadcrumbs'][] = $this->title;
             case 'zset': setZsetValue(data.values);
                 break;
             case 'hash': setHash(data.values);
+                break;
+            case 'string': setString(data.values);
                 break;
             default: setDefault(data.values);
         }
@@ -165,7 +165,20 @@ $this->params['breadcrumbs'][] = $this->title;
     }
     
     /**
-     * 生成表格 Type:set string list
+     * 生成表格 Type: string
+     * @param {array} values
+     * @returns {undefined}
+     */
+    function setString(values){
+        var _table = '<thead><tr><th>Value</th></tr></thead><tbody>',
+            _tr = '';
+            _tr += "<tr><td>" + values +"</td></tr>";
+        var _tabsle = _table +  _tr + '</tbody>';
+        $(".key-detail").html(_tabsle);
+    }
+    
+    /**
+     * 生成表格 Type:set list
      * @param {array} values
      * @returns {undefined}
      */

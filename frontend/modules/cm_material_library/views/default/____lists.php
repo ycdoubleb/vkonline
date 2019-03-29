@@ -1,5 +1,5 @@
 <div class="material-content">
-    <div class="material-info" data-url="preview?id={%id%}" >
+    <div class="material-info" data-url="/cm_material_library/default/preview?id={%id%}" >
         <div class="open-save">
             <span><i class="glyphicon glyphicon-eye-open"></i> {%visit_count%}</span>
             <span><i class="glyphicon glyphicon-save"></i> {%download_count%}</span>

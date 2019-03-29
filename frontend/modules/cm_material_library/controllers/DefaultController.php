@@ -21,11 +21,25 @@ class DefaultController extends Controller
     /**
      * redis 键名前缀
      * format：
-     * cm_material:dir:{目录ID}: => [dirPath,childrens]
-     * eg：cm_material:dir:0 => [dirPath:1,childrens:1]
+     * cm_material:dir:{目录ID}: => {{obj }}
+     * eg：cm_material:dir:0 => {"code":"0","msg":"OK","data":{
+     *   "dir":{"id":"0","name":"\u6839\u76ee\u5f55","level":"0",
+     *   "path":[{"id":"0","name":"\u6839\u76ee\u5f55"}]},
+     *   "children":[{"id":"192","name":"\u4eba\u7269"},{"id":"191","name":"\u56fe\u6807"},{"id":"198","name":"\u5b66\u5386"}]
+     *  }}
      */
     const REDIS_DIR_KEY = 'cm_material:dir:';
     
+    /**
+     * redis 键名前缀
+     * format：
+     * cm_material:type => {{obj }}
+     * eg：cm_material:type=> {"code":"0","msg":"OK","data":[
+     *  {"id":1,"name":"\u89c6\u9891","sign":"video"},
+     *  {"id":2,"name":"\u97f3\u9891","sign":"audio"},
+     *  {"id":3,"name":"\u56fe\u7247","sign":"image"},
+     *  {"id":4,"name":"\u6587\u6863","sign":"document"}]}
+     */
     const REDIS_TYPE_KEY = 'cm_material:type';
     
     private $api_server = "";
@@ -87,7 +101,7 @@ class DefaultController extends Controller
         if(\Yii::$app->request->isAjax){
             Yii::$app->getResponse()->format = 'json';
             foreach($medias as &$media){
-                $media['cover_img'] = Aliyun::absolutePath(!empty($media['cover_url']) ? $media['cover_url'] : 'static/imgs/notfound.png');
+                $media['cover_url'] = !empty($media['cover_url']) ? $media['cover_url'] : Aliyun::absolutePath('static/imgs/notfound.png');
                 //$media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
                 $media['icon'] = "";
                 $media['file_id'] = base64_encode($media['url']);
@@ -136,11 +150,10 @@ class DefaultController extends Controller
     private function getMediaType() 
     {
         //$redis_key 
-        //format = user_visit_log:2019012401:1 => [order_id:1,user_id:1,visit_time:1572233424,visit_count:12]
-        //
+        //format = cm_material:type
+        //过期时间
         $time_out = 24*60*60;
         $redis_key = self::REDIS_TYPE_KEY;
-        
         if (!RedisService::getRedis()->exists($redis_key)) {
             $mediaTypes = ApiService::get("{$this->api_server}/v1/media-type/list", []);
             //不存在，添加一条记录
@@ -148,6 +161,7 @@ class DefaultController extends Controller
         } else {
             $mediaTypes = json_decode(RedisService::getRedis()->get($redis_key), true);
         }
+        //处理素材类型
         $type_name = []; $type_id = []; $type_sign = [];
         if($mediaTypes['code'] == 0){
             foreach ($mediaTypes['data'] as $key => $mediaType){
@@ -172,11 +186,10 @@ class DefaultController extends Controller
     private function getDirDetail($dir_id = 0) 
     {
         //$redis_key 
-        //format = user_visit_log:2019012401:1 => [order_id:1,user_id:1,visit_time:1572233424,visit_count:12]
-        //
+        //format = cm_material:dir:{目录ID}: => {{obj }}
+        //过期时间
         $time_out = 24*60*60;
         $redis_key = self::REDIS_DIR_KEY . "$dir_id";
-        
         if (!RedisService::getRedis()->exists($redis_key)) {
             $dirDetail = ApiService::get("{$this->api_server}/v1/dir/get-detail", ['dir_id' => $dir_id, 'category_id' => $this->getMediaLibraryID()]);
             //不存在，添加一条记录
@@ -244,12 +257,12 @@ class DefaultController extends Controller
             $mediaDetail = [
                 'type_sign' => $mediaTypes['type_sign'][$materialDetail['data']['type_id']],
                 'name' => $materialDetail['data']['name'],
-                'cover_url' => Aliyun::absolutePath(!empty($materialDetail['data']['cover_url']) ? $materialDetail['data']['cover_url'] : 'static/imgs/notfound.png'),
+                'cover_url' => !empty($materialDetail['data']['cover_url']) ? $materialDetail['data']['cover_url'] : Aliyun::absolutePath('static/imgs/notfound.png'),
                 'url' => $materialDetail['data']['url'],
                 'tags' => $materialDetail['data']['tags'],
             ];
         }
-        
+
         return $mediaDetail;
     }
     

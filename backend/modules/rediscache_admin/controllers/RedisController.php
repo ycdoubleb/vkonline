@@ -8,9 +8,9 @@ use Yii;
 use yii\web\Controller;
 
 /**
- * Default controller for the `rediscache_admin` module
+ * Redis controller for the `rediscache_admin` module
  */
-class AclController extends Controller {
+class RedisController extends Controller {
 
     /**
      * Renders the index view for the module
