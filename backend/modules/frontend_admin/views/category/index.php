@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'dataProvider' => $dataProvider,
             'filterModel' => $searchModel,
             'layout' => "{items}\n{summary}\n{pager}",
-            'rowOptions' => function($model, $key, $index, $this){
+            'rowOptions' => function($model, $key, $index){
                 /* @var $model CategorySearch */
                 return ['class'=>"treegrid-{$key}".($model->parent_id == 0 ? "" : " treegrid-parent-{$model->parent_id}")];
             },

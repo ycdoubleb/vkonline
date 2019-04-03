@@ -113,7 +113,7 @@ and open the template in the editor.
     text-align: center;
 }
 
-.material-index .lists-content .material-lists {
+.material-index .lists-content .meida-details {
     margin-right: -12px;
 }
 
@@ -124,6 +124,7 @@ and open the template in the editor.
     background-color: #ffffff;
     margin-right: 10px;
     margin-bottom: 10px;
+    border: 1px solid #f2f2f2;
     -webkit-transition: all 0.2s linear;
     -o-transition: all 0.2s linear;
     -moz-transition: all 0.2s linear;
@@ -143,13 +144,13 @@ and open the template in the editor.
 }
 
 .material-index .material-lists .material-content .material-info .material-img {
-    width: 210px;
+    width: 208px;
     height: 160px;
 }
 
 .material-index .material-lists .material-content .material-info .open-save {
     position: absolute;
-    width: 210px;
+    width: 208px;
     height: 30px;
     line-height: 30px;
     padding-left: 10px;
@@ -168,8 +169,8 @@ and open the template in the editor.
 .material-index .material-lists .material-content .material-operating {
     height: 40px;
     line-height: 40px;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
     color: #999999;
 }
 

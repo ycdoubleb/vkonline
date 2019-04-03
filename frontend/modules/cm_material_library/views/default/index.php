@@ -1,7 +1,6 @@
 <?php
 
 use frontend\modules\cm_material_library\assets\CmMaterialAssets;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
@@ -39,7 +38,7 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
                 </div>
             </div>
             <div class="search-input">
-                <?= Html::input('input', 'keyword', $keyword, ['onchange' => 'searchF({keyword:$(this).val()})'])?>
+                <?= Html::input('input', 'keyword', $keyword, ['onchange' => 'searchF({keyword:$(this).val()})', 'placeholder' => '输入关键字过滤',])?>
                 <div class="search-icon">
                     <i class="glyphicon glyphicon-search"></i>
                 </div>
@@ -136,11 +135,10 @@ $this->renderFile("@frontend/modules/cm_material_library/views/default/____lists
         if(!isPageLoading){
             isPageLoading = true;   //设置已经加载当中...
             var params = $.extend(params_js, {page: target_page});  //传值
-            console.log(params);
+            //console.log(params);
             $.get(plagePageUrl, params, function(rel){
                 isPageLoading = false;      //取消设置加载当中...
                 var data = rel.data;        //获取返回的数据
-                
                 page = Number(data.page);
                 total_page = Number(Math.ceil(data.totalCount / pageSize));
                 $('.summary b').html(data.totalCount);  //设置素材总数

@@ -87,7 +87,8 @@ class DefaultController extends Controller
         $type_id = ArrayHelper::getValue($params, 'type_id', []);   //素材类型ID
         $page = ArrayHelper::getValue($params, 'page');     //页数
         $limit = ArrayHelper::getValue($params, 'limit');   //截取条数
-        
+        //素材分类ID
+        $mediaTypes = $this->getMediaType();
         //素材信息
         $materialDatas = $this->searchMedia($keyword, $dir_id, implode(',', $type_id), $page, $limit);
         $medias = []; $totalCount = 0;
@@ -102,8 +103,7 @@ class DefaultController extends Controller
             Yii::$app->getResponse()->format = 'json';
             foreach($medias as &$media){
                 $media['cover_url'] = !empty($media['cover_url']) ? $media['cover_url'] : Aliyun::absolutePath('static/imgs/notfound.png');
-                //$media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
-                $media['icon'] = "";
+                $media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
                 $media['file_id'] = base64_encode($media['url']);
             }
             try
@@ -121,7 +121,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * 打开反馈问题的模态框 / 添加反馈问题操作
+     * 素材预览模态框
      * @param int $id   素材ID
      * @return type
      */
@@ -289,12 +289,6 @@ class DefaultController extends Controller
         }
         
         return $icon;
-    }
-
-
-    protected function filterSearch($params)
-    {
-        
     }
 
 }
