@@ -114,9 +114,9 @@ $this->title = Yii::t('app', '{My}{Video}', [
                     ]),
                     'filter' => false,
                     'value' => function($model){
-                        return Video::$typeMap[$model['type']];  
+                        return isset(Video::$typeMap[$model['video_type']]) ? Video::$typeMap[$model['video_type']] : null;  
                     },
-                    'headerOptions' => ['style' => 'width:40px'],
+                    'headerOptions' => ['style' => 'width:70px'],
                 ],
                 [
                     'attribute' => 'img',

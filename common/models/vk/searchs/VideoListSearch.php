@@ -70,12 +70,11 @@ class VideoListSearch extends Video
         
         //目录
         if($sign){
-            //获取分类的子级ID    
-            $user_cat_ids = UserCategory::getCatChildrenIds($this->user_cat_id, true);
-            $query->andFilterWhere([
-                'Video.user_cat_id' => !empty($user_cat_ids) ? 
-                    ArrayHelper::merge([$this->user_cat_id], $user_cat_ids) : $this->user_cat_id,
-            ]);
+            if(!empty($this->user_cat_id)){
+                //获取分类的子级ID    
+                $user_cat_ids = UserCategory::getDirChildrenIds($this->user_cat_id, true);
+                $query->andFilterWhere(['Video.user_cat_id' => ArrayHelper::merge($user_cat_ids, [$this->user_cat_id])]);
+            }
         }else{
             if($this->user_cat_id != null && !$sign){
                 $query->andFilterWhere(['Video.user_cat_id' => $this->user_cat_id]);
@@ -137,7 +136,7 @@ class VideoListSearch extends Video
         
         //查询的素材结果
         $materialResult = $query->asArray()->all();      
-        
+
         return [
             'filter' => $params,
             'total' => $totalCount,
