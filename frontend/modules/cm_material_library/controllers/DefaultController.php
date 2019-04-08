@@ -86,7 +86,7 @@ class DefaultController extends Controller
         $dir_id = ArrayHelper::getValue($params, 'dir_id', 0);      //素材目录ID
         $type_id = ArrayHelper::getValue($params, 'type_id', []);   //素材类型ID
         $page = ArrayHelper::getValue($params, 'page');     //页数
-        $limit = ArrayHelper::getValue($params, 'limit');   //截取条数
+        $limit = ArrayHelper::getValue($params, 'limit', 40);   //截取条数
         //素材分类ID
         $mediaTypes = $this->getMediaType();
         //素材信息
@@ -128,7 +128,7 @@ class DefaultController extends Controller
     public function actionPreview($id)
     {
         $mediaDetail = $this->getMediaDetail($id);
-        
+
         return $this->renderAjax('preview', [
             'mediaDetail' => $mediaDetail,
         ]);
@@ -255,6 +255,7 @@ class DefaultController extends Controller
         $mediaTypes = $this->getMediaType();
         if($materialDetail['code'] == 0){
             $mediaDetail = [
+                'id' => $materialDetail['data']['id'],
                 'type_sign' => $mediaTypes['type_sign'][$materialDetail['data']['type_id']],
                 'name' => $materialDetail['data']['name'],
                 'cover_url' => !empty($materialDetail['data']['cover_url']) ? $materialDetail['data']['cover_url'] : Aliyun::absolutePath('static/imgs/notfound.png'),

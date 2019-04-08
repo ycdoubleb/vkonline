@@ -81,6 +81,11 @@ and open the template in the editor.
     margin-bottom: 0px;
 }
 
+.material-index .lists-content .meida-details {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 /*****************************************************************
 *
 *表格显示
@@ -94,11 +99,11 @@ and open the template in the editor.
     margin-left: 10px;
     margin-right: 10px;
     color: #666666;
+    text-align: center;
 }
 
 .material-index .lists-content .meida-table .table thead th{
     height: 50px;
-    text-align: center;
     vertical-align: middle;
     background-color: #f2f2f2;
 }

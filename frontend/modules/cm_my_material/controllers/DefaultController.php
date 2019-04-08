@@ -115,7 +115,7 @@ class DefaultController extends Controller
         $keyword = ArrayHelper::getValue($params, 'keyword', '');       //关键字
         $recursive = !empty($keyword);    //是否递归
         $user_cat_id = ArrayHelper::getValue($params, 'user_cat_id');   //指定搜索目录，默认为根目录
-        $limit = ArrayHelper::getValue($params, 'limit', 20);   //每页显示多个素材
+        $limit = ArrayHelper::getValue($params, 'limit', 40);   //每页显示多个素材
         $page = ArrayHelper::getValue($params, 'page', 1);      //当前分页
         $type_id = ArrayHelper::getValue($params, 'type_id');   //指定要搜索的素材类型
         //参数处理
@@ -154,12 +154,11 @@ class DefaultController extends Controller
                 $query->andFilterWhere(['Material.user_cat_id' => 0]);
             }
         } else {
-            //递归搜索所有目录
-            $user_cat_ids = UserCategory::getCatChildrenIds($user_cat_id, true);
-            $query->andFilterWhere([
-                'Material.user_cat_id' => !empty($user_cat_ids) ? 
-                    ArrayHelper::merge([$user_cat_id], $user_cat_ids) : $user_cat_id,
-            ]);
+            if(!empty($user_cat_id)){
+                //获取分类的子级ID    
+                $user_cat_ids = UserCategory::getDirChildrenIds($user_cat_id, true);
+                $query->andFilterWhere(['Material.user_cat_id' => ArrayHelper::merge($user_cat_ids, [$user_cat_id])]);
+            }
         }
         //-----------------------
         // 关键字过滤

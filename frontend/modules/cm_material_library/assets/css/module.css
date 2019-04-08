@@ -110,7 +110,7 @@ and open the template in the editor.
 .material-index .lists-content {
     padding-left: 20px;
     padding-right: 20px;
-    text-align: center;
+    /*text-align: center;*/
 }
 
 .material-index .lists-content .meida-details {

@@ -48,7 +48,7 @@ $this->title = Yii::t('app', '{Material}{Preview}',[
                 </div>
             </div>
             <div class="modal-footer" style="">
-                <div class="media-name"><?= $mediaDetail['name']?></div>
+                <div class="media-name"><?= $mediaDetail['name'] . '（编号：' . $mediaDetail['id'] .'）'?></div>
                 <div class="media-tags"><?= $mediaDetail['tags']?></div>
             </div>
        </div>

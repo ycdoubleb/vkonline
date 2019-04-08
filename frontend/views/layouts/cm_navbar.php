@@ -11,7 +11,7 @@ use yii\web\View;
 
 NavBar::begin([
     'brandImage' => '/imgs/site/logo.png?rand='. rand(1, 10),
-    'brandUrl' => Yii::$app->homeUrl,
+    'brandUrl' => '/cm_material_library/default/index',
     'options' => [
         'class' => 'navbar-vk navbar-fixed-top',
     ],
