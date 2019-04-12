@@ -1,6 +1,7 @@
 <?php
 
 use backend\modules\rediscache_admin\assets\RedisCacheAdminAsset;
+use yii\helpers\Html;
 use yii\web\View;
 
 /* @var $this View */
@@ -25,6 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
         </select>
     </div>
     <div style="width:49%;display: inline-block;float: right;">
+        <?= Html::a('删除', ['del-redis'], [
+            'onclick' => "delRedis($(this));return false;",
+            'class' => 'btn btn-danger',
+            'title' => Yii::t('app', 'Delete'),
+        ]);?>
+        <br><br>
         <table class="key-info">
             <tbody>
                 <tr class="name">
@@ -122,6 +129,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 break;
             default: setDefault(data.values);
         }
+    }
+     
+    /**
+     * 删除redis缓存
+     * @param {object} _self
+     * @returns {Boolean}
+     */
+    function delRedis(_self){
+        var redisKeys = $('select.keylist').val();
+        if (redisKeys && redisKeys.length) {
+            $.post(_self.attr('href'), {redisKeys: redisKeys});
+        }
+        return false;
     }
     
     /**
