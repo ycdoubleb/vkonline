@@ -140,8 +140,9 @@ class DefaultController extends Controller
      */
     private function getMediaLibraryID()
     {
-        //从config缓存读取 mediacloud_cm_library_id
-        return 2;
+        //从config读取 mediacloud_cm_library_id
+        $config = Config::findOne(['config_name' => 'mediacloud_cm_library_id']);
+        return $config->config_value;
     }
 
     /**

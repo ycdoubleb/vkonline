@@ -5,6 +5,7 @@ namespace backend\modules\rediscache_admin\controllers;
 use common\components\redis\RedisService;
 use common\models\api\ApiResponse;
 use Yii;
+use yii\db\Exception;
 use yii\web\Controller;
 
 /**
@@ -40,6 +41,25 @@ class RedisController extends Controller {
         return new ApiResponse(ApiResponse::CODE_COMMON_OK, null, [
             'keys' => RedisService::getRedis()->keys((String) $key)
         ]);
+    }
+    
+    /**
+     * 删除redis缓存
+     * @return mixed
+     */
+    public function actionDelRedis()
+    {
+        $redisKeys = Yii::$app->getRequest()->post('redisKeys', []);
+        
+        try {
+            RedisService::getRedis()->del(...(array) $redisKeys);
+            Yii::$app->getSession()->setFlash('success','删除成功！');
+            
+        } catch (Exception $ex) {
+            Yii::$app->getSession()->setFlash('error','删除失败！');
+        }
+        
+        return $this->redirect('index');
     }
 
     /**
