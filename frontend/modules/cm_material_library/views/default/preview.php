@@ -38,7 +38,7 @@ $this->title = Yii::t('app', '{Material}{Preview}',[
                                 echo '<audio src="'.$mediaUrl.'" id="disabled" controls="controls" controlslist="nodownload" style="width:100%"></audio>';
                                 break;
                             case 'image' : 
-                                echo Html::img($mediaUrl, ['id' => "disabled", 'style' => 'width:100%']);
+                                echo Html::img($mediaUrl, ['id' => "disabled", 'style' => 'max-width:100%']);
                                 break;
                             case 'document' : 
                                 echo '<iframe src="http://eezxyl.gzedu.com/?furl='.$mediaUrl.'" width="100%" height="700" style="border: none"></iframe>';

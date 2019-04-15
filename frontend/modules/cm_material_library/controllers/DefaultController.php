@@ -104,7 +104,7 @@ class DefaultController extends Controller
             foreach($medias as &$media){
                 $media['cover_url'] = !empty($media['cover_url']) ? $media['cover_url'] : Aliyun::absolutePath('static/imgs/notfound.png');
                 $media['icon'] = $this->getTypeIcon($media['type_id'], $mediaTypes['type_sign']);
-                $media['file_id'] = base64_encode($media['url']);
+                $media['file_id'] = base64_encode($media['download_url']);
             }
             try
             { 

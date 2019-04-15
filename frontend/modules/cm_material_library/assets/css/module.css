@@ -189,6 +189,9 @@ and open the template in the editor.
 }
 
 /*素材预览模态框*/
+.preview .modal-dialog .modal-content .modal-body .clear-shadow {
+    text-align: center;
+}
 .preview .modal-dialog .modal-content .modal-footer {
     text-align: left;
     font-size: 14px;
