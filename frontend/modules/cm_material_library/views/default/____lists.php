@@ -4,7 +4,8 @@
             <span><i class="glyphicon glyphicon-eye-open"></i> {%visit_count%}</span>
             <span><i class="glyphicon glyphicon-save"></i> {%download_count%}</span>
         </div>
-        <img class="material-img" src="{%cover_url%}"/>
+        <div class="material-img" style="background: url({%cover_url%}) center center / contain no-repeat"></div>
+        <!--<img class="material-img" src="{%cover_url%}"/>-->
     </div>
     <div class="material-operating">
         <div class="material-name single-clamp"><i class="{%icon%}"></i> {%name%}</div>
