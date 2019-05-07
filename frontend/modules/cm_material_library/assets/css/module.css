@@ -144,6 +144,10 @@ and open the template in the editor.
 }
 
 .material-index .material-lists .material-content .material-info .material-img {
+    height: 100%;
+}
+
+.cm_my_material-default-index .material-lists .material-content .material-info .material-img {
     width: 208px;
     height: 160px;
 }
@@ -189,6 +193,9 @@ and open the template in the editor.
 }
 
 /*素材预览模态框*/
+.preview .modal-dialog .modal-content .modal-body .clear-shadow {
+    text-align: center;
+}
 .preview .modal-dialog .modal-content .modal-footer {
     text-align: left;
     font-size: 14px;
