@@ -43,11 +43,18 @@ class BaseAction extends Action {
      */
     protected function beforeRun() {
         $this->params = array_merge($this->getBodyParams(), $this->getQueryParams());
-
+        
+        if($raw = Yii::$app->request->getRawBody()){
+            $this->params = array_merge($this->params, json_decode($raw,true));
+        }
+        
         if ($secret = Yii::$app->request->getQueryParam('secret', null)) {
             $this->secretParams = EncryptionService::decrypt($secret, true);
         } else if ($secret = Yii::$app->request->getBodyParam('secret', null)) {
             $this->secretParams = EncryptionService::decrypt($secret, true);
+        }else{
+            //无加密情况，只有签名校对
+            $this->secretParams = $this->params;
         }
         
         return true;
@@ -58,8 +65,7 @@ class BaseAction extends Action {
      * @return bool
      */
     protected function verify(){
-        $is_post = Yii::$app->request->isPost;
-        $notfounds = $this->checkRequiredParams($is_post ? $this->getBodyParams() : $this->getQueryParams(), ['appkey', 'sign', 'timestamp', 'secret']);
+        $notfounds = $this->checkRequiredParams($this->params, ['appkey', 'sign', 'timestamp']);
         if (count($notfounds) > 0) {
             $this->verifyError = new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
              return false;
@@ -71,8 +77,14 @@ class BaseAction extends Action {
             $this->verifyError = new Response(Response::CODE_COMMON_TIMEOUT, null, ["server_time" => time() * 1000]);
             return false;
         }
-        
-        if(!$this->verifySign($this->getParam('appkey'), $timestamp, $this->getParam('sign'))){
+        if(!$this->getParam('secret')){
+            //没加密情况
+            if(!$this->verifySignNoSecret($this->getParam('sign'))){
+                $this->verifyError = new Response(Response::CODE_COMMON_VERIFY_SIGN_FAIL);
+                return false;
+            }
+        }else if(!$this->verifySign($this->getParam('appkey'), $timestamp, $this->getParam('sign'))){
+            //加密情况
             $this->verifyError = new Response(Response::CODE_COMMON_VERIFY_SIGN_FAIL);
              return false;
         }
@@ -94,6 +106,23 @@ class BaseAction extends Action {
         sort($secret_arr);
         $secret_sort_str = implode("", $secret_arr);
         return strtoupper(md5("{$appkey}{$secret_sort_str}{$timestamp}{$appkey}")) == $sign;
+    }
+    
+    /**
+     * 校验签名 
+     * @param string $sign
+     * @return boolean
+     */
+    protected function verifySignNoSecret($sign){
+        $secret_arr = [];
+        foreach ($this->secretParams as $key => $value) {
+            if ($key != 'sign') {
+                $secret_arr [] = "$key$value";
+            }
+        }
+        sort($secret_arr);
+        $secret_sort_str = implode("", $secret_arr);
+        return strtoupper(md5("wskeee{$secret_sort_str}wskeee")) == $sign;
     }
 
     /**

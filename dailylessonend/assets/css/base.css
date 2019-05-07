@@ -433,7 +433,6 @@ textarea {
 }
 .vk-table .detail-des {
     min-height: 80px;
-    display: flex;
     align-items: center;
 }
 .vk-table > thead > tr > th,
