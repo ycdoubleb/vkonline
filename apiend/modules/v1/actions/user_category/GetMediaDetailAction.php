@@ -22,21 +22,18 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class GetMediaDetailAction extends BaseAction {
+class GetMediaDetailAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    protected $requiredParams = ['media_id'];
+
+    public function run()
+    {
         /* @var $user User */
         $user = Yii::$app->user->identity;
         $post = $this->getSecretParams();
 
         $media_id = ArrayHelper::getValue($post, 'media_id', null);             //品牌ID
-
-        if ($media_id == null) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'media_id']);
-        }
 
         $media = (new Query())
                 ->select([
@@ -68,7 +65,7 @@ class GetMediaDetailAction extends BaseAction {
             $media['cat_path'] = UserCategory::getCatById($media['user_cat_id'])->getParents(['id', 'name'], true);
 
             //查询视频路径
-            if($media['type'] == Video::TYPE_VIDEO){
+            if ($media['type'] == Video::TYPE_VIDEO) {
                 $level_key = ['LD', 'SD', 'HD', 'FD'];
                 $path_result = (new Query())
                                 ->select(['level', 'oss_key'])
@@ -84,7 +81,7 @@ class GetMediaDetailAction extends BaseAction {
                 }
                 $media['transcode_urls'] = $urls;
             }
-            
+
             return new Response(Response::CODE_COMMON_OK, null, $media);
         }
     }

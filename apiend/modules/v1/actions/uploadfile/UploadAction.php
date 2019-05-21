@@ -23,22 +23,16 @@ use yii\web\HttpException;
  *
  * @author Administrator
  */
-class UploadAction extends BaseAction {
+class UploadAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    protected $requiredParams = ['fileMd5', 'chunkMd5'];
+
+    public function run()
+    {
         //应用web路径，默认会放本应用的web下，通过设置root_path可改变目标路径
         $params = $this->getSecretParams();
-        
-        if (!isset($params["fileMd5"])) {
-            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'fileMd5']);
-        }
-        if (!isset($params["chunkMd5"])) {
-            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'chunkMd5']);
-        }
-        
+
         $root_path = isset($params["root_path"]) ? $params["root_path"] . '/' : '';
         $dir_path = isset($params["dir_path"]) ? '/' . $params["dir_path"] : '';
         $targetDir = $root_path . 'upload/webuploader/upload_tmp';
@@ -111,7 +105,8 @@ class UploadAction extends BaseAction {
      * 创建目录
      * @param string $path
      */
-    private function mkdir($path) {
+    private function mkdir($path)
+    {
         if (!file_exists($path)) {
             if (!(@mkdir($path, 0777, true))) {
                 throw new HttpException(500, '创建目录失败');

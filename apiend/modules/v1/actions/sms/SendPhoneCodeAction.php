@@ -14,28 +14,25 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class SendPhoneCodeAction extends BaseAction{
-    
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+class SendPhoneCodeAction extends BaseAction
+{
+
+    protected $requiredParams = ['phone'];
+
+    public function run()
+    {
         //发送验证码配置
-        $sendYunSmsConfig = Yii::$app->params['sendYunSms'];  
+        $sendYunSmsConfig = Yii::$app->params['sendYunSms'];
         //应用模板
-        $SMS_TEMPLATE_ID = $sendYunSmsConfig['SMS_TEMPLATE_ID'];                          
+        $SMS_TEMPLATE_ID = $sendYunSmsConfig['SMS_TEMPLATE_ID'];
         $post = $this->getSecretParams();
-        /* 检查必须参数 */
-        $notfounds = $this->checkRequiredParams($post, ['phone']);
-        if (count($notfounds) > 0) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, implode(',', $notfounds));
-        }
+  
         //获取输入的电话号码
         $phone = trim(ArrayHelper::getValue($post, 'phone', null));
         //获取要使用的模板，默认使用注册绑定手机号码/短信登录短信模板ID
         $template_name = ArrayHelper::getValue($post, 'template_name', 'BINGDING_PHONE');
         //检查模板是否存在
-        if(!isset($SMS_TEMPLATE_ID[$template_name])){
+        if (!isset($SMS_TEMPLATE_ID[$template_name])) {
             return new Response(Response::CODE_SMS_TEMPLATE_NOT_FOUND);
         }
 
@@ -43,7 +40,7 @@ class SendPhoneCodeAction extends BaseAction{
         if (!StringUtil::checkPhoneValid($phone)) {
             return new Response(Response::CODE_COMMON_DATA_INVALID, null, null, ['param' => '手机格式']);
         }
-        
+
         //发送验证码功能
         $resp = SmsService::sendCode($phone, $SMS_TEMPLATE_ID[$template_name]);
         if ($resp['result']) {
@@ -52,4 +49,5 @@ class SendPhoneCodeAction extends BaseAction{
             return new Response(Response::CODE_SMS_SEND_FAILED, null, $resp);
         }
     }
+
 }

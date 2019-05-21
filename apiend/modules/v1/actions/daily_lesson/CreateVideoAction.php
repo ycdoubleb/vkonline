@@ -21,16 +21,10 @@ use yii\helpers\ArrayHelper;
  */
 class CreateVideoAction extends BaseAction {
 
+    protected $requiredParams = ['file_id'];
+    
     public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
         $params = $this->getSecretParams();
-        //参数检查
-        $notfounds = $this->checkRequiredParams($params, ['file_id']);
-        if (count($notfounds) > 0) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
-        }
         /* @var $user User */
         $user = Yii::$app->user->identity;
 

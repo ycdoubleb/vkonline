@@ -17,12 +17,11 @@ use Yii;
   }
  * @author Administrator
  */
-class GetCategoryDetailAction extends BaseAction {
+class GetCategoryDetailAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $user_cat_id = $this->getSecretParam('user_cat_id', '0');
         $customer_id = $this->getSecretParam('customer_id', null);
         /* @var $user User */
@@ -81,7 +80,8 @@ class GetCategoryDetailAction extends BaseAction {
      * @param UserCategory $category
      * 
      */
-    private function formatCategory($category) {
+    private function formatCategory($category)
+    {
 
         $category_arr = $category->toArray(['id', 'name', 'type', 'level', 'path']);
         $category_arr['path'] = $category->getParents(['id', 'name'], true);

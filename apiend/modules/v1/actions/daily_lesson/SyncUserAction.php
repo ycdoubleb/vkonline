@@ -21,18 +21,14 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class SyncUserAction extends BaseAction {
+class SyncUserAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    protected $requiredParams = ['id', 'username', 'nickname', 'password_hash', 'phone',];
+
+    public function run()
+    {
         $params = $this->getSecretParams();
-        ;
-        $notfounds = $this->checkRequiredParams($params, ['id', 'username', 'nickname', 'password_hash', 'phone',]);
-        if (count($notfounds) > 0) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
-        }
 
         $tran = Yii::$app->db->beginTransaction();
         try {
@@ -64,7 +60,8 @@ class SyncUserAction extends BaseAction {
      * 效验数据，转换省市区镇代码转换
      * @param type $params
      */
-    private function validateParams($params) {
+    private function validateParams($params)
+    {
         /* 转换id */
         $params['id'] = md5('dailylesson_' . $params['id']);
         /* 把字符转换成对应id */
@@ -86,7 +83,8 @@ class SyncUserAction extends BaseAction {
         return $params;
     }
 
-    private function findRegion($names) {
+    private function findRegion($names)
+    {
         $result = Region::find()
                 ->select(['id', 'name'])
                 ->where(['name' => $names])
@@ -101,7 +99,8 @@ class SyncUserAction extends BaseAction {
      * 
      * @throws Exception
      */
-    private function saveUser($params) {
+    private function saveUser($params)
+    {
         $user_id = $params['id'];
         $user = DailyLessonUser::findOne(['id' => $user_id]);
         if (!$user) {
@@ -110,7 +109,7 @@ class SyncUserAction extends BaseAction {
             ]);
         }
         //$user->loadDefaultValues();
-        
+
         $user->type = DailyLessonUser::TYPE_PARTNER;
         $user->from = DailyLessonUser::DAILY_LESSON;
         $user->status = DailyLessonUser::STATUS_ACTIVE;
@@ -141,7 +140,8 @@ class SyncUserAction extends BaseAction {
      * 
      * @throws Exception
      */
-    private function saveBrand($user, $params) {
+    private function saveBrand($user, $params)
+    {
         $is_new = false;
         $brand = Customer::findOne(['id' => md5($user->id)]);
         $brandAdmin;
@@ -163,7 +163,7 @@ class SyncUserAction extends BaseAction {
                 'level' => CustomerAdmin::MAIN,
                 'created_by' => $user->id,
             ]);
-            
+
             /**
              * 添加用户品牌关联
              */
@@ -181,10 +181,8 @@ class SyncUserAction extends BaseAction {
             'address' => $user->profile->address,
         ]);
 
-        if ($brand->validate() && $brand->save() 
-                && (!isset($brandAdmin) || $brandAdmin->save(false))
-                && (!isset($userBrand) || $userBrand->save(false))
-                ) {
+        if ($brand->validate() && $brand->save() && (!isset($brandAdmin) || $brandAdmin->save(false)) && (!isset($userBrand) || $userBrand->save(false))
+        ) {
             if ($is_new) {
                 $brand->status = Customer::STATUS_ACTIVE;
                 $brand->save(false, ['status']);
@@ -203,7 +201,8 @@ class SyncUserAction extends BaseAction {
      * 
      * @throws Exception
      */
-    private function saveTeacher($user, $params) {
+    private function saveTeacher($user, $params)
+    {
         $teacher_id = md5("{$user->id}_teacher");
         $teacher = Teacher::findOne(['id' => $teacher_id, 'created_by' => $user->id]);
         if (!$teacher) {
@@ -235,7 +234,8 @@ class SyncUserAction extends BaseAction {
      * 
      * @throws Exception
      */
-    private function saveCategory($user, $params) {
+    private function saveCategory($user, $params)
+    {
         //暂时不作初始操作
     }
 

@@ -24,12 +24,11 @@ use yii\web\HttpException;
  *
  * @author Administrator
  */
-class MergeChunksAction extends BaseAction {
+class MergeChunksAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $params = $this->getSecretParams();
         //应用
         $app_id = isset($params["app_id"]) ? $params["app_id"] : '';
@@ -42,7 +41,7 @@ class MergeChunksAction extends BaseAction {
         $customer_id = ArrayHelper::getValue($params, 'customer_id', Yii::$app->user->identity->customer_id);   // 的属品牌
         //查询将要被替换的文件
         $replace_id = ArrayHelper::getValue($params, 'replace_id', '');                                         // 被替换文件id
-        $replace_file = Uploadfile::findOne(['id' => $replace_id]);                                             
+        $replace_file = Uploadfile::findOne(['id' => $replace_id]);
 
         // Create target dir
         $this->mkdir($targetDir);
@@ -143,7 +142,8 @@ class MergeChunksAction extends BaseAction {
      * 图片：thumb_path
      * @param string $filepath
      */
-    private function getFileInfo($filepath) {
+    private function getFileInfo($filepath)
+    {
         $info = ['duration' => 0, 'thumb_path' => ""];
         try {
             $filter = [
@@ -183,7 +183,8 @@ class MergeChunksAction extends BaseAction {
      * @param type $mode            模式：outbound填满高宽，inset等比缩放
      * @return string   生成缩略图路径
      */
-    private function createThumb($type, $filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND) {
+    private function createThumb($type, $filepath, $width = 128, $height = null, $mode = ManipulatorInterface::THUMBNAIL_OUTBOUND)
+    {
         $fileinfo = pathinfo($filepath);
         $thumbpath = $fileinfo['dirname'] . '/thumbs/' . $fileinfo['filename'] . '.jpg';
         $this->mkdir($fileinfo['dirname'] . '/thumbs/');
@@ -208,7 +209,8 @@ class MergeChunksAction extends BaseAction {
      * @returns {string}
      * @private
      */
-    private function getExt($suffix) {
+    private function getExt($suffix)
+    {
         //无法生成缩略图的文件图标
         $exts = [
             'doc' => ['doc', 'docx'],
@@ -237,7 +239,8 @@ class MergeChunksAction extends BaseAction {
      * 创建目录
      * @param string $path
      */
-    private function mkdir($path) {
+    private function mkdir($path)
+    {
         if (!file_exists($path)) {
             if (!(@mkdir($path, 0777, true))) {
                 throw new HttpException(500, '创建目录失败');

@@ -20,12 +20,11 @@ use yii\web\User;
  *
  * @author Administrator
  */
-class SearchAction extends BaseAction {
+class SearchAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $user_cat_id = $this->getSecretParam('user_cat_id', '0');
         $customer_id = $this->getSecretParam('customer_id', null);
         $keyword = $this->getSecretParam('keyword', '');                  //关键字
@@ -110,7 +109,8 @@ class SearchAction extends BaseAction {
      * 
      * @return Query
      */
-    private function getCategoryChildrenQuery($user_cat_id, $user, $customer_id, $type, $recursive) {
+    private function getCategoryChildrenQuery($user_cat_id, $user, $customer_id, $type, $recursive)
+    {
         /*
          * 需要保证列数及顺序一致 
          * id,name,type,thump_path,is_dir,created_at,num_children  url,size,extension
@@ -127,7 +127,7 @@ class SearchAction extends BaseAction {
         if (!empty($type)) {
             $type_arr = explode(',', $type);
         }
-         //添加类型过滤
+        //添加类型过滤
         $media_query->andFilterWhere(['File.type' => $type_arr]);
         /* 加上文件大小和实现路径 */
         $media_query->leftJoin(['Uploadfile' => Uploadfile::tableName()], "Uploadfile.id = File.file_id")
@@ -146,7 +146,8 @@ class SearchAction extends BaseAction {
      * @param string $customer_id
      * @param int $type                 过滤内容
      */
-    private function getCategoryCountQuery($children, $user_cat_id, $user, $customer_id, $type) {
+    private function getCategoryCountQuery($children, $user_cat_id, $user, $customer_id, $type)
+    {
         $user_cat_ids = [];
         foreach ($children as $item) {
             if ($item['is_dir'] == 1) {
@@ -163,7 +164,7 @@ class SearchAction extends BaseAction {
         //媒体查询
         $media_query = $this->createFileQuery(Video::tableName(), $user_cat_ids, $user, $customer_id)->addSelect(['File.user_cat_id dir_id', 'File.id']);
 
-         /* 过滤内容 $type = 1,2,3 */
+        /* 过滤内容 $type = 1,2,3 */
         $type_arr = [1, 2, 3, 4];
         if (!empty($type)) {
             $type_arr = explode(',', $type);
@@ -190,7 +191,8 @@ class SearchAction extends BaseAction {
      * @param string $user_id
      * @param bool $recursive           是否递归搜索
      */
-    private function createCatQuery($user_cat_id, $user, $customer_id, $recursive = false) {
+    private function createCatQuery($user_cat_id, $user, $customer_id, $recursive = false)
+    {
         $query = (new Query())
                 ->from(['UserCategory' => UserCategory::tableName()])
                 ->where(['UserCategory.is_show' => 1]);
@@ -233,7 +235,8 @@ class SearchAction extends BaseAction {
      * @param string $customer_id   
      * @param bool $recursive           是否递归搜索
      */
-    private function createFileQuery($tableName, $user_cat_id, $user, $customer_id, $recursive = false) {
+    private function createFileQuery($tableName, $user_cat_id, $user, $customer_id, $recursive = false)
+    {
         $query = (new Query())
                 ->from(['File' => $tableName])
                 ->leftJoin(['UserCategory' => UserCategory::tableName()], 'File.user_cat_id = UserCategory.id')

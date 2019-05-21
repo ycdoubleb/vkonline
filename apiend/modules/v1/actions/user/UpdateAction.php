@@ -12,12 +12,11 @@ use Yii;
  *
  * @author Administrator
  */
-class UpdateAction extends BaseAction {
+class UpdateAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $post = $this->getSecretParams();
         //只允许自己本人更新，其它人无法更新
         /* @var $user User */

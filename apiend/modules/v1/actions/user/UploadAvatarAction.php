@@ -18,9 +18,6 @@ use yii\web\UploadedFile;
 class UploadAvatarAction extends BaseAction {
 
     public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
         $upload = UploadedFile::getInstanceByName('avatar');
         if ($upload) {
             /* @var $user User */

@@ -16,15 +16,11 @@ use yii\helpers\ArrayHelper;
  */
 class CheckFileAction extends BaseAction {
 
+     protected $requiredParams = ['fileMd5'];
+
     public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
         $params = $this->getSecretParams();
-        if (!isset($params['fileMd5'])) {
-            //不提供fileMd5...
-            return new UploadResponse(UploadResponse::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'fileMd5']);
-        }
+        
         $fileMd5 = $params['fileMd5'];
         $dbFile = Uploadfile::findOne(['id' => $fileMd5, 'is_del' => 0]);
         if ($dbFile) {

@@ -14,18 +14,16 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class CheckPhoneRegisteredAction extends BaseAction {
+class CheckPhoneRegisteredAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    protected $requiredParams = ['phone'];
+
+    public function run()
+    {
         $post = $this->getSecretParams();
         $phone = ArrayHelper::getValue($post, 'phone', null);
 
-        if (!$phone) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'phone']);
-        }
         /* 检查手机格式 */
         if (!StringUtil::checkPhoneValid($phone)) {
             return new Response(Response::CODE_COMMON_DATA_INVALID, null, null, ['param' => '手机格式']);

@@ -6,7 +6,6 @@ use apiend\components\sms\SmsService;
 use apiend\models\Response;
 use apiend\modules\v1\actions\BaseAction;
 use common\models\User;
-use Yii;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -14,23 +13,18 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class ResetPasswordAction extends BaseAction {
-
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+class ResetPasswordAction extends BaseAction
+{
+    protected $requiredParams = ['code_key', 'code', 'phone', 'password'];
+    
+    public function run()
+    {
         $post = $this->getSecretParams();
         /* 验证验证码 */
         $code_key = trim(ArrayHelper::getValue($post, 'code_key', null));
         $code = trim(ArrayHelper::getValue($post, 'code', null));
         $phone = trim(ArrayHelper::getValue($post, 'phone', null));
         $password = trim(ArrayHelper::getValue($post, 'password', null));
-        /* 检查参数缺失 */
-        $notfounds = $this->checkRequiredParams($post, ['code_key', 'code', 'phone', 'password']);
-        if (count($notfounds) > 0) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
-        }
 
         /* 检查验证码是否正确 */
         $resp = SmsService::verificationCode($phone, $code, $code_key, false);

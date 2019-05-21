@@ -13,23 +13,21 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class CheckUsernameRegisteredAction extends BaseAction {
+class CheckUsernameRegisteredAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
-        
+    protected $requiredParams = ['username'];
+
+    public function run()
+    {
         $post = $this->getSecretParams();
         $username = ArrayHelper::getValue($post, 'username', null);
-        if (!$username) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => 'username']);
-        }
+       
         /** username or phone 有注册过的都不准注册 */
         $user = User::findByUsername($username);
-        if($user){
+        if ($user) {
             return new Response(Response::CODE_USER_USERNAME_HAS_REGISTERED);
-        }else{
+        } else {
             return new Response(Response::CODE_COMMON_OK);
         }
     }

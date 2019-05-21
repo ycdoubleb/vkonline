@@ -12,12 +12,11 @@ use Yii;
  *
  * @author Administrator
  */
-class RegisterAction extends BaseAction {
+class RegisterAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $model = new SignupForm();
         $model->setAttributes($this->getSecretParams());
         if ($user = $model->signup()) {

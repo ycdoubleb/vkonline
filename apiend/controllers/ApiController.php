@@ -4,6 +4,7 @@
 namespace apiend\controllers;
 
 use apiend\components\auth\QueryParamHeaderAuth;
+use common\core\ApiException;
 use Yii;
 use yii\base\Controller;
 use yii\base\ErrorException;
@@ -63,13 +64,6 @@ class ApiController extends Controller {
             Yii::$app->response->headers->set('Cache-Control','no-store, no-cache, must-revalidate');
             Yii::$app->response->headers->add('Cache-Control','post-check=0, pre-check=0');
             Yii::$app->response->headers->set('Pragma','no-cache');
-
-            if (!empty($_REQUEST['debug'])) {
-                $random = rand(0, intval($_REQUEST['debug']));
-                if ($random === 0) {
-                    //header('HTTP/1.0 500 Internal Server Error');exit;
-                }
-            }
         };
         return parent::beforeAction($action);
     }
@@ -132,6 +126,10 @@ class ApiController extends Controller {
      */
     protected function convertExceptionToArray($exception)
     {
+        if($exception instanceof ApiException){
+            return $exception->data;
+        }
+        
         if (!YII_DEBUG && !$exception instanceof UserException && !$exception instanceof HttpException) {
             $exception = new HttpException(500, Yii::t('yii', 'An internal server error occurred.'));
         }

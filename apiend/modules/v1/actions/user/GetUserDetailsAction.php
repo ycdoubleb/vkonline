@@ -12,19 +12,16 @@ use Yii;
  *
  * @author Administrator
  */
-class GetUserDetailsAction extends BaseAction{
+class GetUserDetailsAction extends BaseAction
+{
 
-    public function run() {
-        
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
-        
+    public function run()
+    {
         $id = $this->getSecretParam('id');
         if (!$id || $id == '') {
             $id = Yii::$app->user->id;
         }
-        
+
         $user = User::find()
                 ->select([
                     'id', 'customer_id', 'username', 'nickname',
@@ -33,7 +30,7 @@ class GetUserDetailsAction extends BaseAction{
                 ->where(['id' => $id])
                 ->asArray()
                 ->one();
-        
+
         if (!$user) {
             return new Response(Response::CODE_COMMON_NOT_FOUND, null, null, ['param' => '用户']);
         }

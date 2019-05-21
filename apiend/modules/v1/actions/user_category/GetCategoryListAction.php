@@ -22,12 +22,11 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class GetCategoryListAction extends BaseAction {
+class GetCategoryListAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         $user_cat_id = $this->getSecretParam('user_cat_id', '0');
         $customer_id = $this->getSecretParam('customer_id', null);
         $page = $this->getSecretParam('page', 1);
@@ -105,7 +104,8 @@ class GetCategoryListAction extends BaseAction {
      * @param UserCategory $category
      * 
      */
-    private function formatCategory($category) {
+    private function formatCategory($category)
+    {
 
         $category_arr = $category->toArray(['id', 'name', 'type', 'level', 'path']);
         $category_arr['path'] = $category->getParents(['id', 'name'], true);
@@ -122,7 +122,8 @@ class GetCategoryListAction extends BaseAction {
      * 
      * @return Query
      */
-    private function getCategoryChildrenQuery($user_cat_id, $user, $customer_id, $type) {
+    private function getCategoryChildrenQuery($user_cat_id, $user, $customer_id, $type)
+    {
         /*
          * 需要保证列数及顺序一致 
          * id,name,type,thump_path,is_dir,created_at,num_children  url,size,extension
@@ -159,7 +160,8 @@ class GetCategoryListAction extends BaseAction {
      * @param string $customer_id
      * @param int $type                 过滤内容
      */
-    private function getCategoryCountQuery($children, $user_cat_id, $user, $customer_id, $type) {
+    private function getCategoryCountQuery($children, $user_cat_id, $user, $customer_id, $type)
+    {
         $user_cat_ids = [];
         foreach ($children as $item) {
             if ($item['is_dir'] == 1) {
@@ -202,7 +204,8 @@ class GetCategoryListAction extends BaseAction {
      * @param string $customer_id   
      * @param string $user_id
      */
-    private function createCatQuery($user_cat_id, $user, $customer_id) {
+    private function createCatQuery($user_cat_id, $user, $customer_id)
+    {
         $query = (new Query())
                 ->from(['UserCategory' => UserCategory::tableName()])
                 ->where(['UserCategory.parent_id' => $user_cat_id, 'UserCategory.is_show' => 1]);
@@ -231,7 +234,8 @@ class GetCategoryListAction extends BaseAction {
      * @param string $customer_id   
      * @param string $user_id
      */
-    private function createFileQuery($tableName, $user_cat_id, $user, $customer_id) {
+    private function createFileQuery($tableName, $user_cat_id, $user, $customer_id)
+    {
         $query = (new Query())
                 ->from(['File' => $tableName])
                 ->leftJoin(['UserCategory' => UserCategory::tableName()], 'File.user_cat_id = UserCategory.id')

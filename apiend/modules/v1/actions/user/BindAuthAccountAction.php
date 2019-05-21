@@ -13,18 +13,15 @@ use yii\helpers\ArrayHelper;
  *
  * @author Administrator
  */
-class BindAuthAccountAction extends BaseAction {
+class BindAuthAccountAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
-        
+    protected $requiredParams = ['identity_type', 'identifier', 'credential'];
+
+    public function run()
+    {
         $post = $this->getSecretParams();
-        $notfounds = $this->checkRequiredParams($post, ['identity_type', 'identifier', 'credential']);
-        if (count($notfounds) > 0) {
-            return new Response(Response::CODE_COMMON_MISS_PARAM, null, null, ['param' => implode(',', $notfounds)]);
-        }
+
         $identity_type = ArrayHelper::getValue($post, 'identity_type', null);
         $identifier = ArrayHelper::getValue($post, 'identifier', null);
         $credential = ArrayHelper::getValue($post, 'credential', null);

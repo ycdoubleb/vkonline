@@ -18,9 +18,6 @@ use Yii;
 class LoginAction extends BaseAction {
 
     public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
         $post = $this->getSecretParams();
         $model = new DailyLessonLoginForm();
         $model->scenario = LoginForm::SCENARIO_PASS;

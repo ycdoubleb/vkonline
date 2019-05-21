@@ -12,19 +12,18 @@ use Yii;
  *
  * @author Administrator
  */
-class LogoutAction extends BaseAction {
+class LogoutAction extends BaseAction
+{
 
-    public function run() {
-        if (!$this->verify()) {
-            return $this->verifyError;
-        }
+    public function run()
+    {
         /* @var $user User */
         $user = Yii::$app->user->identity;
         $user->access_token = '';
         $user->save(false);
-        
+
         Yii::$app->user->logout();
-        
+
         return new Response(Response::CODE_COMMON_OK);
     }
 
