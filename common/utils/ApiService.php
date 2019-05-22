@@ -12,7 +12,8 @@ use Yii;
  *
  * @author Administrator
  */
-class ApiService {
+class ApiService
+{
 
     /**
      * [
@@ -28,10 +29,16 @@ class ApiService {
      * 组装参数
      * @param array $params
      */
-    private static function _createParams($params) {
+    private static function _createParams($params)
+    {
+        $secret_key = 'wskeee';
         $timestamp = time() * 1000;
         $appkey = 'mediacloud';
-        $secret = EncryptionService::encrypt($params, true, self::$encryption_config);
+        //$secret = EncryptionService::encrypt($params, true, self::$encryption_config);
+        $params = array_merge($params, [
+            'timestamp' => $timestamp,
+            'appkey' => $appkey,
+        ]);
         /**
          * 
          * 签名算法过程：
@@ -42,26 +49,23 @@ class ApiService {
          * 示例：假设appkey=test，md5(testa1b2c3timestamp12345678test)，取得MD5摘要值 C5F3EB5D7DC2748AED89E90AF00081E6 。 
          * */
         $data_arr = [];
+        $params = array_filter($params);
         foreach ($params as $key => $param) {
             $data_arr [] = "$key$param";
         }
         sort($data_arr);
         $data_sort_str = implode("", $data_arr);
-        $sign = strtoupper(md5("{$appkey}{$data_sort_str}{$timestamp}{$appkey}"));
+        $sign = strtoupper(md5("{$secret_key}{$data_sort_str}{$secret_key}"));
 
-        return [
-            'secret' => $secret,
-            'timestamp' => $timestamp,
-            'appkey' => $appkey,
-            'sign' => $sign,
-        ];
+        return array_merge($params, ['sign' => $sign]);
     }
 
     /**
      * 初始加密配置
      * @param array $encryption_config  
      */
-    public static function init($encryption_config) {
+    public static function init($encryption_config)
+    {
         self::$encryption_config = $encryption_config;
     }
 
@@ -71,7 +75,8 @@ class ApiService {
      * @param array $params     参数
      * @param bool $raw         保留原格式，设置false会自动转换为json
      */
-    public static function get($url, $params = [], $raw = false) {
+    public static function get($url, $params = [], $raw = false)
+    {
         //调用API
         $curl = new Curl();
         $curl->setGetParams(self::_createParams($params));
@@ -85,7 +90,8 @@ class ApiService {
      * @param string|array|raw $body    源数据
      * @param bool $raw         保留原格式，设置false会自动转换为json
      */
-    public static function post($url, $params = [], $body = null, $raw = false) {
+    public static function post($url, $params = [], $body = null, $raw = false)
+    {
         //调用API
         $curl = new Curl();
         $curl->setPostParams(self::_createParams($params));
