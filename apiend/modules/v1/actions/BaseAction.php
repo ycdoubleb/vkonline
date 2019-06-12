@@ -53,7 +53,9 @@ class BaseAction extends Action
         $this->params = array_merge($this->getBodyParams(), $this->getQueryParams());
 
         if ($raw = Yii::$app->request->getRawBody()) {
-            $this->params = array_merge($this->params, json_decode($raw, true));
+            try{
+                $this->params = array_merge($this->params, json_decode($raw, true));
+            } catch (\Exception $ex) {}
         }
 
         if ($secret = Yii::$app->request->getQueryParam('secret', null)) {
